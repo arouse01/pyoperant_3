@@ -65,11 +65,11 @@ class ZogPanel(panels.BasePanel):
         self.speaker = hwio.AudioOutput(interface=self.interfaces['pyaudio'])
 
         # assemble inputs into components
-        self.left = components.PeckPort(IR=self.inputs[0],LED=self.outputs[0],name='l')
-        self.center = components.PeckPort(IR=self.inputs[1],LED=self.outputs[1],name='c')
-        self.right = components.PeckPort(IR=self.inputs[2],LED=self.outputs[2],name='r')
+        self.left = components.PeckPort(ir=self.inputs[0], led=self.outputs[0], name='l')
+        self.center = components.PeckPort(ir=self.inputs[1], led=self.outputs[1], name='c')
+        self.right = components.PeckPort(ir=self.inputs[2], led=self.outputs[2], name='r')
         self.house_light = components.HouseLight(light=self.outputs[3])
-        self.hopper = components.Hopper(IR=self.inputs[3],solenoid=self.outputs[4])
+        self.hopper = components.Hopper(ir=self.inputs[3], solenoid=self.outputs[4])
 
         # define reward & punishment methods
         self.reward = self.hopper.reward

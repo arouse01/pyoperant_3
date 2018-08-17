@@ -1,46 +1,69 @@
+import sys
 import random
 from pyoperant.utils import rand_from_log_shape_dist
-import cPickle as pickle
 import numpy as np
 
-def random_queue(conditions,tr_max=100,weights=None):
+if sys.version_info[0] < 3:
+    import pickle
+else:
+    import _pickle as pickle
+
+
+def random_queue(conditions, tr_max=5000, weights=None):
     """ generator which randomly samples conditions
 
     Args:
-       conditions (list):  The conditions to sample from. 
-       weights (list of ints): Weights of each condition
+
+       :param conditions: (list)  The conditions to sample from.
+       :param weights: (list of ints) Weights of each condition
 
     Kwargs:
-       tr_max (int): Maximum number of trial conditions to generate. (default: 100)
+
+       :param tr_max: (int) Maximum number of trial conditions to generate. (default: 100)
 
     Returns:
         whatever the elements of 'conditions' are
 
-    """
-    if weights:
-        conditions_weighted = []
-        for cond,w in zip(conditions,weights):
-            for ww in range(w):
-                conditions_weighted += cond
-        conditions = conditions_weighted
 
+    """
+    if weights:  # Handling weights this way because python 2.7 doesn't have a built-in weighted random function
+
+        conditions_weighted = []
+        for cond in conditions:
+            for w in weights:   # Compare weight values to condition class
+                if cond['class'] == w['class']:
+                    currWeight = int(w['weight'])
+                    for ww in range(currWeight):
+                        conditions_weighted.append(cond)
+        conditions = conditions_weighted
     tr_num = 0
+    #     conditions_weighted = []
+    #     for cond, w in zip(conditions, weights):
+    #         for ww in range(w):
+    #             conditions_weighted.append(cond)
+    #     conditions = conditions_weighted
+    # tr_num = 0
+
     while tr_num < tr_max:
         yield random.choice(conditions)
+
         tr_num += 1
 
-def block_queue(conditions,reps=1,shuffle=False):
+
+def block_queue(conditions, reps=1, shuffle=False):
     """ generate trial conditions from a block
 
     Args:
-        conditions (list):  The conditions to sample from. 
-
+        :param conditions: (list) The conditions to sample from.
+        :param reps:
+        :param shuffle:
     Kwargs:
         reps (int): number of times each item in conditions will be presented (default: 1)
         shuffle (bool): Shuffles the queue (default: False)
 
     Returns:
         whatever the elements of 'conditions' are
+
 
     """
     conditions_repeated = []
@@ -50,9 +73,10 @@ def block_queue(conditions,reps=1,shuffle=False):
 
     if shuffle:
         random.shuffle(conditions)
-    
+
     for cond in conditions:
         yield cond
+
 
 class AdaptiveBase(object):
     """docstring for AdaptiveBase
@@ -60,8 +84,9 @@ class AdaptiveBase(object):
     a staircase. Importantly, any objects inheriting this need to define the
     `update()` and `next()` methods.
     """
+
     def __init__(self, **kwargs):
-        self.updated = True # for first trial, no update needed
+        self.updated = True  # for first trial, no update needed
         self.update_error_str = "queue hasn't been updated since last trial"
 
     def __iter__(self):
@@ -73,8 +98,8 @@ class AdaptiveBase(object):
             self.no_response()
 
     def next(self):
-        if not self.updated: #hasn't been updated since last trial
-            raise Exception(self.update_error_msg()) #TODO: find what causes bug
+        if not self.updated:  # hasn't been updated since last trial
+            raise Exception(self.update_error_msg())  # TODO: find what causes bug
         self.updated = False
 
     def no_response(self):
@@ -91,13 +116,15 @@ class AdaptiveBase(object):
     def update_error_msg(self):
         return self.update_error_str
 
+
 class PersistentBase(object):
     """
     A mixin that allows for the creation of an obj through a load command that
     first checks for a pickled file to load an object before generating a new one.
     """
+
     def __init__(self, filename=None, **kwargs):
-        assert filename != None
+        assert filename is not None
         super(PersistentBase, self).__init__(**kwargs)
         self.filename = filename
         self.save()
@@ -141,7 +168,8 @@ class KaernbachStaircase(AdaptiveBase):
     Returns:
         float
     """
-    def __init__(self, 
+
+    def __init__(self,
                  start_val=100,
                  stepsize_up=3,
                  stepsize_dn=1,
@@ -153,7 +181,7 @@ class KaernbachStaircase(AdaptiveBase):
         super(KaernbachStaircase, self).__init__()
         self.val = start_val
         self.stepsize_up = stepsize_up
-        self.stepsize_dn = stepsize_dn 
+        self.stepsize_dn = stepsize_dn
         self.min_val = min_val
         self.max_val = max_val
         self.crit = crit
@@ -163,26 +191,27 @@ class KaernbachStaircase(AdaptiveBase):
 
     def update(self, correct, no_resp):
         super(KaernbachStaircase, self).update(correct, no_resp)
-            
-        self.val += -1*self.stepsize_dn if correct else self.stepsize_up
 
-        if self.crit_method=='reversals':
-            if correct==self.going_up: # checks if last trial's perf was consistent w/ trend
+        self.val += -1 * self.stepsize_dn if correct else self.stepsize_up
+
+        if self.crit_method == 'reversals':
+            if correct == self.going_up:  # checks if last trial's perf was consistent w/ trend
                 self.counter += 1
                 self.going_up = not self.going_up
 
         # stop at max/min if we hit the rails
-        if (self.max_val!=None) and (self.val > self.max_val):
+        if (self.max_val is not None) and (self.val > self.max_val):
             self.val = self.max_val
-        elif (self.min_val!=None) and (self.val < self.min_val):
+        elif (self.min_val is not None) and (self.val < self.min_val):
             self.val = self.min_val
 
     def next(self):
         super(KaernbachStaircase, self).next()
         if self.counter > self.crit:
             raise StopIteration
-        self.counter += 1 if self.crit_method=='trials' else 0
+        self.counter += 1 if self.crit_method == 'trials' else 0
         return self.val
+
 
 class DoubleStaircase(AdaptiveBase):
     """
@@ -198,6 +227,7 @@ class DoubleStaircase(AdaptiveBase):
     stims: an array of stimuli names ordered from most easily left to most easily right
     rate_constant: the step size is the rate_constant*(high_idx-low_idx)
     """
+
     def __init__(self, stims, rate_constant=.05, **kwargs):
         super(DoubleStaircase, self).__init__(**kwargs)
         self.stims = stims
@@ -220,16 +250,16 @@ class DoubleStaircase(AdaptiveBase):
         super(DoubleStaircase, self).next()
         if self.high_idx - self.low_idx <= 1:
             raise StopIteration
-        
+
         delta = int(np.ceil((self.high_idx - self.low_idx) * self.rate_constant))
-        if random.random() < .5: # probe low side
+        if random.random() < .5:  # probe low side
             self.trial['low'] = True
             self.trial['value'] = self.low_idx + delta
-            return {'class': 'L',  'stim_name': self.stims[self.trial['value']]}
+            return {'class': 'L', 'stim_name': self.stims[self.trial['value']]}
         else:
             self.trial['low'] = False
             self.trial['value'] = self.high_idx - delta
-            return {'class': 'R',  'stim_name': self.stims[self.trial['value']]}
+            return {'class': 'R', 'stim_name': self.stims[self.trial['value']]}
 
     def no_response(self):
         super(DoubleStaircase, self).no_response()
@@ -237,8 +267,10 @@ class DoubleStaircase(AdaptiveBase):
 
     def update_error_msg(self):
         sup = super(DoubleStaircase, self).update_error_msg()
-        state = "self.trial.low=%s    self.trial.value=%d    self.low_idx=%d    self.high_idx=%d" % (self.trial['low'], self.trial['value'], self.low_idx, self.high_idx)
+        state = "self.trial.low=%s    self.trial.value=%d    self.low_idx=%d    self.high_idx=%d" % (
+            self.trial['low'], self.trial['value'], self.low_idx, self.high_idx)
         return "\n".join([sup, state])
+
 
 class DoubleStaircaseReinforced(AdaptiveBase):
     """
@@ -252,6 +284,7 @@ class DoubleStaircaseReinforced(AdaptiveBase):
     rate_constant: the step size is the rate_constant*(high_idx-low_idx)
     probe_rate: proportion of trials that are between [0, low_idx] or [high_idx, length(stims)]
     """
+
     def __init__(self, stims, rate_constant=.05, probe_rate=.1, sample_log=False, **kwargs):
         super(DoubleStaircaseReinforced, self).__init__(**kwargs)
         self.dblstaircase = DoubleStaircase(stims, rate_constant)
@@ -259,7 +292,8 @@ class DoubleStaircaseReinforced(AdaptiveBase):
         self.probe_rate = probe_rate
         self.sample_log = sample_log
         self.last_probe = False
-        self.update_error_str = "reinforced double staircase queue %s hasn't been updated since last trial" % (self.stims[0])
+        self.update_error_str = "reinforced double staircase queue %s hasn't been updated since last trial" % (
+            self.stims[0])
 
     def update(self, correct, no_resp):
         if self.last_probe:
@@ -281,18 +315,19 @@ class DoubleStaircaseReinforced(AdaptiveBase):
                 return self.next()
         else:
             self.last_probe = False
-            if random.random() < .5: # probe left
+            if random.random() < .5:  # probe left
                 if self.sample_log:
                     val = int((1 - rand_from_log_shape_dist()) * self.dblstaircase.low_idx)
                 else:
                     val = random.randrange(self.dblstaircase.low_idx + 1)
-                return {'class': 'L',  'stim_name': self.stims[val]}
-            else: # probe right
+                return {'class': 'L', 'stim_name': self.stims[val]}
+            else:  # probe right
                 if self.sample_log:
-                    val = self.dblstaircase.high_idx + int(rand_from_log_shape_dist() * (len(self.stims) - self.dblstaircase.high_idx)) 
+                    val = self.dblstaircase.high_idx + int(
+                        rand_from_log_shape_dist() * (len(self.stims) - self.dblstaircase.high_idx))
                 else:
                     val = self.dblstaircase.high_idx + random.randrange(len(self.stims) - self.dblstaircase.high_idx)
-                return {'class': 'R',  'stim_name': self.stims[val]}
+                return {'class': 'R', 'stim_name': self.stims[val]}
 
     def no_response(self):
         super(DoubleStaircaseReinforced, self).no_response()
@@ -303,8 +338,9 @@ class DoubleStaircaseReinforced(AdaptiveBase):
 
     def update_error_msg(self):
         sup = super(DoubleStaircaseReinforced, self).update_error_msg()
-        state = "self.last_probe=%s" % (self.last_probe)
-        sub_state = "self.dbs.trial=%s    self.dbs.low_idx=%d    self.dbs.high_idx=%d" % (self.dblstaircase.trial, self.dblstaircase.low_idx, self.dblstaircase.high_idx)
+        state = "self.last_probe=%s" % self.last_probe
+        sub_state = "self.dbs.trial=%s    self.dbs.low_idx=%d    self.dbs.high_idx=%d" % (
+            self.dblstaircase.trial, self.dblstaircase.low_idx, self.dblstaircase.high_idx)
         return "\n".join([sup, state, sub_state])
 
 
@@ -322,6 +358,7 @@ class MixedAdaptiveQueue(PersistentBase, AdaptiveBase):
                         NotImplemented
     filename: filename of pickle to save itself
     """
+
     def __init__(self, sub_queues, probabilities=None, **kwargs):
         super(MixedAdaptiveQueue, self).__init__(**kwargs)
         self.sub_queues = sub_queues
@@ -342,10 +379,10 @@ class MixedAdaptiveQueue(PersistentBase, AdaptiveBase):
                 self.sub_queue_idx = random.randrange(len(self.sub_queues))
                 return self.sub_queues[self.sub_queue_idx].next()
             except StopIteration:
-                #TODO: deal with subqueue finished, and possibility of all subqueues finishing
+                # TODO: deal with subqueue finished, and possibility of all subqueues finishing
                 raise NotImplementedError
         else:
-            #TODO: support variable probabilities for each sub_queue
+            # TODO: support variable probabilities for each sub_queue
             raise NotImplementedError
 
     def on_load(self):
@@ -355,7 +392,3 @@ class MixedAdaptiveQueue(PersistentBase, AdaptiveBase):
                 sub_queue.on_load()
             except AttributeError:
                 pass
-
-
-
-

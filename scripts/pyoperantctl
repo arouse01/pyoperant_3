@@ -1,8 +1,9 @@
 #!/usr/bin/env perl
 
-$numBoxes=16;
 
-$opdatdir="/home/bird/opdat/";
+$numBoxes=2;
+
+$opdatdir="/home/rouse/bird/data/";
 $file="${opdatdir}panel_subject_behavior";
 
 #this code parses a file as described in panel_subject_behavior
@@ -236,7 +237,7 @@ while($i<$numBoxes){
 
 	    if($shouldStartProcesses){
 		print("attempting to start $correctProgram[$i] in $directory[$i]\n");
-		system "cd $directory[$i]; echo '".$date.": starting $correctProgram[$i]' >> $opdatdir"."B".$birdid[$i]."/B".$birdid[$i]."_log.txt; $correctProgram[$i] &";
+		system "cd $directory[$i]; echo '".$date.": starting $correctProgram[$i]' >> $opdatdir".$birdid[$i]."/".$birdid[$i]."_log.txt; $correctProgram[$i] &";
 	    }
 	}
     } elsif ($boxCorrect[$i]==-1){

@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="boxIcons">
+    <file>red_stop.svg</file>
+    <file>green_circle.svg</file>
+  </qresource>
+</RCC>

@@ -6,6 +6,7 @@ from pyoperant.behavior import base, shape
 from pyoperant.errors import EndSession, EndBlock
 from pyoperant import components, utils, reinf, queues
 
+
 class TwoAltChoiceExp(base.BaseExp):
     """A two alternative choice experiment
 
@@ -33,8 +34,9 @@ class TwoAltChoiceExp(base.BaseExp):
 
 
     """
+
     def __init__(self, *args, **kwargs):
-        super(TwoAltChoiceExp,  self).__init__(*args, **kwargs)
+        super(TwoAltChoiceExp, self).__init__(*args, **kwargs)
         self.shaper = shape.Shaper2AC(self.panel, self.log, self.parameters, self.log_error_callback)
 
         # # assign stim files full names
@@ -73,7 +75,7 @@ class TwoAltChoiceExp(base.BaseExp):
         self.session_q = None
 
         self.data_csv = os.path.join(self.parameters['experiment_path'],
-                                     self.parameters['subject']+'_trialdata_'+self.timestamp+'.csv')
+                                     self.parameters['subject'] + '_trialdata_' + self.timestamp + '.csv')
         self.make_data_csv()
 
         if 'reinforcement' in self.parameters.keys():
@@ -96,10 +98,10 @@ class TwoAltChoiceExp(base.BaseExp):
                     'default': {
                         'queue': 'random',
                         'conditions': [{'class': k} for k in self.parameters['classes'].keys()]
-                        }
-                    },
+                    }
+                },
                 'order': ['default']
-                }
+            }
 
         if 'session_schedule' not in self.parameters:
             self.parameters['session_schedule'] = self.parameters['light_schedule']
@@ -137,12 +139,12 @@ class TwoAltChoiceExp(base.BaseExp):
         port through `experiment.class_assoc['L']`.
 
         """
-        assert len(self.parameters['classes'])==2, 'does not currently support > 2 classes'
+        assert len(self.parameters['classes']) == 2, 'does not currently support > 2 classes'
 
         self.class_assoc = {}
         for class_, class_params in self.parameters['classes'].items():
             try:
-                self.class_assoc[class_] = getattr(self.panel,class_params['component'])
+                self.class_assoc[class_] = getattr(self.panel, class_params['component'])
             except KeyError:
                 pass
 
@@ -180,30 +182,31 @@ class TwoAltChoiceExp(base.BaseExp):
                 self.trials = []
                 self.do_correction = False
                 self.session_id += 1
-                self.log.info('starting session %s: %s' % (self.session_id,sn_cond))
+                self.log.info('starting session %s: %s' % (self.session_id, sn_cond))
 
                 # grab the block details
                 blk = copy.deepcopy(self.parameters['block_design']['blocks'][sn_cond])
 
                 # load the block details into the trial queue
                 q_type = blk.pop('queue')
-                if q_type=='random':
+                if q_type == 'random':
                     self.trial_q = queues.random_queue(**blk)
-                elif q_type=='block':
+                elif q_type == 'block':
                     self.trial_q = queues.block_queue(**blk)
-                elif q_type=='mixedDblStaircase':
+                elif q_type == 'mixedDblStaircase':
                     dbl_staircases = [queues.DoubleStaircaseReinforced(stims) for stims in blk['stim_lists']]
-                    self.trial_q = queues.MixedAdaptiveQueue.load(os.path.join(self.parameters['experiment_path'], 'persistentQ.pkl'), dbl_staircases)
-                try: 
+                    self.trial_q = queues.MixedAdaptiveQueue.load(
+                        os.path.join(self.parameters['experiment_path'], 'persistentQ.pkl'), dbl_staircases)
+                try:
                     run_trial_queue()
                 except EndSession:
                     return 'post'
 
             self.session_q = None
-        
+
         else:
             self.log.info('continuing last session')
-            try: 
+            try:
                 run_trial_queue()
             except EndSession:
                 return 'post'
@@ -218,7 +221,7 @@ class TwoAltChoiceExp(base.BaseExp):
         return None
 
     ## trial flow
-    def new_trial(self,conditions=None):
+    def new_trial(self, conditions=None):
         """Creates a new trial and appends it to the trial list
 
         If `self.do_correction` is `True`, then the conditions are ignored and a new
@@ -233,7 +236,7 @@ class TwoAltChoiceExp(base.BaseExp):
 
         """
         if len(self.trials) > 0:
-            index = self.trials[-1].index+1
+            index = self.trials[-1].index + 1
         else:
             index = 0
 
@@ -261,17 +264,17 @@ class TwoAltChoiceExp(base.BaseExp):
             for mot in trial_motifs:
                 trial.events.append(mot)
 
-        trial.session=self.session_id
+        trial.session = self.session_id
         trial.annotate(**conditions)
 
         self.trials.append(trial)
         self.this_trial = self.trials[-1]
         self.this_trial_index = self.trials.index(self.this_trial)
-        self.log.debug("trial %i: %s, %s" % (self.this_trial.index,self.this_trial.type_,self.this_trial.class_))
+        self.log.debug("trial %i: %s, %s" % (self.this_trial.index, self.this_trial.type_, self.this_trial.class_))
 
         return True
 
-    def get_stimuli(self,**conditions):
+    def get_stimuli(self, **conditions):
         """ Get the trial's stimuli from the conditions
 
         Returns
@@ -293,18 +296,18 @@ class TwoAltChoiceExp(base.BaseExp):
         # TODO: calculate reaction times
         pass
 
-    def save_trial(self,trial):
-        '''write trial results to CSV'''
+    def save_trial(self, trial):
+        """write trial results to CSV"""
 
         trial_dict = {}
         for field in self.fields_to_save:
             try:
-                trial_dict[field] = getattr(trial,field)
+                trial_dict[field] = getattr(trial, field)
             except AttributeError:
                 trial_dict[field] = trial.annotations[field]
 
-        with open(self.data_csv,'ab') as data_fh:
-            trialWriter = csv.DictWriter(data_fh,fieldnames=self.fields_to_save,extrasaction='ignore')
+        with open(self.data_csv, 'ab') as data_fh:
+            trialWriter = csv.DictWriter(data_fh, fieldnames=self.fields_to_save, extrasaction='ignore')
             trialWriter.writerow(trial_dict)
 
     def run_trial(self):
@@ -325,10 +328,10 @@ class TwoAltChoiceExp(base.BaseExp):
         self.trial_post()
 
     def trial_pre(self):
-        ''' this is where we initialize a trial'''
+        """ this is where we initialize a trial"""
         # make sure lights are on at the beginning of each trial, prep for trial
         self.log.debug('running trial')
-        self.log.debug("number of open file descriptors: %d" %(utils.get_num_open_fds()))
+        self.log.debug("number of open file descriptors: %d" % (utils.get_num_open_fds()))
 
         self.this_trial = self.trials[-1]
         min_wait = self.this_trial.stimulus_event.duration
@@ -336,8 +339,7 @@ class TwoAltChoiceExp(base.BaseExp):
         self.this_trial.annotate(min_wait=min_wait)
         self.this_trial.annotate(max_wait=max_wait)
         self.log.debug('created new trial')
-        self.log.debug('min/max wait: %s/%s' % (min_wait,max_wait))
-
+        self.log.debug('min/max wait: %s/%s' % (min_wait, max_wait))
 
     def trial_post(self):
         '''things to do at the end of a trial'''
@@ -351,7 +353,7 @@ class TwoAltChoiceExp(base.BaseExp):
         self.do_correction = True
         if len(self.trials) > 0:
             if self.parameters['correction_trials']:
-                if self.this_trial.correct == True:
+                if self.this_trial.correct:
                     self.do_correction = False
                 elif self.this_trial.response == 'none':
                     if self.this_trial.type_ == 'normal':
@@ -361,7 +363,7 @@ class TwoAltChoiceExp(base.BaseExp):
         else:
             self.do_correction = False
 
-        if self.check_session_schedule()==False:
+        if not self.check_session_schedule():
             raise EndSession
 
     def stimulus_pre(self):
@@ -373,7 +375,7 @@ class TwoAltChoiceExp(base.BaseExp):
         self.panel.center.on()
         trial_time = None
         while trial_time is None:
-            if self.check_session_schedule()==False:
+            if not self.check_session_schedule():
                 self.panel.center.off()
                 self.panel.speaker.stop()
                 self.update_adaptive_queue(presented=False)
@@ -388,7 +390,7 @@ class TwoAltChoiceExp(base.BaseExp):
                                                   label='peck',
                                                   time=0.0,
                                                   )
-                                            )
+                                      )
 
         # record trial initiation
         self.summary['trials'] += 1
@@ -401,11 +403,11 @@ class TwoAltChoiceExp(base.BaseExp):
             cue = self.this_trial.annotations["cue"]
             self.log.debug("cue light turning on")
             cue_start = dt.datetime.now()
-            if cue=="red":
+            if cue == "red":
                 self.panel.cue.red()
-            elif cue=="green":
+            elif cue == "green":
                 self.panel.cue.green()
-            elif cue=="blue":
+            elif cue == "blue":
                 self.panel.cue.blue()
             utils.wait(self.parameters["cue_duration"])
             self.panel.cue.off()
@@ -422,13 +424,13 @@ class TwoAltChoiceExp(base.BaseExp):
         ## 2. play stimulus
         stim_start = dt.datetime.now()
         self.this_trial.stimulus_event.time = (stim_start - self.this_trial.time).total_seconds()
-        self.panel.speaker.play() # already queued in stimulus_pre()
+        self.panel.speaker.play()  # already queued in stimulus_pre()
 
     def stimulus_post(self):
         self.log.debug('waiting %s secs...' % self.this_trial.annotations['min_wait'])
         utils.wait(self.this_trial.annotations['min_wait'])
 
-    #response flow
+    # response flow
     def response_pre(self):
         for class_, port in self.class_assoc.items():
             port.on()
@@ -455,7 +457,7 @@ class TwoAltChoiceExp(base.BaseExp):
                                                  time=elapsed_time,
                                                  )
                     self.this_trial.events.append(response_event)
-                    self.log.info('response: %s' % (self.this_trial.response))
+                    self.log.info('response: %s' % self.this_trial.response)
                     return
             utils.wait(.015)
 
@@ -469,7 +471,7 @@ class TwoAltChoiceExp(base.BaseExp):
 
     def consequence_main(self):
         # correct trial
-        if self.this_trial.response==self.this_trial.class_:
+        if self.this_trial.response == self.this_trial.class_:
             self.this_trial.correct = True
 
             if self.parameters['reinforcement']['secondary']:
@@ -480,7 +482,7 @@ class TwoAltChoiceExp(base.BaseExp):
                 self._run_correction_reward()
             elif self.reinf_sched.consequate(trial=self.this_trial):
                 self.reward_pre()
-                self.reward_main() # provide a reward
+                self.reward_main()  # provide a reward
                 self.reward_post()
 
         # no response
@@ -505,8 +507,7 @@ class TwoAltChoiceExp(base.BaseExp):
             else:
                 self.trial_q.update(False, True)
 
-
-    def secondary_reinforcement(self,value=1.0):
+    def secondary_reinforcement(self, value=1.0):
         return self.panel.center.flash(dur=value)
 
     ## reward flow
@@ -529,7 +530,7 @@ class TwoAltChoiceExp(base.BaseExp):
             self.summary['hopper_already_up'] += 1
             self.log.warning("hopper already up on panel %s" % str(err))
             utils.wait(self.parameters['classes'][self.this_trial.class_]['reward_value'])
-            #self.panel.reset()
+            # self.panel.reset()
 
         except components.HopperWontComeUpError as err:
             self.this_trial.reward = 'error'
@@ -549,7 +550,7 @@ class TwoAltChoiceExp(base.BaseExp):
             self.this_trial.reward = 'error'
             self.summary['hopper_wont_go_down'] += 1
             self.log.warning("hopper didn't go down on panel %s" % str(err))
-            #self.panel.reset()
+            # self.panel.reset()
 
         finally:
             self.panel.house_light.on()

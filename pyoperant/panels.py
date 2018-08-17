@@ -1,5 +1,6 @@
 ## Panel classes
 
+
 class BasePanel(object):
     """Returns a panel instance.
 
@@ -35,12 +36,12 @@ class BasePanel(object):
         >>>     return True
 
     """
-    def __init__(self, *args,**kwargs):
 
+    def __init__(self, *args, **kwargs):
         self.interfaces = {}
 
         self.inputs = []
         self.outputs = []
 
     def reset(self):
-         raise NotImplementedError
+        raise NotImplementedError

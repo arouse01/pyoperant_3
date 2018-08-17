@@ -125,8 +125,8 @@ if __name__ == "__main__":
 
 
     if parameters['debug']:
-        print parameters
-        print PANELS
+        print(parameters)
+        print(PANELS)
 
     panel = PANELS[parameters['panel_name']]()
 

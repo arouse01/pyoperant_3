@@ -7,13 +7,18 @@ from pyoperant import utils, InterfaceError
 
 logger = logging.getLogger(__name__)
 
-# TODO: Smart find arduinos using something like this: http://stackoverflow.com/questions/19809867/how-to-check-if-serial-port-is-already-open-by-another-process-in-linux-using
+
+# TODO: Smart find arduinos using something like this:
+#    http://stackoverflow.com/questions/19809867/how-to-check-if-serial-port-is-already-open-by-another-process-in-linux-using
 # TODO: Attempt to reconnect device if it can't be reached
-# TODO: Allow device to be connected to through multiple python instances. This kind of works but needs to be tested thoroughly.
+# TODO: Allow device to be connected to through multiple python instances.
+#       This kind of works but needs to be tested thoroughly.
+# TODO: Polling pins
 
 class ArduinoInterface(base_.BaseInterface):
     """Creates a pyserial interface to communicate with an Arduino via the serial connection.
-    Communication is through two byte messages where the first byte specifies the channel and the second byte specifies the action.
+    Communication is through two byte messages where the first byte specifies the channel and the second byte specifies
+    the action.
     Valid actions are:
     0. Read input value
     1. Set output to ON
@@ -22,7 +27,8 @@ class ArduinoInterface(base_.BaseInterface):
     4. Sets channel as an input
     5. Sets channel as an input with a pullup resistor (basically inverts the input values)
     :param device_name: The address of the device on the local system (e.g. /dev/tty.usbserial)
-    :param baud_rate: The baud (bits/second) rate for serial communication. If this is changed, then it also needs to be changed in the arduino project code.
+    :param baud_rate: The baud (bits/second) rate for serial communication. If this is changed, then it also needs to be
+            changed in the arduino project code.
     """
 
     _default_state = dict(invert=False,
@@ -52,16 +58,17 @@ class ArduinoInterface(base_.BaseInterface):
 
     def __str__(self):
 
-        return "Arduino device at %s: %d input channels and %d output channels configured" % (self.device_name, len(self.inputs), len(self.outputs))
+        return "Arduino device at %s: %d input channels and %d output channels configured" % (
+            self.device_name, len(self.inputs), len(self.outputs))
 
     def __repr__(self):
         # Add inputs and outputs to this
         return "ArduinoInterface(%s, baud_rate=%d)" % (self.device_name, self.baud_rate)
 
     def open(self):
-        '''Open a serial connection for the device
+        """Open a serial connection for the device
         :return: None
-        '''
+        """
 
         logger.debug("Opening device %s" % self)
         self.device = serial.Serial(port=self.device_name,
@@ -76,20 +83,20 @@ class ArduinoInterface(base_.BaseInterface):
         logger.info("Successfully opened device %s" % self)
 
     def close(self):
-        '''Close a serial connection for the device
+        """Close a serial connection for the device
         :return: None
-        '''
+        """
 
         logger.debug("Closing %s" % self)
         self.device.close()
 
     def _config_read(self, channel, pullup=False, **kwargs):
-        ''' Configure the channel to act as an input
+        """ Configure the channel to act as an input
         :param channel: the channel number to configure
         :param pullup: the channel should be configured in pullup mode. On the arduino this has the effect of
         returning HIGH when unpressed and LOW when pressed. The returned value will have to be inverted.
         :return: None
-        '''
+        """
 
         logger.debug("Configuring %s, channel %d as input" % (self.device_name, channel))
         if pullup is False:
@@ -106,10 +113,10 @@ class ArduinoInterface(base_.BaseInterface):
         self._state[channel]["invert"] = pullup
 
     def _config_write(self, channel, **kwargs):
-        ''' Configure the channel to act as an output
+        """ Configure the channel to act as an output
         :param channel: the channel number to configure
         :return: None
-        '''
+        """
 
         logger.debug("Configuring %s, channel %d as output" % (self.device_name, channel))
         self.device.write(self._make_arg(channel, 3))
@@ -120,7 +127,7 @@ class ArduinoInterface(base_.BaseInterface):
         self._state.setdefault(channel, self._default_state.copy())
 
     def _read_bool(self, channel, **kwargs):
-        ''' Read a value from the specified channel
+        """ Read a value from the specified channel
         :param channel: the channel from which to read
         :return: value
 
@@ -128,12 +135,12 @@ class ArduinoInterface(base_.BaseInterface):
         ------
         ArduinoException
             Reading from the device failed.
-        '''
+        """
 
         if channel not in self._state:
             raise InterfaceError("Channel %d is not configured on device %s" % (channel, self.device_name))
 
-        if self.device.inWaiting() > 0: # There is currently data in the input buffer
+        if self.device.inWaiting() > 0:  # There is currently data in the input buffer
             self.device.flushInput()
         self.device.write(self._make_arg(channel, 0))
         # Also need to make sure self.device.read() returns something that ord can work with. Possibly except TypeError
@@ -143,8 +150,8 @@ class ArduinoInterface(base_.BaseInterface):
                 break
                 # serial.SerialException("Testing")
             except serial.SerialException:
-            # This is to make it robust in case it accidentally disconnects or you try to access the arduino in
-            # multiple ways
+                # This is to make it robust in case it accidentally disconnects or you try to access the arduino in
+                # multiple ways
                 pass
             except TypeError:
                 ArduinoException("Could not read from arduino device")
@@ -163,7 +170,8 @@ class ArduinoInterface(base_.BaseInterface):
         :param channel: the channel from which to read
         :param timeout: the time, in seconds, until polling times out. Defaults to no timeout.
         :param wait: the time, in seconds, between subsequent reads. Defaults to 0.
-        :param suppress_longpress: only return a successful read if the previous read was False. This can be helpful when using a button, where a press might trigger multiple times.
+        :param suppress_longpress: only return a successful read if the previous read was False. This can be helpful
+        when using a button, where a press might trigger multiple times.
 
         :return: timestamp of True read
         """
@@ -180,12 +188,13 @@ class ArduinoInterface(base_.BaseInterface):
                     self._state[channel]["held"] = False
             else:
                 logger.debug("Polling: %s" % True)
-                # As long as the channel is not currently held, or longpresses are not being supressed, register the press
+                # As long as the channel is not currently held, or longpresses are not being supressed,
+                # register the press
                 if (not self._state[channel]["held"]) or (not suppress_longpress):
                     break
 
             if timeout is not None:
-                if time.time() - start >= timeout: # Return GoodNite exception?
+                if time.time() - start >= timeout:  # Return GoodNite exception?
                     logger.debug("Polling timed out. Returning")
                     return None
 
@@ -198,11 +207,11 @@ class ArduinoInterface(base_.BaseInterface):
         return datetime.datetime.now()
 
     def _write_bool(self, channel, value, **kwargs):
-        '''Write a value to the specified channel
+        """Write a value to the specified channel
         :param channel: the channel to write to
         :param value: the value to write
         :return: value written if succeeded
-        '''
+        """
 
         if channel not in self._state:
             raise InterfaceError("Channel %d is not configured on device %s" % (channel, self))
@@ -217,6 +226,50 @@ class ArduinoInterface(base_.BaseInterface):
         else:
             raise InterfaceError('Could not write to serial device %s, channel %d' % (self.device, channel))
 
+    # # ENABLE IF USING TEENSY WAV PLAYBACK
+    # def _play_wav(self, value, **kwargs):
+    #     channel = 99
+    #     """Start audio playback
+    #     :param channel: the channel to write to (60 is built into the arduino code to handle audio)
+    #     :param value: the file type
+    #     :return: value written if succeeded
+    #     """
+    #
+    #     # if channel not in self._state:
+    #     #     raise InterfaceError("Channel %d is not configured on device %s" % (channel, self))
+    #
+    #     logger.debug("Writing %s to device %s, audio" % (value, self))
+    #     if value:
+    #         s = self.device.write(self._make_arg(channel, 1))
+    #     else:
+    #         s = self.device.write(self._make_arg(channel, 2))
+    #     if s:
+    #         return value
+    #     else:
+    #         raise InterfaceError('Could not write to serial device %s, audio' % (self.device, channel))
+    #
+    # def _stop_wav(self, value, **kwargs):
+    #     channel = 99
+    #     """Stop audio playback
+    #     :param channel: the channel to write to (60 is built into the arduino code to handle audio)
+    #     :param value: the file type
+    #     :return: value written if succeeded
+    #     """
+    #
+    #     # if channel not in self._state:
+    #     #     raise InterfaceError("Channel %d is not configured on device %s" % (channel, self))
+    #
+    #     logger.debug("Stopping audio on device %s, audio" % (self))
+    #     s = self.device.write(self._make_arg(channel, 0))
+    #     if s:
+    #         return value
+    #     else:
+    #         raise InterfaceError('Could not write to serial device %s, audio' % (self.device, channel))
+    #
+    # def _queue_wav(self):
+    #     # Not used but required by pyoperant
+    #     return
+
     @staticmethod
     def _make_arg(channel, value):
         """ Turns a channel and boolean value into a 2 byte hex string to be fed to the arduino
@@ -227,5 +280,4 @@ class ArduinoInterface(base_.BaseInterface):
 
 
 class ArduinoException(Exception):
-
     pass

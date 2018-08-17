@@ -1,10 +1,13 @@
 
 # Classes of operant components
+
+
 class BaseIO(object):
     """any type of IO device. maintains info on interface for query IO device"""
-    def __init__(self,interface=None,params={},*args,**kwargs):
+    def __init__(self, interface=None, params={}, *args, **kwargs):
         self.interface = interface
         self.params = params
+
 
 class BooleanInput(BaseIO):
     """Class which holds information about inputs and abstracts the methods of
@@ -18,10 +21,10 @@ class BooleanInput(BaseIO):
     read() -- reads value of the input. Returns a boolean
     poll() -- polls the input until value is True. Returns the time of the change
     """
-    def __init__(self,interface=None,params={},*args,**kwargs):
-        super(BooleanInput, self).__init__(interface=interface,params=params,*args,**kwargs)
+    def __init__(self, interface=None, params={}, *args, **kwargs):
+        super(BooleanInput, self).__init__(interface=interface, params=params, *args, **kwargs)
 
-        assert hasattr(self.interface,'_read_bool')
+        assert hasattr(self.interface, '_read_bool')
         self.config()
 
     def config(self):
@@ -34,9 +37,10 @@ class BooleanInput(BaseIO):
         """read status"""
         return self.interface._read_bool(**self.params)
 
-    def poll(self,timeout=None):
+    def poll(self, timeout=None):
         """ runs a loop, querying for pecks. returns peck time or "GoodNite" exception """
-        return self.interface._poll(timeout=timeout,**self.params)
+        return self.interface._poll(timeout=timeout, **self.params)
+
 
 class BooleanOutput(BaseIO):
     """Class which holds information about outputs and abstracts the methods of
@@ -53,10 +57,10 @@ class BooleanOutput(BaseIO):
         returns the last passed by write(value)
     toggle() -- flips the value from the current value
     """
-    def __init__(self,interface=None,params={},*args,**kwargs):
-        super(BooleanOutput, self).__init__(interface=interface,params=params,*args,**kwargs)
+    def __init__(self, interface=None, params={}, *args, **kwargs):
+        super(BooleanOutput, self).__init__(interface=interface, params=params, *args, **kwargs)
 
-        assert hasattr(self.interface,'_write_bool')
+        assert hasattr(self.interface, '_write_bool')
         self.last_value = None
         self.config()
 
@@ -68,19 +72,20 @@ class BooleanOutput(BaseIO):
 
     def read(self):
         """read status"""
-        if hasattr(self.interface,'_read_bool'):
+        if hasattr(self.interface, '_read_bool'):
             return self.interface._read_bool(**self.params)
         else:
             return self.last_value
 
-    def write(self,value=False):
+    def write(self, value=False):
         """write status"""
-        self.last_value = self.interface._write_bool(value=value,**self.params)
+        self.last_value = self.interface._write_bool(value=value, **self.params)
         return self.last_value
 
     def toggle(self):
         value = not self.read()
         return self.write(value=value)
+
 
 class AudioOutput(BaseIO):
     """Class which holds information about audio outputs and abstracts the
@@ -98,14 +103,14 @@ class AudioOutput(BaseIO):
         returns the last passed by write(value)
     toggle() -- flips the value from the current value
     """
-    def __init__(self, interface=None,params={},*args,**kwargs):
-        super(AudioOutput, self).__init__(interface=interface,params=params,*args,**kwargs)
+    def __init__(self, interface=None, params={}, *args, **kwargs):
+        super(AudioOutput, self).__init__(interface=interface, params=params, *args, **kwargs)
 
-        assert hasattr(self.interface,'_queue_wav')
-        assert hasattr(self.interface,'_play_wav')
-        assert hasattr(self.interface,'_stop_wav')
+        assert hasattr(self.interface, '_queue_wav')
+        assert hasattr(self.interface, '_play_wav')
+        assert hasattr(self.interface, '_stop_wav')
 
-    def queue(self,wav_filename):
+    def queue(self, wav_filename):
         return self.interface._queue_wav(wav_filename)
 
     def play(self):
@@ -113,9 +118,3 @@ class AudioOutput(BaseIO):
 
     def stop(self):
         return self.interface._stop_wav()
-
-
-
-
-
-

@@ -23,6 +23,7 @@ try:
 except ImportError:
     import json
 
+
 class NumpyAwareJSONEncoder(json.JSONEncoder):
     """ this json encoder converts numpy arrays to lists so that json can write them.
 
@@ -39,13 +40,16 @@ class NumpyAwareJSONEncoder(json.JSONEncoder):
 
     def default(self, obj):
         if isinstance(obj, np.ndarray):
-                return obj.tolist()
+            return obj.tolist()
         return json.JSONEncoder.default(self, obj)
+
 
 # consider importing this from python-neo
 class Event(object):
     """docstring for Event"""
-    def __init__(self, time=None, duration=None, label='', name=None, description=None, file_origin=None, *args, **kwargs):
+
+    def __init__(self, time=None, duration=None, label='', name=None, description=None, file_origin=None, *args,
+                 **kwargs):
         super(Event, self).__init__()
         self.time = time
         self.duration = duration
@@ -56,22 +60,25 @@ class Event(object):
         self.annotations = {}
         self.annotate(**kwargs)
 
-    def annotate(self,**kwargs):
+    def annotate(self, **kwargs):
         self.annotations.update(kwargs)
 
 
 class Stimulus(Event):
     """docstring for Stimulus"""
+
     def __init__(self, *args, **kwargs):
         super(Stimulus, self).__init__(*args, **kwargs)
-        if self.label=='':
+        if self.label == '':
             self.label = 'stimulus'
+
 
 class AuditoryStimulus(Stimulus):
     """docstring for AuditoryStimulus"""
+
     def __init__(self, *args, **kwargs):
         super(AuditoryStimulus, self).__init__(*args, **kwargs)
-        if self.label=='':
+        if self.label == '':
             self.label = 'auditory_stimulus'
 
 
@@ -101,7 +108,7 @@ def run_state_machine(start_in='pre', error_state=None, error_callback=None, **s
     while state is not None:
         try:
             state = state_functions[state]()
-        except Exception, e:
+        except Exception as e:
             if error_callback:
                 error_callback(e)
                 raise
@@ -112,6 +119,7 @@ def run_state_machine(start_in='pre', error_state=None, error_callback=None, **s
 
 class Trial(Event):
     """docstring for Trial"""
+
     def __init__(self,
                  index=None,
                  type_='normal',
@@ -132,7 +140,7 @@ class Trial(Event):
         self.events = []
         self.stim_event = None
 
- 
+
 class Command(object):
     """
     Enables to run subprocess commands in a different thread with TIMEOUT option.
@@ -147,14 +155,15 @@ class Command(object):
     process = None
     status = None
     output, error = '', ''
- 
+
     def __init__(self, command):
-        if isinstance(command, basestring):
+        if isinstance(command, str):
             command = shlex.split(command)
         self.command = command
- 
+
     def run(self, timeout=None, **kwargs):
         """ Run a command then return: (status, output, error). """
+
         def target(**kwargs):
             try:
                 self.process = subprocess.Popen(self.command, **kwargs)
@@ -163,6 +172,7 @@ class Command(object):
             except:
                 self.error = traceback.format_exc()
                 self.status = -1
+
         # default stdout and stderr
         if 'stdout' not in kwargs:
             kwargs['stdout'] = subprocess.PIPE
@@ -177,36 +187,42 @@ class Command(object):
             thread.join()
         return self.status, self.output, self.error
 
+
 def parse_commandline(arg_str=sys.argv[1:]):
     """ parse command line arguments
     note: optparse is depreciated w/ v2.7 in favor of argparse
 
     """
-    parser=ArgumentParser()
+    parser = ArgumentParser()
     parser.add_argument('-B', '--box',
-                      action='store', type=int, dest='box', required=False,
-                      help='(int) box identifier')
+                        action='store', type=int, dest='box', required=False,
+                        help='(int) box identifier')
     parser.add_argument('-S', '--subject',
-                      action='store', type=str, dest='subj', required=False,
-                      help='subject ID and folder name')
-    parser.add_argument('-c','--config',
-                      action='store', type=str, dest='config_file', default='config.json', required=True,
-                      help='configuration file [default: %(default)s]')
+                        action='store', type=str, dest='subj', required=False,
+                        help='subject ID and folder name')
+    parser.add_argument('-c', '--config',
+                        action='store', type=str, dest='config_file', default='config.json', required=True,
+                        help='configuration file [default: %(default)s]')
     args = parser.parse_args(arg_str)
     return vars(args)
 
+
 def check_cmdline_params(parameters, cmd_line):
     # if someone is using red bands they should ammend the checks I perform here
-    allchars=string.maketrans('','')
-    nodigs=allchars.translate(allchars, string.digits)
-    if not ('box' not in cmd_line or cmd_line['box'] == int(parameters['panel_name'].encode('ascii','ignore').translate(allchars, nodigs))):
-        print "box number doesn't match config and command line"
+    allchars = string.maketrans('', '')
+    nodigs = allchars.translate(allchars, string.digits)
+    if not ('box' not in cmd_line or cmd_line['box'] == int(
+            parameters['panel_name'].encode('ascii', 'ignore').translate(allchars, nodigs))):
+        print(
+            "box number doesn't match config and command line")  # changed to parenthetical (print function has changed apparently) 1/17/18 AR
         return False
-    if not ('subj' not in cmd_line or int(cmd_line['subj'].encode('ascii','ignore').translate(allchars, nodigs)) == int(parameters['subject'].encode('ascii','ignore').translate(allchars, nodigs))):
-        print "subject number doesn't match config and command line"
-        return False
+    if not ('subj' not in cmd_line or int(
+            cmd_line['subj'].encode('ascii', 'ignore').translate(allchars, nodigs)) == int(
+            parameters['subject'].encode('ascii', 'ignore').translate(allchars, nodigs))):
+            print(
+                "subject number doesn't match config and command line")  # changed to parenthetical (print function has changed apparently) 1/17/18 AR
+            return False
     return True
-
 
 
 def time_in_range(start, end, x):
@@ -216,10 +232,14 @@ def time_in_range(start, end, x):
     else:
         return start <= x or x <= end
 
-def is_day((latitude, longitude) = ('32.82', '-117.14')):
+
+def is_day(latitude='42.41', longitude='-71.13'):
+    # def is_day((latitude, longitude) = ('32.82', '-117.14')):
+    # #Tuples not supported in Python 3, rewrote to separate tuples as this function is only called
+    # without parameters anyway (1/17/18 AR)
     """Is it daytime?
 
-    (lat,long) -- latitude and longitude of location to check (default is San Diego*)
+    (lat,long) -- latitude and longitude of location to check (default is Medford, MA) (changed from San Deigo* to Medford 1/17/18 AR)
     Returns True if it is daytime
 
     * Discovered by the Germans in 1904, they named it San Diego,
@@ -227,17 +247,17 @@ def is_day((latitude, longitude) = ('32.82', '-117.14')):
     """
     import ephem
     obs = ephem.Observer()
-    obs.lat = latitude # San Diego, CA
+    obs.lat = latitude  # San Diego, CA
     obs.long = longitude
-    sun = ephem.Sun()
+    sun = ephem._sun()
     sun.compute()
     next_sunrise = ephem.localtime(obs.next_rising(sun))
     next_sunset = ephem.localtime(obs.next_setting(sun))
     return next_sunset < next_sunrise
 
 
-def check_time(schedule,fmt="%H:%M"):
-    """ determine whether trials should be done given the current time and the light schedule
+def check_time(schedule, fmt="%H:%M"):
+    """ determine whether trials should be done given the current time and light schedule
 
     returns Boolean if current time meets schedule
 
@@ -247,6 +267,7 @@ def check_time(schedule,fmt="%H:%M"):
     schedule=[('06:00','12:00'),('18:00','24:00')] will have lights on between
 
     """
+
     if schedule == 'sun':
         if is_day():
             return True
@@ -254,13 +275,35 @@ def check_time(schedule,fmt="%H:%M"):
         for epoch in schedule:
             assert len(epoch) is 2
             now = dt.datetime.time(dt.datetime.now())
-            start = dt.datetime.time(dt.datetime.strptime(epoch[0],fmt))
-            end = dt.datetime.time(dt.datetime.strptime(epoch[1],fmt))
-            if time_in_range(start,end,now):
+            start = dt.datetime.time(dt.datetime.strptime(epoch[0], fmt))
+            end = dt.datetime.time(dt.datetime.strptime(epoch[1], fmt))
+            if time_in_range(start, end, now):
                 return True
     return False
 
-def wait(secs=1.0, final_countdown=0.0,waitfunc=None):
+
+def check_day(schedule):
+    """ determine whether trials should be done given the current day
+
+    """
+    today = dt.datetime.today().weekday()
+
+    if schedule == 'weekday':
+        if today < 5:  # .weekday() returns int of day of week, with Monday = 0
+            return True
+        else:
+            return False
+    elif schedule == 'daily':
+            return True
+    else:   # Match current day of week to session_days parameter
+        todayDate = dt.datetime.today()
+        for eachDay in schedule:
+            if eachDay == today or eachDay == todayDate.strftime("%A").lower() or eachDay == todayDate.strftime("%a").lower():
+                return True
+    return False
+
+
+def wait(secs=1.0, final_countdown=0.0, waitfunc=None):
     """Smartly wait for a given time period.
 
     secs -- total time to wait in seconds
@@ -272,26 +315,27 @@ def wait(secs=1.0, final_countdown=0.0,waitfunc=None):
     the final hogCPUsecs the more precise method of constantly polling the clock
     is used for greater precision.
     """
-    #initial relaxed period, using sleep (better for system resources etc)
+    # initial relaxed period, using sleep (better for system resources etc)
     if secs > final_countdown:
-        time.sleep(secs-final_countdown)
-        secs = final_countdown # only this much is now left
+        time.sleep(secs - final_countdown)
+        secs = final_countdown  # only this much is now left
 
-    #It's the Final Countdown!!
-    #hog the cpu, checking time
+    # It's the Final Countdown!!
+    # hog the cpu, checking time
     t0 = time.time()
-    while (time.time()-t0) < secs:
-        #let's see if any events were collected in meantime
+    while (time.time() - t0) < secs:
+        # let's see if any events were collected in meantime
         try:
             waitfunc()
         except:
             pass
 
+
 def auditory_stim_from_wav(wav):
-    with closing(wave.open(wav,'rb')) as wf:
+    with closing(wave.open(wav, 'rb')) as wf:
         (nchannels, sampwidth, framerate, nframes, comptype, compname) = wf.getparams()
 
-        duration = float(nframes)/sampwidth
+        duration = float(nframes) / sampwidth
         duration = duration * 2.0 / framerate
         stim = AuditoryStimulus(time=0.0,
                                 duration=duration,
@@ -308,6 +352,7 @@ def auditory_stim_from_wav(wav):
                                              }
                                 )
     return stim
+
 
 def concat_wav(input_file_list, output_filename='concat.wav'):
     """ concat a set of wav files into a single wav file and return the output filename
@@ -326,18 +371,18 @@ def concat_wav(input_file_list, output_filename='concat.wav'):
     """
 
     cursor = 0
-    epochs = [] # list of file epochs
+    epochs = []  # list of file epochs
     audio_data = ''
     with closing(wave.open(output_filename, 'wb')) as output:
         for input_filename, isi in input_file_list:
 
             # read in the wav file
-            with closing(wave.open(input_filename,'rb')) as wav_part:
+            with closing(wave.open(input_filename, 'rb')) as wav_part:
                 try:
                     params = wav_part.getparams()
                     output.setparams(params)
                     fs = output.getframerate()
-                except: # TODO: what was I trying to except here? be more specific
+                except:  # TODO: what was I trying to except here? be more specific
                     pass
 
                 audio_frames = wav_part.readframes(wav_part.getnframes())
@@ -346,30 +391,29 @@ def concat_wav(input_file_list, output_filename='concat.wav'):
             audio_data += audio_frames
 
             part_start = cursor
-            part_dur = len(audio_frames)/params[1]
+            part_dur = len(audio_frames) / params[1]
 
-            epochs.append(AuditoryStimulus(time=float(part_start)/fs,
-                                           duration=float(part_dur)/fs,
+            epochs.append(AuditoryStimulus(time=float(part_start) / fs,
+                                           duration=float(part_dur) / fs,
                                            name=input_filename,
                                            file_origin=input_filename,
                                            annotations=params,
                                            label='motif'
                                            ))
-            cursor += part_dur # move cursor length of the duration
+            cursor += part_dur  # move cursor length of the duration
 
             # add isi
             if isi > 0.0:
-                isi_frames = ''.join([struct.pack('h', fr) for fr in [0]*int(fs*isi)])
+                isi_frames = ''.join([struct.pack('h', fr) for fr in [0] * int(fs * isi)])
                 audio_data += isi_frames
-                cursor += len(isi_frames)/params[1]
+                cursor += len(isi_frames) / params[1]
 
         # concat all of the audio together and write to file
         output.writeframes(audio_data)
 
-
     description = 'concatenated on-the-fly'
     concat_wav = AuditoryStimulus(time=0.0,
-                                  duration=epochs[-1].time+epochs[-1].duration,
+                                  duration=epochs[-1].time + epochs[-1].duration,
                                   name=output_filename,
                                   label='wav',
                                   description=description,
@@ -377,26 +421,27 @@ def concat_wav(input_file_list, output_filename='concat.wav'):
                                   annotations=output.getparams(),
                                   )
 
-    return (concat_wav,epochs)
+    return concat_wav, epochs
 
 
 def get_num_open_fds():
-    '''
+    """
     return the number of open file descriptors for current process
 
     .. warning: will only work on UNIX-like os-es.
-    '''
+    """
 
     pid = os.getpid()
     procs = subprocess.check_output(
-        [ "lsof", '-w', '-Ff', "-p", str( pid ) ] )
+        ["lsof", '-w', '-Ff', "-p", str(pid)])
 
     nprocs = len(
         filter(
-            lambda s: s and s[ 0 ] == 'f' and s[1: ].isdigit(),
-            procs.split( '\n' ) )
-        )
+            lambda s: s and s[0] == 'f' and s[1:].isdigit(),
+            procs.split('\n'))
+    )
     return nprocs
+
 
 def rand_from_log_shape_dist(alpha=10):
     """
@@ -406,5 +451,5 @@ def rand_from_log_shape_dist(alpha=10):
     """
     beta = (alpha + 1) * np.log(alpha + 1) - alpha
     t = random.random()
-    ret = ((beta * t-1)/(sp.special.lambertw((beta*t-1)/np.e)) - 1) / alpha
+    ret = ((beta * t - 1) / (sp.special.lambertw((beta * t - 1) / np.e)) - 1) / alpha
     return max(min(np.real(ret), 1), 0)

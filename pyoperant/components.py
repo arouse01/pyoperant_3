@@ -1,8 +1,12 @@
+## Last Modified: 1/17/18 (AR) Added LED indicator, water reinforcement classes
+
 import datetime
 from pyoperant import hwio, utils, ComponentError
 
+
 class BaseComponent(object):
     """Base class for physcal component"""
+
     def __init__(self, name=None, *args, **kwargs):
         self.name = name
         pass
@@ -14,21 +18,26 @@ class HopperActiveError(ComponentError):
     """raised when the hopper is up when it shouldn't be"""
     pass
 
+
 class HopperInactiveError(ComponentError):
     """raised when the hopper is down when it shouldn't be"""
     pass
+
 
 class HopperAlreadyUpError(HopperActiveError):
     """raised when the hopper is already up before it goes up"""
     pass
 
+
 class HopperWontComeUpError(HopperInactiveError):
     """raised when the hopper won't come up"""
     pass
 
+
 class HopperWontDropError(HopperActiveError):
     """raised when the hopper won't drop"""
     pass
+
 
 class Hopper(BaseComponent):
     """ Class which holds information about a hopper
@@ -52,14 +61,15 @@ class Hopper(BaseComponent):
         time in seconds to wait before checking to make sure the hopper is up
 
     """
-    def __init__(self,IR,solenoid,max_lag=0.3,*args,**kwargs):
-        super(Hopper, self).__init__(*args,**kwargs)
+
+    def __init__(self, ir, solenoid, max_lag=0.3, *args, **kwargs):
+        super(Hopper, self).__init__(*args, **kwargs)
         self.max_lag = max_lag
-        if isinstance(IR,hwio.BooleanInput):
-            self.IR = IR
+        if isinstance(ir, hwio.BooleanInput):
+            self.IR = ir
         else:
-            raise ValueError('%s is not an input channel' % IR)
-        if isinstance(solenoid,hwio.BooleanOutput):
+            raise ValueError('%s is not an input channel' % ir)
+        if isinstance(solenoid, hwio.BooleanOutput):
             self.solenoid = solenoid
         else:
             raise ValueError('%s is not an output channel' % solenoid)
@@ -88,7 +98,7 @@ class Hopper(BaseComponent):
             elif solenoid_status:
                 raise HopperInactiveError
             else:
-                raise ComponentError("the IR & solenoid don't match: IR:%s,solenoid:%s" % (IR_status,solenoid_status))
+                raise ComponentError("the IR & solenoid don't match: IR:%s,solenoid:%s" % (IR_status, solenoid_status))
         else:
             return IR_status
 
@@ -109,7 +119,7 @@ class Hopper(BaseComponent):
         self.solenoid.write(True)
         time_up = self.IR.poll(timeout=self.max_lag)
 
-        if time_up is None: # poll timed out
+        if time_up is None:  # poll timed out
             self.solenoid.write(False)
             raise HopperWontComeUpError
         else:
@@ -137,13 +147,14 @@ class Hopper(BaseComponent):
             raise HopperWontDropError(e)
         return time_down
 
-    def feed(self,dur=2.0,error_check=True):
+    def feed(self, dur=2.0, error_check=True):
         """Performs a feed
 
         Parameters
         ---------
-        dur : float, optional 
+        :param dur: float, optional
             duration of feed in seconds
+        :param error_check:
 
         Returns
         -------
@@ -158,10 +169,12 @@ class Hopper(BaseComponent):
         HopperWontComeUpError
             The Hopper did not raise for the feed.
         HopperWontDropError
-            The Hopper did not drop fater the feed.
+            The Hopper did not drop after the feed.
+
+
 
         """
-        assert self.max_lag < dur, "max_lag (%ss) must be shorter than duration (%ss)" % (self.max_lag,dur)
+        assert self.max_lag < dur, "max_lag (%ss) must be shorter than duration (%ss)" % (self.max_lag, dur)
         try:
             self.check()
         except HopperActiveError as e:
@@ -171,11 +184,12 @@ class Hopper(BaseComponent):
         utils.wait(dur)
         feed_over = self.down()
         feed_duration = feed_over - feed_time
-        return (feed_time,feed_duration)
+        return feed_time, feed_duration
 
-    def reward(self,value=2.0):
+    def reward(self, value=2.0):
         """wrapper for `feed`, passes *value* into *dur* """
         return self.feed(dur=value)
+
 
 ## Peck Port ##
 
@@ -197,16 +211,17 @@ class PeckPort(BaseComponent):
         input channel for the IR beam to check for a peck
 
     """
-    def __init__(self,IR,LED,*args,**kwargs):
-        super(PeckPort, self).__init__(*args,**kwargs)
-        if isinstance(IR,hwio.BooleanInput):
-            self.IR = IR
+
+    def __init__(self, ir, led, *args, **kwargs):
+        super(PeckPort, self).__init__(*args, **kwargs)
+        if isinstance(ir, hwio.BooleanInput):
+            self.IR = ir
         else:
-            raise ValueError('%s is not an input channel' % IR)
-        if isinstance(LED,hwio.BooleanOutput):
-            self.LED = LED
+            raise ValueError('%s is not an input channel' % ir)
+        if isinstance(led, hwio.BooleanOutput):
+            self.LED = led
         else:
-            raise ValueError('%s is not an output channel' % LED)
+            raise ValueError('%s is not an output channel' % led)
 
     def status(self):
         """reads the status of the IR beam
@@ -240,7 +255,7 @@ class PeckPort(BaseComponent):
         self.LED.write(True)
         return True
 
-    def flash(self,dur=1.0,isi=0.1):
+    def flash(self, dur=1.0, isi=0.1):
         """Flashes the LED on and off with *isi* seconds high and low for *dur* seconds, then revert LED to prior state.
 
         Parameters
@@ -263,9 +278,9 @@ class PeckPort(BaseComponent):
             utils.wait(isi)
             flash_duration = datetime.datetime.now() - flash_time
         self.LED.write(LED_state)
-        return (flash_time,flash_duration)
+        return flash_time, flash_duration
 
-    def poll(self,timeout=None):
+    def poll(self, timeout=None):
         """ Polls the peck port until there is a peck
 
         Returns
@@ -275,7 +290,9 @@ class PeckPort(BaseComponent):
         """
         return self.IR.poll(timeout)
 
+
 ## House Light ##
+
 class HouseLight(BaseComponent):
     """ Class which holds information about the house light
 
@@ -291,12 +308,17 @@ class HouseLight(BaseComponent):
     punish() -- calls timeout() for 'value' as 'dur'
 
     """
-    def __init__(self,light,*args,**kwargs):
-        super(HouseLight, self).__init__(*args,**kwargs)
-        if isinstance(light,hwio.BooleanOutput):
+
+    def __init__(self, light, inverted=False, *args, **kwargs):
+        super(HouseLight, self).__init__(*args, **kwargs)
+        if isinstance(light, hwio.BooleanOutput):
             self.light = light
         else:
             raise ValueError('%s is not an output channel' % light)
+        if inverted:
+            self.inverted = True
+        else:
+            self.inverted = False
 
     def off(self):
         """Turns the house light off.
@@ -307,7 +329,10 @@ class HouseLight(BaseComponent):
             True if successful.
 
         """
-        self.light.write(False)
+        if self.inverted:
+            self.light.write(True)
+        else:
+            self.light.write(False)
         return True
 
     def on(self):
@@ -318,10 +343,13 @@ class HouseLight(BaseComponent):
         bool
             True if successful.
         """
-        self.light.write(True)
+        if self.inverted:
+            self.light.write(False)
+        else:
+            self.light.write(True)
         return True
 
-    def timeout(self,dur=10.0):
+    def timeout(self, dur=10.0):
         """Turn off the light for *dur* seconds 
 
         Keywords
@@ -336,13 +364,19 @@ class HouseLight(BaseComponent):
 
         """
         timeout_time = datetime.datetime.now()
-        self.light.write(False)
+        if self.inverted:
+            self.light.write(True)
+        else:
+            self.light.write(False)
         utils.wait(dur)
         timeout_duration = datetime.datetime.now() - timeout_time
-        self.light.write(True)
-        return (timeout_time,timeout_duration)
+        if self.inverted:
+            self.light.write(False)
+        else:
+            self.light.write(True)
+        return timeout_time, timeout_duration
 
-    def punish(self,value=10.0):
+    def punish(self, value=10.0):
         """Calls `timeout(dur)` with *value* as *dur* """
         return self.timeout(dur=value)
 
@@ -362,17 +396,18 @@ class RGBLight(BaseComponent):
         output channel for the blue LED
 
     """
-    def __init__(self,red,green,blue,*args,**kwargs):
-        super(RGBLight, self).__init__(*args,**kwargs)
-        if isinstance(red,hwio.BooleanOutput):
+
+    def __init__(self, red, green, blue, *args, **kwargs):
+        super(RGBLight, self).__init__(*args, **kwargs)
+        if isinstance(red, hwio.BooleanOutput):
             self._red = red
         else:
             raise ValueError('%s is not an output channel' % red)
-        if isinstance(green,hwio.BooleanOutput):
+        if isinstance(green, hwio.BooleanOutput):
             self._green = green
         else:
             raise ValueError('%s is not an output channel' % green)
-        if isinstance(blue,hwio.BooleanOutput):
+        if isinstance(blue, hwio.BooleanOutput):
             self._blue = blue
         else:
             raise ValueError('%s is not an output channel' % blue)
@@ -388,6 +423,7 @@ class RGBLight(BaseComponent):
         self._green.write(False)
         self._blue.write(False)
         return self._red.write(True)
+
     def green(self):
         """Turns the cue light to green
 
@@ -399,6 +435,7 @@ class RGBLight(BaseComponent):
         self._red.write(False)
         self._blue.write(False)
         return self._green.write(True)
+
     def blue(self):
         """Turns the cue light to blue
 
@@ -410,6 +447,7 @@ class RGBLight(BaseComponent):
         self._red.write(False)
         self._green.write(False)
         return self._blue.write(True)
+
     def off(self):
         """Turns the cue light off
 
@@ -436,3 +474,84 @@ class RGBLight(BaseComponent):
 #     def __init__(self,*args,**kwargs):
 #         super(Perch, self).__init__(*args,**kwargs)
 
+
+## Water Reinforcement ##
+
+class WaterValve(BaseComponent):
+    """ Class which holds information about the water solenoid
+
+    Keywords
+    --------
+    pump : hwio.BooleanOutput
+        output channel to turn the water solenoid on and off
+
+    Methods:
+    on() -- opens solenoid valve
+    off() -- closes solenoid valve
+    feed(dur) -- opens solenoid for 'dur' seconds (default=10.0)
+    reward() -- calls feed() for 'value' as 'dur'
+
+    """
+
+    def __init__(self, solenoid, *args, **kwargs):
+        super(WaterValve, self).__init__(*args, **kwargs)
+        if isinstance(solenoid, hwio.BooleanOutput):
+            self.solenoid = solenoid
+        else:
+            raise ValueError('%s is not an output channel' % solenoid)
+
+    def on(self):
+        """Opens the solenoid valve.
+
+        Returns
+        -------
+        bool
+            True if the solenoid opens.
+
+        """
+
+        self.solenoid.write(True)
+        time_up = datetime.datetime.now()
+
+        return time_up
+
+    def off(self):
+        """Closes the solenoid valve.
+
+        Returns
+        -------
+        bool
+            True if the solenoid closes.
+
+        """
+        self.solenoid.write(False)
+        time_down = datetime.datetime.now()
+
+        return time_down
+
+    def feed(self, dur=0.2):
+        """Performs a feed
+
+        Parameters
+        ---------
+        dur : float, optional
+            duration of feed in seconds
+
+        Returns
+        -------
+        (datetime, float)
+            Timestamp of the feed and the feed duration
+            :param dur:
+
+
+        """
+
+        feed_time = self.on()
+        utils.wait(dur)
+        feed_over = self.off()
+        feed_duration = feed_over - feed_time
+        return feed_time, feed_duration
+
+    def reward(self, value=0.2):
+        """wrapper for `feed`, passes *value* into *dur* """
+        return self.feed(dur=value)

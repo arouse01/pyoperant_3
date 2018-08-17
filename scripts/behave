@@ -1,12 +1,19 @@
 #!/usr/bin/env python
 
-import sys, os
-import signal
 import argparse
 import importlib
-try: import simplejson as json
+import os
+import signal
+import sys
 
-except ImportError: import json
+# append this folder to working directory
+sys.path.append('/home/rouse/Desktop/pyoperant/pyoperant/pyoperant')
+
+try:
+    import simplejson as json
+
+except ImportError:
+    import json
 
 from pyoperant.local import PANELS
 
@@ -18,7 +25,7 @@ except ImportError:
 try:
     from pyoperant.local import DATAPATH
 except ImportError:
-    DATAPATH = '/home/bird/opdat'
+    DATAPATH = '/home/rouse/bird/data'
 
 
 def parse_commandline(arg_str=sys.argv[1:]):
@@ -27,9 +34,9 @@ def parse_commandline(arg_str=sys.argv[1:]):
     """
     parser = argparse.ArgumentParser(
         description='Run Pyoperant scripts from the command line',
-        epilog='The following protocols are installed and registered: ' + \
+        epilog='The following protocols are installed and registered: ' +
                ', '.join(list_protocols())
-        )
+    )
     parser.add_argument('protocol',
                         action='store',
                         type=str,
@@ -49,7 +56,7 @@ def parse_commandline(arg_str=sys.argv[1:]):
                         required=True,
                         help='subject identifier'
                         )
-    parser.add_argument('-c','--config',
+    parser.add_argument('-c', '--config',
                         action='store',
                         type=str,
                         dest='config_file',
@@ -61,19 +68,21 @@ def parse_commandline(arg_str=sys.argv[1:]):
 
     return vars(args)
 
+
 def list_protocols():
     from pyoperant.behavior.base import BaseExp
-    l = []
+    protocol_list = []
     behav_modules = [importlib.import_module(pstr) for pstr in BEHAVIORS]
     for mod in behav_modules:
-        for name, obj in mod.__dict__.iteritems():
+        for name, obj in mod.__dict__.iteritems():  # Python 3 renamed dict.iteritems > dict.items
             try:
-                if issubclass(obj,BaseExp):
-                    l.append(name)
+                if issubclass(obj, BaseExp):
+                    protocol_list.append(name)
 
             except TypeError:
                 pass
-    return l
+    return protocol_list
+
 
 def find_protocol(protocol):
     packages = []
@@ -87,21 +96,21 @@ def find_protocol(protocol):
             continue
     raise ImportError('%s not found' % protocol)
 
+
 def clean(*args):
     sys.exit(0)
 
 
 def main():
-
-    for sig in (signal.SIGINT,signal.SIGTERM,):
+    for sig in (signal.SIGINT, signal.SIGTERM,):
         signal.signal(sig, clean)
 
     cmd_line = parse_commandline()
 
-    experiment_path = os.path.join(DATAPATH,cmd_line['subject'])
-    config_file = os.path.join(experiment_path,cmd_line['config_file'])
-    stimuli_path = os.path.join(experiment_path,'Stimuli')
-
+    experiment_path = os.path.join(DATAPATH, cmd_line['subject'])
+    config_file = os.path.join(experiment_path, cmd_line['config_file'])
+    stimuli_path = os.path.join(experiment_path, 'Stimuli')
+    # print(experiment_path)
     try:
         with open(config_file, 'rb') as config:
             parameters = json.load(config)
@@ -111,10 +120,10 @@ def main():
     BehaviorProtocol = find_protocol(cmd_line['protocol'])
 
     if ('debug' in parameters) and parameters['debug']:
-        print parameters
-        print PANELS
+        print(parameters)
+        print(PANELS)
 
-    for k in ['subject','panel_name','experiment_path']:
+    for k in ['subject', 'panel_name', 'experiment_path']:
         parameters.pop(k) if k in parameters.keys() else None
 
     stimuli_path = parameters.pop('stim_path') if 'stim_path' in parameters else stimuli_path
@@ -126,7 +135,7 @@ def main():
         experiment_path=experiment_path,
         stim_path=stimuli_path,
         **parameters
-        )
+    )
 
     behavior.run()
 

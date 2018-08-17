@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="pyoperant_active" pattern="(file[pyoperant]:*||file[pyoperant]:*/)&amp;&amp;!file[pyoperant]:junk/*&amp;&amp;!file:pyoperant/local_vogel.py&amp;&amp;!file:pyoperant/local_zog.py&amp;&amp;!file:pyoperant/behavior/three_ac_matching.py&amp;&amp;!file:pyoperant/behavior/three_ac_matching_config.json&amp;&amp;!file:pyoperant/behavior/two_alt_choice.py||file[pyoperant]:Interface//*" />
+</component>
