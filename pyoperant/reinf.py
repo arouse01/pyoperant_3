@@ -123,7 +123,7 @@ class GoInterruptSchedule(BaseSchedule):
             if trial.response == 'sPlus':  # False alarm
                 return True
             else:
-                return False   # Miss
+                return False  # Miss
         else:
             return False
 
@@ -153,19 +153,13 @@ class GoInterruptPercentSchedule(BaseSchedule):
         self.prob = prob
 
     def consequate(self, trial):
-        assert hasattr(trial, 'correct') and isinstance(trial.correct, bool)
-        if trial.correct:
-            if trial.response == 'sPlus':  # Hit
-                return random.random() < self.prob
-            else:
-                return False  # Correct reject
-        elif not trial.correct:
-            if trial.response == 'sPlus':  # False alarm
-                return True
-            else:
-                return False   # Miss
+        if trial.responseType == "correct_response":
+            return random.random() < self.prob
+        elif trial.responseType == "false_alarm":
+            return True
         else:
             return False
+
 
 class VariableRatioSchedule(FixedRatioSchedule):
     """Maintains logic for deciding whether to consequate trials.

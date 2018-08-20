@@ -534,6 +534,11 @@
       },
       "1i training": {
         "description": "training b1i; 100, 125, 150",
+        "reinforcement": {
+          "schedule": "go_interrupt",
+          "prob": 0.8,
+          "secondary": false
+        },
         "conditions": [
           {
             "class": "sMinus",
@@ -854,16 +859,13 @@
             "weight": 1
           }
         ],
-        "queue": "random",
-        "reinforcement": {
-          "schedule": "go_interrupt",
-          "prob": 1,
-          "secondary": false
-        }
+
+        "queue": "random"
+
       }
     },
     "order": [
-      "default"
+      "1i training"
     ]
   },
   "classes": {

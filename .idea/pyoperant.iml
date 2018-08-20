@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="PYTHON_MODULE" version="4">
   <component name="NewModuleRootManager">
-    <perl5>
-      <path value="$MODULE_DIR$/scripts/Perl" type="perl-library" />
-      <path value="$MODULE_DIR$/junk" type="perl-library" />
-    </perl5>
     <content url="file://$MODULE_DIR$">
+      <excludeFolder url="file://$MODULE_DIR$/Interface/JSON Editor" />
       <excludeFolder url="file://$MODULE_DIR$/venv" />
     </content>
     <orderEntry type="jdk" jdkName="Python 2.7 (venv)" jdkType="Python SDK" />

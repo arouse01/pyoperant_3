@@ -22,6 +22,7 @@ except AttributeError:
 try:
     _encoding = QtGui.QApplication.UnicodeUTF8
 
+
     def _translate(context, text, disambig):
         return QtGui.QApplication.translate(context, text, disambig, _encoding)
 except AttributeError:
@@ -29,8 +30,8 @@ except AttributeError:
         return QtGui.QApplication.translate(context, text, disambig)
 
 
-class Ui_MainWindow(object):
-    def setupUi(self, MainWindow):
+class UiMainWindow(object):
+    def setup_ui(self, main_window):
 
         self.startBoxList = []
         self.stopBoxList = []
@@ -57,65 +58,80 @@ class Ui_MainWindow(object):
         # Object location-specific variables
         self.numberOfBoxes = 12
 
-
         # Calculate box arrangement in window
         rowCount = math.floor(math.sqrt(self.numberOfBoxes))
-        columnCount = self.numberOfBoxes/rowCount
+        columnCount = self.numberOfBoxes / rowCount
         numHorizontalLines = self.numberOfBoxes
-        print numHorizontalLines
-        numVerticalLines = columnCount-1
+        numVerticalLines = columnCount - 1
 
-        MainWindow.setObjectName(_fromUtf8("MainWindow"))
-        MainWindow.resize(1200, 953)
+        # Make main window
+        main_window.setObjectName(_fromUtf8("main_window"))
+        main_window.resize(1200, 953)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(MainWindow.sizePolicy().hasHeightForWidth())
-        MainWindow.setSizePolicy(sizePolicy)
-        MainWindow.setMaximumSize(QtCore.QSize(1200, 1000))
-        self.centralwidget = QtGui.QWidget(MainWindow)
+        main_window.setSizePolicy(sizePolicy)
+        main_window.setMaximumSize(QtCore.QSize(1200, 1000))
+        self.centralwidget = QtGui.QWidget(main_window)
+
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Maximum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.centralwidget.sizePolicy().hasHeightForWidth())
         self.centralwidget.setSizePolicy(sizePolicy)
         self.centralwidget.setMaximumSize(QtCore.QSize(2000, 2000))
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
+
         self.gridLayoutWidget = QtGui.QWidget(self.centralwidget)
         self.gridLayoutWidget.setGeometry(QtCore.QRect(9, 9, 1183, 913))
         self.gridLayoutWidget.setObjectName(_fromUtf8("gridLayoutWidget"))
         self.mainGrid = QtGui.QGridLayout(self.gridLayoutWidget)
         self.mainGrid.setObjectName(_fromUtf8("mainGrid"))
+
         # Menu at bottom of screen
         self.menuGrid = QtGui.QGridLayout()
         self.menuGrid.setObjectName(_fromUtf8("menuGrid"))
         self.stopAllButton = QtGui.QPushButton(self.gridLayoutWidget)
         self.stopAllButton.setObjectName(_fromUtf8("stopAllButton"))
-        self.menuGrid.addWidget(self.stopAllButton, 0, 0, 1, 1)
         self.startAllButton = QtGui.QPushButton(self.gridLayoutWidget)
         self.startAllButton.setObjectName(_fromUtf8("startAllButton"))
+        self.menuGrid.addWidget(self.stopAllButton, 0, 0, 1, 1)
         self.menuGrid.addWidget(self.startAllButton, 0, 1, 1, 1)
+        self.behaviorField = QtGui.QComboBox(self.gridLayoutWidget)
+        self.behaviorField.setMinimumSize(QtCore.QSize(200, 0))
+        self.behaviorField.setMaximumSize(QtCore.QSize(300, 16777215))
+        self.behaviorField.setObjectName(_fromUtf8("behaviorField"))
+        self.behaviorField.addItem(_fromUtf8(""))
+        self.menuGrid.addWidget(self.behaviorField, 0, 4, 1, 1)
+        self.behaviorLabel = QtGui.QLabel(self.gridLayoutWidget)
+        self.behaviorLabel.setMinimumSize(QtCore.QSize(70, 0))
+        self.behaviorLabel.setMaximumSize(QtCore.QSize(80, 80))
+        self.behaviorLabel.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+        self.behaviorLabel.setObjectName(_fromUtf8("behaviorLabel"))
+        self.menuGrid.addWidget(self.behaviorLabel, 0, 3, 1, 1)
+        self.menuGrid.addItem(QtGui.QSpacerItem(20, 20, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding), 0, 2,
+                              1, 1)
         self.mainGrid.addLayout(self.menuGrid, 7, 0, 1, 7)
 
-        # Layout dividing lines
-        for i in range(0, numHorizontalLines):   # Horizontal lines
+        ### Layout dividing lines
+        for i in range(0, numHorizontalLines):  # Horizontal lines
             self.lineList.append(QtGui.QFrame(self.gridLayoutWidget))
             self.lineList[i].setFrameShape(QtGui.QFrame.HLine)
             self.lineList[i].setFrameShadow(QtGui.QFrame.Sunken)
             self.lineList[i].setObjectName(_fromUtf8("hline_%d" % i))
-            self.mainGrid.addWidget(self.lineList[i], 2*math.floor(i/columnCount)+1, 2*(i % (columnCount)), 1, 1)
+            self.mainGrid.addWidget(self.lineList[i], 2 * math.floor(i / columnCount) + 1, 2 * (i % columnCount), 1,
+                                    1)
 
-        for i in range(numHorizontalLines, self.numberOfBoxes+int(numVerticalLines)):  # Vertical lines
+        for i in range(numHorizontalLines, self.numberOfBoxes + int(numVerticalLines)):  # Vertical lines
             self.lineList.append(QtGui.QFrame(self.gridLayoutWidget))
             self.lineList[i].setFrameShadow(QtGui.QFrame.Plain)
             self.lineList[i].setLineWidth(2)
             self.lineList[i].setMidLineWidth(0)
             self.lineList[i].setFrameShape(QtGui.QFrame.VLine)
             self.lineList[i].setObjectName(_fromUtf8("vline_%d" % i))
-            self.mainGrid.addWidget(self.lineList[i], 0, (i-numHorizontalLines)*2+1, 2*rowCount, 1)
+            self.mainGrid.addWidget(self.lineList[i], 0, (i - numHorizontalLines) * 2 + 1, 2 * rowCount, 1)
 
-        ## Individual section elements
-        for box in range(0, 12):
+        ### Individual section elements
+        for box in range(0, self.numberOfBoxes):
             # Object placement
             self.gridLayoutBoxList.append(QtGui.QGridLayout())
             self.birdEntryLabelBoxList.append(QtGui.QLabel(self.gridLayoutWidget))
@@ -131,20 +147,14 @@ class Ui_MainWindow(object):
             self.startBoxList.append(QtGui.QPushButton(self.gridLayoutWidget))
             self.statusTextBoxList.append(QtGui.QTextBrowser(self.gridLayoutWidget))
             self.stopBoxList.append(QtGui.QPushButton(self.gridLayoutWidget))
-            self.mainGrid.addLayout(self.gridLayoutBoxList[box], 2*(box % rowCount), 2*math.floor(box/rowCount), 1, 1)
-            # print "%d, %d" % (2*(i % rowCount), 2*math.floor(i/rowCount))
+            self.mainGrid.addLayout(self.gridLayoutBoxList[box], 2 * (box % rowCount), 2 * math.floor(box / rowCount),
+                                    1, 1)
 
             # Formatting
             self.stopBoxList[box].setEnabled(False)
             sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.Maximum)
             sizePolicy.setHorizontalStretch(0)
             sizePolicy.setVerticalStretch(0)
-            sizePolicy.setHeightForWidth(self.birdEntryBoxList[box].sizePolicy().hasHeightForWidth())
-            sizePolicy.setHeightForWidth(self.birdEntryLabelBoxList[box].sizePolicy().hasHeightForWidth())
-            sizePolicy.setHeightForWidth(self.graphicBoxList[box].sizePolicy().hasHeightForWidth())
-            sizePolicy.setHeightForWidth(self.paramFileBoxList[box].sizePolicy().hasHeightForWidth())
-            sizePolicy.setHeightForWidth(self.paramFileButtonBoxList[box].sizePolicy().hasHeightForWidth())
-            sizePolicy.setHeightForWidth(self.paramFileLabelBoxList[box].sizePolicy().hasHeightForWidth())
             font = QtGui.QFont()
             font.setPointSize(11)
             self.birdEntryBoxList[box].setFont(font)
@@ -230,24 +240,23 @@ class Ui_MainWindow(object):
             self.stopBoxList[box].setMaximumSize(QtCore.QSize(100, 16777215))
             self.stopBoxList[box].setObjectName(_fromUtf8("stop_Box%d" % box))
 
-        MainWindow.setCentralWidget(self.centralwidget)
-        self.statusbar = QtGui.QStatusBar(MainWindow)
-        self.statusbar.setObjectName(_fromUtf8("statusbar"))
-        MainWindow.setStatusBar(self.statusbar)
+        main_window.setCentralWidget(self.centralwidget)
 
-        self.retranslateUi(MainWindow)
-        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+        self.retranslate_ui(main_window)
+        QtCore.QMetaObject.connectSlotsByName(main_window)
 
-    def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(_translate("MainWindow", "pyoperant Interface", None))
+    def retranslate_ui(self, mainwindow):
+        mainwindow.setWindowTitle(_translate("MainWindow", "pyoperant Interface", None))
         self.startAllButton.setText(_translate("MainWindow", "Start All", None))
         self.stopAllButton.setText(_translate("MainWindow", "Stop All", None))
-        for box in range(0, 12):
+        self.behaviorField.setItemText(0, _translate("MainWindow", "GoNoGoInterruptExp", None))
+        self.behaviorLabel.setText(_translate("MainWindow", "Paradigm", None))
+
+        for box in range(0, self.numberOfBoxes):
             self.birdEntryLabelBoxList[box].setText(_translate("MainWindow", "Bird", None))
             self.checkActiveLabelBoxList[box].setText(_translate("MainWindow", "Active", None))
-            self.labelBoxList[box].setText(_translate("MainWindow", _fromUtf8("Box %s" % str(box+1)), None))
+            self.labelBoxList[box].setText(_translate("MainWindow", _fromUtf8("Box %s" % str(box + 1)), None))
             self.paramFileButtonBoxList[box].setText(_translate("MainWindow", "...", None))
             self.paramFileLabelBoxList[box].setText(_translate("MainWindow", "File", None))
             self.startBoxList[box].setText(_translate("MainWindow", "Start", None))
             self.stopBoxList[box].setText(_translate("MainWindow", "Stop", None))
-

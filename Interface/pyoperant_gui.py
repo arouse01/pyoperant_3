@@ -6,7 +6,7 @@ import serial
 import time
 import threading
 import Queue
-import numpy
+# import numpy
 
 try:
     import simplejson as json
@@ -14,20 +14,20 @@ try:
 except ImportError:
     import json
 
-import ui_layout
-import pyoperant
+import pyoperant_gui_layout
+# import pyoperant
 
 
 # it also keeps events etc that we defined in Qt Designer
 
-class pyoperantGui(QtGui.QMainWindow, ui_layout.Ui_MainWindow):
+class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
     def __init__(self):
 
         super(self.__class__, self).__init__()
-        self.setupUi(self)  # This is defined in design.py file automatically
+        self.setup_ui(self)  # This is defined in design.py file automatically
         # It sets up layout and widgets that are defined
 
-
+        # Number of boxes declared in pyoperant_gui_layout.py
 
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.refreshall)
@@ -44,30 +44,29 @@ class pyoperantGui(QtGui.QMainWindow, ui_layout.Ui_MainWindow):
 
         self.optionMenuList = []
 
-        self.subprocessBox = [0] * self.numberOfBoxes   # stores subprocesses for pyoperant for each box
+        self.subprocessBox = [0] * self.numberOfBoxes  # stores subprocesses for pyoperant for each box
         self.logProcessBox = [0] * self.numberOfBoxes  # stores subprocesses for log reading for each box
-        self.logpathList = [0] * self.numberOfBoxes     # stores log file path for each box
+        self.logpathList = [0] * self.numberOfBoxes  # stores log file path for each box
 
-        boxList = range(0,self.numberOfBoxes)
+        self.boxList = range(0, self.numberOfBoxes)
 
         # Option menu setup
-        for boxnumber in boxList:
+        for boxnumber in self.boxList:
             self.optionMenuList.append(QtGui.QMenu())
             # Duplicate the following two lines to add additional menu items, modifying names as needed
             self.purgeActionList.append(QtGui.QAction("Purge", self))
             self.optionMenuList[boxnumber].addAction(self.purgeActionList[boxnumber])
 
-        for boxnumber in boxList:
+        for boxnumber in self.boxList:
             # This is only in a separate for loop to visually isolate it from the option menu setup above
-            self.qList[boxnumber] = Queue.Queue()  # Queue for running subprocesses and pulling outputs without blocking main script
-            #self.qReadList[boxnumber] = Queue.Queue()  # Queue for running log read subprocesses without blocking main script
+            self.qList[
+                boxnumber] = Queue.Queue()  # Queue for running subprocesses and pulling outputs without blocking main script
+            # self.qReadList[boxnumber] = Queue.Queue()  # Queue for running log read subprocesses without blocking main script
 
-
-
-            #self.tReadList[boxnumber] = threading.Thread(target=self.read_output,
+            # self.tReadList[boxnumber] = threading.Thread(target=self.read_output,
             #                                             args=(self.logProcessBox[boxnumber].stdout,
             #                                                   self.qReadList[boxnumber]))
-            #self.tReadList[boxnumber].daemon = True
+            # self.tReadList[boxnumber].daemon = True
 
         i = 0
         for button in self.paramFileButtonBoxList:
@@ -87,7 +86,7 @@ class pyoperantGui(QtGui.QMainWindow, ui_layout.Ui_MainWindow):
             action.triggered.connect(lambda _, b=i: self.purge_water(boxnumber=b))
             i += 1
 
-        for boxnumber in boxList:  # Attach menus to option buttons
+        for boxnumber in self.boxList:  # Attach menus to option buttons
             self.optionButtonBoxList[boxnumber].setMenu(self.optionMenuList[boxnumber])
 
         self.closeEvent = self.close_application
@@ -113,7 +112,6 @@ class pyoperantGui(QtGui.QMainWindow, ui_layout.Ui_MainWindow):
             self.subprocessBox[boxnumber] = 0
             self.box_enable(boxnumber)
             self.graphicBoxList[boxnumber].setPixmap(self.redIcon)
-        return
 
     def start_box(self, boxnumber):
         # start selected box
@@ -182,7 +180,6 @@ class pyoperantGui(QtGui.QMainWindow, ui_layout.Ui_MainWindow):
             msg = QtGui.QMessageBox("Warning", "Box not checked.", QtGui.QMessageBox.Warning,
                                     QtGui.QMessageBox.Ok, 0, 0)
             msg.exec_()
-        return
 
     def read_output(self, pipe, q):
 
@@ -199,17 +196,15 @@ class pyoperantGui(QtGui.QMainWindow, ui_layout.Ui_MainWindow):
 
     def start_all(self):
         # start all checked boxes
-        for boxnumber in range(0, 12):
+        for boxnumber in self.boxList:
             if self.subprocessBox[boxnumber] == 0 and self.checkActiveBoxList[boxnumber].checkState():
                 self.start_box(boxnumber)
-        return
 
     def stop_all(self):
         # stop all running boxes
-        for boxnumber in range(0, 12):
+        for boxnumber in self.boxList:
             if not self.subprocessBox[boxnumber] == 0:
                 self.stop_box(boxnumber)
-        return
 
     def box_disable(self, boxnumber):
         # Hide and/or disable objects while box is running
@@ -226,8 +221,7 @@ class pyoperantGui(QtGui.QMainWindow, ui_layout.Ui_MainWindow):
         self.stopBoxList[boxnumber].setEnabled(False)
 
     def purge_water(self, boxnumber):
-        return
-        boxnumber = boxnumber + 1   # boxnumber is index, but device name is not
+        boxnumber = boxnumber + 1  # boxnumber is index, but device name is not
         print("Purging water system in box %d" % boxnumber)
         device_name = '/dev/teensy%02i' % boxnumber
         self.device = serial.Serial(port=device_name,
@@ -236,12 +230,12 @@ class pyoperantGui(QtGui.QMainWindow, ui_layout.Ui_MainWindow):
         if self.device is None:
             raise 'Could not open serial device %s' % self.device_name
 
-        #print("Waiting for device to open")
+        # print("Waiting for device to open")
         self.device.readline()
         self.device.flushInput()
         print("Successfully opened device %s" % self.device_name)
         # solenoid = channel 16
-        self.device.write("".join([chr(16), chr(3)]))   # set channel 16 as output
+        self.device.write("".join([chr(16), chr(3)]))  # set channel 16 as output
         # self.device.write("".join([chr(16), chr(2)]))  # close solenoid, just in case
         self.device.write("".join([chr(16), chr(1)]))  # open solenoid
         startTime = time.time()
@@ -252,21 +246,21 @@ class pyoperantGui(QtGui.QMainWindow, ui_layout.Ui_MainWindow):
             if purgeTime <= elapsedTime:
                 break
 
-        self.device.write("".join([chr(16), chr(2)]))   # close solenoid
-        self.device.close()    # close connection
+        self.device.write("".join([chr(16), chr(2)]))  # close solenoid
+        self.device.close()  # close connection
         print 'Purged box ' + str(boxnumber)
 
     def refreshall(self):
         # print "timer fired"
-        for box in range(0, 12):
+        for box in self.boxList:
             if not self.subprocessBox[box] == 0:  # If box is running
                 self.refreshfile(box)
 
     def refreshfile(self, boxnumber):
         birdName = str(self.birdEntryBoxList[boxnumber].toPlainText())
         # experiment_path = str(self.logpathList[boxnumber]+"/")
-        dataPath = os.path.join(self.experimentPath,birdName,birdName + ".log")
-        print "opening file for box %d (%s)" % (boxnumber+1, birdName)
+        dataPath = os.path.join(self.experimentPath, birdName, birdName + ".log")
+        # print "opening file for box %d (%s)" % (boxnumber + 1, birdName)
         f = open(dataPath, 'r')
         if f:
             logData = f.readlines()
@@ -275,10 +269,13 @@ class pyoperantGui(QtGui.QMainWindow, ui_layout.Ui_MainWindow):
         else:
             print "Unable to open file for %s" % birdName
 
+    def read_file(self,filePath):
+        pass
+
     def open_application(self):
         settingsFile = 'settings.json'
         if os.path.isfile(settingsFile):  # Make sure param file is specified
-            print 'Settings detected'
+            print 'settings.json file detected, loading settings'
             with open(settingsFile, 'r') as f:
                 dictLoaded = json.load(f)
                 if dictLoaded['birds']:
@@ -292,22 +289,18 @@ class pyoperantGui(QtGui.QMainWindow, ui_layout.Ui_MainWindow):
                             self.paramFileBoxList[i].setPlainText(paramFile)
 
     def close_application(self, event):
-        # Save settings to file to reload for next time
-        # choice = QtGui.QMessageBox.question(self, "Save?", "Save all settings?", QtGui.QMessageBox.No | QtGui.QMessageBox.Yes)
-
-        # if choice == QtGui.QMessageBox.Yes:
+        ## Save settings to file to reload for next time
         # build dictionary to save
-        boxlist = range(0, self.numberOfBoxes)
         paramFileList = []
         birdListTemp = []
-        for boxnumber in boxlist:
+        for boxnumber in self.boxList:
             # Get plain text of both param file path and bird name, then join in a list for each
             paramSingle = str(self.paramFileBoxList[boxnumber].toPlainText())
             paramFileList.append(paramSingle)
             birdSingle = str(self.birdEntryBoxList[boxnumber].toPlainText())
             birdListTemp.append(birdSingle)
-        paramFiles = zip(boxlist, paramFileList)
-        birds = zip(boxlist, birdListTemp)
+        paramFiles = zip(self.boxList, paramFileList)
+        birds = zip(self.boxList, birdListTemp)
 
         d = {}
         d['paramFiles'] = paramFiles
@@ -316,13 +309,32 @@ class pyoperantGui(QtGui.QMainWindow, ui_layout.Ui_MainWindow):
         with open('settings.json', 'w') as outfile:
             json.dump(d, outfile, ensure_ascii=False)
 
-        event.accept()
+        ## Box-specific closing operations
+        # Close all serial ports, if available
+        for boxnumber in self.boxList:
+            device_name = '/dev/teensy%02d' % int(boxnumber + 1)
+            try:
+                device = serial.Serial(port=device_name,
+                                       baudrate=19200,
+                                       timeout=5)
+
+                if device.isOpen():
+                    device.close()
+                    # print "Closed device %d" % int(boxnumber + 1)
+            except:
+                pass
+
+            # print "Checked device %d" % int(boxnumber + 1)
+        # Stop running sessions
+        self.stop_all()
+
+        event.accept()  # Accept GUI closing
 
 
 def main():
     app = QtGui.QApplication(sys.argv)  # A new instance of QApplication
 
-    form = pyoperantGui()  # We set the form to be our ExampleApp (design)
+    form = PyoperantGui()  # We set the form to be our ExampleApp (design)
     form.show()  # Show the form
     sys.exit(app.exec_())  # and execute the app
 

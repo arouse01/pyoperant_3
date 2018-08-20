@@ -13,6 +13,7 @@ def dprime(confusion_matrix):
 
     http://en.wikipedia.org/wiki/D'
     """
+
     if max(confusion_matrix.shape) > 2:
         return False
     else:
@@ -100,6 +101,23 @@ def create_conf_matrix(expected, predicted):
         m[exp, pred] += 1
     return m
 
+
+def create_conf_matrix_summary(matrix):
+    """
+    Function takes in a 1-D array of expected values and a 1-D array of predictions
+    and returns a confusion matrix with size corresponding to the number of classes.
+
+    http://en.wikipedia.org/wiki/Confusion_matrix
+
+    Keyword arguments:
+    expected  -- list of expected or true values
+    predicted -- list of predicted or response values
+
+    Returns the confusion matrix as a numpy array m[expectation,prediction]
+
+    """
+    m = np.asarray(matrix)
+    return m
 
 class Performance:
     """ use this to compute performance metrics """

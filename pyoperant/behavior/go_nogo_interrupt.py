@@ -4,7 +4,7 @@ import copy
 import datetime as dt
 from pyoperant.behavior import base, shape
 from pyoperant.errors import EndSession, EndBlock
-from pyoperant import components, utils, reinf, queues
+from pyoperant import components, utils, reinf, queues, analysis
 
 
 class GoNoGoInterruptExp(base.BaseExp):
@@ -77,25 +77,6 @@ class GoNoGoInterruptExp(base.BaseExp):
         self.data_csv = os.path.join(self.parameters['experiment_path'],
                                      self.parameters['subject'] + '_trialdata_' + self.timestamp + '.csv')
         self.make_data_csv()
-
-        if 'reinforcement' in self.parameters.keys():
-            reinforcement = self.parameters['reinforcement']
-            if reinforcement['schedule'] == 'variable_ratio':
-                self.reinf_sched = reinf.VariableRatioSchedule(ratio=reinforcement['ratio'])
-            elif reinforcement['schedule'] == 'fixed_ratio':
-                self.reinf_sched = reinf.FixedRatioSchedule(ratio=reinforcement['ratio'])
-            elif reinforcement['schedule'] == 'percent_reinf':
-                self.reinf_sched = reinf.PercentReinforcement(prob=reinforcement['prob'])
-            elif reinforcement['schedule'] == 'go_interrupt':
-                self.reinf_sched = reinf.GoInterruptPercentSchedule(prob=reinforcement['prob'])
-            elif reinforcement['schedule'] == 'go_interrupt':
-                self.reinf_sched = reinf.GoInterruptPercentSchedule(prob=reinforcement['prob'])
-
-            else:
-                self.reinf_sched = reinf.ContinuousReinforcement()
-
-        else:
-            self.reinf_sched = reinf.ContinuousReinforcement()
 
         if 'block_design' not in self.parameters:
             self.parameters['block_design'] = {
@@ -200,6 +181,27 @@ class GoNoGoInterruptExp(base.BaseExp):
                 # load the block details into the trial queue
                 q_type = blk.pop('queue')
                 blk.pop('description')  # remove the "description" entry from the dictionary so queues doesn't complain
+
+                # Define reinforcement parameters
+                if 'reinforcement' in blk.keys():
+                    reinforcement = blk.pop('reinforcement')
+                    if reinforcement['schedule'] == 'variable_ratio':
+                        self.reinf_sched = reinf.VariableRatioSchedule(ratio=reinforcement['ratio'])
+                    elif reinforcement['schedule'] == 'fixed_ratio':
+                        self.reinf_sched = reinf.FixedRatioSchedule(ratio=reinforcement['ratio'])
+                    elif reinforcement['schedule'] == 'percent_reinf':
+                        self.reinf_sched = reinf.PercentReinforcement(prob=reinforcement['prob'])
+                    elif reinforcement['schedule'] == 'go_interrupt':
+                        self.reinf_sched = reinf.GoInterruptPercentSchedule(prob=reinforcement['prob'])
+                    elif reinforcement['schedule'] == 'go_interrupt':
+                        self.reinf_sched = reinf.GoInterruptPercentSchedule(prob=reinforcement['prob'])
+
+                    else:
+                        self.reinf_sched = reinf.ContinuousReinforcement()
+
+                else:
+                    self.reinf_sched = reinf.ContinuousReinforcement()
+
                 if q_type == 'random':
                     self.trial_q = queues.random_queue(**blk)
                 elif q_type == 'block':
@@ -317,7 +319,9 @@ class GoNoGoInterruptExp(base.BaseExp):
 
     def analyze_trial(self):
         # TODO: calculate reaction times
-        pass
+        matrix = [[self.summary['correct_responses'],self.summary['false_alarms']],[self.summary['misses'],self.summary['correct_rejections']]]
+        conf_matrix = analysis.create_conf_matrix_summary(matrix)
+        self.summary['dprime'] = analysis.dprime(conf_matrix)
 
     def save_trial(self, trial):
         """write trial results to CSV"""
@@ -470,22 +474,44 @@ class GoNoGoInterruptExp(base.BaseExp):
 
     ## consequence flow
     def consequence_pre(self):
-        pass
+        # Calculate response type, add to total of response types
+        if self.this_trial.class_ == "probePlus" or self.this_trial.class_ == "sPlus":
+            self.summary['splus_trials'] += 1
+            if self.this_trial.response == "sPlus":
+                self.this_trial.correct = True  # Mark correct response to probe as correct
+                self.summary['correct_responses'] += 1
+                self.this_trial.responseType = "correct_response"
+            else:
+                # could also individually code this_trial.responseType as no_response, if desired
+                self.summary['misses'] += 1
+                self.this_trial.responseType = "miss"
+
+        elif self.this_trial.class_ == "probeMinus" or self.this_trial.class_ == "sMinus":
+            self.summary['sminus_trials'] += 1
+            if self.this_trial.response == "sPlus":
+                self.summary['false_alarms'] += 1
+                self.this_trial.responseType = "false_alarm"
+            else:
+                # could also individually code this_trial.responseType as no_response, if desired
+                self.this_trial.correct = True  # Mark correct response to probe as correct
+                self.summary['correct_rejections'] += 1
+                self.this_trial.responseType = "correct_reject"
 
     def consequence_main(self):
-        # Reward probe trials regardless of response
-        if self.this_trial.class_ == "probePlus" or self.this_trial.class_ == "probeMinus":
-            if self.this_trial.class_ == "probePlus" and self.this_trial.response == "sPlus":
-                self.this_trial.correct = True  # Mark correct response to probe as correct
+        # treat probe trials regardless of response
+        if self.this_trial.class_[0:5] == "probe":
             # self.reward_pre()
             # self.reward_main()  # provide a reward
             # self.reward_post()
+            pass
 
         else:  # Handling non-probe trials
             # correct response trial
-            if self.this_trial.response == self.this_trial.class_:
-                self.this_trial.correct = True
+            if self.this_trial.response == 'none':
+                # no response
+                pass
 
+            elif self.this_trial.correct:
                 if self.parameters['reinforcement']['secondary']:
                     secondary_reinf_event = self.secondary_reinforcement()
                     # self.this_trial.events.append(secondary_reinf_event)
@@ -499,23 +525,9 @@ class GoNoGoInterruptExp(base.BaseExp):
                     self.reward_main()  # provide a reward
                     self.reward_post()
 
-            # no response
-            elif self.this_trial.response == 'none':
-                pass
-
             # incorrect trial
             else:
                 self.this_trial.correct = False
-                # if self.this_trial.class_ == 'sPlus':  # if trial is S+ and bird hits trial switch
-                #     pass  # nothing, end trial and move to next
-                # elif self.this_trial.class_ == 'probeMinus' or self.this_trial.class_ == 'probePlus':  # probe trials are reinforced regardless of choice
-                #     self.reward_pre()
-                #     self.reward_main()  # provide a reward
-                #     self.reward_post()
-                # elif self.reinf_sched.consequate(trial=self.this_trial):
-                #     self.punish_pre()
-                #     self.punish_main()
-                #     self.punish_post()
                 if self.reinf_sched.consequate(trial=self.this_trial):
                     self.punish_pre()
                     self.punish_main()

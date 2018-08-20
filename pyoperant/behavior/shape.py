@@ -155,6 +155,7 @@ class Shaper(object):
             else:
                 t = random.randrange(t_min, t_max)
             utils.wait(t)
+            # print "Waiting %i" % t
             return next_state
 
         return temp
@@ -642,12 +643,10 @@ class ShaperGoNogoInterrupt(Shaper):
     """accomodate go/nogo terminal procedure along with one or two hopper 2choice procedures
     Go/Nogo shaping works like this:
     Block 1:  Water opens (for 2 s) for the first day that the animal is in the apparatus at random intervals.
-    Block 2:  Playbacks begin when w.
-    Block 4:  Wait for a peck to non-flashing center key, when you get it, the hopper
-              comes up for 2.5 sec. Run 100 trials.
-    NOTE:     when you run the go/nog procedure in a 2 hopper apparatus, it uses only the
-              right hand key and hopper.  If you do this often, you may want to add the
-              facility for use of the left hand key and hopper."""
+    Block 2:  Playbacks begin when w UNFINISHED.
+    Block 4:  UNFINISHED
+    NOTE:     sPlus and sMinus names might be deprecated or changed, check documentation and other code
+    """
 
     def __init__(self, panel, log, parameters, error_callback=None):
         super(ShaperGoNogoInterrupt, self).__init__(panel, log, parameters, error_callback)
@@ -680,7 +679,7 @@ class ShaperGoNogoInterrupt(Shaper):
 
         return temp
 
-    def _water_trainer2(self, block_num, reps=10000):
+    def _water_trainer2(self, block_num, reps=1000000):
         """
         Block 1:  Water is frequently dispensed from the port to train the bird that water
         is available in that location. If resp port accessed, water also dispensed. No light used."""
@@ -697,7 +696,7 @@ class ShaperGoNogoInterrupt(Shaper):
                                     # wait=self._wait_block(10, 40, 'reward'),  # wait between 10 and 40 seconds
                                     silent_resp=self._random_poll(self.panel.respSens, 10, 40, 'reward', 'pre_reward'),
                                     pre_reward=self._pre_reward('reward'),
-                                    reward=self.reward(1, 'check'))  # Reward for 1 second
+                                    reward=self.reward(0.2, 'check'))  # Reward for 1 second
             if not utils.check_time(self.parameters['light_schedule']):
                 return 'sleep_block'
             return self.block_name(block_num + 1)
@@ -885,6 +884,8 @@ class ShaperGoNogoInterrupt(Shaper):
 class ShaperGoInterruptOneStep(Shaper):
     """accomodate go/nogo terminal procedure along with one or two hopper 2choice procedures
     Single-step operant conditioning to use both the trial start and
+
+    NOTE: sPlus and sMinus names might be deprecated or renamed, check json file and other code
     """
 
     def __init__(self, panel, log, parameters, error_callback=None):
@@ -1006,8 +1007,6 @@ class ShaperGoInterruptOneStep(Shaper):
             return self.block_name(block_num + 1)
 
         return temp
-
-
 
     def _play_audio(self, next_state, trial_class):
         def temp():
