@@ -108,7 +108,8 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         # stop selected box
 
         if not self.subprocessBox[boxnumber] == 0:  # Only operate if box is running
-            self.subprocessBox[boxnumber].kill
+            self.subprocessBox[boxnumber].terminate()
+            self.subprocessBox[boxnumber].wait()
             self.subprocessBox[boxnumber] = 0
             self.box_enable(boxnumber)
             self.graphicBoxList[boxnumber].setPixmap(self.redIcon)
@@ -146,7 +147,8 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
                                     msg = QtGui.QMessageBox("Warning", error, QtGui.QMessageBox.Warning,
                                                             QtGui.QMessageBox.Ok, 0, 0)
                                     msg.exec_()
-                                    self.subprocessBox[boxnumber].kill
+                                    self.subprocessBox[boxnumber].terminate
+                                    self.subprocessBox[boxnumber].wait
                                     self.subprocessBox[boxnumber] = 0
                                     self.graphicBoxList[boxnumber].setPixmap(self.redIcon)
                             except Queue.Empty:
@@ -233,7 +235,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         # print("Waiting for device to open")
         self.device.readline()
         self.device.flushInput()
-        print("Successfully opened device %s" % self.device_name)
+        print("Successfully opened device %s" % device_name)
         # solenoid = channel 16
         self.device.write("".join([chr(16), chr(3)]))  # set channel 16 as output
         # self.device.write("".join([chr(16), chr(2)]))  # close solenoid, just in case
@@ -259,18 +261,27 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
     def refreshfile(self, boxnumber):
         birdName = str(self.birdEntryBoxList[boxnumber].toPlainText())
         # experiment_path = str(self.logpathList[boxnumber]+"/")
-        dataPath = os.path.join(self.experimentPath, birdName, birdName + ".log")
+        summary_file = os.path.join(self.experimentPath, birdName, birdName + '.summaryDAT')
+        # dataPath = os.path.join(self.experimentPath, birdName, birdName + ".log")
         # print "opening file for box %d (%s)" % (boxnumber + 1, birdName)
-        f = open(dataPath, 'r')
+        # dataPath = os.path.join(self.experimentPath, birdName, birdName + ".log")
+        # print "opening file for box %d (%s)" % (boxnumber + 1, birdName)
+        try:
+            f = open(summary_file, 'r')
+        except:
+            pass
+
         if f:
             logData = f.readlines()
-            self.statusTextBoxList[boxnumber].setPlainText('\n'.join(logData[-10:]))
+            self.statusTextBoxList[boxnumber].setPlainText(''.join(logData[-10:]))
             f.close()
         else:
             print "Unable to open file for %s" % birdName
 
-    def read_file(self,filePath):
-        pass
+        #with open(summary_file, 'r') as f:
+            #logData = f.readlines()
+            #self.statusTextBoxList[boxnumber].setPlainText('\n'.join(logData[-10:]))
+            #f.close()
 
     def open_application(self):
         settingsFile = 'settings.json'

@@ -220,11 +220,11 @@ class BaseExp(object):
                                 post=self.session_post)
         return 'idle'
 
-    # gentner-lab specific functions
     def init_summary(self):
         """ initializes an empty summary dictionary """
         self.summary = {'trials': 0,
                         'responses': 0,
+                        'feeds': 0,
                         'correct_responses': 0,
                         'false_alarms': 0,
                         'misses': 0,
@@ -251,19 +251,15 @@ class BaseExp(object):
             #f.write("Feeder ops today: %i\n" % self.summary['feeds'])
             f.write("\nLast trial run @: %s" % self.summary['last_trial_time'])
 
-    def write_shaping_summary(self):
+    def write_summary_shaping(self):
         """ takes in a summary dictionary and options and writes to the bird's summaryDAT"""
         summary_file = os.path.join(self.parameters['experiment_path'], self.parameters['subject'] + '.summaryDAT')
         with open(summary_file, 'wb') as f:
-            f.write("Trials this session: %s\n" % self.summary['trials'])
-            f.write("Rf'd responses: %i\n" % self.summary['responses'])
-            f.write("\n")
-            f.write("\tS+\tS-\n")
-            f.write("RespSw\t%i\t%i\n" % (self.summary['correct_responses'], self.summary['false_alarms']))
-            f.write("TrlSw\t%i\t%i\n" % (self.summary['misses'], self.summary['correct_rejections']))
-            f.write("d': %1.2f\n" % self.summary['dprime'])
+            f.write("Shaping Summary\n\n")
+            f.write("Feeds today: %s\n" % self.summary['feeds'])
+            f.write("Pecks today: %i\n" % self.summary['responses'])
             # f.write("Feeder ops today: %i\n" % self.summary['feeds'])
-            f.write("\nLast trial run @: %s" % self.summary['last_trial_time'])
+            f.write("\nStart time @: %s" % self.summary['last_trial_time'])
 
     def log_error_callback(self, err):
         if err.__class__ is InterfaceError or err.__class__ is ComponentError:

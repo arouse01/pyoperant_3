@@ -1,7 +1,9 @@
 import random
+import os
 import datetime as dt
 from pyoperant import panels
 from pyoperant import utils
+#from pyoperant.behavior import base
 
 
 class Shaper(object):
@@ -21,6 +23,7 @@ class Shaper(object):
               until pecked, then food for 2.5 sec.   Run 100 trials."""
 
     def __init__(self, panel, log, parameters, error_callback=None):
+        self.init_summary()
         self.panel = panel
         assert isinstance(panel, panels.BasePanel)
         self.log = log
@@ -319,6 +322,7 @@ class Shaper(object):
 
         return temp
 
+
     def _rand_state(self, states):
         def temp():
             return random.choice(states)
@@ -361,6 +365,33 @@ class Shaper(object):
             return "block%d" % block_num
         else:
             return None
+
+    def init_summary(self):
+        """ initializes an empty summary dictionary """
+        self.summary = {'trials': 0,
+                        'responses': 0,
+                        'feeds': 0,
+                        'correct_responses': 0,
+                        'false_alarms': 0,
+                        'misses': 0,
+                        'correct_rejections': 0,
+                        'cr_rate': 0,
+                        'fa_rate': 0,
+                        'last_trial_time': [],
+                        'dprime': 0,
+                        'sminus_trials': 0,
+                        'splus_trials': 0
+                        }
+
+    def write_summary_shaping(self):
+        """ takes in a summary dictionary and options and writes to the bird's summaryDAT"""
+        summary_file = os.path.join(self.parameters['experiment_path'], self.parameters['subject'] + '.summaryDAT')
+        with open(summary_file, 'wb') as f:
+            f.write("Shaping Summary\n\n")
+            f.write("Feeds today: %s\n" % self.summary['feeds'])
+            f.write("Pecks today: %i" % self.summary['responses'])
+            # f.write("Feeder ops today: %i\n" % self.summary['feeds'])
+            f.write("\nStart time @: %s" % self.summary['last_trial_time'])
 
 
 class Shaper2AC(Shaper):
@@ -650,6 +681,172 @@ class ShaperGoNogoInterrupt(Shaper):
 
     def __init__(self, panel, log, parameters, error_callback=None):
         super(ShaperGoNogoInterrupt, self).__init__(panel, log, parameters, error_callback)
+        self.block1 = self._water_trainer(1)
+
+    def _water_trainer(self, block_num, reps=1000000):
+        """
+        Block 1:  Water is frequently dispensed from the port to train the bird that water
+        is available in that location. If resp port accessed, water also dispensed. No light used."""
+
+        def temp():
+            self.recent_state = block_num
+            self.log.warning('Starting %s' % (self.block_name(block_num)))
+            utils.run_state_machine(start_in='init',
+                                    error_state='wait',
+                                    error_callback=self.error_callback,
+                                    init=self._block_init('check'),
+                                    check=self._check_block_log('silent_resp', reps, float('inf')), # next_state, reps, revert_timeout
+                                    # wait=self._wait_block(10, 40, 'reward'),  # wait between 10 and 40 seconds
+                                    silent_resp=self._random_poll(self.panel.respSens, 20, 60, 'reward', 'pre_reward'),
+                                    pre_reward=self._pre_reward_log('reward'),
+                                    reward=self.reward_log(0.2, 'check'))  # Reward for 1 second
+            if not utils.check_time(self.parameters['light_schedule']):
+                return 'sleep_block'
+            return self.block_name(block_num + 1)
+
+        return temp
+
+    def _water_block(self, block_num, reps=5000):
+        """
+        Block 3:  Trial light turns on. Playback starts when switch is pressed. Both switches are inactive for first
+        200ms of playback.
+        On S+ trials: Water is delivered when reward port is accessed during playback, or passively at end
+        On both trial types: accessing trial port stops playback and another interaction starts new trial/playback
+        """
+
+        def temp():
+            self.recent_state = block_num
+            self.log.warning('Starting %s' % (self.block_name(block_num)))
+            utils.run_state_machine(start_in='init',
+                                    error_state='wait',
+                                    error_callback=self.error_callback,
+                                    init=self._block_init('check'),
+                                    check=self._check_block('poll_trial', reps, float('inf')),
+                                    poll_trial=self._light_poll(self.panel.trialSens, 10, 'check',
+                                                                'coin_flip'),  # poll for 10 on loop
+                                    coin_flip=self._rand_state(('audio_sPlus', 'audio_sMinus')),
+                                    audio_sPlus=self._play_audio('sPlus_pause_buffer', 'sPlus'),
+                                    sPlus_pause_buffer=self._wait_block(.2, .2, 'sPlus_trial'),
+                                    sPlus_trial=self._light_poll_dual(self.panel.trialSens, self.panel.respSens, 5,
+                                                                      'trialResp_sPlus_stop', 'no_resp_sPlus_stop'
+                                                                                              'respResp_sPlus_stop'),
+                                    trialResp_sPlus_stop=self._close_audio('trial_end_wait'),
+                                    no_resp_sPlus_stop=self._close_audio('reward'),
+                                    respResp_sPlus_stop=self._close_audio('pre_reward'),
+                                    audio_sMinus=self._play_audio('sMinus_pause_buffer', 'sMinus'),
+                                    sMinus_pause_buffer=self._wait_block(.2, .2, 'sMinus_trial'),
+                                    sMinus_trial=self._light_poll_dual(self.panel.trialSens, self.panel.respSens, 5,
+                                                                       'trialResp_sMinus_stop', 'no_resp_sMinus_stop'
+                                                                                                'respResp_sMinus_stop'),
+                                    trialResp_sMinus_stop=self._close_audio('trial_end_wait'),
+                                    no_resp_sMinus_stop=self._close_audio('trial_end_wait'),
+                                    respResp_sMinus_stop=self._close_audio('trial_end_wait'),
+                                    pre_reward=self._pre_reward('reward'),
+                                    reward=self.reward(.5, 'trial_end_wait'),
+                                    trial_end_wait=self._wait_block(.2, .2, 'check'))
+            if not utils.check_time(self.parameters['light_schedule']):
+                return 'sleep_block'
+            return self.block_name(block_num + 1)
+
+        return temp
+
+    def _water_block_no_passive(self, block_num, reps=200):
+        """
+        Block 4:  Trial light turns on. Playback starts when switch is pressed. Both switches are inactive for first
+        200ms of playback.
+        On S+ trials: Water is delivered when reward port is accessed during playback or up to 5 s after playback end
+        On both trial types: accessing trial port stops playback and another interaction starts new trial/playback
+        """
+
+        def temp():
+            self.recent_state = block_num
+            self.log.warning('Starting %s' % (self.block_name(block_num)))
+            utils.run_state_machine(start_in='init',
+                                    error_state='wait',
+                                    error_callback=self.error_callback,
+                                    init=self._block_init('check'),
+                                    check=self._check_block('poll_trial', reps, float('inf')),
+                                    poll_trial=self._light_poll(self.panel.trialSens, 10, 'check',
+                                                                'coin_flip'),  # poll for 10 on loop
+                                    coin_flip=self._rand_state(('audio_sPlus', 'audio_sMinus')),
+                                    audio_sPlus=self._play_audio('sPlus_pause_buffer', 'sPlus'),
+                                    sPlus_pause_buffer=self._wait_block(.2, .2, 'sPlus_trial'),
+                                    sPlus_trial=self._light_poll_dual(self.panel.trialSens, self.panel.respSens, 10,
+                                                                      'trialResp_sPlus_stop', 'no_resp_sPlus_stop'
+                                                                                              'respResp_sPlus_stop'),
+                                    trialResp_sPlus_stop=self._close_audio('trial_end_wait'),
+                                    no_resp_sPlus_stop=self._close_audio('trial_end_wait'),
+                                    respResp_sPlus_stop=self._close_audio('pre_reward'),
+                                    audio_sMinus=self._play_audio('sMinus_pause_buffer', 'sMinus'),
+                                    sMinus_pause_buffer=self._wait_block(.2, .2, 'sMinus_trial'),
+                                    sMinus_trial=self._light_poll_dual(self.panel.trialSens, self.panel.respSens, 10,
+                                                                       'trialResp_sMinus_stop', 'no_resp_sMinus_stop'
+                                                                                                'respResp_sMinus_stop'),
+                                    trialResp_sMinus_stop=self._close_audio('trial_end_wait'),
+                                    no_resp_sMinus_stop=self._close_audio('trial_end_wait'),
+                                    respResp_sMinus_stop=self._close_audio('trial_end_wait'),
+                                    pre_reward=self._pre_reward('reward'),
+                                    reward=self.reward(.5, 'trial_end_wait'),
+                                    trial_end_wait=self._wait_block(.1, .1, 'check'))
+            if not utils.check_time(self.parameters['light_schedule']):
+                return 'sleep_block'
+            return self.block_name(block_num + 1)
+
+        return temp
+
+    def _check_block_log(self, next_state, reps, revert_timeout):
+        # If function returns None, state machine ends (I think)
+        # None returns when: no response and elapsed time > timeout
+        #                    number of actual responses >= reps
+        #                    time is outside of light schedule
+        def temp():
+            self.write_summary_shaping()
+            if not self.responded_block:
+                elapsed_time = (dt.datetime.now() - self.block_start).total_seconds()
+                if elapsed_time > revert_timeout:
+                    self.log.warning("No response in block %d, reverting to block %d.  Time: %s" % (
+                        self.recent_state, self.recent_state - 1, dt.datetime.now().isoformat(' ')))
+                    return None
+            else:
+                if self.response_counter >= reps:
+                    return None
+            if not utils.check_time(self.parameters['light_schedule']):
+                return None
+            return next_state
+
+        return temp
+
+    def _pre_reward_log(self, next_state):
+        def temp():
+            self.responded_block = True
+            self.response_counter = self.response_counter + 1
+            self.summary['responses'] = self.response_counter
+            return next_state
+
+        return temp
+
+    def reward_log(self, value, next_state):
+        def temp():
+            self.log.info('%d\t%d\t%s\t%s' % (
+                self.recent_state, self.response_counter, self.last_response, dt.datetime.now().isoformat(' ')))
+            self.summary['feeds'] += 1
+            self.panel.reward(value=value)
+            return next_state
+
+        return temp
+
+
+class ShaperGoNogoInterrupt_misc(Shaper):
+    """accomodate go/nogo terminal procedure along with one or two hopper 2choice procedures
+    Go/Nogo shaping works like this:
+    Block 1:  Water opens (for 2 s) for the first day that the animal is in the apparatus at random intervals.
+    Block 2:  Playbacks begin when w UNFINISHED.
+    Block 4:  UNFINISHED
+    NOTE:     sPlus and sMinus names might be deprecated or changed, check documentation and other code
+    """
+
+    def __init__(self, panel, log, parameters, error_callback=None):
+        super(ShaperGoNogoInterrupt_misc, self).__init__(panel, log, parameters, error_callback)
         self.block1 = self._water_trainer2(1)
         # self.block2 = self._water_block(2)
         # self.block3 = self._water_block_no_passive(3)
