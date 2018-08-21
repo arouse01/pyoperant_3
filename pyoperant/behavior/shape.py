@@ -697,9 +697,9 @@ class ShaperGoNogoInterrupt(Shaper):
                                     init=self._block_init('check'),
                                     check=self._check_block_log('silent_resp', reps, float('inf')), # next_state, reps, revert_timeout
                                     # wait=self._wait_block(10, 40, 'reward'),  # wait between 10 and 40 seconds
-                                    silent_resp=self._random_poll(self.panel.respSens, 20, 60, 'reward', 'pre_reward'),
+                                    silent_resp=self._random_poll(self.panel.respSens, 20, 120, 'reward', 'pre_reward'),
                                     pre_reward=self._pre_reward_log('reward'),
-                                    reward=self.reward_log(0.2, 'check'))  # Reward for 1 second
+                                    reward=self.reward_log(0.17, 'check'))  # Reward for 1 second
             if not utils.check_time(self.parameters['light_schedule']):
                 return 'sleep_block'
             return self.block_name(block_num + 1)
