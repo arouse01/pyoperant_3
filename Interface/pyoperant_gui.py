@@ -15,10 +15,7 @@ except ImportError:
     import json
 
 import pyoperant_gui_layout
-# import pyoperant
 
-
-# it also keeps events etc that we defined in Qt Designer
 
 class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
     def __init__(self):
@@ -144,9 +141,10 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
                             try:
                                 error = self.qList[boxnumber].get(False)
                                 if error and not error[0:4] == "ALSA":
-                                    msg = QtGui.QMessageBox("Warning", error, QtGui.QMessageBox.Warning,
-                                                            QtGui.QMessageBox.Ok, 0, 0)
-                                    msg.exec_()
+                                    self.statusTextBoxList[boxnumber].setPlainText(error)
+                                    # msg = QtGui.QMessageBox("Warning", error, QtGui.QMessageBox.Warning,
+                                                            # QtGui.QMessageBox.Ok, 0, 0)
+                                    # msg.exec_()
                                     self.subprocessBox[boxnumber].terminate
                                     self.subprocessBox[boxnumber].wait
                                     self.subprocessBox[boxnumber] = 0
@@ -154,17 +152,6 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
                             except Queue.Empty:
                                 self.box_disable(boxnumber)  # UI modifications while box is running
                                 self.graphicBoxList[boxnumber].setPixmap(self.greenIcon)
-
-                            # if error and not error[0:4] == "ALSA":
-                            #     msg = QtGui.QMessageBox("Warning", error, QtGui.QMessageBox.Warning,
-                            #                             QtGui.QMessageBox.Ok, 0, 0)
-                            #     msg.exec_()
-                            #     self.subprocessBox[boxnumber].kill
-                            #     self.subprocessBox[boxnumber] = 0
-                            #     self.graphicBoxList[boxnumber].setPixmap(self.redIcon)
-                            # else:
-                            #     self.box_disable(boxnumber)  # UI modifications while box is running
-                            #     self.graphicBoxList[boxnumber].setPixmap(self.greenIcon)
 
                     else:
                         msg = QtGui.QMessageBox("Warning", "Bird name must be entered.", QtGui.QMessageBox.Warning,
@@ -254,9 +241,21 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
 
     def refreshall(self):
         # print "timer fired"
-        for box in self.boxList:
-            if not self.subprocessBox[box] == 0:  # If box is running
-                self.refreshfile(box)
+        for boxnumber in self.boxList:
+            if not self.subprocessBox[boxnumber] == 0:  # If box is running
+                try:    # Check for any errors. If found, stop box and display error
+                    error = self.qList[boxnumber].get(False)
+                    if error and not error[0:4] == "ALSA":
+                        self.statusTextBoxList[boxnumber].setPlainText(error)
+                        # msg = QtGui.QMessageBox("Warning", error, QtGui.QMessageBox.Warning,
+                        # QtGui.QMessageBox.Ok, 0, 0)
+                        # msg.exec_()
+                        self.subprocessBox[boxnumber].terminate
+                        self.subprocessBox[boxnumber].wait
+                        self.subprocessBox[boxnumber] = 0
+                        self.graphicBoxList[boxnumber].setPixmap(self.redIcon)
+                except Queue.Empty:
+                    self.refreshfile(boxnumber)
 
     def refreshfile(self, boxnumber):
         birdName = str(self.birdEntryBoxList[boxnumber].toPlainText())

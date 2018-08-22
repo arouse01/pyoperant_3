@@ -259,7 +259,7 @@ class BaseExp(object):
             f.write("Feeds today: %s\n" % self.summary['feeds'])
             f.write("Pecks today: %i\n" % self.summary['responses'])
             # f.write("Feeder ops today: %i\n" % self.summary['feeds'])
-            f.write("\nStart time @: %s" % self.summary['last_trial_time'])
+            f.write("\nLast trial @: %s" % self.summary['last_trial_time'])
 
     def log_error_callback(self, err):
         if err.__class__ is InterfaceError or err.__class__ is ComponentError:

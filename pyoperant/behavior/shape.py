@@ -391,7 +391,7 @@ class Shaper(object):
             f.write("Feeds today: %s\n" % self.summary['feeds'])
             f.write("Pecks today: %i" % self.summary['responses'])
             # f.write("Feeder ops today: %i\n" % self.summary['feeds'])
-            f.write("\nStart time @: %s" % self.summary['last_trial_time'])
+            f.write("\nLast trial @: %s" % self.summary['last_trial_time'])
 
 
 class Shaper2AC(Shaper):
@@ -673,7 +673,7 @@ class Shaper3ACMatching(Shaper3AC):
 class ShaperGoNogoInterrupt(Shaper):
     """accomodate go/nogo terminal procedure along with one or two hopper 2choice procedures
     Go/Nogo shaping works like this:
-    Block 1:  Water opens (for 2 s) for the first day that the animal is in the apparatus at random intervals.
+    Block 1:  Water opens (for .015 s) for the first day that the animal is in the apparatus at random intervals.
     Block 2:  Playbacks begin when w UNFINISHED.
     Block 4:  UNFINISHED
     NOTE:     sPlus and sMinus names might be deprecated or changed, check documentation and other code
@@ -697,9 +697,9 @@ class ShaperGoNogoInterrupt(Shaper):
                                     init=self._block_init('check'),
                                     check=self._check_block_log('silent_resp', reps, float('inf')), # next_state, reps, revert_timeout
                                     # wait=self._wait_block(10, 40, 'reward'),  # wait between 10 and 40 seconds
-                                    silent_resp=self._random_poll(self.panel.respSens, 20, 120, 'reward', 'pre_reward'),
+                                    silent_resp=self._random_poll(self.panel.respSens, 60, 120, 'reward', 'pre_reward'),
                                     pre_reward=self._pre_reward_log('reward'),
-                                    reward=self.reward_log(0.17, 'check'))  # Reward for 1 second
+                                    reward=self.reward_log(0.15, 'check'))  # Reward for 1 second
             if not utils.check_time(self.parameters['light_schedule']):
                 return 'sleep_block'
             return self.block_name(block_num + 1)
@@ -829,8 +829,9 @@ class ShaperGoNogoInterrupt(Shaper):
         def temp():
             self.log.info('%d\t%d\t%s\t%s' % (
                 self.recent_state, self.response_counter, self.last_response, dt.datetime.now().isoformat(' ')))
-            self.summary['feeds'] += 1
             self.panel.reward(value=value)
+            self.summary['feeds'] += 1
+            self.summary['last_trial_time'] = dt.datetime.now()
             return next_state
 
         return temp
@@ -852,7 +853,7 @@ class ShaperGoNogoInterrupt_misc(Shaper):
         # self.block3 = self._water_block_no_passive(3)
         # self.block4 = self._center_peck_no_passive(4)
 
-    def _water_trainer(self, block_num, reps=500):
+    def _water_trainer_misc(self, block_num, reps=500):
         """
         Block 1:  Water is frequently dispensed from the port to train the bird that water
         is available in that location.  No light used."""
