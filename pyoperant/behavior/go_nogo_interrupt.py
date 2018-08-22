@@ -5,7 +5,7 @@ import datetime as dt
 from pyoperant.behavior import base, shape
 from pyoperant.errors import EndSession, EndBlock
 from pyoperant import components, utils, reinf, queues, analysis
-
+from mem_top import mem_top
 
 class GoNoGoInterruptExp(base.BaseExp):
     """A two alternative choice experiment

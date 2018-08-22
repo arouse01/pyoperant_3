@@ -6,6 +6,7 @@ import serial
 import time
 import threading
 import Queue
+from mem_top import mem_top
 # import numpy
 
 try:
@@ -241,20 +242,21 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
 
     def refreshall(self):
         # print "timer fired"
+        # print mem_top()
         for boxnumber in self.boxList:
             if not self.subprocessBox[boxnumber] == 0:  # If box is running
-                try:    # Check for any errors. If found, stop box and display error
-                    error = self.qList[boxnumber].get(False)
-                    if error and not error[0:4] == "ALSA":
-                        self.statusTextBoxList[boxnumber].setPlainText(error)
-                        # msg = QtGui.QMessageBox("Warning", error, QtGui.QMessageBox.Warning,
-                        # QtGui.QMessageBox.Ok, 0, 0)
-                        # msg.exec_()
-                        self.subprocessBox[boxnumber].terminate
-                        self.subprocessBox[boxnumber].wait
-                        self.subprocessBox[boxnumber] = 0
-                        self.graphicBoxList[boxnumber].setPixmap(self.redIcon)
-                except Queue.Empty:
+                # try:    # Check for any errors. If found, stop box and display error
+                #     error = self.qList[boxnumber].get(False)
+                #     if error and not error[0:4] == "ALSA" and not error[0:5] == 'pydev':
+                #         self.statusTextBoxList[boxnumber].setPlainText(error)
+                #         # msg = QtGui.QMessageBox("Warning", error, QtGui.QMessageBox.Warning,
+                #         # QtGui.QMessageBox.Ok, 0, 0)
+                #         # msg.exec_()
+                #         self.subprocessBox[boxnumber].terminate
+                #         self.subprocessBox[boxnumber].wait
+                #         self.subprocessBox[boxnumber] = 0
+                #         self.graphicBoxList[boxnumber].setPixmap(self.redIcon)
+                # except Queue.Empty:
                     self.refreshfile(boxnumber)
 
     def refreshfile(self, boxnumber):
