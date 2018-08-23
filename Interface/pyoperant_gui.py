@@ -6,7 +6,8 @@ import serial
 import time
 import threading
 import Queue
-from mem_top import mem_top
+
+# from mem_top import mem_top
 # import numpy
 
 try:
@@ -47,6 +48,9 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         self.logpathList = [0] * self.numberOfBoxes  # stores log file path for each box
 
         self.boxList = range(0, self.numberOfBoxes)
+
+        # Variable initiation
+        self.experimentPath = ""
 
         # Option menu setup
         for boxnumber in self.boxList:
@@ -115,61 +119,54 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
     def start_box(self, boxnumber):
         # start selected box
         actualboxnumber = boxnumber + 1
-        if self.checkActiveBoxList[boxnumber].checkState():
-            if os.path.exists("/dev/teensy%02i" % actualboxnumber):  # check if Teensy is detected
-                jsonPath = self.paramFileBoxList[boxnumber].toPlainText()
-                if os.path.isfile(jsonPath):  # Make sure param file is specified
-                    try:
-                        from pyoperant.local import DATAPATH
-                    except ImportError:
-                        DATAPATH = '/home/rouse/bird/data'
-                    self.experimentPath = DATAPATH
-                    birdName = self.birdEntryBoxList[boxnumber].toPlainText()
-                    if not birdName == "":  # Make sure bird is specified too
-                        if self.subprocessBox[boxnumber] == 0:  # Make sure box isn't already running
-                            self.subprocessBox[boxnumber] = subprocess.Popen(
-                                ['python', '/home/rouse/Desktop/pyoperant/pyoperant/scripts/behave', '-P',
-                                 str(boxnumber + 1), '-S', '%s' % birdName, '%s' % self.behaviorField.currentText(),
-                                 '-c', '%s' % jsonPath], stderr=subprocess.PIPE)
 
-                            self.tList[boxnumber] = threading.Thread(target=self.read_output,
-                                                                     args=(self.subprocessBox[boxnumber].stderr,
-                                                                           self.qList[boxnumber]))
-                            self.tList[boxnumber].daemon = True
+        # Error checking: make sure all relevant boxes are filled and files are found:
+        birdName = self.birdEntryBoxList[boxnumber].toPlainText()
+        jsonPath = self.paramFileBoxList[boxnumber].toPlainText()
 
-                            self.tList[boxnumber].start()
-
-                            try:
-                                error = self.qList[boxnumber].get(False)
-                                if error and not error[0:4] == "ALSA":
-                                    self.statusTextBoxList[boxnumber].setPlainText(error)
-                                    # msg = QtGui.QMessageBox("Warning", error, QtGui.QMessageBox.Warning,
-                                                            # QtGui.QMessageBox.Ok, 0, 0)
-                                    # msg.exec_()
-                                    self.subprocessBox[boxnumber].terminate
-                                    self.subprocessBox[boxnumber].wait
-                                    self.subprocessBox[boxnumber] = 0
-                                    self.graphicBoxList[boxnumber].setPixmap(self.redIcon)
-                            except Queue.Empty:
-                                self.box_disable(boxnumber)  # UI modifications while box is running
-                                self.graphicBoxList[boxnumber].setPixmap(self.greenIcon)
-
-                    else:
-                        msg = QtGui.QMessageBox("Warning", "Bird name must be entered.", QtGui.QMessageBox.Warning,
-                                                QtGui.QMessageBox.Ok, 0, 0)
-                        msg.exec_()
-                else:
-                    msg = QtGui.QMessageBox("Warning", "No parameter file selected.", QtGui.QMessageBox.Warning,
-                                            QtGui.QMessageBox.Ok, 0, 0)
-                    msg.exec_()
-            else:
-                msg = QtGui.QMessageBox("Warning", "Teensy not detected.", QtGui.QMessageBox.Warning,
-                                        QtGui.QMessageBox.Ok, 0, 0)
-                msg.exec_()
+        if not self.checkActiveBoxList[boxnumber].checkState():
+            self.statusTextBoxList[boxnumber].setPlainText("Error: Box not set as Active.")
+        elif not os.path.exists("/dev/teensy%02i" % actualboxnumber):  # check if Teensy is detected:
+            self.statusTextBoxList[boxnumber].setPlainText("Error: Teensy %d not detected." % actualboxnumber)
+        elif birdName == "":
+            self.statusTextBoxList[boxnumber].setPlainText("Error: Bird name must be entered.")
+        elif not os.path.isfile(jsonPath):  # Make sure param file is specified
+            self.statusTextBoxList[boxnumber].setPlainText("Error: No parameter file selected.")
         else:
-            msg = QtGui.QMessageBox("Warning", "Box not checked.", QtGui.QMessageBox.Warning,
-                                    QtGui.QMessageBox.Ok, 0, 0)
-            msg.exec_()
+            try:
+                from pyoperant.local import DATAPATH
+            except ImportError:
+                DATAPATH = '/home/rouse/bird/data'
+            self.experimentPath = DATAPATH
+
+            if self.subprocessBox[boxnumber] == 0:  # Make sure box isn't already running
+                self.subprocessBox[boxnumber] = subprocess.Popen(
+                    ['python', '/home/rouse/Desktop/pyoperant/pyoperant/scripts/behave', '-P',
+                     str(boxnumber + 1), '-S', '%s' % birdName, '%s' % self.behaviorField.currentText(),
+                     '-c', '%s' % jsonPath], stderr=subprocess.PIPE)
+
+                self.tList[boxnumber] = threading.Thread(target=self.read_output,
+                                                         args=(self.subprocessBox[boxnumber].stderr,
+                                                               self.qList[boxnumber]))
+                self.tList[boxnumber].daemon = True
+
+                self.tList[boxnumber].start()
+
+                try:
+                    error = self.qList[boxnumber].get(False)
+                    if error and not error[0:4] == "ALSA":
+                        self.statusTextBoxList[boxnumber].setPlainText(error)
+                        # msg = QtGui.QMessageBox("Warning", error, QtGui.QMessageBox.Warning,
+                        # QtGui.QMessageBox.Ok, 0, 0)
+                        # msg.exec_()
+                        self.stop_box(boxnumber)
+                        # self.subprocessBox[boxnumber].terminate
+                        # self.subprocessBox[boxnumber].wait
+                        # self.subprocessBox[boxnumber] = 0
+                        # self.graphicBoxList[boxnumber].setPixmap(self.redIcon)
+                except Queue.Empty:
+                    self.box_disable(boxnumber)  # UI modifications while box is running
+                    self.graphicBoxList[boxnumber].setPixmap(self.greenIcon)
 
     def read_output(self, pipe, q):
 
@@ -214,20 +211,19 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         boxnumber = boxnumber + 1  # boxnumber is index, but device name is not
         print("Purging water system in box %d" % boxnumber)
         device_name = '/dev/teensy%02i' % boxnumber
-        self.device = serial.Serial(port=device_name,
-                                    baudrate=19200,
-                                    timeout=5)
-        if self.device is None:
-            raise 'Could not open serial device %s' % self.device_name
+        device = serial.Serial(port=device_name,
+                               baudrate=19200,
+                               timeout=5)
+        if device is None:
+            raise 'Could not open serial device %s' % device_name
 
-        # print("Waiting for device to open")
-        self.device.readline()
-        self.device.flushInput()
+        device.readline()
+        device.flushInput()
         print("Successfully opened device %s" % device_name)
         # solenoid = channel 16
-        self.device.write("".join([chr(16), chr(3)]))  # set channel 16 as output
-        # self.device.write("".join([chr(16), chr(2)]))  # close solenoid, just in case
-        self.device.write("".join([chr(16), chr(1)]))  # open solenoid
+        device.write("".join([chr(16), chr(3)]))  # set channel 16 as output
+        # device.write("".join([chr(16), chr(2)]))  # close solenoid, just in case
+        device.write("".join([chr(16), chr(1)]))  # open solenoid
         startTime = time.time()
         purgeTime = 5
 
@@ -236,8 +232,8 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             if purgeTime <= elapsedTime:
                 break
 
-        self.device.write("".join([chr(16), chr(2)]))  # close solenoid
-        self.device.close()  # close connection
+        device.write("".join([chr(16), chr(2)]))  # close solenoid
+        device.close()  # close connection
         print 'Purged box ' + str(boxnumber)
 
     def refreshall(self):
@@ -245,18 +241,18 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         # print mem_top()
         for boxnumber in self.boxList:
             if not self.subprocessBox[boxnumber] == 0:  # If box is running
-                # try:    # Check for any errors. If found, stop box and display error
-                #     error = self.qList[boxnumber].get(False)
-                #     if error and not error[0:4] == "ALSA" and not error[0:5] == 'pydev':
-                #         self.statusTextBoxList[boxnumber].setPlainText(error)
-                #         # msg = QtGui.QMessageBox("Warning", error, QtGui.QMessageBox.Warning,
-                #         # QtGui.QMessageBox.Ok, 0, 0)
-                #         # msg.exec_()
-                #         self.subprocessBox[boxnumber].terminate
-                #         self.subprocessBox[boxnumber].wait
-                #         self.subprocessBox[boxnumber] = 0
-                #         self.graphicBoxList[boxnumber].setPixmap(self.redIcon)
-                # except Queue.Empty:
+                try:  # Check for any errors. If found, stop box and display error
+                    error = self.qList[boxnumber].get(False)
+                    if error and not error[0:4] == "ALSA" and not error[0:5] == 'pydev':
+                        self.statusTextBoxList[boxnumber].setPlainText(error)
+                        # msg = QtGui.QMessageBox("Warning", error, QtGui.QMessageBox.Warning,
+                        # QtGui.QMessageBox.Ok, 0, 0)
+                        # msg.exec_()
+                        self.subprocessBox[boxnumber].terminate
+                        self.subprocessBox[boxnumber].wait
+                        self.subprocessBox[boxnumber] = 0
+                        self.graphicBoxList[boxnumber].setPixmap(self.redIcon)
+                except Queue.Empty:
                     self.refreshfile(boxnumber)
 
     def refreshfile(self, boxnumber):
@@ -270,7 +266,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         try:
             f = open(summary_file, 'r')
         except:
-            pass
+            f = False
 
         if f:
             logData = f.readlines()
@@ -279,10 +275,10 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         else:
             print "Unable to open file for %s" % birdName
 
-        #with open(summary_file, 'r') as f:
-            #logData = f.readlines()
-            #self.statusTextBoxList[boxnumber].setPlainText('\n'.join(logData[-10:]))
-            #f.close()
+        # with open(summary_file, 'r') as f:
+        # logData = f.readlines()
+        # self.statusTextBoxList[boxnumber].setPlainText('\n'.join(logData[-10:]))
+        # f.close()
 
     def open_application(self):
         settingsFile = 'settings.json'
