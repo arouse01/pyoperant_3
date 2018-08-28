@@ -6,6 +6,7 @@ import serial
 import time
 import threading
 import Queue
+from guppy import hpy
 
 # from mem_top import mem_top
 # import numpy
@@ -51,6 +52,8 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
 
         # Variable initiation
         self.experimentPath = ""
+        # self.hp = hpy()
+        # self.before = self.hp.heap()
 
         # Option menu setup
         for boxnumber in self.boxList:
@@ -110,8 +113,17 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         # stop selected box
 
         if not self.subprocessBox[boxnumber] == 0:  # Only operate if box is running
-            self.subprocessBox[boxnumber].terminate()
-            self.subprocessBox[boxnumber].wait()
+            while True:  # Loop through error codes generated, if any
+                error = ""
+                try:
+                    error = '{0}\n{1}'.format(error, self.qList[boxnumber].get(False))
+                except Queue.Empty:
+                    break
+            # self.tList[boxnumber].terminate()
+            # self.subprocessBox[boxnumber].stderr.close()
+            # self.subprocessBox[boxnumber].stdout.close()
+            self.subprocessBox[boxnumber].kill()
+
             self.subprocessBox[boxnumber] = 0
             self.box_enable(boxnumber)
             self.graphicBoxList[boxnumber].setPixmap(self.redIcon)
@@ -142,19 +154,23 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             if self.subprocessBox[boxnumber] == 0:  # Make sure box isn't already running
                 self.subprocessBox[boxnumber] = subprocess.Popen(
                     ['python', '/home/rouse/Desktop/pyoperant/pyoperant/scripts/behave', '-P',
-                     str(boxnumber + 1), '-S', '%s' % birdName, '%s' % self.behaviorField.currentText(),
-                     '-c', '%s' % jsonPath], stderr=subprocess.PIPE)
+                     str(boxnumber + 1), '-S', '{0}'.format(birdName), '{0}'.format(self.behaviorField.currentText()),
+                     '-c', '{0}'.format(jsonPath)], stdin=open(os.devnull), stderr=subprocess.PIPE, stdout=open(os.devnull))
 
                 self.tList[boxnumber] = threading.Thread(target=self.read_output,
-                                                         args=(self.subprocessBox[boxnumber].stderr,
+                                                         args=(boxnumber, self.subprocessBox[boxnumber].stderr,
                                                                self.qList[boxnumber]))
                 self.tList[boxnumber].daemon = True
 
                 self.tList[boxnumber].start()
 
-                try:
-                    error = self.qList[boxnumber].get(False)
-                    if error and not error[0:4] == "ALSA":
+                while True:  # Loop through error codes generated, if any
+                    error = ""
+                    try:
+                        error = '{0}\n{1}'.format(error, self.qList[boxnumber].get(False))
+                    except Queue.Empty:
+                        break
+                if error and not error[0:4] == "ALSA":
                         self.statusTextBoxList[boxnumber].setPlainText(error)
                         # msg = QtGui.QMessageBox("Warning", error, QtGui.QMessageBox.Warning,
                         # QtGui.QMessageBox.Ok, 0, 0)
@@ -164,15 +180,18 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
                         # self.subprocessBox[boxnumber].wait
                         # self.subprocessBox[boxnumber] = 0
                         # self.graphicBoxList[boxnumber].setPixmap(self.redIcon)
-                except Queue.Empty:
+                else:
                     self.box_disable(boxnumber)  # UI modifications while box is running
                     self.graphicBoxList[boxnumber].setPixmap(self.greenIcon)
 
-    def read_output(self, pipe, q):
+    def read_output(self, boxnumber, pipe, q):
 
         while True:
             output = pipe.readline()
             q.put(output)
+            running = self.subprocessBox[boxnumber]
+            if running == 0:
+                break
 
     def read_input(self, write_pipe, in_pipe_name):
         """reads input from a pipe with name `read_pipe_name`,
@@ -234,31 +253,35 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
 
         device.write("".join([chr(16), chr(2)]))  # close solenoid
         device.close()  # close connection
-        print 'Purged box ' + str(boxnumber)
+        print "Purged box {0}".format(str(boxnumber))
 
     def refreshall(self):
         # print "timer fired"
         # print mem_top()
         for boxnumber in self.boxList:
             if not self.subprocessBox[boxnumber] == 0:  # If box is running
-                try:  # Check for any errors. If found, stop box and display error
-                    error = self.qList[boxnumber].get(False)
-                    if error and not error[0:4] == "ALSA" and not error[0:5] == 'pydev':
-                        self.statusTextBoxList[boxnumber].setPlainText(error)
-                        # msg = QtGui.QMessageBox("Warning", error, QtGui.QMessageBox.Warning,
-                        # QtGui.QMessageBox.Ok, 0, 0)
-                        # msg.exec_()
-                        self.subprocessBox[boxnumber].terminate
-                        self.subprocessBox[boxnumber].wait
-                        self.subprocessBox[boxnumber] = 0
-                        self.graphicBoxList[boxnumber].setPixmap(self.redIcon)
-                except Queue.Empty:
+                # Check for any errors. If found, stop box and display error
+                while True:  # Loop through error codes generated, if any
+                    error = ""
+                    try:
+                        error = '{0}\n{1}'.format(error, self.qList[boxnumber].get(False))
+                    except Queue.Empty:
+                        break
+                if error and not error[0:4] == "ALSA" and not error[0:5] == 'pydev':
+                    self.statusTextBoxList[boxnumber].setPlainText(error)
+
+                    self.stop_box(boxnumber)
+                    # self.subprocessBox[boxnumber].terminate
+                    # self.subprocessBox[boxnumber].wait
+                    # self.subprocessBox[boxnumber] = 0
+                    # self.graphicBoxList[boxnumber].setPixmap(self.redIcon)
+                else:
                     self.refreshfile(boxnumber)
 
     def refreshfile(self, boxnumber):
         birdName = str(self.birdEntryBoxList[boxnumber].toPlainText())
         # experiment_path = str(self.logpathList[boxnumber]+"/")
-        summary_file = os.path.join(self.experimentPath, birdName, birdName + '.summaryDAT')
+        summary_file = os.path.join(self.experimentPath, birdName, "{0}{1}".format(birdName,'.summaryDAT'))
         # dataPath = os.path.join(self.experimentPath, birdName, birdName + ".log")
         # print "opening file for box %d (%s)" % (boxnumber + 1, birdName)
         # dataPath = os.path.join(self.experimentPath, birdName, birdName + ".log")
@@ -273,7 +296,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             self.statusTextBoxList[boxnumber].setPlainText(''.join(logData[-10:]))
             f.close()
         else:
-            print "Unable to open file for %s" % birdName
+            print "{0}{1}".format("Unable to open file for ", birdName)
 
         # with open(summary_file, 'r') as f:
         # logData = f.readlines()
@@ -320,7 +343,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         ## Box-specific closing operations
         # Close all serial ports, if available
         for boxnumber in self.boxList:
-            device_name = '/dev/teensy%02d' % int(boxnumber + 1)
+            device_name = "{0}{1}".format('/dev/teensy',int(boxnumber + 1))
             try:
                 device = serial.Serial(port=device_name,
                                        baudrate=19200,

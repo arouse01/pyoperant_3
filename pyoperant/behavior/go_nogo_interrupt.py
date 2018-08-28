@@ -5,7 +5,7 @@ import datetime as dt
 from pyoperant.behavior import base, shape
 from pyoperant.errors import EndSession, EndBlock
 from pyoperant import components, utils, reinf, queues, analysis
-#from mem_top import mem_top
+
 
 class GoNoGoInterruptExp(base.BaseExp):
     """A two alternative choice experiment
@@ -181,6 +181,15 @@ class GoNoGoInterruptExp(base.BaseExp):
                 # load the block details into the trial queue
                 q_type = blk.pop('queue')
                 blk.pop('description')  # remove the "description" entry from the dictionary so queues doesn't complain
+                if 'punish' not in blk:
+                    self.punishBool = True  # Assume punishment should be used
+                else:
+                    self.punishBool = blk.pop('punish')  # var determines whether punishment is used
+
+                if 'passive' not in blk['reinforcement']:
+                    self.passiveReward = False
+                else:
+                    self.passiveReward = blk['reinforcement']['passive']
 
                 # Define reinforcement parameters
                 if 'reinforcement' in blk.keys():
@@ -509,7 +518,13 @@ class GoNoGoInterruptExp(base.BaseExp):
             # correct response trial
             if self.this_trial.response == 'none':
                 # no response
-                pass
+                if self.passiveReward and self.this_trial.class_ == "sPlus":
+                    # provide passive reward, even if bird didn't make response
+                    self.reward_pre()
+                    self.reward_main()  # provide a reward
+                    self.reward_post()
+                else:
+                    pass
 
             elif self.this_trial.correct:
                 if self.parameters['reinforcement']['secondary']:
@@ -603,7 +618,8 @@ class GoNoGoInterruptExp(base.BaseExp):
 
     def punish_main(self):
         value = self.parameters['classes'][self.this_trial.class_]['punish_value']
-        punish_event = self.panel.punish(value=value)
+        if self.punishBool:
+            punish_event = self.panel.punish(value=value)
         self.this_trial.punish = True
 
     def punish_post(self):

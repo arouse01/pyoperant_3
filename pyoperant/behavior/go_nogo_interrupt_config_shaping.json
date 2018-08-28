@@ -1,6 +1,6 @@
 {
   "Machine": "Rouse",
-  "shape": true,
+  "shape": false,
   "block_design": {
     "blocks": {
       "default": {
@@ -532,6 +532,76 @@
           "secondary": false
         }
       },
+      "shaping": {
+        "description": "initial training; 100, 125, 150",
+        "reinforcement": {
+          "schedule": "go_interrupt",
+          "prob": 1,
+          "secondary": false,
+          "passive": true
+        },
+        "conditions": [
+          {
+            "class": "sMinus",
+            "stim_name": "11"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "12"
+          },
+          {
+            "class": "sPlus",
+            "stim_name": "15"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "61"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "62"
+          },
+          {
+            "class": "sPlus",
+            "stim_name": "65"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "111"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "112"
+          },
+          {
+            "class": "sPlus",
+            "stim_name": "115"
+          }
+        ],
+        "weights": [
+          {
+            "class": "sMinus",
+            "weight": 12
+          },
+          {
+            "class": "sPlus",
+            "weight": 3
+          },
+          {
+            "class": "probeMinus",
+            "weight": 4
+          },
+          {
+            "class": "probePlus",
+            "weight": 1
+          }
+        ],
+
+        "queue": "random",
+
+        "punish": false
+
+      },
       "1i training": {
         "description": "training b1i; 100, 125, 150",
         "reinforcement": {
@@ -860,11 +930,14 @@
           }
         ],
 
-        "queue": "random"
+        "queue": "random",
+
+        "punish": true
 
       }
     },
     "order": [
+      "shaping",
       "1i training"
     ]
   },

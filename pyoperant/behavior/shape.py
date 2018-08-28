@@ -1,8 +1,10 @@
 import random
 import os
 import datetime as dt
+import copy
 from pyoperant import panels
 from pyoperant import utils
+from pyoperant import queues
 #from pyoperant.behavior import base
 
 
@@ -117,15 +119,16 @@ class Shaper(object):
             self.log.info("Blk #\tTrl #\tResp Key\tResp Time")
             self.responded_block = False
             self.response_counter = 0
+            self.trial_counter = 0
             return next_state
 
         return temp
 
     def _check_block(self, next_state, reps, revert_timeout):
         # If function returns None, state machine ends (I think)
-        # None returns when: no response and elapsed time > timeout
-        #                    number of actual responses >= reps
-        #                    time is outside of light schedule
+        # None returns when: -no response and elapsed time > timeout
+        #                    -number of actual responses >= reps
+        #                    -time is outside of light schedule
         def temp():
             if not self.responded_block:
                 elapsed_time = (dt.datetime.now() - self.block_start).total_seconds()
@@ -322,6 +325,11 @@ class Shaper(object):
 
         return temp
 
+    def _rand_state_p(self, states):
+        def temp():
+            return random.choice(states)
+
+        return temp
 
     def _rand_state(self, states):
         def temp():
@@ -393,6 +401,15 @@ class Shaper(object):
             # f.write("Feeder ops today: %i\n" % self.summary['feeds'])
             f.write("\nLast trial @: %s" % self.summary['last_trial_time'])
 
+    def write_summary_training(self):
+        """ takes in a summary dictionary and options and writes to the bird's summaryDAT"""
+        summary_file = os.path.join(self.parameters['experiment_path'], self.parameters['subject'] + '.summaryDAT')
+        with open(summary_file, 'wb') as f:
+            f.write("Training Summary\n\n")
+            f.write("Feeds since start: %s\n" % self.summary['feeds'])
+            f.write("Pecks since start: %i" % self.summary['responses'])
+            f.write("Correct resps: %i\n" % self.summary['correct_responses'])
+            f.write("\nLast trial @: %s" % self.summary['last_trial_time'])
 
 class Shaper2AC(Shaper):
     """Run a shaping routine in the operant chamber that will teach an
@@ -673,17 +690,18 @@ class Shaper3ACMatching(Shaper3AC):
 class ShaperGoNogoInterrupt(Shaper):
     """accomodate go/nogo terminal procedure along with one or two hopper 2choice procedures
     Go/Nogo shaping works like this:
-    Block 1:  Water opens (for .015 s) for the first day that the animal is in the apparatus at random intervals.
-    Block 2:  Playbacks begin when w UNFINISHED.
-    Block 4:  UNFINISHED
+    Block 1:  Water opens (for 15 ms) for the first day that the animal is in the apparatus at random intervals so that animal can learn to drink from water port
+    Block 2:  Playback begins when trial switch is pecked. Water is dispensed with a correct response to S+, or at end of S+ playback. No punishment for incorrect responses.
     NOTE:     sPlus and sMinus names might be deprecated or changed, check documentation and other code
     """
+
+    # TODO: Make trial type a ratio other than 50:50
 
     def __init__(self, panel, log, parameters, error_callback=None):
         super(ShaperGoNogoInterrupt, self).__init__(panel, log, parameters, error_callback)
         self.block1 = self._water_trainer(1)
 
-    def _water_trainer(self, block_num, reps=1000000):
+    def _water_trainer(self, block_num, reps=50):
         """
         Block 1:  Water is frequently dispensed from the port to train the bird that water
         is available in that location. If resp port accessed, water also dispensed. No light used."""
@@ -708,24 +726,28 @@ class ShaperGoNogoInterrupt(Shaper):
 
     def _water_block(self, block_num, reps=5000):
         """
-        Block 3:  Trial light turns on. Playback starts when switch is pressed. Both switches are inactive for first
+        Block 2:  Trial light turns on. Playback starts when switch is pressed. Both switches are inactive for first
         200ms of playback.
         On S+ trials: Water is delivered when reward port is accessed during playback, or passively at end
         On both trial types: accessing trial port stops playback and another interaction starts new trial/playback
         """
 
         def temp():
+            conditions = self.parameters['block_design']['blocks']['shaping']['conditions']
+            weights = self.parameters['block_design']['blocks']['shaping']['weights']
+            self.trial_list = queues.random_queue(conditions,reps,weights)
             self.recent_state = block_num
             self.log.warning('Starting %s' % (self.block_name(block_num)))
             utils.run_state_machine(start_in='init',
                                     error_state='wait',
                                     error_callback=self.error_callback,
                                     init=self._block_init('check'),
-                                    check=self._check_block('poll_trial', reps, float('inf')),
+                                    check=self._check_block_log('poll_trial', reps, float('inf')),
                                     poll_trial=self._light_poll(self.panel.trialSens, 10, 'check',
-                                                                'coin_flip'),  # poll for 10 on loop
-                                    coin_flip=self._rand_state(('audio_sPlus', 'audio_sMinus')),
-                                    audio_sPlus=self._play_audio('sPlus_pause_buffer', 'sPlus'),
+                                                                'audio_play'),  # poll for 10 on loop
+                                    audio_play=self._play_audio('sPlus_pause_buffer', 'sMinus_pause_buffer'),
+                                    #coin_flip=self._rand_state(('audio_sPlus', 'audio_sMinus')),
+                                    #audio_sPlus=self._play_audio('sPlus_pause_buffer', 'sPlus'),
                                     sPlus_pause_buffer=self._wait_block(.2, .2, 'sPlus_trial'),
                                     sPlus_trial=self._light_poll_dual(self.panel.trialSens, self.panel.respSens, 5,
                                                                       'trialResp_sPlus_stop', 'no_resp_sPlus_stop'
@@ -733,7 +755,7 @@ class ShaperGoNogoInterrupt(Shaper):
                                     trialResp_sPlus_stop=self._close_audio('trial_end_wait'),
                                     no_resp_sPlus_stop=self._close_audio('reward'),
                                     respResp_sPlus_stop=self._close_audio('pre_reward'),
-                                    audio_sMinus=self._play_audio('sMinus_pause_buffer', 'sMinus'),
+                                    #audio_sMinus=self._play_audio('sMinus_pause_buffer', 'sMinus'),
                                     sMinus_pause_buffer=self._wait_block(.2, .2, 'sMinus_trial'),
                                     sMinus_trial=self._light_poll_dual(self.panel.trialSens, self.panel.respSens, 5,
                                                                        'trialResp_sMinus_stop', 'no_resp_sMinus_stop'
@@ -741,8 +763,8 @@ class ShaperGoNogoInterrupt(Shaper):
                                     trialResp_sMinus_stop=self._close_audio('trial_end_wait'),
                                     no_resp_sMinus_stop=self._close_audio('trial_end_wait'),
                                     respResp_sMinus_stop=self._close_audio('trial_end_wait'),
-                                    pre_reward=self._pre_reward('reward'),
-                                    reward=self.reward(.5, 'trial_end_wait'),
+                                    pre_reward=self._pre_reward_log('reward'),
+                                    reward=self.reward_log(.5, 'trial_end_wait'),
                                     trial_end_wait=self._wait_block(.2, .2, 'check'))
             if not utils.check_time(self.parameters['light_schedule']):
                 return 'sleep_block'
@@ -794,6 +816,12 @@ class ShaperGoNogoInterrupt(Shaper):
 
         return temp
 
+    def _shaping_trial(self, next_state):
+        def temp():
+            self.trial_counter = self.trial_counter + 1
+            return next_state
+        return temp()
+
     def _check_block_log(self, next_state, reps, revert_timeout):
         # If function returns None, state machine ends (I think)
         # None returns when: no response and elapsed time > timeout
@@ -801,6 +829,7 @@ class ShaperGoNogoInterrupt(Shaper):
         #                    time is outside of light schedule
         def temp():
             self.write_summary_shaping()
+            self.trial_counter = self.trial_counter + 1
             if not self.responded_block:
                 elapsed_time = (dt.datetime.now() - self.block_start).total_seconds()
                 if elapsed_time > revert_timeout:
@@ -835,6 +864,50 @@ class ShaperGoNogoInterrupt(Shaper):
             return next_state
 
         return temp
+
+    def _play_audio(self, class1_state, class2_state):
+        # Play next shaping trial, return next state based on trial class
+        def temp():
+            #trial = utils.Trial(index=self.trial_counter)
+            #trial.class_ = self.conditions['class']
+            # trial_stim, trial_motifs = self.get_stimuli(**conditions)
+            current_trial = self.trial_list[self.trial_counter]
+            trial_stim = self.get_stimuli(current_trial)
+            self.log.debug("presenting stimulus %s" % trial_stim.name)
+            self.panel.speaker.queue(trial_stim.file_origin)
+            self.panel.speaker.play()
+            if current_trial['class'][0:4] == class1_state[0:4]:
+                return class1_state
+            else:
+                return class2_state
+
+        return temp
+
+    def _close_audio(self, next_state):
+        def temp():
+            self.panel.speaker.stop()
+            return next_state
+
+        return temp
+
+    def get_stimuli(self, **conditions):
+        """ Get the trial's stimuli from the conditions
+
+        Returns
+        -------
+        stim, epochs : Event, list
+
+
+        """
+        # TODO: default stimulus selection
+        #stim_name = self.conditions
+        stim_name = conditions['stim_name']
+        stim_file = self.parameters['stims'][stim_name]
+        self.log.debug(stim_file)
+
+        stim = utils.auditory_stim_from_wav(stim_file)
+        epochs = []
+        return stim, epochs
 
 
 class ShaperGoNogoInterrupt_misc(Shaper):
