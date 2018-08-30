@@ -244,7 +244,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         # device.write("".join([chr(16), chr(2)]))  # close solenoid, just in case
         device.write("".join([chr(16), chr(1)]))  # open solenoid
         startTime = time.time()
-        purgeTime = 5
+        purgeTime = 20
 
         while True:
             elapsedTime = time.time() - startTime

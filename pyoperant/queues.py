@@ -28,26 +28,58 @@ def random_queue(conditions, tr_max=5000, weights=None):
     """
     if weights:  # Handling weights this way because python 2.7 doesn't have a built-in weighted random function
 
-        conditions_weighted = []
+        classes_weighted = []
+        for w in weights:
+            currWeight = int(w['weight'])
+            for ww in range(currWeight):
+                classes_weighted.append(w['class'])
+        # classes_weighted is a weighted list of classes, so that randomly picking a condition will yield that condition at the expected probability
+
+        conditionsList = {}
         for cond in conditions:
-            for w in weights:   # Compare weight values to condition class
-                if cond['class'] == w['class']:
-                    currWeight = int(w['weight'])
-                    for ww in range(currWeight):
-                        conditions_weighted.append(cond)
-        conditions = conditions_weighted
-    tr_num = 0
+            condClass = cond['class']
+            if condClass not in conditionsList:
+                conditionsList[condClass] = []
+            conditionsList[condClass].append(cond)
+        # conditionsList is a dict with stimuli sorted into classes
+
+        tr_num = 0
+        while tr_num < tr_max:
+            yield random.choice(conditionsList[random.choice(
+                classes_weighted)])  # pick random condition (stim) from weighted random class
+            tr_num += 1
+
+    else:
+        # just randomly pick a condition
+        tr_num = 0
+        while tr_num < tr_max:
+            yield random.choice(conditions)
+
+            tr_num += 1
+
+    # if weights:  # Handling weights this way because python 2.7 doesn't have a built-in weighted random function
+    #
     #     conditions_weighted = []
-    #     for cond, w in zip(conditions, weights):
-    #         for ww in range(w):
-    #             conditions_weighted.append(cond)
+    #
+    #     for cond in conditions:
+    #         for w in weights:   # Compare weight values to condition class
+    #             if cond['class'] == w['class']:
+    #                 currWeight = int(w['weight'])
+    #                 for ww in range(currWeight):
+    #                     conditions_weighted.append(cond)
     #     conditions = conditions_weighted
     # tr_num = 0
-
-    while tr_num < tr_max:
-        yield random.choice(conditions)
-
-        tr_num += 1
+    # #     conditions_weighted = []
+    # #     for cond, w in zip(conditions, weights):
+    # #         for ww in range(w):
+    # #             conditions_weighted.append(cond)
+    # #     conditions = conditions_weighted
+    # # tr_num = 0
+    #
+    # while tr_num < tr_max:
+    #     yield random.choice(conditions)
+    #
+    #     tr_num += 1
 
 
 def block_queue(conditions, reps=1, shuffle=False):

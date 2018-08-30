@@ -1,6 +1,6 @@
 {
   "Machine": "Rouse",
-  "shape": false,
+  "shape": true,
   "block_design": {
     "blocks": {
       "default": {

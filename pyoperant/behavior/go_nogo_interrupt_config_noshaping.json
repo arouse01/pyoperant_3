@@ -1,6 +1,6 @@
 {
   "Machine": "Rouse",
-  "shape": true,
+  "shape": false,
   "block_design": {
     "blocks": {
       "default": {
@@ -524,7 +524,7 @@
             "class": "probePlus",
             "weight": 2
           }
-            ],
+        ],
         "queue": "random",
         "reinforcement": {
           "schedule": "go_interrupt",
@@ -532,8 +532,75 @@
           "secondary": false
         }
       },
+      "shaping": {
+        "description": "initial training; 100, 125, 150",
+        "reinforcement": {
+          "schedule": "go_interrupt",
+          "prob": 1,
+          "secondary": false,
+          "passive": true
+        },
+        "conditions": [
+          {
+            "class": "sMinus",
+            "stim_name": "11"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "12"
+          },
+          {
+            "class": "sPlus",
+            "stim_name": "15"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "61"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "62"
+          },
+          {
+            "class": "sPlus",
+            "stim_name": "65"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "111"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "112"
+          },
+          {
+            "class": "sPlus",
+            "stim_name": "115"
+          }
+        ],
+        "weights": [
+          {
+            "class": "sMinus",
+            "weight": 12
+          },
+          {
+            "class": "sPlus",
+            "weight": 3
+          }
+        ],
+
+        "queue": "random",
+
+        "punish": false
+
+      },
       "1i training": {
         "description": "training b1i; 100, 125, 150",
+        "reinforcement": {
+          "schedule": "go_interrupt",
+          "prob": 0.8,
+          "secondary": false
+        },
         "conditions": [
           {
             "class": "sMinus",
@@ -835,7 +902,6 @@
             "class": "sPlus",
             "stim_name": "125"
           }
-
         ],
         "weights": [
           {
@@ -855,47 +921,40 @@
             "weight": 1
           }
         ],
-        "queue": "random",
-        "reinforcement": {
-          "schedule": "go_interrupt",
-          "prob": 1,
-          "secondary": false
-        }
-      }
 
+        "queue": "random",
+
+        "punish": true
+
+      }
     },
     "order": [
-      "default"
+      "shaping",
+      "1i training"
     ]
   },
   "classes": {
     "sPlus": {
       "component": "respSens",
-      "punish_value": 3.0,
-      "reward_value": 2,
-      "ratio": 4
+      "punish_value": 0.0,
+      "reward_value": 0.2
     },
     "sMinus": {
       "component": "trialSens",
       "punish_value": 3.0,
-      "reward_value": 0.0,
-      "ratio": 12
+      "reward_value": 0.0
     },
     "probePlus": {
       "punish_value": 0.0,
-      "reward_value": 2,
-      "ratio": 1
+      "reward_value": 0.0
     },
     "probeMinus": {
       "punish_value": 0.0,
-      "reward_value": 2,
-      "ratio": 3
+      "reward_value": 0.0
     }
-
   },
   "comments": "json doesn't support comments",
   "correction_trials": false,
-
   "current_scale": 0.25,
   "debug": false,
   "description": "Discriminate AB Task",
@@ -905,7 +964,6 @@
     "email": "andrew.rouse@tufts.edu",
     "name": "Andrew Rouse"
   },
-
   "intertrial_min": 0.1,
   "light_schedule": [
     [
