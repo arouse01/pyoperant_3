@@ -701,7 +701,7 @@ class ShaperGoNogoInterrupt(Shaper):
         super(ShaperGoNogoInterrupt, self).__init__(panel, log, parameters, error_callback)
         self.block1 = self._water_trainer(1)
 
-    def _water_trainer(self, block_num, reps=50):
+    def _water_trainer(self, block_num, reps=5000):
         """
         Block 1:  Water is frequently dispensed from the port to train the bird that water
         is available in that location. If resp port accessed, water also dispensed. No light used."""
@@ -715,7 +715,7 @@ class ShaperGoNogoInterrupt(Shaper):
                                     init=self._block_init('check'),
                                     check=self._check_block_log('silent_resp', reps, float('inf')), # next_state, reps, revert_timeout
                                     # wait=self._wait_block(10, 40, 'reward'),  # wait between 10 and 40 seconds
-                                    silent_resp=self._random_poll(self.panel.respSens, 60, 120, 'reward', 'pre_reward'),
+                                    silent_resp=self._random_poll(self.panel.respSens, 600, 6000, 'reward', 'pre_reward'),
                                     pre_reward=self._pre_reward_log('reward'),
                                     reward=self.reward_log(0.15, 'check'))  # Reward for 1 second
             if not utils.check_time(self.parameters['light_schedule']):

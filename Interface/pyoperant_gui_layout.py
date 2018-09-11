@@ -47,8 +47,8 @@ class UiMainWindow(object):
         self.labelBoxList = []
         self.checkActiveLabelBoxList = []
         self.optionButtonBoxList = []
-        self.purgeActionList = []
         self.lineList = []
+
 
         self.greenIcon = QPixmap("green_circle.svg")
         self.redIcon = QPixmap("red_stop.svg")
@@ -235,7 +235,7 @@ class UiMainWindow(object):
             self.paramFileLabelBoxList[box].setSizePolicy(sizePolicy)
             self.startBoxList[box].setMaximumSize(QtCore.QSize(100, 16777215))
             self.startBoxList[box].setObjectName(_fromUtf8("start_Box1"))
-            self.statusTextBoxList[box].setMaximumSize(QtCore.QSize(230, 180))
+            self.statusTextBoxList[box].setMaximumSize(QtCore.QSize(230, 190))
             self.statusTextBoxList[box].setObjectName(_fromUtf8("statusText_Box%d" % box))
             self.stopBoxList[box].setMaximumSize(QtCore.QSize(100, 16777215))
             self.stopBoxList[box].setObjectName(_fromUtf8("stop_Box%d" % box))

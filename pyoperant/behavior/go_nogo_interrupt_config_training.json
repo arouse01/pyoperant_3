@@ -929,8 +929,7 @@
       }
     },
     "order": [
-      "shaping",
-      "1i training"
+      "shaping"
     ]
   },
   "classes": {

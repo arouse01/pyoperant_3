@@ -52,15 +52,18 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
 
         # Variable initiation
         self.experimentPath = ""
-        # self.hp = hpy()
-        # self.before = self.hp.heap()
+        self.purgeActionList = []
+        self.primeActionList = []
 
         # Option menu setup
         for boxnumber in self.boxList:
             self.optionMenuList.append(QtGui.QMenu())
             # Duplicate the following two lines to add additional menu items, modifying names as needed
-            self.purgeActionList.append(QtGui.QAction("Purge", self))
+            self.purgeActionList.append(QtGui.QAction("Purge (20s)", self))
             self.optionMenuList[boxnumber].addAction(self.purgeActionList[boxnumber])
+
+            self.primeActionList.append(QtGui.QAction("Prime (5s)", self))
+            self.optionMenuList[boxnumber].addAction(self.primeActionList[boxnumber])
 
         for boxnumber in self.boxList:
             # This is only in a separate for loop to visually isolate it from the option menu setup above
@@ -85,10 +88,16 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         for button in self.stopBoxList:
             button.clicked.connect(lambda _, b=i: self.stop_box(boxnumber=b))
             i += 1
-        i = 0
+
         # Duplicate this for each menu item, changing names and functions to match
+        i = 0
         for action in self.purgeActionList:
-            action.triggered.connect(lambda _, b=i: self.purge_water(boxnumber=b))
+            action.triggered.connect(lambda _, b=i: self.purge_water(boxnumber=b, purge_time=20))
+            i += 1
+
+        i = 0
+        for action in self.primeActionList:
+            action.triggered.connect(lambda _, b=i: self.purge_water(boxnumber=b, purge_time=5))
             i += 1
 
         for boxnumber in self.boxList:  # Attach menus to option buttons
@@ -226,7 +235,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         self.startBoxList[boxnumber].setEnabled(True)
         self.stopBoxList[boxnumber].setEnabled(False)
 
-    def purge_water(self, boxnumber):
+    def purge_water(self, boxnumber, purge_time=20):
         boxnumber = boxnumber + 1  # boxnumber is index, but device name is not
         print("Purging water system in box %d" % boxnumber)
         device_name = '/dev/teensy%02i' % boxnumber
@@ -244,11 +253,10 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         # device.write("".join([chr(16), chr(2)]))  # close solenoid, just in case
         device.write("".join([chr(16), chr(1)]))  # open solenoid
         startTime = time.time()
-        purgeTime = 20
 
         while True:
             elapsedTime = time.time() - startTime
-            if purgeTime <= elapsedTime:
+            if purge_time <= elapsedTime:
                 break
 
         device.write("".join([chr(16), chr(2)]))  # close solenoid
@@ -269,7 +277,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
                         break
                 if error and not error[0:4] == "ALSA" and not error[0:5] == 'pydev':
                     self.statusTextBoxList[boxnumber].setPlainText(error)
-
+                    print error
                     self.stop_box(boxnumber)
                     # self.subprocessBox[boxnumber].terminate
                     # self.subprocessBox[boxnumber].wait
