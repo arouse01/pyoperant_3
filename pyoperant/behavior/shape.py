@@ -181,6 +181,9 @@ class Shaper(object):
 
         return temp
 
+    def _poll_not(self, component, duration, next_state, reward_state=None):
+        return self._poll(component, duration, next_state, reward_state, poll_state=self._poll_end)
+
     def _poll_dual(self, component1, component2, duration, trial_state, timeout_state=None, resp_state=None,
                    poll_state=None):
         if poll_state is None:  # If no specific poll function specified, run poll without turning component on/off (like if no light)
@@ -210,12 +213,28 @@ class Shaper(object):
             t = random.randrange(t_min, t_max)
         return self._poll(component, t, next_state, reward_state)
 
+    def _random_light_poll(self, component, t_min, t_max, next_state, reward_state=None):
+        if t_min == t_max:
+            t = t_max
+        else:
+            t = random.randrange(t_min, t_max)
+        return self._poll(component, t, next_state, reward_state, poll_state=self._light_main)
+
     def _light_poll(self, component, duration, next_state, reward_state=None):
         return self._poll(component, duration, next_state, reward_state, poll_state=self._light_main)
 
     def _light_poll_dual(self, component1, component2, duration, trial_state, timeout_state, resp_state=None):
         return self._poll_dual(component1, component2, duration, trial_state, timeout_state, resp_state,
                                poll_state=self._light_dual)
+
+    def _poll_end(self, component, next_state):  # Check that component is back to default state
+        def temp():
+            if not component.status():
+                return None
+            utils.wait(.015)
+            return 'main'
+
+        return temp
 
     def _punish_main(self, component, duration, next_state):
         def temp():
@@ -699,9 +718,57 @@ class ShaperGoNogoInterrupt(Shaper):
 
     def __init__(self, panel, log, parameters, error_callback=None):
         super(ShaperGoNogoInterrupt, self).__init__(panel, log, parameters, error_callback)
-        self.block1 = self._water_trainer(1)
+        self.block1 = self._water_trainer_light(1)
+        self.block2 = self._water_block(2)
 
-    def _water_trainer(self, block_num, reps=5000):
+    def _water_trainer(self, block_num, reps=10):
+        """
+        Block 1:  Water is frequently dispensed from the port to train the bird that water
+        is available in that location. If resp port accessed, water also dispensed. Light not used."""
+
+        def temp():
+            self.recent_state = block_num
+            self.log.warning('Starting %s' % (self.block_name(block_num)))
+            utils.run_state_machine(start_in='init',
+                                    error_state='wait',
+                                    error_callback=self.error_callback,
+                                    init=self._block_init('check'),
+                                    check=self._check_block_log('silent_resp', reps, float('inf')), # next_state, reps, revert_timeout
+                                    # wait=self._wait_block(10, 40, 'reward'),  # wait between 10 and 40 seconds
+                                    silent_resp=self._random_poll(self.panel.respSens, 600, 1200, 'reward', 'pre_reward'),
+                                    pre_reward=self._pre_reward_log('reward'),
+                                    reward=self.reward_log(0.15, 'check'))  # Reward for 1 second
+            if not utils.check_time(self.parameters['light_schedule']):
+                return 'sleep_block'
+            return self.block_name(block_num + 1)
+
+        return temp
+
+    def _water_trainer_light(self, block_num, reps=10):
+        """
+        Block 1:  Water is frequently dispensed from the port to train the bird that water
+        is available in that location. If resp port accessed, water also dispensed. Light used."""
+
+        def temp():
+            self.recent_state = block_num
+            self.log.warning('Starting %s' % (self.block_name(block_num)))
+            utils.run_state_machine(start_in='init',
+                                    error_state='wait',
+                                    error_callback=self.error_callback,
+                                    init=self._block_init('check'),
+                                    check=self._check_block_log('silent_resp', reps, float('inf')), # next_state, reps, revert_timeout
+                                    # wait=self._wait_block(10, 40, 'reward'),  # wait between 10 and 40 seconds
+                                    silent_resp=self._random_light_poll(self.panel.respSens, 600, 1200, 'reward', 'pre_reward'),
+                                    pre_reward=self._pre_reward_log('reward'),
+                                    reward=self.reward_log(0.15, 'trial_end'),  # Reward for .15 second
+                                    trial_end=self._poll_not(self.panel.respSens, float('inf'), 'check'))
+            if not utils.check_time(self.parameters['light_schedule']):
+                return 'sleep_block'
+            return self.block_name(block_num + 1)
+
+        return temp
+
+    def _water_block(self, block_num, reps=50000):
         """
         Block 1:  Water is frequently dispensed from the port to train the bird that water
         is available in that location. If resp port accessed, water also dispensed. No light used."""
@@ -713,18 +780,18 @@ class ShaperGoNogoInterrupt(Shaper):
                                     error_state='wait',
                                     error_callback=self.error_callback,
                                     init=self._block_init('check'),
-                                    check=self._check_block_log('silent_resp', reps, float('inf')), # next_state, reps, revert_timeout
-                                    # wait=self._wait_block(10, 40, 'reward'),  # wait between 10 and 40 seconds
-                                    silent_resp=self._random_poll(self.panel.respSens, 600, 6000, 'reward', 'pre_reward'),
+                                    check=self._check_block_log('silent_resp', reps, float('inf')),
+                                    silent_resp=self._light_poll(self.panel.respSens, 6000, 'check', 'pre_reward'),
                                     pre_reward=self._pre_reward_log('reward'),
-                                    reward=self.reward_log(0.15, 'check'))  # Reward for 1 second
+                                    reward=self.reward_log(0.15, 'trial_end'),  # Reward for .15 second
+                                    trial_end=self._poll_not(self.panel.respSens, float('inf'), 'check'))
             if not utils.check_time(self.parameters['light_schedule']):
                 return 'sleep_block'
             return self.block_name(block_num + 1)
 
         return temp
 
-    def _water_block(self, block_num, reps=5000):
+    def _water_block_trials(self, block_num, reps=5000):
         """
         Block 2:  Trial light turns on. Playback starts when switch is pressed. Both switches are inactive for first
         200ms of playback.
@@ -821,6 +888,15 @@ class ShaperGoNogoInterrupt(Shaper):
             self.trial_counter = self.trial_counter + 1
             return next_state
         return temp()
+
+    def _sensor_check(self, component, next_state):
+        def temp():
+            if not component.status():
+                return None
+            utils.wait(.015)
+            return 'main'
+
+        return temp
 
     def _check_block_log(self, next_state, reps, revert_timeout):
         # If function returns None, state machine ends (I think)

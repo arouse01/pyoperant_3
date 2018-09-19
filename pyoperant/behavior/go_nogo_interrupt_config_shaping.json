@@ -538,7 +538,7 @@
           "schedule": "go_interrupt",
           "prob": 1,
           "secondary": false,
-          "passive": true
+          "passive": false
         },
         "conditions": [
           {
