@@ -131,7 +131,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             # self.tList[boxnumber].terminate()
             # self.subprocessBox[boxnumber].stderr.close()
             # self.subprocessBox[boxnumber].stdout.close()
-            self.subprocessBox[boxnumber].kill()
+            self.subprocessBox[boxnumber].terminate()
 
             self.subprocessBox[boxnumber] = 0
             self.box_enable(boxnumber)

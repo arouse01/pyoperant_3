@@ -2,9 +2,12 @@ import os
 import csv
 import copy
 import datetime as dt
+import atexit
 from pyoperant.behavior import base, shape
 from pyoperant.errors import EndSession, EndBlock
 from pyoperant import components, utils, reinf, queues, analysis
+
+
 
 
 class GoNoGoInterruptExp(base.BaseExp):

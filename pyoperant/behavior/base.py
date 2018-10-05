@@ -1,6 +1,7 @@
 import logging, traceback
 import os, sys, socket
 import datetime as dt
+import atexit
 from pyoperant import utils, components, local, hwio
 from pyoperant import ComponentError, InterfaceError
 from pyoperant.behavior import shape
@@ -77,10 +78,13 @@ class BaseExp(object):
         self.panel = panel
         self.log.debug('panel %s initialized' % self.parameters['panel_name'])
 
+        atexit.register(self.pyoperant_close)
+
         if 'shape' not in self.parameters:  # or self.parameters['shape'] not in ['block1', 'block2', 'block3', 'block4', 'block5']:
             self.parameters['shape'] = None
 
         self.shaper = shape.ShaperGoNogoInterrupt(self.panel, self.log, self.parameters, self.log_error_callback)
+
 
     def save(self):
         self.snapshot_f = os.path.join(self.parameters['experiment_path'], self.timestamp + '.json')
@@ -199,6 +203,12 @@ class BaseExp(object):
                                 main=self.sleep_main,
                                 post=self.sleep_post)
         return 'idle'
+
+    def pyoperant_close(self):
+        self.log.debug('waiting for response')
+        print "Closing pyoperant, turing off all components"
+        self.panel.trialSens.off()
+        self.panel.respSens.off()
 
     # session
 
