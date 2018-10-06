@@ -945,7 +945,7 @@
     "sPlus": {
       "component": "respSens",
       "punish_value": 0.0,
-      "reward_value": 0.2
+      "reward_value": 0.15
     },
     "sMinus": {
       "component": "trialSens",

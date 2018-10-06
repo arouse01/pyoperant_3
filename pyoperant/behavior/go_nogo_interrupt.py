@@ -40,6 +40,10 @@ class GoNoGoInterruptExp(base.BaseExp):
 
     def __init__(self, *args, **kwargs):
         super(GoNoGoInterruptExp, self).__init__(*args, **kwargs)
+
+        if self.parameters['adlib']:
+            self.shaper = shape.ShaperAdLib(self.panel, self.log, self.parameters, self.log_error_callback)
+
         if self.parameters['shape']:
             self.shaper = shape.ShaperGoNogoInterrupt(self.panel, self.log, self.parameters, self.log_error_callback)
 

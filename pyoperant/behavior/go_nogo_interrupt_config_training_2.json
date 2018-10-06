@@ -679,7 +679,7 @@
     },
     "sMinus": {
       "component": "trialSens",
-      "punish_value": 2.0,
+      "punish_value": 5.0,
       "reward_value": 0.0
     },
     "probePlus": {
