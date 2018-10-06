@@ -109,12 +109,16 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
 
     def param_file_select(self, boxnumber):
 
-        self.paramFileBoxList[boxnumber].clear()  # In case there are any existing elements in the list
-        paramFile = QtGui.QFileDialog.getOpenFileName(self, "Select Preferences File")
-        # execute getOpenFileName dialog and set the directory variable to be equal
-        # to the user selected directory
+        existingFile = self.paramFileBoxList[boxnumber].toPlainText()
+        if os.path.isfile(existingFile):  # If param file is already specified, start in that folder
+            existingPathFile = os.path.split(str(existingFile))
+            currentPath = existingPathFile[0]
+        else:  # Otherwise just start in working directory
+            currentPath = os.path.dirname(os.path.realpath(__file__))
+        paramFile = QtGui.QFileDialog.getOpenFileName(self, "Select Preferences File", currentPath, "JSON Files (*.json)")
+        # execute getOpenFileName dialog and set the directory variable to be equal to the user selected directory
 
-        if paramFile:  # if user didn't pick a file don't continue
+        if paramFile:  # if user didn't pick a file don't replace existing path
 
             self.paramFileBoxList[boxnumber].setPlainText(paramFile)  # add file to the listWidget
 
