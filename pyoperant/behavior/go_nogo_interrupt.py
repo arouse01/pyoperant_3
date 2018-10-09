@@ -2,12 +2,9 @@ import os
 import csv
 import copy
 import datetime as dt
-import atexit
 from pyoperant.behavior import base, shape
 from pyoperant.errors import EndSession, EndBlock
 from pyoperant import components, utils, reinf, queues, analysis
-
-
 
 
 class GoNoGoInterruptExp(base.BaseExp):
@@ -335,7 +332,7 @@ class GoNoGoInterruptExp(base.BaseExp):
 
     def analyze_trial(self):
         # TODO: calculate reaction times
-        matrix = [[self.summary['correct_responses'],self.summary['false_alarms']],[self.summary['misses'],self.summary['correct_rejections']]]
+        matrix = [[self.summary['correct_responses'], self.summary['false_alarms']],[self.summary['misses'],self.summary['correct_rejections']]]
         conf_matrix = analysis.create_conf_matrix_summary(matrix)
         self.summary['dprime'] = analysis.dprime(conf_matrix)
 
@@ -536,7 +533,7 @@ class GoNoGoInterruptExp(base.BaseExp):
             elif self.this_trial.correct:
                 if self.parameters['reinforcement']['secondary']:
                     secondary_reinf_event = self.secondary_reinforcement()
-                    # self.this_trial.events.append(secondary_reinf_event)
+                    self.this_trial.events.append(secondary_reinf_event)
 
                 if self.this_trial.type_ == 'correction':
                     self._run_correction_reward()

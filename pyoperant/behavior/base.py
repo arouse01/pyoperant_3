@@ -83,6 +83,9 @@ class BaseExp(object):
         if 'shape' not in self.parameters:  # or self.parameters['shape'] not in ['block1', 'block2', 'block3', 'block4', 'block5']:
             self.parameters['shape'] = None
 
+        if 'adlib' not in self.parameters:  # or self.parameters['shape'] not in ['block1', 'block2', 'block3', 'block4', 'block5']:
+            self.parameters['adlib'] = None
+
         self.shaper = shape.ShaperGoNogoInterrupt(self.panel, self.log, self.parameters, self.log_error_callback)
 
 

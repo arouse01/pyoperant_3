@@ -6,7 +6,7 @@ import serial
 import time
 import threading
 import Queue
-from guppy import hpy
+# from guppy import hpy
 
 # from mem_top import mem_top
 # import numpy

@@ -835,9 +835,8 @@ class ShaperAdLib(Shaper):
     """
 
     def __init__(self, panel, log, parameters, error_callback=None):
-        super(ShaperGoNogoInterrupt, self).__init__(panel, log, parameters, error_callback)
-        self.block1 = self._water_trainer_light(1)
-        self.block2 = self._water_block(2)
+        super(ShaperAdLib, self).__init__(panel, log, parameters, error_callback)
+        self.block1 = self._water_block(1)
 
     def _water_trainer_light(self, block_num, reps=10):
         """

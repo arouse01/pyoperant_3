@@ -49,40 +49,39 @@ class UiMainWindow(object):
         self.optionButtonBoxList = []
         self.lineList = []
 
-
         self.greenIcon = QPixmap("green_circle.svg")
         self.redIcon = QPixmap("red_stop.svg")
         self.wrenchIcon = QIcon()
         self.wrenchIcon.addPixmap(QtGui.QPixmap(_fromUtf8("icons/wrench.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
 
         # Object location-specific variables
-        self.numberOfBoxes = 12
+        self.numberOfBoxes = 6
 
         # Calculate box arrangement in window
-        rowCount = math.floor(math.sqrt(self.numberOfBoxes))
+        # rowCount = math.floor(math.sqrt(self.numberOfBoxes))
+        rowCount = 3
         columnCount = self.numberOfBoxes / rowCount
         numHorizontalLines = self.numberOfBoxes
         numVerticalLines = columnCount - 1
 
         # Make main window
         main_window.setObjectName(_fromUtf8("main_window"))
-        main_window.resize(1200, 953)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Fixed)
+
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         main_window.setSizePolicy(sizePolicy)
-        main_window.setMaximumSize(QtCore.QSize(1200, 1000))
+        # main_window.setMaximumSize(QtCore.QSize(1200, 1000))
         self.centralwidget = QtGui.QWidget(main_window)
 
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Maximum)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         self.centralwidget.setSizePolicy(sizePolicy)
-        self.centralwidget.setMaximumSize(QtCore.QSize(2000, 2000))
+        # self.centralwidget.setMaximumSize(QtCore.QSize(2000, 2000))
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
 
         self.gridLayoutWidget = QtGui.QWidget(self.centralwidget)
-        self.gridLayoutWidget.setGeometry(QtCore.QRect(9, 9, 1183, 913))
         self.gridLayoutWidget.setObjectName(_fromUtf8("gridLayoutWidget"))
         self.mainGrid = QtGui.QGridLayout(self.gridLayoutWidget)
         self.mainGrid.setObjectName(_fromUtf8("mainGrid"))
@@ -98,7 +97,7 @@ class UiMainWindow(object):
         self.menuGrid.addWidget(self.startAllButton, 0, 1, 1, 1)
         self.behaviorField = QtGui.QComboBox(self.gridLayoutWidget)
         self.behaviorField.setMinimumSize(QtCore.QSize(200, 0))
-        self.behaviorField.setMaximumSize(QtCore.QSize(300, 16777215))
+        self.behaviorField.setMaximumSize(QtCore.QSize(300, 30))
         self.behaviorField.setObjectName(_fromUtf8("behaviorField"))
         self.behaviorField.addItem(_fromUtf8(""))
         self.menuGrid.addWidget(self.behaviorField, 0, 4, 1, 1)
@@ -110,7 +109,7 @@ class UiMainWindow(object):
         self.menuGrid.addWidget(self.behaviorLabel, 0, 3, 1, 1)
         self.menuGrid.addItem(QtGui.QSpacerItem(20, 20, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding), 0, 2,
                               1, 1)
-        self.mainGrid.addLayout(self.menuGrid, 7, 0, 1, 7)
+        self.mainGrid.addLayout(self.menuGrid, 2*rowCount, 0, 1, 2*columnCount-1)
 
         ### Layout dividing lines
         for i in range(0, numHorizontalLines):  # Horizontal lines
@@ -153,8 +152,8 @@ class UiMainWindow(object):
             # Formatting
             self.stopBoxList[box].setEnabled(False)
             sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.Maximum)
-            sizePolicy.setHorizontalStretch(0)
-            sizePolicy.setVerticalStretch(0)
+            sizePolicy.setHorizontalStretch(1)
+            sizePolicy.setVerticalStretch(1)
             font = QtGui.QFont()
             font.setPointSize(11)
             self.birdEntryBoxList[box].setFont(font)
@@ -235,13 +234,21 @@ class UiMainWindow(object):
             self.paramFileLabelBoxList[box].setSizePolicy(sizePolicy)
             self.startBoxList[box].setMaximumSize(QtCore.QSize(100, 16777215))
             self.startBoxList[box].setObjectName(_fromUtf8("start_Box1"))
-            self.statusTextBoxList[box].setMaximumSize(QtCore.QSize(230, 190))
+            self.statusTextBoxList[box].setMaximumSize(QtCore.QSize(230, 250))
             self.statusTextBoxList[box].setObjectName(_fromUtf8("statusText_Box%d" % box))
             self.stopBoxList[box].setMaximumSize(QtCore.QSize(100, 16777215))
             self.stopBoxList[box].setObjectName(_fromUtf8("stop_Box%d" % box))
 
         main_window.setCentralWidget(self.centralwidget)
 
+        # Set window and grid size based on content
+        mainGridWidth = math.floor(self.gridLayoutWidget.sizeHint().width()*1.0375)
+        mainGridHeight = self.gridLayoutWidget.sizeHint().height()
+
+        # horizWindow = 300 * columnCount
+        # vertWindow = 300 * rowCount + 100
+        main_window.setFixedSize(mainGridWidth, mainGridHeight)
+        
         self.retranslate_ui(main_window)
         QtCore.QMetaObject.connectSlotsByName(main_window)
 
