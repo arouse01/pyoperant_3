@@ -54,6 +54,8 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         self.experimentPath = ""
         self.purgeActionList = []
         self.primeActionList = []
+        self.openActionList = []
+        self.closeActionList = []
 
         # Option menu setup
         for boxnumber in self.boxList:
@@ -64,6 +66,12 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
 
             self.primeActionList.append(QtGui.QAction("Prime (5s)", self))
             self.optionMenuList[boxnumber].addAction(self.primeActionList[boxnumber])
+
+            self.openActionList.append(QtGui.QAction("Solenoid Open", self))
+            self.optionMenuList[boxnumber].addAction(self.openActionList[boxnumber])
+
+            self.closeActionList.append(QtGui.QAction("Solenoid Close", self))
+            self.optionMenuList[boxnumber].addAction(self.closeActionList[boxnumber])
 
         for boxnumber in self.boxList:
             # This is only in a separate for loop to visually isolate it from the option menu setup above
@@ -98,6 +106,16 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         i = 0
         for action in self.primeActionList:
             action.triggered.connect(lambda _, b=i: self.purge_water(boxnumber=b, purge_time=5))
+            i += 1
+
+        i = 0
+        for action in self.openActionList:
+            action.triggered.connect(lambda _, b=i: self.open_water(boxnumber=b, purge_time=5))
+            i += 1
+
+        i = 0
+        for action in self.closeActionList:
+            action.triggered.connect(lambda _, b=i: self.close_water(boxnumber=b, purge_time=5))
             i += 1
 
         for boxnumber in self.boxList:  # Attach menus to option buttons
@@ -266,6 +284,46 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         device.write("".join([chr(16), chr(2)]))  # close solenoid
         device.close()  # close connection
         print "Purged box {0}".format(str(boxnumber))
+
+    def open_water(self, boxnumber, purge_time=20):
+        boxnumber = boxnumber + 1  # boxnumber is index, but device name is not
+        print("Opening water system in box %d" % boxnumber)
+        device_name = '/dev/teensy%02i' % boxnumber
+        device = serial.Serial(port=device_name,
+                               baudrate=19200,
+                               timeout=5)
+        if device is None:
+            raise 'Could not open serial device %s' % device_name
+
+        device.readline()
+        device.flushInput()
+        print("Successfully opened device %s" % device_name)
+        # solenoid = channel 16
+        device.write("".join([chr(16), chr(3)]))  # set channel 16 as output
+        # device.write("".join([chr(16), chr(2)]))  # close solenoid, just in case
+        device.write("".join([chr(16), chr(1)]))  # open solenoid
+
+        print "Successfully opened water system in box {0}".format(str(boxnumber))
+
+    def close_water(self, boxnumber, purge_time=20):
+        boxnumber = boxnumber + 1  # boxnumber is index, but device name is not
+        print("Closing water system in box %d" % boxnumber)
+        device_name = '/dev/teensy%02i' % boxnumber
+        device = serial.Serial(port=device_name,
+                               baudrate=19200,
+                               timeout=5)
+        if device is None:
+            raise 'Could not open serial device %s' % device_name
+
+        device.readline()
+        device.flushInput()
+        # solenoid = channel 16
+        device.write("".join([chr(16), chr(3)]))  # set channel 16 as output
+        # device.write("".join([chr(16), chr(2)]))  # close solenoid, just in case
+
+        device.write("".join([chr(16), chr(2)]))  # close solenoid
+        device.close()  # close connection
+        print "Closed water system in box {0}".format(str(boxnumber))
 
     def refreshall(self):
         # print "timer fired"

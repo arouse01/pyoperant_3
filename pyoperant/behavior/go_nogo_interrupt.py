@@ -96,6 +96,9 @@ class GoNoGoInterruptExp(base.BaseExp):
         if 'session_schedule' not in self.parameters:
             self.parameters['session_schedule'] = self.parameters['light_schedule']
 
+        if 'free_day_off' not in self.parameters:
+            self.parameters['free_day_off'] = False
+
         if 'no_response_correction_trials' not in self.parameters:
             self.parameters['no_response_correction_trials'] = False
 
@@ -123,7 +126,9 @@ class GoNoGoInterruptExp(base.BaseExp):
         """
         if utils.check_day(self.parameters['session_days']):
             return utils.check_time(self.parameters['session_schedule'])
-        return False
+        else:
+            self.shaper.run_shape('adlib')
+            return False
 
     def session_pre(self):
         """ Runs before the session starts
@@ -332,7 +337,7 @@ class GoNoGoInterruptExp(base.BaseExp):
 
     def analyze_trial(self):
         # TODO: calculate reaction times
-        matrix = [[self.summary['correct_responses'], self.summary['false_alarms']],[self.summary['misses'],self.summary['correct_rejections']]]
+        matrix = [[self.summary['correct_responses'], self.summary['false_alarms']], [self.summary['misses'],self.summary['correct_rejections']]]
         conf_matrix = analysis.create_conf_matrix_summary(matrix)
         self.summary['dprime'] = analysis.dprime(conf_matrix)
 

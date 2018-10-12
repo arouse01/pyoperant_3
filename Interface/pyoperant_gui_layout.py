@@ -248,7 +248,7 @@ class UiMainWindow(object):
         # horizWindow = 300 * columnCount
         # vertWindow = 300 * rowCount + 100
         main_window.setFixedSize(mainGridWidth, mainGridHeight)
-        
+
         self.retranslate_ui(main_window)
         QtCore.QMetaObject.connectSlotsByName(main_window)
 

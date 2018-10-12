@@ -54,6 +54,19 @@ class Shaper(object):
                                 sleep_block=self._run_sleep)
         self.log.warning('Shaping procedure complete.  Remember to disable shaping in your config file')
 
+    def run_adlib(self, start_in='block1'):
+        self.log.warning('Starting ad-lib water procedure')
+        utils.run_state_machine(start_in='block1',
+                                error_state='block1',
+                                error_callback=self.error_callback,
+                                block1=self.block1,
+                                block2=self.block2,
+                                block3=self.block3,
+                                block4=self.block4,
+                                block5=self.block5
+                               )
+        self.log.warning('Stopping ad-lib water procedure.')
+
     def _null_block(self, block_num):
         def temp():
             return self.block_name(block_num + 1)
@@ -145,10 +158,54 @@ class Shaper(object):
 
         return temp
 
+    def _check_block_log(self, next_state, reps, revert_timeout):
+        # If function returns None, state machine ends (I think)
+        # None returns when: -no response and elapsed time > timeout
+        #                    -number of actual responses >= reps
+        #                    -time is outside of light schedule
+        def temp():
+            self.write_summary_shaping()
+            self.trial_counter = self.trial_counter + 1
+            if not utils.check_time(self.parameters['light_schedule']):
+                return None
+            if not self.responded_block:  # responded_block is TRUE if a response is registered
+                elapsed_time = (dt.datetime.now() - self.block_start).total_seconds()
+                if elapsed_time > revert_timeout:
+                    self.log.warning("No response in block %d, reverting to block %d.  Time: %s" % (
+                        self.recent_state, self.recent_state - 1, dt.datetime.now().isoformat(' ')))
+                    return None
+            else:
+                if self.response_counter >= reps:
+                    return None
+
+            return next_state
+
+        return temp
+
     def _pre_reward(self, next_state):
         def temp():
             self.responded_block = True
             self.response_counter = self.response_counter + 1
+            return next_state
+
+        return temp
+
+    def _pre_reward_log(self, next_state):
+        def temp():
+            self.responded_block = True
+            self.response_counter = self.response_counter + 1
+            self.summary['responses'] = self.response_counter
+            return next_state
+
+        return temp
+
+    def reward_log(self, value, next_state):
+        def temp():
+            self.log.info('%d\t%d\t%s\t%s' % (
+                self.recent_state, self.response_counter, self.last_response, dt.datetime.now().isoformat(' ')))
+            self.panel.reward(value=value)
+            self.summary['feeds'] += 1
+            self.summary['last_trial_time'] = dt.datetime.now()
             return next_state
 
         return temp
@@ -399,15 +456,7 @@ class Shaper(object):
                         'responses': 0,
                         'feeds': 0,
                         'correct_responses': 0,
-                        'false_alarms': 0,
-                        'misses': 0,
-                        'correct_rejections': 0,
-                        'cr_rate': 0,
-                        'fa_rate': 0,
                         'last_trial_time': [],
-                        'dprime': 0,
-                        'sminus_trials': 0,
-                        'splus_trials': 0
                         }
 
     def write_summary_shaping(self):
@@ -429,6 +478,63 @@ class Shaper(object):
             f.write("Pecks since start: %i" % self.summary['responses'])
             f.write("Correct resps: %i\n" % self.summary['correct_responses'])
             f.write("\nLast trial @: %s" % self.summary['last_trial_time'])
+
+    def _pre_reward_log(self, next_state):
+        def temp():
+            self.responded_block = True
+            self.response_counter = self.response_counter + 1
+            self.summary['responses'] = self.response_counter
+            return next_state
+
+        return temp
+
+    def reward_log(self, value, next_state):
+        def temp():
+            self.log.info('%d\t%d\t%s\t%s' % (
+                self.recent_state, self.response_counter, self.last_response, dt.datetime.now().isoformat(' ')))
+            self.panel.reward(value=value)
+            self.summary['feeds'] += 1
+            self.summary['last_trial_time'] = dt.datetime.now()
+            return next_state
+
+        return temp
+
+
+class ShaperFree(Shaper):
+    """
+    Special shaping paradigm for providing ad-lib water on non-experimental days (days not listed in the session_days parameter)
+    Free water available from response port. Light on resp port is lit while port is accessible.
+    """
+
+    def __init__(self, panel, log, parameters, error_callback=None):
+        super(ShaperFree, self).__init__(panel, log, parameters, error_callback)
+        self.block1 = self._water_block(1)
+
+    def _water_block(self, block_num, reps=float('inf')):
+        """
+        Block 1:  Water is only dispensed if resp port is accessed. Light on resp port is lit while port is accessible.
+        """
+
+        def temp():
+            self.recent_state = block_num
+            self.log.warning('Starting %s' % (self.block_name(block_num)))
+            utils.run_state_machine(start_in='init',
+                                    error_state='wait',
+                                    error_callback=self.error_callback,
+                                    init=self._block_init('check'),
+                                    check=self._check_block_log('silent_resp', reps, float('inf')),
+                                    silent_resp=self._light_poll(self.panel.respSens, 6000, 'check', 'pre_reward'),
+                                    pre_reward=self._pre_reward_log('reward'),
+                                    reward=self.reward_log(0.15, 'trial_end'),  # Reward for .15 second
+                                    trial_end=self._poll_not(self.panel.respSens, float('inf'), 'check'))
+            if not utils.check_time(self.parameters['light_schedule']):
+                return None  # Break out of ad-lib cycle and return to base-level control for sleep control
+            if utils.check_time(self.parameters['session_schedule']):  # If session should be starting
+                return None  # Break out of ad-lib cycle and return to base-level control to start session
+            return self.block_name(block_num + 1)
+
+        return temp
+
 
 class Shaper2AC(Shaper):
     """Run a shaping routine in the operant chamber that will teach an
@@ -782,91 +888,20 @@ class ShaperGoNogoInterrupt(Shaper):
 
         return temp
 
-    def _check_block_log(self, next_state, reps, revert_timeout):
-        # If function returns None, state machine ends (I think)
-        # None returns when: no response and elapsed time > timeout
-        #                    number of actual responses >= reps
-        #                    time is outside of light schedule
-        def temp():
-            self.write_summary_shaping()
-            self.trial_counter = self.trial_counter + 1
-            if not self.responded_block:
-                elapsed_time = (dt.datetime.now() - self.block_start).total_seconds()
-                if elapsed_time > revert_timeout:
-                    self.log.warning("No response in block %d, reverting to block %d.  Time: %s" % (
-                        self.recent_state, self.recent_state - 1, dt.datetime.now().isoformat(' ')))
-                    return None
-            else:
-                if self.response_counter >= reps:
-                    return None
-            if not utils.check_time(self.parameters['light_schedule']):
-                return None
-            return next_state
-
-        return temp
-
-    def _pre_reward_log(self, next_state):
-        def temp():
-            self.responded_block = True
-            self.response_counter = self.response_counter + 1
-            self.summary['responses'] = self.response_counter
-            return next_state
-
-        return temp
-
-    def reward_log(self, value, next_state):
-        def temp():
-            self.log.info('%d\t%d\t%s\t%s' % (
-                self.recent_state, self.response_counter, self.last_response, dt.datetime.now().isoformat(' ')))
-            self.panel.reward(value=value)
-            self.summary['feeds'] += 1
-            self.summary['last_trial_time'] = dt.datetime.now()
-            return next_state
-
-        return temp
-
 
 class ShaperAdLib(Shaper):
-    """accomodate go/nogo terminal procedure along with one or two hopper 2choice procedures
-    Go/Nogo shaping works like this:
-    Block 1:  Water opens (for 15 ms) for the first day that the animal is in the apparatus at random intervals so that animal can learn to drink from water port
-    Block 2:  Playback begins when trial switch is pecked. Water is dispensed with a correct response to S+, or at end of S+ playback. No punishment for incorrect responses.
-    NOTE:     sPlus and sMinus names might be deprecated or changed, check documentation and other code
+    """Free water available from response port
+    Block 1:  Water is only dispensed if resp port is accessed. Light on resp port is lit while port is accessible.
     """
 
     def __init__(self, panel, log, parameters, error_callback=None):
         super(ShaperAdLib, self).__init__(panel, log, parameters, error_callback)
         self.block1 = self._water_block(1)
 
-    def _water_trainer_light(self, block_num, reps=10):
-        """
-        Block 1:  Water is frequently dispensed from the port to train the bird that water
-        is available in that location. If resp port accessed, water also dispensed. Light used."""
-
-        def temp():
-            self.recent_state = block_num
-            self.log.warning('Starting %s' % (self.block_name(block_num)))
-            utils.run_state_machine(start_in='init',
-                                    error_state='wait',
-                                    error_callback=self.error_callback,
-                                    init=self._block_init('check'),
-                                    check=self._check_block_log('silent_resp', reps, float('inf')),
-                                    # next_state, reps, revert_timeout
-                                    # wait=self._wait_block(10, 40, 'reward'),  # wait between 10 and 40 seconds
-                                    silent_resp=self._random_light_poll(self.panel.respSens, 600, 1200, 'reward',
-                                                                        'pre_reward'),
-                                    pre_reward=self._pre_reward_log('reward'),
-                                    reward=self.reward_log(0.15, 'trial_end'),  # Reward for .15 second
-                                    trial_end=self._poll_not(self.panel.respSens, float('inf'), 'check'))
-            if not utils.check_time(self.parameters['light_schedule']):
-                return 'sleep_block'
-            return self.block_name(block_num + 1)
-
-        return temp
-
     def _water_block(self, block_num, reps=50000):
         """
-        Block 1:  Water is only dispensed if resp port is accessed. Light on resp port is lit while port is accessible."""
+        Block 1:  Water is only dispensed if resp port is accessed. Light on resp port is lit while port is accessible.
+        """
 
         def temp():
             self.recent_state = block_num
@@ -886,67 +921,8 @@ class ShaperAdLib(Shaper):
 
         return temp
 
-    def _shaping_trial(self, next_state):
-        def temp():
-            self.trial_counter = self.trial_counter + 1
-            return next_state
 
-        return temp()
-
-    def _sensor_check(self, component, next_state):
-        def temp():
-            if not component.status():
-                return None
-            utils.wait(.015)
-            return 'main'
-
-        return temp
-
-    def _check_block_log(self, next_state, reps, revert_timeout):
-        # If function returns None, state machine ends (I think)
-        # None returns when: no response and elapsed time > timeout
-        #                    number of actual responses >= reps
-        #                    time is outside of light schedule
-        def temp():
-            self.write_summary_shaping()
-            self.trial_counter = self.trial_counter + 1
-            if not self.responded_block:
-                elapsed_time = (dt.datetime.now() - self.block_start).total_seconds()
-                if elapsed_time > revert_timeout:
-                    self.log.warning("No response in block %d, reverting to block %d.  Time: %s" % (
-                        self.recent_state, self.recent_state - 1, dt.datetime.now().isoformat(' ')))
-                    return None
-            else:
-                if self.response_counter >= reps:
-                    return None
-            if not utils.check_time(self.parameters['light_schedule']):
-                return None
-            return next_state
-
-        return temp
-
-    def _pre_reward_log(self, next_state):
-        def temp():
-            self.responded_block = True
-            self.response_counter = self.response_counter + 1
-            self.summary['responses'] = self.response_counter
-            return next_state
-
-        return temp
-
-    def reward_log(self, value, next_state):
-        def temp():
-            self.log.info('%d\t%d\t%s\t%s' % (
-                self.recent_state, self.response_counter, self.last_response, dt.datetime.now().isoformat(' ')))
-            self.panel.reward(value=value)
-            self.summary['feeds'] += 1
-            self.summary['last_trial_time'] = dt.datetime.now()
-            return next_state
-
-        return temp
-
-
-class ShaperGoNogoInterrupt_misc(Shaper):
+class ShaperGoNogoInterruptMisc(Shaper):
     """accomodate go/nogo terminal procedure along with one or two hopper 2choice procedures
     Go/Nogo shaping works like this:
     Block 1:  Water opens (for 2 s) for the first day that the animal is in the apparatus at random intervals.
@@ -956,7 +932,7 @@ class ShaperGoNogoInterrupt_misc(Shaper):
     """
 
     def __init__(self, panel, log, parameters, error_callback=None):
-        super(ShaperGoNogoInterrupt_misc, self).__init__(panel, log, parameters, error_callback)
+        super(ShaperGoNogoInterruptMisc, self).__init__(panel, log, parameters, error_callback)
         self.block1 = self._water_trainer2(1)
         # self.block2 = self._water_block(2)
         # self.block3 = self._water_block_no_passive(3)
@@ -1344,6 +1320,7 @@ class ShaperGoNogoInterrupt_misc(Shaper):
         stim = utils.auditory_stim_from_wav(stim_file)
         epochs = []
         return stim, epochs
+
 
 class ShaperGoInterruptOneStep(Shaper):
     """accomodate go/nogo terminal procedure along with one or two hopper 2choice procedures

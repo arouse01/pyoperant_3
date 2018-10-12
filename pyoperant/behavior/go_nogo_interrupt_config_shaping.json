@@ -1,6 +1,7 @@
 {
   "Machine": "Rouse",
   "shape": true,
+
   "block_design": {
     "blocks": {
       "default": {
@@ -1002,7 +1003,8 @@
     1,
     2,
     3,
-    4
+    4,
+    5
   ],
   "sr": 44100,
   "stim_path": "/home/rouse/bird/stim",

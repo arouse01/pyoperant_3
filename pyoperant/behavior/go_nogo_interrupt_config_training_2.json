@@ -1,6 +1,7 @@
 {
   "Machine": "Rouse",
   "shape": false,
+  "free_day_off": true,
   "block_design": {
     "blocks": {
       "default": {
