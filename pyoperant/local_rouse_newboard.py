@@ -12,20 +12,11 @@ _ROUSE_MAP = {
     8: ('/dev/teensy08', 2, 76, 2, 88),
     }
 
-INPUTS = [37,  # Trial IR
-          36,  # Response IR
-          ]
-
-OUTPUTS = [1,  # Trial LED
-           2,  # Response LED
-           3,  # House lights
-           16,  # Reinforcement solenoid
-           ]
-
 
 class RousePanel(panels.BasePanel):
     """class for rouse boxes """
-    def __init__(self, panel_id=None, *args, **kwargs):
+
+    def __init__(self, panel_id=None, boardtype=None,*args, **kwargs):
         super(RousePanel, self).__init__(*args, **kwargs)
         self.id = panel_id
 
@@ -34,6 +25,27 @@ class RousePanel(panels.BasePanel):
         self.interfaces['arduino'] = arduino_.ArduinoInterface(device_name='/dev/teensy%02i' % self.id)
 
         # define inputs
+        if boardtype == 'v2':
+            INPUTS = [38,  # Trial IR
+                      37,  # Response IR
+                      ]
+
+            OUTPUTS = [36,  # Trial LED
+                       35,  # Response LED
+                       20,  # House lights
+                       22,  # Reinforcement solenoid
+                       ]
+        else:
+            INPUTS = [37,  # Trial IR
+                      36,  # Response IR
+                      ]
+
+            OUTPUTS = [1,  # Trial LED
+                       2,  # Response LED
+                       3,  # House lights
+                       16,  # Reinforcement solenoid
+                       ]
+
         for in_chan in INPUTS:
             self.inputs.append(hwio.BooleanInput(interface=self.interfaces['arduino'],
                                                  params={'channel': in_chan
@@ -90,48 +102,48 @@ class RousePanel(panels.BasePanel):
 
 class Rouse1(RousePanel):
     """Rouse1 panel"""
-    def __init__(self):
-        super(Rouse1, self).__init__(panel_id=1)
+    def __init__(self, boardtype='v1'):
+        super(Rouse1, self).__init__(panel_id=1, boardtype='v1')
 
 
 class Rouse2(RousePanel):
     """Rouse2 panel"""
-    def __init__(self):
-        super(Rouse2, self).__init__(panel_id=2)
+    def __init__(self, boardtype='v1'):
+        super(Rouse2, self).__init__(panel_id=2, boardtype='v1')
 
 
 class Rouse3(RousePanel):
     """Rouse3 panel"""
-    def __init__(self):
-        super(Rouse3, self).__init__(panel_id=3)
+    def __init__(self, boardtype='v1'):
+        super(Rouse3, self).__init__(panel_id=3, boardtype='v1')
 
 
 class Rouse4(RousePanel):
     """Rouse4 panel"""
-    def __init__(self):
-        super(Rouse4, self).__init__(panel_id=4)
+    def __init__(self, boardtype='v1'):
+        super(Rouse4, self).__init__(panel_id=4, boardtype='v1')
 
 
 class Rouse5(RousePanel):
     """Rouse4 panel"""
-    def __init__(self):
-        super(Rouse5, self).__init__(panel_id=5)
+    def __init__(self, boardtype='v1'):
+        super(Rouse5, self).__init__(panel_id=5, boardtype='v1')
 
 
 class Rouse6(RousePanel):
     """Rouse6 panel"""
-    def __init__(self):
-        super(Rouse6, self).__init__(panel_id=6)
+    def __init__(self, **kwargs):
+        super(Rouse6, self).__init__(panel_id=6, **kwargs)
 
 
 # class Rouse7(RousePanel):
 #     """Rouse7 panel"""
-#     def __init__(self):
+#     def __init__(self, boardtype='v1'):
 #         super(Rouse7, self).__init__(id=7)
 #
 # class Rouse8(RousePanel):
 #     """Rouse8 panel"""
-#     def __init__(self):
+#     def __init__(self, boardtype='v1'):
 #         super(Rouse8, self).__init__(id=8)
 
 

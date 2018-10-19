@@ -83,10 +83,6 @@ class BaseExp(object):
         if 'shape' not in self.parameters:  # or self.parameters['shape'] not in ['block1', 'block2', 'block3', 'block4', 'block5']:
             self.parameters['shape'] = None
 
-        if 'free_day_off' not in self.parameters:  # or self.parameters['shape'] not in ['block1', 'block2', 'block3', 'block4', 'block5']:
-            self.parameters['free_day_off'] = None
-
-        self.shaper = shape.ShaperGoNogoInterrupt(self.panel, self.log, self.parameters, self.log_error_callback)
 
 
     def save(self):
@@ -165,31 +161,25 @@ class BaseExp(object):
                       )
         if self.parameters['shape']:
             self.shaper.run_shape(self.parameters['shape'])
+
         while True:  # is this while necessary
             utils.run_state_machine(start_in='idle',
                                     error_state='idle',
                                     error_callback=self.log_error_callback,
                                     idle=self._run_idle,
                                     sleep=self._run_sleep,
-                                    session=self._run_session,
-                                    dayoff=self._run_dayoff)
+                                    session=self._run_session)
 
     def _run_idle(self):
         if not self.check_light_schedule():  # If lights should be off
             return 'sleep'
         elif self.check_session_schedule():  # If session should be running
             return 'session'
-        elif not self.check_day_schedule() and self.parameters['free_day_off']:  # If it's a day off and day off parameter is active
-            return 'dayoff'
         else:
             self.panel_reset()
             self.log.debug('idling...')
             utils.wait(self.parameters['idle_poll_interval'])
             return 'idle'
-
-    def _run_dayoff(self):
-        self.shaper.run_adlib('adlib')
-        return 'idle'
 
     # defining functions for sleep
     def sleep_pre(self):

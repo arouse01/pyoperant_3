@@ -2,7 +2,7 @@ import os
 import csv
 import copy
 import datetime as dt
-from pyoperant.behavior import base, shape
+from pyoperant.behavior import base, shape, adlib
 from pyoperant.errors import EndSession, EndBlock
 from pyoperant import components, utils, reinf, queues, analysis
 
@@ -38,11 +38,13 @@ class GoNoGoInterruptExp(base.BaseExp):
     def __init__(self, *args, **kwargs):
         super(GoNoGoInterruptExp, self).__init__(*args, **kwargs)
 
-        if self.parameters['adlib']:
-            self.shaper = shape.ShaperAdLib(self.panel, self.log, self.parameters, self.log_error_callback)
-
         if self.parameters['shape']:
             self.shaper = shape.ShaperGoNogoInterrupt(self.panel, self.log, self.parameters, self.log_error_callback)
+
+        if 'free_day_off' not in self.parameters:  # or self.parameters['shape'] not in ['block1', 'block2', 'block3', 'block4', 'block5']:
+            self.parameters['free_day_off'] = False
+
+        # self.shaper = shape.ShaperGoNogoInterrupt(self.panel, self.log, self.parameters, self.log_error_callback)
 
         # # assign stim files full names
         for name, filename in self.parameters['stims'].items():
@@ -98,6 +100,8 @@ class GoNoGoInterruptExp(base.BaseExp):
 
         if 'free_day_off' not in self.parameters:
             self.parameters['free_day_off'] = False
+        elif self.parameters['free_day_off']:
+            self.shaperAdLib = adlib.ShaperFree(self.panel, self.log, self.parameters, self.log_error_callback)
 
         if 'no_response_correction_trials' not in self.parameters:
             self.parameters['no_response_correction_trials'] = False
@@ -115,21 +119,52 @@ class GoNoGoInterruptExp(base.BaseExp):
             trialWriter = csv.writer(data_fh)
             trialWriter.writerow(self.fields_to_save)
 
-    ## session flow
-    def check_session_schedule(self):
-        """ Check the session schedule
+    def run(self):  # Overwrite base method to include ad lib water when sessions not running
 
-        Returns
-        -------
-        bool
-            True if sessions should be running, based on day and time
-        """
-        if utils.check_day(self.parameters['session_days']):
-            return utils.check_time(self.parameters['session_schedule'])
+        for attr in self.req_panel_attr:
+            assert hasattr(self.panel, attr)
+        self.panel_reset()
+        self.save()
+        self.init_summary()
+
+        self.log.info('%s: running %s with parameters in %s' % (self.name,
+                                                                self.__class__.__name__,
+                                                                self.snapshot_f,
+                                                                )
+                      )
+        if self.parameters['shape']:
+            self.shaper.run_shape(self.parameters['shape'])
+
+        while True:  # is this while necessary?
+            utils.run_state_machine(start_in='idle',
+                                    error_state='idle',
+                                    error_callback=self.log_error_callback,
+                                    idle=self._run_idle,
+                                    sleep=self._run_sleep,
+                                    session=self._run_session,
+                                    dayoff=self._run_dayoff)
+
+    def _run_idle(self):
+        if not self.check_light_schedule():
+            # If lights should be off
+            return 'sleep'
+        elif self.check_session_schedule():
+            # If session should be running
+            return 'session'
+        elif self.parameters['free_day_off']:
+            # By this point, established that lights should be on and session shouldn't be running. Therefore if day off parameter is active, start adlib procedure
+            return 'dayoff'
         else:
-            self.shaper.run_shape('adlib')
-            return False
+            self.panel_reset()
+            self.log.debug('idling...')
+            utils.wait(self.parameters['idle_poll_interval'])
+            return 'idle'
 
+    def _run_dayoff(self):
+        self.shaperAdLib.run_adlib()
+        return 'idle'
+
+    ## session flow
     def session_pre(self):
         """ Runs before the session starts
 
@@ -189,37 +224,6 @@ class GoNoGoInterruptExp(base.BaseExp):
 
                 # load the block details into the trial queue
                 q_type = blk.pop('queue')
-                blk.pop('description')  # remove the "description" entry from the dictionary so queues doesn't complain
-                if 'punish' not in blk:
-                    self.punishBool = True  # Assume punishment should be used
-                else:
-                    self.punishBool = blk.pop('punish')  # var determines whether punishment is used
-
-                if 'passive' not in blk['reinforcement']:
-                    self.passiveReward = False
-                else:
-                    self.passiveReward = blk['reinforcement']['passive']
-
-                # Define reinforcement parameters
-                if 'reinforcement' in blk.keys():
-                    reinforcement = blk.pop('reinforcement')
-                    if reinforcement['schedule'] == 'variable_ratio':
-                        self.reinf_sched = reinf.VariableRatioSchedule(ratio=reinforcement['ratio'])
-                    elif reinforcement['schedule'] == 'fixed_ratio':
-                        self.reinf_sched = reinf.FixedRatioSchedule(ratio=reinforcement['ratio'])
-                    elif reinforcement['schedule'] == 'percent_reinf':
-                        self.reinf_sched = reinf.PercentReinforcement(prob=reinforcement['prob'])
-                    elif reinforcement['schedule'] == 'go_interrupt':
-                        self.reinf_sched = reinf.GoInterruptPercentSchedule(prob=reinforcement['prob'])
-                    elif reinforcement['schedule'] == 'go_interrupt':
-                        self.reinf_sched = reinf.GoInterruptPercentSchedule(prob=reinforcement['prob'])
-
-                    else:
-                        self.reinf_sched = reinf.ContinuousReinforcement()
-
-                else:
-                    self.reinf_sched = reinf.ContinuousReinforcement()
-
                 if q_type == 'random':
                     self.trial_q = queues.random_queue(**blk)
                 elif q_type == 'block':
@@ -228,10 +232,48 @@ class GoNoGoInterruptExp(base.BaseExp):
                     dbl_staircases = [queues.DoubleStaircaseReinforced(stims) for stims in blk['stim_lists']]
                     self.trial_q = queues.MixedAdaptiveQueue.load(
                         os.path.join(self.parameters['experiment_path'], 'persistentQ.pkl'), dbl_staircases)
+                blk.pop('description')  # remove the "description" entry from the dictionary so queues doesn't complain
+
+                # Define reinforcement parameters
+                if 'reinforcement' not in blk.keys():
+                    self.reinf_sched = reinf.ContinuousReinforcement()
+                    self.secondary_reinf_bool = False  # Assume no secondary reinforcement should be used
+                    self.punish_bool = True  # Assume punishment should be used
+                    self.passiveReward = False  # Assume no passive reward on S+ trials
+                else:
+                    reinforcement = blk.pop('reinforcement')
+
+                    # Get reinforcement schedule
+                    if reinforcement['schedule'] == 'variable_ratio':
+                        self.reinf_sched = reinf.VariableRatioSchedule(ratio=reinforcement['ratio'])
+                    elif reinforcement['schedule'] == 'fixed_ratio':
+                        self.reinf_sched = reinf.FixedRatioSchedule(ratio=reinforcement['ratio'])
+                    elif reinforcement['schedule'] == 'percent_reinf':
+                        self.reinf_sched = reinf.PercentReinforcement(prob=reinforcement['prob'])
+                    elif reinforcement['schedule'] == 'go_interrupt':
+                        self.reinf_sched = reinf.GoInterruptPercentSchedule(prob=reinforcement['prob'])
+                    else:
+                        self.reinf_sched = reinf.ContinuousReinforcement()
+
+                    # Other reinforcement parameters
+                    if 'secondary' not in reinforcement:
+                        self.secondary_reinf_bool = False  # Assume no secondary reinforcement should be used
+                    else:
+                        self.secondary_reinf_bool = reinforcement['secondary']
+
+                    if 'punish' not in reinforcement:
+                        self.punish_bool = True  # Assume punishment should be used
+                    else:
+                        self.punish_bool = reinforcement['punish']  # var determines whether punishment is used
+
+                    if 'passive' not in blk['reinforcement']:
+                        self.passiveReward = False  # Assume no passive reward on S+ trials
+                    else:
+                        self.passiveReward = reinforcement['passive']
+
                 try:
                     run_trial_queue()
                 except EndSession:
-
                     return 'post'
 
             self.session_q = None
@@ -337,7 +379,8 @@ class GoNoGoInterruptExp(base.BaseExp):
 
     def analyze_trial(self):
         # TODO: calculate reaction times
-        matrix = [[self.summary['correct_responses'], self.summary['false_alarms']], [self.summary['misses'],self.summary['correct_rejections']]]
+        matrix = [[self.summary['correct_responses'], self.summary['false_alarms']],
+                  [self.summary['misses'], self.summary['correct_rejections']]]
         conf_matrix = analysis.create_conf_matrix_summary(matrix)
         self.summary['dprime'] = analysis.dprime(conf_matrix)
 
@@ -536,7 +579,7 @@ class GoNoGoInterruptExp(base.BaseExp):
                     pass
 
             elif self.this_trial.correct:
-                if self.parameters['reinforcement']['secondary']:
+                if self.secondary_reinf_bool:
                     secondary_reinf_event = self.secondary_reinforcement()
                     self.this_trial.events.append(secondary_reinf_event)
 
@@ -627,7 +670,7 @@ class GoNoGoInterruptExp(base.BaseExp):
 
     def punish_main(self):
         value = self.parameters['classes'][self.this_trial.class_]['punish_value']
-        if self.punishBool:
+        if self.punish_bool:
             punish_event = self.panel.punish(value=value)
         self.this_trial.punish = True
 

@@ -15,8 +15,6 @@ try:
 except ImportError:
     import json
 
-from pyoperant.local import PANELS
-
 try:
     from pyoperant.local import BEHAVIORS
 except ImportError:
@@ -107,6 +105,10 @@ def main():
 
     cmd_line = parse_commandline()
 
+    from pyoperant.local import PANELS
+
+
+
     experiment_path = os.path.join(DATAPATH, cmd_line['subject'])
     config_file = os.path.join(experiment_path, cmd_line['config_file'])
     stimuli_path = os.path.join(experiment_path, 'Stimuli')
@@ -128,8 +130,13 @@ def main():
 
     stimuli_path = parameters.pop('stim_path') if 'stim_path' in parameters else stimuli_path
 
+    if 'board_version' not in parameters:
+        boardtype = None
+    else:
+        boardtype = parameters['board_version']
+
     behavior = BehaviorProtocol(
-        panel=PANELS[cmd_line['panel']](),
+        panel=PANELS[cmd_line['panel']](boardtype=boardtype),
         subject=cmd_line['subject'],
         panel_name=cmd_line['panel'],
         experiment_path=experiment_path,

@@ -479,26 +479,6 @@ class Shaper(object):
             f.write("Correct resps: %i\n" % self.summary['correct_responses'])
             f.write("\nLast trial @: %s" % self.summary['last_trial_time'])
 
-    def _pre_reward_log(self, next_state):
-        def temp():
-            self.responded_block = True
-            self.response_counter = self.response_counter + 1
-            self.summary['responses'] = self.response_counter
-            return next_state
-
-        return temp
-
-    def reward_log(self, value, next_state):
-        def temp():
-            self.log.info('%d\t%d\t%s\t%s' % (
-                self.recent_state, self.response_counter, self.last_response, dt.datetime.now().isoformat(' ')))
-            self.panel.reward(value=value)
-            self.summary['feeds'] += 1
-            self.summary['last_trial_time'] = dt.datetime.now()
-            return next_state
-
-        return temp
-
 
 class ShaperFree(Shaper):
     """
@@ -523,7 +503,7 @@ class ShaperFree(Shaper):
                                     error_callback=self.error_callback,
                                     init=self._block_init('check'),
                                     check=self._check_block_log('silent_resp', reps, float('inf')),
-                                    silent_resp=self._light_poll(self.panel.respSens, 6000, 'check', 'pre_reward'),
+                                    silent_resp=self._light_poll(self.panel.respSens, 60, 'check', 'pre_reward'),
                                     pre_reward=self._pre_reward_log('reward'),
                                     reward=self.reward_log(0.15, 'trial_end'),  # Reward for .15 second
                                     trial_end=self._poll_not(self.panel.respSens, float('inf'), 'check'))
@@ -532,6 +512,32 @@ class ShaperFree(Shaper):
             if utils.check_time(self.parameters['session_schedule']):  # If session should be starting
                 return None  # Break out of ad-lib cycle and return to base-level control to start session
             return self.block_name(block_num + 1)
+
+        return temp
+
+    def _check_block_log(self, next_state, reps, revert_timeout):
+        # If function returns None, state machine ends (I think)
+        # None returns when: -no response and elapsed time > timeout
+        #                    -number of actual responses >= reps
+        #                    -time is outside of light schedule
+        def temp():
+            self.write_summary_shaping()
+            self.trial_counter = self.trial_counter + 1
+            if not utils.check_time(self.parameters['light_schedule']):
+                return None
+            if utils.check_time(self.parameters['session_schedule']):  # If session should be starting
+                return None  # Break out of ad-lib cycle and return to base-level control to start session
+            if not self.responded_block:  # responded_block is TRUE if a response is registered
+                elapsed_time = (dt.datetime.now() - self.block_start).total_seconds()
+                if elapsed_time > revert_timeout:
+                    self.log.warning("No response in block %d, reverting to block %d.  Time: %s" % (
+                        self.recent_state, self.recent_state - 1, dt.datetime.now().isoformat(' ')))
+                    return None
+            else:
+                if self.response_counter >= reps:
+                    return None
+
+            return next_state
 
         return temp
 
