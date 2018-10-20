@@ -80,7 +80,7 @@ def mcc(confusion_matrix):
         return a
 
 
-def create_conf_matrix(expected, predicted):
+def create_conf_matrix(expected, observed):
     """
     Function takes in a 1-D array of expected values and a 1-D array of predictions
     and returns a confusion matrix with size corresponding to the number of classes.
@@ -89,34 +89,35 @@ def create_conf_matrix(expected, predicted):
 
     Keyword arguments:
     expected  -- list of expected or true values
-    predicted -- list of predicted or response values
+    observed -- list of observed or response values
 
     Returns the confusion matrix as a numpy array m[expectation,prediction]
 
     """
-    n_classes = max(len(set(expected)), len(set(predicted)), 2)
+    n_classes = max(len(set(expected)), len(set(observed)), 2)
 
     m = np.zeros((n_classes, n_classes))
-    for exp, pred in zip(expected, predicted):
+    for exp, pred in zip(expected, observed):
         m[exp, pred] += 1
     return m
 
 
 def create_conf_matrix_summary(matrix):
     """
-    Function takes in a 1-D array of expected values and a 1-D array of predictions
-    and returns a confusion matrix with size corresponding to the number of classes.
+    Function takes in a 2-D confusion matrix and converts it to an array.
 
     http://en.wikipedia.org/wiki/Confusion_matrix
 
     Keyword arguments:
     expected  -- list of expected or true values
-    predicted -- list of predicted or response values
+    observed -- list of predicted or response values
 
     Returns the confusion matrix as a numpy array m[expectation,prediction]
 
     """
-    m = np.asarray(matrix)
+
+    mArray = np.asarray(matrix)
+    m = mArray.astype(float)
     return m
 
 class Performance:

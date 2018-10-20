@@ -160,9 +160,9 @@ class BaseExp(object):
                                                                 )
                       )
         if self.parameters['shape']:
-            self.shaper.run_shape(self.parameters['shape'])
+            self.shaper.run_shape()
 
-        while True:  # is this while necessary
+        while True:  # is this while necessary?
             utils.run_state_machine(start_in='idle',
                                     error_state='idle',
                                     error_callback=self.log_error_callback,
@@ -259,7 +259,7 @@ class BaseExp(object):
         summary_file = os.path.join(self.parameters['experiment_path'], self.parameters['subject'] + '.summaryDAT')
         with open(summary_file, 'wb') as f:
             f.write("Trials this session: %s\n" % self.summary['trials'])
-            f.write("Rf'd responses: %i\n" % self.summary['responses'])
+            f.write("Rf'd responses: %i\n" % self.summary['feeds'])
             f.write("\n")
             f.write("\tS+\tS-\n")
             f.write("RespSw\t%i\t%i\n" % (self.summary['correct_responses'], self.summary['false_alarms']))

@@ -133,7 +133,7 @@ class GoNoGoInterruptExp(base.BaseExp):
                                                                 )
                       )
         if self.parameters['shape']:
-            self.shaper.run_shape(self.parameters['shape'])
+            self.shaper.run_shape()
 
         while True:  # is this while necessary?
             utils.run_state_machine(start_in='idle',
@@ -223,16 +223,8 @@ class GoNoGoInterruptExp(base.BaseExp):
                 blk = copy.deepcopy(self.parameters['block_design']['blocks'][sn_cond])
 
                 # load the block details into the trial queue
-                q_type = blk.pop('queue')
-                if q_type == 'random':
-                    self.trial_q = queues.random_queue(**blk)
-                elif q_type == 'block':
-                    self.trial_q = queues.block_queue(**blk)
-                elif q_type == 'mixedDblStaircase':
-                    dbl_staircases = [queues.DoubleStaircaseReinforced(stims) for stims in blk['stim_lists']]
-                    self.trial_q = queues.MixedAdaptiveQueue.load(
-                        os.path.join(self.parameters['experiment_path'], 'persistentQ.pkl'), dbl_staircases)
                 blk.pop('description')  # remove the "description" entry from the dictionary so queues doesn't complain
+                q_type = blk.pop('queue')
 
                 # Define reinforcement parameters
                 if 'reinforcement' not in blk.keys():
@@ -266,10 +258,19 @@ class GoNoGoInterruptExp(base.BaseExp):
                     else:
                         self.punish_bool = reinforcement['punish']  # var determines whether punishment is used
 
-                    if 'passive' not in blk['reinforcement']:
+                    if 'passive' not in reinforcement:
                         self.passiveReward = False  # Assume no passive reward on S+ trials
                     else:
                         self.passiveReward = reinforcement['passive']
+
+                if q_type == 'random':
+                    self.trial_q = queues.random_queue(**blk)
+                elif q_type == 'block':
+                    self.trial_q = queues.block_queue(**blk)
+                elif q_type == 'mixedDblStaircase':
+                    dbl_staircases = [queues.DoubleStaircaseReinforced(stims) for stims in blk['stim_lists']]
+                    self.trial_q = queues.MixedAdaptiveQueue.load(
+                        os.path.join(self.parameters['experiment_path'], 'persistentQ.pkl'), dbl_staircases)
 
                 try:
                     run_trial_queue()
@@ -379,8 +380,8 @@ class GoNoGoInterruptExp(base.BaseExp):
 
     def analyze_trial(self):
         # TODO: calculate reaction times
-        matrix = [[self.summary['correct_responses'], self.summary['false_alarms']],
-                  [self.summary['misses'], self.summary['correct_rejections']]]
+        matrix = [[self.summary['correct_responses'], self.summary['misses']],
+                  [self.summary['false_alarms'], self.summary['correct_rejections']]]
         conf_matrix = analysis.create_conf_matrix_summary(matrix)
         self.summary['dprime'] = analysis.dprime(conf_matrix)
 

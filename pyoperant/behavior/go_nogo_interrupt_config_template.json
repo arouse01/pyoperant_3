@@ -18,7 +18,7 @@
     "text"
   ],
 
-  "shape": false,
+  "shape": true,
   "free_day_off": true,
 
   "classes": {
@@ -899,7 +899,7 @@
   ],
   "session_schedule": [
     [
-      "8:30",
+      "08:30",
       "20:30"
     ]
   ],
@@ -911,7 +911,6 @@
     4,
     5
   ],
-
 
   "stim_path": "/home/rouse/bird/stim",
   "stims": {

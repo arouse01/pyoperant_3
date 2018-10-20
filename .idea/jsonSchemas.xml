@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="JsonSchemaMappingsProjectConfiguration">
+    <state>
+      <map>
+        <entry key="JSON schema v6">
+          <value>
+            <SchemaInfo>
+              <option name="name" value="JSON schema v6" />
+              <option name="relativePathToSchema" value="http://json-schema.org/draft-06/schema" />
+              <option name="schemaVersion" value="JSON schema version 6" />
+              <option name="applicationDefined" value="true" />
+              <option name="patterns">
+                <list>
+                  <Item>
+                    <option name="path" value="pyoperant/behavior/go_nogo_interrupt_config_template.json" />
+                  </Item>
+                </list>
+              </option>
+            </SchemaInfo>
+          </value>
+        </entry>
+        <entry key="pyoperant schema">
+          <value>
+            <SchemaInfo>
+              <option name="name" value="pyoperant schema" />
+              <option name="relativePathToSchema" value="pyoperant/behavior/go_nogo_interrupt_config_schema.json" />
+              <option name="schemaVersion" value="JSON schema version 6" />
+              <option name="applicationDefined" value="true" />
+              <option name="patterns">
+                <list>
+                  <Item>
+                    <option name="path" value="pyoperant/behavior/go_nogo_interrupt_config_training.json" />
+                  </Item>
+                </list>
+              </option>
+            </SchemaInfo>
+          </value>
+        </entry>
+      </map>
+    </state>
+  </component>
+</project>

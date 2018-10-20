@@ -26,6 +26,7 @@ def random_queue(conditions, tr_max=5000, weights=None):
 
 
     """
+    random.seed()
     if weights:  # Handling weights this way because python 2.7 doesn't have a built-in weighted random function
 
         classes_weighted = []

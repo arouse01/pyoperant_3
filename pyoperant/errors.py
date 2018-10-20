@@ -40,3 +40,4 @@ class ComponentError(Exception):
 
     """
     pass
+

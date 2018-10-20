@@ -5,9 +5,7 @@ __Logging variables (variables that appear in the log file but do not affect cod
     name: [str] experiment name
     description: [str] brief description of experiment
     comments: "json doesn't support comments"
-    experimenter: [obj] experimenter details
-        email: [str] experimenter's email address. Used if log_handlers is set to email
-        name: [str] experimenter name
+
 
 __Paths__
     experiment_path: [str] full path to experiment folder for writing log files
@@ -15,15 +13,19 @@ __Paths__
 
 
 __Regular variables__
-    panel_name: [str] which panel to use (as defined in local file)
-    subject: [str] subject ID or name
+    panel_name: [str] which panel to use (as defined in local file) - usually overwritten by behave script command line parameter
+    experimenter: [obj] experimenter details, only relevant if emailing results
+        email: [str] experimenter's email address. Used if log_handlers is set to email
+        name: [str] experimenter name
+    subject: [str] subject ID or name - usually overwritten by behave script command line parameter
     subject_type: [str] "bird" or "human" - human has a few small changes to process (e.g. light blinks when block is completed)
 
-    debug: [bool] enable/disable debug logging
     log_handlers*: [obj] SMTP config details if log files will be emailed to experimenter (?)
 
-    shape: [bool] enable/disable shaping process
-    free_day_off: [bool] whether ad lib water should be given outside of scheduled sessions (e.g. on off days)
+    debug: [bool] enable/disable debug logging
+
+    shape: [bool] (opt) enable/disable shaping process (default is false)
+    free_day_off: [bool] (opt) whether ad lib water should be given outside of scheduled sessions (e.g. on off days) (default is false
 
     classes: [obj] Defines stimulus classes (pyoperant currently only supports two classes *6/14/18 AR - Noted in behavior file, but not sure why it's true, and the three_ac_matching_config.json file has three entries here)
         (class Name): member, [obj] variable name is user-defined

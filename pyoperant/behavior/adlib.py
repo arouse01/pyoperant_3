@@ -23,7 +23,7 @@ class Adlib(object):
         self.recent_state = 0
         self.last_response = None
 
-    def run_adlib(self, start_in='block1'):
+    def run_adlib(self):
         self.log.warning('Starting ad-lib water procedure')
         utils.run_state_machine(start_in='block1',
                                 error_state='block1',
@@ -53,13 +53,12 @@ class Adlib(object):
         def temp():
             self.write_summary_shaping()
             self.trial_counter = self.trial_counter + 1
-            if not utils.check_time(self.parameters['light_schedule']):
-                return None  # Check against light schedule, break out if lights out
-
-            if not utils.check_time(self.parameters['session_schedule']):  # If session should be starting
+            if not utils.check_time(self.parameters['light_schedule']):  # If lights should be off
+                return None  # Break out if lights out
+            elif self.check_session_schedule():  # If session should be running
                 return None  # Break out of ad-lib cycle and return to base-level control to start session
-
-            return next_state
+            else:
+                return next_state
 
         return temp
 
@@ -89,7 +88,6 @@ class Adlib(object):
 
         return temp
 
-    # TODO: catch errors here
     def reward(self, value, next_state):
         def temp():
             self.log.info('%d\t%d\t%s\t%s' % (
@@ -132,16 +130,6 @@ class Adlib(object):
         return self._poll(component, duration, next_state, reward_state, poll_state=self._light_main)
 
     # Polling subroutines
-    # TODO: remake to not hog CPU
-    def _poll_end(self, component):  # Check that component is back to default state
-        def temp():
-            if not component.status():
-                return None
-            utils.wait(.015)
-            return 'main'
-
-        return temp
-
     def _poll_main(self, component, duration):
         def temp():
             elapsed_time = (dt.datetime.now() - self.polling_start).total_seconds()
@@ -157,11 +145,11 @@ class Adlib(object):
 
         return temp
 
-    def _light_main(self, component, duration):
+    def _light_main(self, component, duration=15):
         def temp():
             # elapsed_time = (dt.datetime.now() - self.polling_start).total_seconds()
             component.on()
-            responseTime = component.poll(timeout=15)
+            responseTime = component.poll(timeout=duration)
             if responseTime > 0:
                 component.off()
                 self.responded_poll = True
@@ -171,18 +159,14 @@ class Adlib(object):
                 component.off()
                 return None
 
-            if elapsed_time <= duration:
+        return temp
 
-                if component.status():
-                    component.off()
-                    self.responded_poll = True
-                    self.last_response = component.name
-                    return None
-                utils.wait(.015)
-                return 'main'
-            else:
-                component.off()
+    def _poll_end(self, component):  # Check that component is back to default state
+        def temp():
+            if not component.status():
                 return None
+            utils.wait(.015)
+            return 'main'
 
         return temp
 
@@ -206,6 +190,18 @@ class Adlib(object):
             # f.write("Feeder ops today: %i\n" % self.summary['feeds'])
             f.write("\nLast trial @: %s" % self.summary['last_trial_time'])
 
+
+class ShaperFree(Adlib):
+    """
+    Special shaping paradigm for providing ad-lib water on non-experimental days (days not listed in the session_days parameter)
+    Free water available from response port. Light on resp port is lit while port is accessible.
+    """
+
+    def __init__(self, panel, log, parameters, error_callback=None):
+        super(ShaperFree, self).__init__(panel, log, parameters, error_callback)
+        self.block1 = self._water_block()
+
+    # Block logic
     def _water_block(self):
         """
         Block 1:  Water is only dispensed if resp port is accessed. Light on resp port is lit while port is accessible.
@@ -221,24 +217,9 @@ class Adlib(object):
                                     pre_reward=self._pre_reward_log('reward'),
                                     reward=self.reward_log(0.15, 'trial_end'),  # Reward for .15 second
                                     trial_end=self._poll_not(self.panel.respSens, float('inf'), 'check'))
-            if not utils.check_time(self.parameters['light_schedule']):
-                return None  # Break out of ad-lib cycle and return to base-level control for sleep control
-            if self.check_session_schedule():  # If session should be starting
+            if not utils.check_time(self.parameters['light_schedule']):  # If lights should be off
+                return None  # Break out of ad-lib cycle and return to base-level control for 'sleep' control
+            if self.check_session_schedule():  # If session should be starting/running
                 return None  # Break out of ad-lib cycle and return to base-level control to start session
 
         return temp
-
-
-class ShaperFree(Adlib):
-    """
-    Special shaping paradigm for providing ad-lib water on non-experimental days (days not listed in the session_days parameter)
-    Free water available from response port. Light on resp port is lit while port is accessible.
-    """
-
-    def __init__(self, panel, log, parameters, error_callback=None):
-        super(ShaperFree, self).__init__(panel, log, parameters, error_callback)
-        self.block1 = self._water_block()
-
-
-
-

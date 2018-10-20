@@ -3,6 +3,7 @@ import sys
 import struct
 import time
 import subprocess
+import inspect
 import threading
 import traceback
 import shlex
@@ -233,31 +234,47 @@ def time_in_range(start, end, x):
         return start <= x or x <= end
 
 
-def is_day(latitude='42.41', longitude='-71.13'):
+def is_day(city='Boston', lat='42.41', lon='-71.13'):
     # def is_day((latitude, longitude) = ('32.82', '-117.14')):
+    # latitude='42.41', longitude='-71.13' for Medford, MA
     # #Tuples not supported in Python 3, rewrote to separate tuples as this function is only called
     # without parameters anyway (1/17/18 AR)
     """Is it daytime?
 
-    (lat,long) -- latitude and longitude of location to check (default is Medford, MA) (changed from San Deigo* to Medford 1/17/18 AR)
+    parameter: city, valid entries are large world cities (best option is to select your nearest large city
+               alternative is lat and lon of current location
     Returns True if it is daytime
 
     * Discovered by the Germans in 1904, they named it San Diego,
     which of course in German means a whale's vagina. (Burgundy, 2004)
     """
+
     import ephem
-    obs = ephem.Observer()
-    obs.lat = latitude  # San Diego, CA
-    obs.long = longitude
-    sun = ephem._sun()
-    sun.compute()
-    next_sunrise = ephem.localtime(obs.next_rising(sun))
-    next_sunset = ephem.localtime(obs.next_setting(sun))
+    if city:
+        # print 'city'
+        try:
+            obs = ephem.city(city.capitalize())
+        except KeyError:
+            raise NoCityMatchError
+        except AttributeError:
+            obs = ephem.city(city.get('city').capitalize())
+    elif lat & lon:
+        # print 'coords'
+        obs = ephem.Observer()
+        obs.lat = str(lat)
+        obs.long = str(lon)
+    else:
+        # print 'else'
+        obs = ephem.city('Boston')
+
+    next_sunrise = ephem.localtime(obs.next_rising(ephem.Sun()))
+    next_sunset = ephem.localtime(obs.next_setting(ephem.Sun()))
     return next_sunset < next_sunrise
 
 
-def check_time(schedule, fmt="%H:%M"):
-    """ determine whether trials should be done given the current time and light schedule
+def check_time(schedule, fmt="%H:%M", **kwargs):
+    """ Determine whether current time is within $schedule
+    Primary use: determine whether trials should be done given the current time and light schedule or session schedule
 
     returns Boolean if current time meets schedule
 
@@ -269,7 +286,7 @@ def check_time(schedule, fmt="%H:%M"):
     """
 
     if schedule == 'sun':
-        if is_day():
+        if is_day(kwargs):
             return True
     else:
         for epoch in schedule:
@@ -453,3 +470,17 @@ def rand_from_log_shape_dist(alpha=10):
     t = random.random()
     ret = ((beta * t - 1) / (sp.special.lambertw((beta * t - 1) / np.e)) - 1) / alpha
     return max(min(np.real(ret), 1), 0)
+
+
+class NoCityMatchError(Exception):
+    """Raised for is_day() when no matching city is found in the ephem module
+    """
+    #print 'No city matches entered text. Try using coords instead (lat=xxx, lon=yyy)'
+    pass
+
+
+class VarTypeError(Exception):
+    """Raised for is_day() when coords are entered as values
+    """
+    #print 'No city matches entered text. Try using coords instead (lat=xxx, lon=yyy)'
+    pass
