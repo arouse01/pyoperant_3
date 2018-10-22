@@ -3,8 +3,7 @@
 # Form implementation generated from reading ui file 'untitled_2.ui'
 #
 # Created by: PyQt4 UI code generator 4.11.4
-#
-# WARNING! All changes made in this file will be lost!
+
 
 # Much of the core code (of creating each of the sections) could probably made more dynamic to allow the user to
 # specify the desired number of boxes
@@ -31,8 +30,8 @@ except AttributeError:
 
 
 class UiMainWindow(object):
-    def setup_ui(self, main_window):
 
+    def setup_ui(self, main_window):
         self.startBoxList = []
         self.stopBoxList = []
         self.paramFileButtonBoxList = []
@@ -51,33 +50,46 @@ class UiMainWindow(object):
 
         self.greenIcon = QPixmap("green_circle.svg")
         self.redIcon = QPixmap("red_stop.svg")
+        self.errorIcon = QPixmap("error_x.png")
         self.wrenchIcon = QIcon()
         self.wrenchIcon.addPixmap(QtGui.QPixmap(_fromUtf8("icons/wrench.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
 
+        # Variable setting
         # Object location-specific variables
         self.numberOfBoxes = 6
 
         # Calculate box arrangement in window
-        # rowCount = math.floor(math.sqrt(self.numberOfBoxes))
+        # self.rowCount = math.floor(math.sqrt(self.numberOfBoxes))
         rowCount = 3
         columnCount = self.numberOfBoxes / rowCount
+
         numHorizontalLines = self.numberOfBoxes
         numVerticalLines = columnCount - 1
 
+        # Text formatting
+        fontSize = 11
+        font = QtGui.QFont()
+        font.setPointSize(fontSize)
+
+        # Size policies
+        sizePolicy_Fixed = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+        sizePolicy_Fixed.setHorizontalStretch(0)
+        sizePolicy_Fixed.setVerticalStretch(0)
+
+        sizePolicy_minEx_max = QtGui.QSizePolicy(QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.Maximum)
+        sizePolicy_minEx_max.setHorizontalStretch(0)
+        sizePolicy_minEx_max.setVerticalStretch(0)
+
+        sizePolicy_max = QtGui.QSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Maximum)
+        sizePolicy_max.setHorizontalStretch(0)
+        sizePolicy_max.setVerticalStretch(0)
+
         # Make main window
         main_window.setObjectName(_fromUtf8("main_window"))
-
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        main_window.setSizePolicy(sizePolicy)
+        main_window.setSizePolicy(sizePolicy_Fixed)
         # main_window.setMaximumSize(QtCore.QSize(1200, 1000))
         self.centralwidget = QtGui.QWidget(main_window)
-
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        self.centralwidget.setSizePolicy(sizePolicy)
+        self.centralwidget.setSizePolicy(sizePolicy_Fixed)
         # self.centralwidget.setMaximumSize(QtCore.QSize(2000, 2000))
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
 
@@ -91,8 +103,10 @@ class UiMainWindow(object):
         self.menuGrid.setObjectName(_fromUtf8("menuGrid"))
         self.stopAllButton = QtGui.QPushButton(self.gridLayoutWidget)
         self.stopAllButton.setObjectName(_fromUtf8("stopAllButton"))
+        self.stopAllButton.setSizePolicy(sizePolicy_minEx_max)
         self.startAllButton = QtGui.QPushButton(self.gridLayoutWidget)
         self.startAllButton.setObjectName(_fromUtf8("startAllButton"))
+        self.startAllButton.setSizePolicy(sizePolicy_minEx_max)
         self.menuGrid.addWidget(self.stopAllButton, 0, 0, 1, 1)
         self.menuGrid.addWidget(self.startAllButton, 0, 1, 1, 1)
         self.behaviorField = QtGui.QComboBox(self.gridLayoutWidget)
@@ -131,7 +145,7 @@ class UiMainWindow(object):
 
         ### Individual section elements
         for box in range(0, self.numberOfBoxes):
-            # Object placement
+            # Object creation
             self.gridLayoutBoxList.append(QtGui.QGridLayout())
             self.birdEntryLabelBoxList.append(QtGui.QLabel(self.gridLayoutWidget))
             self.birdEntryBoxList.append(QtGui.QPlainTextEdit(self.gridLayoutWidget))
@@ -149,41 +163,7 @@ class UiMainWindow(object):
             self.mainGrid.addLayout(self.gridLayoutBoxList[box], 2 * (box % rowCount), 2 * math.floor(box / rowCount),
                                     1, 1)
 
-            # Formatting
-            self.stopBoxList[box].setEnabled(False)
-            sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.Maximum)
-            sizePolicy.setHorizontalStretch(1)
-            sizePolicy.setVerticalStretch(1)
-            font = QtGui.QFont()
-            font.setPointSize(11)
-            self.birdEntryBoxList[box].setFont(font)
-            self.birdEntryBoxList[box].setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-            self.birdEntryBoxList[box].setMaximumSize(QtCore.QSize(200, 26))
-            self.birdEntryBoxList[box].setObjectName(_fromUtf8("birdEntry_Box%d" % box))
-            self.birdEntryBoxList[box].setPlainText(_fromUtf8(""))
-            self.birdEntryBoxList[box].setSizePolicy(sizePolicy)
-            self.birdEntryBoxList[box].setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-            self.birdEntryLabelBoxList[box].setAlignment(
-                QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
-            self.birdEntryLabelBoxList[box].setMaximumSize(QtCore.QSize(500, 26))
-            self.birdEntryLabelBoxList[box].setObjectName(_fromUtf8("birdEntryLabel_Box%d" % box))
-            self.birdEntryLabelBoxList[box].setSizePolicy(sizePolicy)
-            self.checkActiveBoxList[box].setIconSize(QtCore.QSize(20, 20))
-            self.checkActiveBoxList[box].setMaximumSize(QtCore.QSize(22, 22))
-            self.checkActiveBoxList[box].setObjectName(_fromUtf8("checkActive_Box%d" % box))
-            self.checkActiveBoxList[box].setText(_fromUtf8(""))
-            self.checkActiveLabelBoxList[box].setAlignment(QtCore.Qt.AlignCenter)
-            self.checkActiveLabelBoxList[box].setObjectName(_fromUtf8("checkActiveLabel_Box%d" % box))
-            self.graphicBoxList[box].setAlignment(QtCore.Qt.AlignCenter)
-            self.graphicBoxList[box].setFrameShadow(QtGui.QFrame.Sunken)
-            self.graphicBoxList[box].setFrameShape(QtGui.QFrame.Panel)
-            self.graphicBoxList[box].setMargin(2)
-            self.graphicBoxList[box].setMaximumSize(QtCore.QSize(35, 35))
-            self.graphicBoxList[box].setObjectName(_fromUtf8("graphicLabel_Box%d" % box))
-            self.graphicBoxList[box].setPixmap(self.redIcon)
-            self.graphicBoxList[box].setScaledContents(True)
-            self.graphicBoxList[box].setText(_fromUtf8(""))
-            self.graphicBoxList[box].setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
+            # Actual object placement
             self.gridLayoutBoxList[box].addItem(
                 QtGui.QSpacerItem(20, 20, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding), 1, 1, 1, 1)
             self.gridLayoutBoxList[box].addItem(
@@ -208,36 +188,95 @@ class UiMainWindow(object):
                                                   QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
             self.gridLayoutBoxList[box].setObjectName(_fromUtf8("gridLayout_Box%d" % box))
             self.gridLayoutBoxList[box].setSpacing(6)
-            self.labelBoxList[box].setObjectName(_fromUtf8("label_Box%d" % box))
+
+            # Formatting
+
+            # # Text boxes
+
+            self.statusTextBoxList[box].setMaximumSize(QtCore.QSize(230, 215))
+            self.statusTextBoxList[box].setObjectName(_fromUtf8("statusText_Box%d" % box))
+            self.statusTextBoxList[box].setSizePolicy(sizePolicy_minEx_max)
+
+            self.birdEntryBoxList[box].setFont(font)
+            self.birdEntryBoxList[box].setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+            self.birdEntryBoxList[box].setMaximumSize(QtCore.QSize(200, 26))
+            self.birdEntryBoxList[box].setObjectName(_fromUtf8("birdEntry_Box%d" % box))
+            self.birdEntryBoxList[box].setPlainText(_fromUtf8(""))
+            self.birdEntryBoxList[box].setSizePolicy(sizePolicy_minEx_max)
+            self.birdEntryBoxList[box].setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+
             self.paramFileBoxList[box].setFont(font)
             self.paramFileBoxList[box].setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
             self.paramFileBoxList[box].setMaximumSize(QtCore.QSize(200, 26))
             self.paramFileBoxList[box].setObjectName(_fromUtf8("paramFile_Box%d" % box))
-            self.paramFileBoxList[box].setSizePolicy(sizePolicy)
+            self.paramFileBoxList[box].setSizePolicy(sizePolicy_minEx_max)
             self.paramFileBoxList[box].setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-            self.paramFileButtonBoxList[box].setMaximumSize(QtCore.QSize(26, 26))
-            self.paramFileButtonBoxList[box].setObjectName(_fromUtf8("paramFileButton_Box%d" % box))
-            self.paramFileButtonBoxList[box].setSizePolicy(sizePolicy)
-            self.optionButtonBoxList[box].setMaximumSize(QtCore.QSize(26, 26))
-            self.optionButtonBoxList[box].setObjectName(_fromUtf8("optionButton_Box%d" % box))
-            self.optionButtonBoxList[box].setSizePolicy(sizePolicy)
-            self.optionButtonBoxList[box].setIcon(self.wrenchIcon)
-            self.optionButtonBoxList[box].setMinimumSize(QtCore.QSize(26, 26))
-            self.optionButtonBoxList[box].setMaximumSize(QtCore.QSize(26, 26))
-            self.optionButtonBoxList[box].setPopupMode(2)
-            self.optionButtonBoxList[box].setArrowType(0)
-            self.optionButtonBoxList[box].setText(_fromUtf8(""))
+
+            # # Labels
+
+            self.labelBoxList[box].setObjectName(_fromUtf8("label_Box%d" % box))
+
+            self.checkActiveLabelBoxList[box].setAlignment(QtCore.Qt.AlignCenter)
+            self.checkActiveLabelBoxList[box].setObjectName(_fromUtf8("checkActiveLabel_Box%d" % box))
+            self.checkActiveLabelBoxList[box].setSizePolicy(sizePolicy_minEx_max)
+
             self.paramFileLabelBoxList[box].setAlignment(
                 QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
             self.paramFileLabelBoxList[box].setMaximumSize(QtCore.QSize(500, 26))
             self.paramFileLabelBoxList[box].setObjectName(_fromUtf8("paramFileLabel_Box%d" % box))
-            self.paramFileLabelBoxList[box].setSizePolicy(sizePolicy)
-            self.startBoxList[box].setMaximumSize(QtCore.QSize(100, 16777215))
+            self.paramFileLabelBoxList[box].setSizePolicy(sizePolicy_minEx_max)
+
+            self.birdEntryLabelBoxList[box].setAlignment(
+                QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+            self.birdEntryLabelBoxList[box].setMaximumSize(QtCore.QSize(500, 26))
+            self.birdEntryLabelBoxList[box].setObjectName(_fromUtf8("birdEntryLabel_Box%d" % box))
+            self.birdEntryLabelBoxList[box].setSizePolicy(sizePolicy_minEx_max)
+
+            # # Buttons
+
+            self.paramFileButtonBoxList[box].setMaximumSize(QtCore.QSize(26, 26))
+            self.paramFileButtonBoxList[box].setObjectName(_fromUtf8("paramFileButton_Box%d" % box))
+            self.paramFileButtonBoxList[box].setSizePolicy(sizePolicy_max)
+
+            self.startBoxList[box].setMaximumSize(QtCore.QSize(100, 27))
             self.startBoxList[box].setObjectName(_fromUtf8("start_Box1"))
-            self.statusTextBoxList[box].setMaximumSize(QtCore.QSize(230, 250))
-            self.statusTextBoxList[box].setObjectName(_fromUtf8("statusText_Box%d" % box))
-            self.stopBoxList[box].setMaximumSize(QtCore.QSize(100, 16777215))
+            self.startBoxList[box].setSizePolicy(sizePolicy_minEx_max)
+
+            self.stopBoxList[box].setMaximumSize(QtCore.QSize(100, 27))
             self.stopBoxList[box].setObjectName(_fromUtf8("stop_Box%d" % box))
+            self.stopBoxList[box].setEnabled(False)
+            self.stopBoxList[box].setSizePolicy(sizePolicy_minEx_max)
+
+            self.optionButtonBoxList[box].setMaximumSize(QtCore.QSize(26, 26))
+            self.optionButtonBoxList[box].setObjectName(_fromUtf8("optionButton_Box%d" % box))
+            self.optionButtonBoxList[box].setSizePolicy(sizePolicy_max)
+            self.optionButtonBoxList[box].setIcon(self.wrenchIcon)
+            self.optionButtonBoxList[box].setMinimumSize(QtCore.QSize(26, 26))
+            self.optionButtonBoxList[box].setMaximumSize(QtCore.QSize(26, 26))
+            self.optionButtonBoxList[box].setPopupMode(QtGui.QToolButton.InstantPopup)
+            self.optionButtonBoxList[box].setArrowType(QtCore.Qt.NoArrow)
+            self.optionButtonBoxList[box].setText(_fromUtf8(""))
+            self.optionButtonBoxList[box].setToolButtonStyle(QtCore.Qt.ToolButtonIconOnly)
+
+            # # Checkboxes
+
+            self.checkActiveBoxList[box].setIconSize(QtCore.QSize(20, 20))
+            self.checkActiveBoxList[box].setMaximumSize(QtCore.QSize(22, 22))
+            self.checkActiveBoxList[box].setObjectName(_fromUtf8("checkActive_Box%d" % box))
+            self.checkActiveBoxList[box].setText(_fromUtf8(""))
+
+            # Graphics
+
+            self.graphicBoxList[box].setAlignment(QtCore.Qt.AlignCenter)
+            self.graphicBoxList[box].setFrameShadow(QtGui.QFrame.Sunken)
+            self.graphicBoxList[box].setFrameShape(QtGui.QFrame.Panel)
+            self.graphicBoxList[box].setMargin(2)
+            self.graphicBoxList[box].setMaximumSize(QtCore.QSize(35, 35))
+            self.graphicBoxList[box].setObjectName(_fromUtf8("graphicLabel_Box%d" % box))
+            self.graphicBoxList[box].setPixmap(self.redIcon)
+            self.graphicBoxList[box].setScaledContents(True)
+            self.graphicBoxList[box].setText(_fromUtf8(""))
+            self.graphicBoxList[box].setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
 
         main_window.setCentralWidget(self.centralwidget)
 
@@ -267,3 +306,99 @@ class UiMainWindow(object):
             self.paramFileLabelBoxList[box].setText(_translate("MainWindow", "File", None))
             self.startBoxList[box].setText(_translate("MainWindow", "Start", None))
             self.stopBoxList[box].setText(_translate("MainWindow", "Stop", None))
+
+
+class UiSolenoidControl(object):
+    def setup_ui(self, solenoid_control):
+        solenoid_control.setObjectName(_fromUtf8("solenoid_control"))
+        solenoid_control.resize(300, 185)
+        sizePolicy_fixed = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+        sizePolicy_fixed.setHorizontalStretch(0)
+        sizePolicy_fixed.setVerticalStretch(0)
+        sizePolicy_max = QtGui.QSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Maximum)
+        sizePolicy_max.setHorizontalStretch(0)
+        sizePolicy_max.setVerticalStretch(0)
+
+        solenoid_control.setSizePolicy(sizePolicy_fixed)
+        solenoid_control.setMaximumSize(QtCore.QSize(300, 200))
+
+        self.gridLayout = QtGui.QGridLayout(solenoid_control)
+        self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
+
+        self.verticalLayout = QtGui.QVBoxLayout()
+        self.verticalLayout.setSizeConstraint(QtGui.QLayout.SetFixedSize)
+        self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
+
+        self.box_name = QtGui.QLabel(solenoid_control)
+        self.box_name.setSizePolicy(sizePolicy_max)
+        self.box_name.setMaximumSize(QtCore.QSize(280, 24))
+        self.box_name.setBaseSize(QtCore.QSize(50, 18))
+        font = QtGui.QFont()
+        font.setPointSize(13)
+        self.box_name.setFont(font)
+        self.box_name.setAlignment(QtCore.Qt.AlignCenter)
+        self.box_name.setObjectName(_fromUtf8("box_name"))
+
+        self.solenoid_text = QtGui.QLabel(solenoid_control)
+        self.solenoid_text.setSizePolicy(sizePolicy_fixed)
+        self.solenoid_text.setMaximumSize(QtCore.QSize(280, 24))
+        self.solenoid_text.setAlignment(QtCore.Qt.AlignCenter)
+        self.solenoid_text.setObjectName(_fromUtf8("solenoid_text"))
+
+        self.solenoid_Status_Text = QtGui.QLabel(solenoid_control)
+        self.solenoid_Status_Text.setSizePolicy(sizePolicy_fixed)
+        self.solenoid_Status_Text.setMinimumSize(QtCore.QSize(0, 17))
+        self.solenoid_Status_Text.setMaximumSize(QtCore.QSize(280, 24))
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        self.solenoid_Status_Text.setFont(font)
+        self.solenoid_Status_Text.setAlignment(QtCore.Qt.AlignCenter)
+        self.solenoid_Status_Text.setObjectName(_fromUtf8("solenoid_Status_Text"))
+        spacerItem = QtGui.QSpacerItem(20, 10, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
+
+        self.horizontalLayout = QtGui.QHBoxLayout()
+        self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
+
+        self.open_Button = QtGui.QPushButton(solenoid_control)
+        self.open_Button.setMinimumSize(QtCore.QSize(0, 27))
+        self.open_Button.setMaximumSize(QtCore.QSize(136, 27))
+        self.open_Button.setObjectName(_fromUtf8("open_Button"))
+
+        self.close_Button = QtGui.QPushButton(solenoid_control)
+        self.close_Button.setEnabled(False)
+        self.close_Button.setMinimumSize(QtCore.QSize(0, 27))
+        self.close_Button.setMaximumSize(QtCore.QSize(136, 27))
+        self.close_Button.setObjectName(_fromUtf8("close_Button"))
+
+        self.line = QtGui.QFrame(solenoid_control)
+        self.line.setFrameShape(QtGui.QFrame.HLine)
+        self.line.setFrameShadow(QtGui.QFrame.Sunken)
+        self.line.setObjectName(_fromUtf8("line"))
+        self.done_Button = QtGui.QPushButton(solenoid_control)
+        self.done_Button.setSizePolicy(sizePolicy_fixed)
+        self.done_Button.setMaximumSize(QtCore.QSize(270, 27))
+        self.done_Button.setObjectName(_fromUtf8("done_Button"))
+
+        self.horizontalLayout.addWidget(self.open_Button)
+        self.horizontalLayout.addWidget(self.close_Button)
+
+        self.verticalLayout.addWidget(self.box_name)
+        self.verticalLayout.addWidget(self.solenoid_text)
+        self.verticalLayout.addWidget(self.solenoid_Status_Text)
+        self.verticalLayout.addItem(spacerItem)
+        self.verticalLayout.addLayout(self.horizontalLayout)
+        self.verticalLayout.addWidget(self.line)
+        self.verticalLayout.addWidget(self.done_Button)
+        self.gridLayout.addLayout(self.verticalLayout, 0, 0, 2, 2)
+
+        self.retranslate_ui(solenoid_control)
+        QtCore.QMetaObject.connectSlotsByName(solenoid_control)
+
+    def retranslate_ui(self, solenoid_control):
+        solenoid_control.setWindowTitle(_translate("solenoid_control", "Solenoid Control", None))
+        self.box_name.setText(_translate("solenoid_control", "Box ", None))
+        self.solenoid_text.setText(_translate("solenoid_control", "Solenoid is ", None))
+        self.solenoid_Status_Text.setText(_translate("solenoid_control", "CLOSED", None))
+        self.open_Button.setText(_translate("solenoid_control", "Open Solenoid", None))
+        self.close_Button.setText(_translate("solenoid_control", "Close Solenoid", None))
+        self.done_Button.setText(_translate("solenoid_control", "Done", None))

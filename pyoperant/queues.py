@@ -9,7 +9,7 @@ else:
     import _pickle as pickle
 
 
-def random_queue(conditions, tr_max=5000, weights=None):
+def random_queue(conditions, tr_max=5000, weights=None, **kwargs):
     """ generator which randomly samples conditions
 
     Args:

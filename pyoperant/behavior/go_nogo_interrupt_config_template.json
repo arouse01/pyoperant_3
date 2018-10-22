@@ -17,8 +17,7 @@
   "log_handlers": [
     "text"
   ],
-
-  "shape": true,
+  "shape": false,
   "free_day_off": true,
 
   "classes": {

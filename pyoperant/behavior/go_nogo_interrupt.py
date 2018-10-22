@@ -164,6 +164,26 @@ class GoNoGoInterruptExp(base.BaseExp):
         self.shaperAdLib.run_adlib()
         return 'idle'
 
+    def init_summary(self):
+        """ initializes an empty summary dictionary """
+        self.summary = {'trials': 0,
+                        'responses': 0,
+                        'feeds': 0,
+                        'correct_responses': 0,
+                        'false_alarms': 0,
+                        'misses': 0,
+                        'correct_rejections': 0,
+                        'cr_rate': 0,
+                        'fa_rate': 0,
+                        'last_trial_time': [],
+                        'dprime': 0,
+                        'sminus_trials': 0,
+                        'splus_trials': 0
+                        }
+        summary_file = os.path.join(self.parameters['experiment_path'], self.parameters['subject'] + '.summaryDAT')
+        with open(summary_file, 'wb') as f:
+            f.write("Welcome to pyoperant v%s." % self.version)
+
     ## session flow
     def session_pre(self):
         """ Runs before the session starts
@@ -251,17 +271,17 @@ class GoNoGoInterruptExp(base.BaseExp):
                     if 'secondary' not in reinforcement:
                         self.secondary_reinf_bool = False  # Assume no secondary reinforcement should be used
                     else:
-                        self.secondary_reinf_bool = reinforcement['secondary']
+                        self.secondary_reinf_bool = reinforcement.pop('secondary')
 
                     if 'punish' not in reinforcement:
                         self.punish_bool = True  # Assume punishment should be used
                     else:
-                        self.punish_bool = reinforcement['punish']  # var determines whether punishment is used
+                        self.punish_bool = reinforcement.pop('punish')  # var determines whether punishment is used
 
                     if 'passive' not in reinforcement:
                         self.passiveReward = False  # Assume no passive reward on S+ trials
                     else:
-                        self.passiveReward = reinforcement['passive']
+                        self.passiveReward = reinforcement.pop('passive')
 
                 if q_type == 'random':
                     self.trial_q = queues.random_queue(**blk)

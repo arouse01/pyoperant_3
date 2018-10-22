@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1200</width>
-    <height>953</height>
+       <width>650</width>
+       <height>384</height>
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+      <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
@@ -41,28 +41,7 @@
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
      <layout class="QGridLayout" name="mainGrid">
-      <item row="4" column="2">
-       <widget class="Line" name="line_19">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="0">
-       <widget class="Line" name="line_6">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="0">
-       <widget class="Line" name="line_8">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1" rowspan="6">
+         <item row="1" column="1" rowspan="3">
        <widget class="Line" name="line_13">
         <property name="frameShadow">
          <enum>QFrame::Plain</enum>
@@ -74,770 +53,6 @@
          <enum>Qt::Vertical</enum>
         </property>
        </widget>
-      </item>
-      <item row="2" column="4">
-       <widget class="Line" name="line_3">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="3" rowspan="6">
-       <widget class="Line" name="line_14">
-        <property name="frameShadow">
-         <enum>QFrame::Plain</enum>
-        </property>
-        <property name="lineWidth">
-         <number>2</number>
-        </property>
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="6">
-       <widget class="Line" name="line_4">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="Line" name="line_2">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="2">
-       <widget class="Line" name="line_7">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="7" column="0" colspan="7">
-       <layout class="QGridLayout" name="menuGrid">
-        <item row="0" column="0">
-         <widget class="QPushButton" name="stopAllButton">
-          <property name="text">
-           <string>Stop All</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="2">
-         <spacer name="horizontalSpacer">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="0" column="4">
-         <widget class="QComboBox" name="behaviorField">
-          <property name="minimumSize">
-           <size>
-            <width>200</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>300</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <item>
-           <property name="text">
-            <string>GoNoGoInterruptExp</string>
-           </property>
-          </item>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QPushButton" name="startAllButton">
-          <property name="text">
-           <string>Start All</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="3">
-         <widget class="QLabel" name="behaviorLabel">
-          <property name="minimumSize">
-           <size>
-            <width>70</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>80</width>
-            <height>80</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Behavior</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item row="6" column="6">
-       <widget class="Line" name="line_10">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="5" rowspan="6">
-       <widget class="Line" name="line_9">
-        <property name="frameShadow">
-         <enum>QFrame::Plain</enum>
-        </property>
-        <property name="lineWidth">
-         <number>2</number>
-        </property>
-        <property name="midLineWidth">
-         <number>0</number>
-        </property>
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="6">
-       <widget class="Line" name="line_11">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="4">
-       <widget class="Line" name="line">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="2">
-       <widget class="Line" name="line_16">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="4">
-       <widget class="Line" name="line_15">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0">
-       <layout class="QGridLayout" name="gridLayout_Box1_2">
-        <property name="spacing">
-         <number>6</number>
-        </property>
-        <item row="2" column="1" alignment="Qt::AlignHCenter">
-         <widget class="QGraphicsView" name="graphic_Box1_2">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>35</width>
-            <height>35</height>
-           </size>
-          </property>
-          <property name="verticalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="horizontalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="interactive">
-           <bool>false</bool>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="6" column="1">
-         <spacer name="vertSpacer2_Box1_2">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="3" column="1">
-         <spacer name="vertSpacer_Box1_2">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="7" column="2" colspan="2">
-         <widget class="QTextEdit" name="paramFile_Box1_2">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>200</width>
-            <height>26</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>11</pointsize>
-           </font>
-          </property>
-          <property name="cursor" stdset="0">
-           <cursorShape>IBeamCursor</cursorShape>
-          </property>
-          <property name="verticalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="horizontalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <spacer name="vertSpacer3_Box1_2">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="8" column="1">
-         <widget class="QLabel" name="birdEntryLabel_Box1_2">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>500</width>
-            <height>26</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Bird</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="2" rowspan="7" colspan="3">
-         <widget class="QTextBrowser" name="statusText_Box1_2">
-          <property name="maximumSize">
-           <size>
-            <width>230</width>
-            <height>180</height>
-           </size>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="1" alignment="Qt::AlignHCenter">
-         <widget class="QLabel" name="checkActiveLabel_Box1_2">
-          <property name="text">
-           <string>Active</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="7" column="4">
-         <widget class="QPushButton" name="paramFileButton_Box1_2">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>26</width>
-            <height>26</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>...</string>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="7" column="1">
-         <widget class="QLabel" name="paramFileLabel_Box1_2">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>500</width>
-            <height>26</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>File</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="8" column="2" colspan="2">
-         <widget class="QPlainTextEdit" name="birdEntry_Box1_2">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Maximum">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>200</width>
-            <height>26</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>11</pointsize>
-           </font>
-          </property>
-          <property name="cursor" stdset="0">
-           <cursorShape>IBeamCursor</cursorShape>
-          </property>
-          <property name="verticalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="horizontalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="plainText">
-           <string/>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="1" alignment="Qt::AlignHCenter">
-         <widget class="QCheckBox" name="checkActive_Box1_2">
-          <property name="maximumSize">
-           <size>
-            <width>22</width>
-            <height>22</height>
-           </size>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="10" column="1" colspan="2" alignment="Qt::AlignHCenter|Qt::AlignVCenter">
-         <widget class="QPushButton" name="stop_Box1_2">
-          <property name="maximumSize">
-           <size>
-            <width>100</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Stop</string>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1" alignment="Qt::AlignHCenter">
-         <widget class="QLabel" name="label_Box1_2">
-          <property name="text">
-           <string>Box 1</string>
-          </property>
-         </widget>
-        </item>
-        <item row="10" column="3" colspan="2" alignment="Qt::AlignHCenter|Qt::AlignVCenter">
-         <widget class="QPushButton" name="start_Box1_2">
-          <property name="maximumSize">
-           <size>
-            <width>100</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Start</string>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item row="5" column="0">
-       <layout class="QGridLayout" name="gridLayout_Box1_3">
-        <property name="spacing">
-         <number>6</number>
-        </property>
-        <item row="4" column="1" alignment="Qt::AlignHCenter">
-         <widget class="QCheckBox" name="checkActive_Box1_3">
-          <property name="maximumSize">
-           <size>
-            <width>22</width>
-            <height>22</height>
-           </size>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1" alignment="Qt::AlignHCenter">
-         <widget class="QGraphicsView" name="graphic_Box1_3">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>35</width>
-            <height>35</height>
-           </size>
-          </property>
-          <property name="verticalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="horizontalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="interactive">
-           <bool>false</bool>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="1">
-         <spacer name="vertSpacer_Box1_3">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="9" column="3" colspan="2" alignment="Qt::AlignHCenter|Qt::AlignVCenter">
-         <widget class="QPushButton" name="start_Box1_3">
-          <property name="maximumSize">
-           <size>
-            <width>100</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Start</string>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="6" column="1">
-         <spacer name="vertSpacer2_Box1_3">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="7" column="4">
-         <widget class="QPushButton" name="paramFileButton_Box1_3">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>26</width>
-            <height>26</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>...</string>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="7" column="1">
-         <widget class="QLabel" name="paramFileLabel_Box1_3">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>500</width>
-            <height>26</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>File</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1" alignment="Qt::AlignHCenter">
-         <widget class="QLabel" name="label_Box1_3">
-          <property name="text">
-           <string>Box 1</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="2" rowspan="7" colspan="3">
-         <widget class="QTextBrowser" name="statusText_Box1_3">
-          <property name="maximumSize">
-           <size>
-            <width>230</width>
-            <height>180</height>
-           </size>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="7" column="2" colspan="2">
-         <widget class="QTextEdit" name="paramFile_Box1_3">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>200</width>
-            <height>26</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>11</pointsize>
-           </font>
-          </property>
-          <property name="cursor" stdset="0">
-           <cursorShape>IBeamCursor</cursorShape>
-          </property>
-          <property name="verticalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="horizontalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="8" column="2" colspan="2">
-         <widget class="QPlainTextEdit" name="birdEntry_Box1_3">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Maximum">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>200</width>
-            <height>26</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>11</pointsize>
-           </font>
-          </property>
-          <property name="cursor" stdset="0">
-           <cursorShape>IBeamCursor</cursorShape>
-          </property>
-          <property name="verticalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="horizontalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="plainText">
-           <string/>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="1" alignment="Qt::AlignHCenter">
-         <widget class="QLabel" name="checkActiveLabel_Box1_3">
-          <property name="text">
-           <string>Active</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="8" column="1">
-         <widget class="QLabel" name="birdEntryLabel_Box1_3">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>500</width>
-            <height>26</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Bird</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="9" column="1" colspan="2" alignment="Qt::AlignHCenter|Qt::AlignVCenter">
-         <widget class="QPushButton" name="stop_Box1_3">
-          <property name="maximumSize">
-           <size>
-            <width>100</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Stop</string>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <spacer name="vertSpacer3_Box1_3">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-       </layout>
       </item>
       <item row="1" column="2">
        <layout class="QGridLayout" name="gridLayout_Box1_4">
@@ -1138,211 +353,27 @@
         </item>
        </layout>
       </item>
-      <item row="3" column="2">
-       <layout class="QGridLayout" name="gridLayout_Box1_5">
+         <item row="2" column="0">
+             <widget class="Line" name="line_2">
+                 <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                 </property>
+             </widget>
+         </item>
+         <item row="2" column="2">
+             <widget class="Line" name="line_7">
+                 <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                 </property>
+             </widget>
+         </item>
+         <item row="1" column="0">
+             <layout class="QGridLayout" name="gridLayout_Box1">
         <property name="spacing">
          <number>6</number>
         </property>
-        <item row="1" column="1">
-         <spacer name="vertSpacer3_Box1_5">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="7" column="2" colspan="2">
-         <widget class="QTextEdit" name="paramFile_Box1_5">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>200</width>
-            <height>26</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>11</pointsize>
-           </font>
-          </property>
-          <property name="cursor" stdset="0">
-           <cursorShape>IBeamCursor</cursorShape>
-          </property>
-          <property name="verticalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="horizontalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1" alignment="Qt::AlignHCenter">
-         <widget class="QLabel" name="label_Box1_5">
-          <property name="text">
-           <string>Box 1</string>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="1" alignment="Qt::AlignHCenter">
-         <widget class="QCheckBox" name="checkActive_Box1_5">
-          <property name="maximumSize">
-           <size>
-            <width>22</width>
-            <height>22</height>
-           </size>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="6" column="1">
-         <spacer name="vertSpacer2_Box1_5">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="8" column="2" colspan="2">
-         <widget class="QPlainTextEdit" name="birdEntry_Box1_5">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Maximum">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>200</width>
-            <height>26</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>11</pointsize>
-           </font>
-          </property>
-          <property name="cursor" stdset="0">
-           <cursorShape>IBeamCursor</cursorShape>
-          </property>
-          <property name="verticalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="horizontalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="plainText">
-           <string/>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="1">
-         <spacer name="vertSpacer_Box1_5">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="9" column="1" colspan="2" alignment="Qt::AlignHCenter|Qt::AlignVCenter">
-         <widget class="QPushButton" name="stop_Box1_5">
-          <property name="maximumSize">
-           <size>
-            <width>100</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Stop</string>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="1" alignment="Qt::AlignHCenter">
-         <widget class="QLabel" name="checkActiveLabel_Box1_5">
-          <property name="text">
-           <string>Active</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="9" column="3" colspan="2" alignment="Qt::AlignHCenter|Qt::AlignVCenter">
-         <widget class="QPushButton" name="start_Box1_5">
-          <property name="maximumSize">
-           <size>
-            <width>100</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Start</string>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="2" rowspan="7" colspan="3">
-         <widget class="QTextBrowser" name="statusText_Box1_5">
-          <property name="maximumSize">
-           <size>
-            <width>230</width>
-            <height>180</height>
-           </size>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="8" column="1">
-         <widget class="QLabel" name="birdEntryLabel_Box1_5">
+                 <item row="8" column="0">
+                     <widget class="QLabel" name="birdEntryLabel_Box1">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -1363,149 +394,15 @@
           </property>
          </widget>
         </item>
-        <item row="7" column="4">
-         <widget class="QPushButton" name="paramFileButton_Box1_5">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>26</width>
-            <height>26</height>
-           </size>
-          </property>
+                 <item row="0" column="0" alignment="Qt::AlignHCenter">
+                     <widget class="QLabel" name="label_Box1">
           <property name="text">
-           <string>...</string>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
+              <string>Box 1</string>
           </property>
          </widget>
         </item>
-        <item row="7" column="1">
-         <widget class="QLabel" name="paramFileLabel_Box1_5">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>500</width>
-            <height>26</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>File</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1" alignment="Qt::AlignHCenter">
-         <widget class="QLabel" name="label_2">
-          <property name="maximumSize">
-           <size>
-            <width>25</width>
-            <height>25</height>
-           </size>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-          <property name="pixmap">
-           <pixmap resource="icons/icons.qrc">:/boxIcons/red_stop.svg</pixmap>
-          </property>
-          <property name="scaledContents">
-           <bool>true</bool>
-          </property>
-          <property name="margin">
-           <number>2</number>
-          </property>
-          <property name="textInteractionFlags">
-           <set>Qt::NoTextInteraction</set>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item row="5" column="2">
-       <layout class="QGridLayout" name="gridLayout_Box1_6">
-        <property name="spacing">
-         <number>6</number>
-        </property>
-        <item row="9" column="1" colspan="2" alignment="Qt::AlignHCenter|Qt::AlignVCenter">
-         <widget class="QPushButton" name="stop_Box1_6">
-          <property name="maximumSize">
-           <size>
-            <width>100</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Stop</string>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="8" column="2" colspan="2">
-         <widget class="QPlainTextEdit" name="birdEntry_Box1_6">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Maximum">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>200</width>
-            <height>26</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>11</pointsize>
-           </font>
-          </property>
-          <property name="cursor" stdset="0">
-           <cursorShape>IBeamCursor</cursorShape>
-          </property>
-          <property name="verticalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="horizontalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="plainText">
-           <string/>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="1" alignment="Qt::AlignHCenter">
-         <widget class="QLabel" name="checkActiveLabel_Box1_6">
-          <property name="text">
-           <string>Active</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="1" alignment="Qt::AlignHCenter">
-         <widget class="QCheckBox" name="checkActive_Box1_6">
+                 <item row="4" column="0" alignment="Qt::AlignHCenter">
+                     <widget class="QCheckBox" name="checkActive_Box1">
           <property name="maximumSize">
            <size>
             <width>22</width>
@@ -1526,66 +423,21 @@
           </property>
          </widget>
         </item>
-        <item row="7" column="2" colspan="2">
-         <widget class="QTextEdit" name="paramFile_Box1_6">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>200</width>
-            <height>26</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>11</pointsize>
-           </font>
-          </property>
-          <property name="cursor" stdset="0">
-           <cursorShape>IBeamCursor</cursorShape>
-          </property>
-          <property name="verticalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="horizontalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="7" column="4">
-         <widget class="QPushButton" name="paramFileButton_Box1_6">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>26</width>
-            <height>26</height>
-           </size>
-          </property>
+                 <item row="5" column="0" alignment="Qt::AlignHCenter">
+                     <widget class="QLabel" name="checkActiveLabel_Box1">
           <property name="text">
-           <string>...</string>
+              <string>Active</string>
+          </property>
+          <property name="alignment">
+              <set>Qt::AlignCenter</set>
           </property>
           <property name="HAlign" stdset="0">
            <string/>
           </property>
          </widget>
         </item>
-        <item row="7" column="1">
-         <widget class="QLabel" name="paramFileLabel_Box1_6">
+                 <item row="7" column="0">
+                     <widget class="QLabel" name="paramFileLabel_Box1">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -1606,8 +458,8 @@
           </property>
          </widget>
         </item>
-        <item row="3" column="1">
-         <spacer name="vertSpacer_Box1_6">
+                 <item row="1" column="0">
+                     <spacer name="vertSpacer3_Box1">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
@@ -1619,206 +471,151 @@
           </property>
          </spacer>
         </item>
-        <item row="0" column="1" alignment="Qt::AlignHCenter">
-         <widget class="QLabel" name="label_Box1_6">
-          <property name="text">
-           <string>Box 1</string>
-          </property>
-         </widget>
-        </item>
-        <item row="8" column="1">
-         <widget class="QLabel" name="birdEntryLabel_Box1_6">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>500</width>
-            <height>26</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Bird</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="2" rowspan="7" colspan="3">
-         <widget class="QTextBrowser" name="statusText_Box1_6">
-          <property name="maximumSize">
-           <size>
-            <width>230</width>
-            <height>180</height>
-           </size>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="9" column="3" colspan="2" alignment="Qt::AlignHCenter|Qt::AlignVCenter">
-         <widget class="QPushButton" name="start_Box1_6">
-          <property name="maximumSize">
-           <size>
-            <width>100</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Start</string>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1" alignment="Qt::AlignHCenter">
-         <widget class="QGraphicsView" name="graphic_Box1_6">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
+                 <item row="2" column="0" alignment="Qt::AlignHCenter">
+                     <widget class="QLabel" name="label">
           <property name="maximumSize">
            <size>
             <width>35</width>
             <height>35</height>
            </size>
           </property>
-          <property name="verticalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
+                         <property name="frameShape">
+                             <enum>QFrame::Panel</enum>
+                         </property>
+                         <property name="frameShadow">
+                             <enum>QFrame::Sunken</enum>
           </property>
-          <property name="horizontalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="interactive">
-           <bool>false</bool>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="6" column="1">
-         <spacer name="vertSpacer2_Box1_6">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="1" column="1">
-         <spacer name="vertSpacer3_Box1_6">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-       </layout>
-      </item>
-      <item row="1" column="4">
-       <layout class="QGridLayout" name="gridLayout_Box1_7">
-        <property name="spacing">
-         <number>6</number>
-        </property>
-        <item row="2" column="1" alignment="Qt::AlignHCenter">
-         <widget class="QGraphicsView" name="graphic_Box1_7">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>35</width>
-            <height>35</height>
-           </size>
-          </property>
-          <property name="verticalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="horizontalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="interactive">
-           <bool>false</bool>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="7" column="1">
-         <widget class="QLabel" name="paramFileLabel_Box1_7">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>500</width>
-            <height>26</height>
-           </size>
+                         <property name="midLineWidth">
+                             <number>0</number>
           </property>
           <property name="text">
-           <string>File</string>
+           <string/>
           </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                         <property name="pixmap">
+                             <pixmap resource="icons/icons.qrc">:/boxIcons/red_stop.svg</pixmap>
           </property>
-         </widget>
-        </item>
-        <item row="5" column="1" alignment="Qt::AlignHCenter">
-         <widget class="QLabel" name="checkActiveLabel_Box1_7">
-          <property name="text">
-           <string>Active</string>
+                         <property name="scaledContents">
+                             <bool>true</bool>
           </property>
           <property name="alignment">
            <set>Qt::AlignCenter</set>
           </property>
+                         <property name="margin">
+                             <number>2</number>
+          </property>
+                         <property name="textInteractionFlags">
+                             <set>Qt::NoTextInteraction</set>
+          </property>
+         </widget>
+        </item>
+                 <item row="0" column="1" rowspan="7" colspan="3">
+                     <widget class="QTextBrowser" name="statusText_Box1">
+          <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+                         <property name="minimumSize">
+           <size>
+               <width>0</width>
+               <height>215</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>230</width>
+               <height>215</height>
+           </size>
+          </property>
+                         <property name="html">
+                             <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+                                 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style
+                                 type=&quot;text/css&quot;&gt;
+                                 p, li { white-space: pre-wrap; }
+                                 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:11pt;
+                                 font-weight:400; font-style:normal;&quot;&gt;
+                                 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px;
+                                 margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;1&lt;/p&gt;
+                                 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px;
+                                 margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;2&lt;/p&gt;
+                                 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px;
+                                 margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;3&lt;/p&gt;
+                                 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px;
+                                 margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;4&lt;/p&gt;
+                                 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px;
+                                 margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;5&lt;/p&gt;
+                                 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px;
+                                 margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;6&lt;/p&gt;
+                                 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px;
+                                 margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;7&lt;/p&gt;
+                                 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px;
+                                 margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;8&lt;/p&gt;
+                                 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px;
+                                 margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;9&lt;/p&gt;
+                                 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px;
+                                 margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;10&lt;/p&gt;
+                                 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px;
+                                 margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;11&lt;/p&gt;
+                                 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px;
+                                 margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;12&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
+                             </string>
+          </property>
           <property name="HAlign" stdset="0">
            <string/>
           </property>
          </widget>
         </item>
-        <item row="9" column="3" colspan="2" alignment="Qt::AlignHCenter|Qt::AlignVCenter">
-         <widget class="QPushButton" name="start_Box1_7">
+                 <item row="7" column="3">
+                     <widget class="QPushButton" name="paramFileButton_Box1">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="maximumSize">
            <size>
-            <width>100</width>
-            <height>16777215</height>
+            <width>26</width>
+            <height>26</height>
            </size>
           </property>
           <property name="text">
-           <string>Start</string>
+           <string>...</string>
           </property>
           <property name="HAlign" stdset="0">
            <string/>
           </property>
          </widget>
         </item>
-        <item row="8" column="2" colspan="2">
-         <widget class="QPlainTextEdit" name="birdEntry_Box1_7">
+                 <item row="3" column="0">
+                     <spacer name="vertSpacer_Box1">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+                 <item row="6" column="0">
+                     <spacer name="vertSpacer2_Box1">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+                 <item row="8" column="1" colspan="2">
+                     <widget class="QPlainTextEdit" name="birdEntry_Box1">
           <property name="sizePolicy">
            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Maximum">
             <horstretch>0</horstretch>
@@ -1853,10 +650,10 @@
           </property>
          </widget>
         </item>
-        <item row="7" column="2" colspan="2">
-         <widget class="QTextEdit" name="paramFile_Box1_7">
+                 <item row="7" column="1" colspan="2">
+                     <widget class="QTextEdit" name="paramFile_Box1">
           <property name="enabled">
-           <bool>false</bool>
+              <bool>true</bool>
           </property>
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
@@ -1889,43 +686,44 @@
           </property>
          </widget>
         </item>
-        <item row="6" column="1">
-         <spacer name="vertSpacer2_Box1_7">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
+                 <item row="10" column="3">
+                     <widget class="QToolButton" name="toolButton">
+                         <property name="minimumSize">
            <size>
-            <width>20</width>
-            <height>20</height>
+            <width>26</width>
+            <height>26</height>
            </size>
           </property>
-         </spacer>
-        </item>
-        <item row="4" column="1" alignment="Qt::AlignHCenter">
-         <widget class="QCheckBox" name="checkActive_Box1_7">
           <property name="maximumSize">
            <size>
-            <width>22</width>
-            <height>22</height>
+               <width>56</width>
+            <height>26</height>
            </size>
           </property>
           <property name="text">
            <string/>
           </property>
-          <property name="iconSize">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
+                         <property name="icon">
+                             <iconset>
+                                 <normaloff>icons/wrench.svg</normaloff>icons/wrench.svg
+                             </iconset>
           </property>
-          <property name="HAlign" stdset="0">
-           <string/>
+                         <property name="popupMode">
+                             <enum>QToolButton::InstantPopup</enum>
+          </property>
+                         <property name="toolButtonStyle">
+                             <enum>Qt::ToolButtonIconOnly</enum>
+          </property>
+                         <property name="autoRaise">
+                             <bool>true</bool>
+          </property>
+                         <property name="arrowType">
+                             <enum>Qt::NoArrow</enum>
           </property>
          </widget>
         </item>
-        <item row="9" column="1" colspan="2" alignment="Qt::AlignHCenter|Qt::AlignVCenter">
-         <widget class="QPushButton" name="stop_Box1_7">
+                 <item row="10" column="1">
+                     <widget class="QPushButton" name="stop_Box1">
           <property name="maximumSize">
            <size>
             <width>100</width>
@@ -1940,153 +738,8 @@
           </property>
          </widget>
         </item>
-        <item row="8" column="1">
-         <widget class="QLabel" name="birdEntryLabel_Box1_7">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>500</width>
-            <height>26</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Bird</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="1">
-         <spacer name="vertSpacer_Box1_7">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="0" column="1" alignment="Qt::AlignHCenter">
-         <widget class="QLabel" name="label_Box1_7">
-          <property name="text">
-           <string>Box 1</string>
-          </property>
-         </widget>
-        </item>
-        <item row="7" column="4">
-         <widget class="QPushButton" name="paramFileButton_Box1_7">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>26</width>
-            <height>26</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>...</string>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="2" rowspan="7" colspan="3">
-         <widget class="QTextBrowser" name="statusText_Box1_7">
-          <property name="maximumSize">
-           <size>
-            <width>230</width>
-            <height>180</height>
-           </size>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <spacer name="vertSpacer3_Box1_7">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-       </layout>
-      </item>
-      <item row="3" column="4">
-       <layout class="QGridLayout" name="gridLayout_Box1_8">
-        <property name="spacing">
-         <number>6</number>
-        </property>
-        <item row="7" column="1">
-         <widget class="QLabel" name="paramFileLabel_Box1_8">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>500</width>
-            <height>26</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>File</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="1">
-         <spacer name="vertSpacer_Box1_8">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="6" column="1">
-         <spacer name="vertSpacer2_Box1_8">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="9" column="3" colspan="2" alignment="Qt::AlignHCenter|Qt::AlignVCenter">
-         <widget class="QPushButton" name="start_Box1_8">
+                 <item row="10" column="2">
+                     <widget class="QPushButton" name="start_Box1">
           <property name="maximumSize">
            <size>
             <width>100</width>
@@ -2101,1777 +754,77 @@
           </property>
          </widget>
         </item>
-        <item row="7" column="2" colspan="2">
-         <widget class="QTextEdit" name="paramFile_Box1_8">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>200</width>
-            <height>26</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>11</pointsize>
-           </font>
-          </property>
-          <property name="cursor" stdset="0">
-           <cursorShape>IBeamCursor</cursorShape>
-          </property>
-          <property name="verticalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="horizontalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="8" column="1">
-         <widget class="QLabel" name="birdEntryLabel_Box1_8">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>500</width>
-            <height>26</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Bird</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1" alignment="Qt::AlignHCenter">
-         <widget class="QGraphicsView" name="graphic_Box1_8">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>35</width>
-            <height>35</height>
-           </size>
-          </property>
-          <property name="verticalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="horizontalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="interactive">
-           <bool>false</bool>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="9" column="1" colspan="2" alignment="Qt::AlignHCenter|Qt::AlignVCenter">
-         <widget class="QPushButton" name="stop_Box1_8">
-          <property name="maximumSize">
-           <size>
-            <width>100</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Stop</string>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1" alignment="Qt::AlignHCenter">
-         <widget class="QLabel" name="label_Box1_8">
-          <property name="text">
-           <string>Box 1</string>
-          </property>
-         </widget>
-        </item>
-        <item row="8" column="2" colspan="2">
-         <widget class="QPlainTextEdit" name="birdEntry_Box1_8">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Maximum">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>200</width>
-            <height>26</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>11</pointsize>
-           </font>
-          </property>
-          <property name="cursor" stdset="0">
-           <cursorShape>IBeamCursor</cursorShape>
-          </property>
-          <property name="verticalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="horizontalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="plainText">
-           <string/>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="1" alignment="Qt::AlignHCenter">
-         <widget class="QLabel" name="checkActiveLabel_Box1_8">
-          <property name="text">
-           <string>Active</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="1" alignment="Qt::AlignHCenter">
-         <widget class="QCheckBox" name="checkActive_Box1_8">
-          <property name="maximumSize">
-           <size>
-            <width>22</width>
-            <height>22</height>
-           </size>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="7" column="4">
-         <widget class="QPushButton" name="paramFileButton_Box1_8">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>26</width>
-            <height>26</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>...</string>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="2" rowspan="7" colspan="3">
-         <widget class="QTextBrowser" name="statusText_Box1_8">
-          <property name="maximumSize">
-           <size>
-            <width>230</width>
-            <height>180</height>
-           </size>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <spacer name="vertSpacer3_Box1_8">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
        </layout>
       </item>
-      <item row="5" column="4">
-       <layout class="QGridLayout" name="gridLayout_Box1_9">
-        <property name="spacing">
-         <number>6</number>
-        </property>
-        <item row="8" column="1">
-         <widget class="QLabel" name="birdEntryLabel_Box1_9">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>500</width>
-            <height>26</height>
-           </size>
-          </property>
+         <item row="4" column="0" colspan="4">
+             <layout class="QGridLayout" name="menuGrid">
+                 <item row="0" column="0">
+                     <widget class="QPushButton" name="stopAllButton">
           <property name="text">
-           <string>Bird</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              <string>Stop All</string>
           </property>
          </widget>
         </item>
-        <item row="7" column="2" colspan="2">
-         <widget class="QTextEdit" name="paramFile_Box1_9">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>200</width>
-            <height>26</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>11</pointsize>
-           </font>
-          </property>
-          <property name="cursor" stdset="0">
-           <cursorShape>IBeamCursor</cursorShape>
-          </property>
-          <property name="verticalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="horizontalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="6" column="1">
-         <spacer name="vertSpacer2_Box1_9">
+                 <item row="0" column="2">
+                     <spacer name="horizontalSpacer">
           <property name="orientation">
-           <enum>Qt::Vertical</enum>
+              <enum>Qt::Horizontal</enum>
           </property>
           <property name="sizeHint" stdset="0">
            <size>
-            <width>20</width>
+               <width>40</width>
             <height>20</height>
            </size>
           </property>
          </spacer>
         </item>
-        <item row="3" column="1">
-         <spacer name="vertSpacer_Box1_9">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
+                 <item row="0" column="4">
+                     <widget class="QComboBox" name="behaviorField">
+                         <property name="minimumSize">
            <size>
-            <width>20</width>
-            <height>20</height>
+               <width>200</width>
+               <height>0</height>
            </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="2" column="1" alignment="Qt::AlignHCenter">
-         <widget class="QGraphicsView" name="graphic_Box1_9">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
           </property>
           <property name="maximumSize">
            <size>
-            <width>35</width>
-            <height>35</height>
-           </size>
-          </property>
-          <property name="verticalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="horizontalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="interactive">
-           <bool>false</bool>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="1" alignment="Qt::AlignHCenter">
-         <widget class="QLabel" name="checkActiveLabel_Box1_9">
-          <property name="text">
-           <string>Active</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="7" column="4">
-         <widget class="QPushButton" name="paramFileButton_Box1_9">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>26</width>
-            <height>26</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>...</string>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="1" alignment="Qt::AlignHCenter">
-         <widget class="QCheckBox" name="checkActive_Box1_9">
-          <property name="maximumSize">
-           <size>
-            <width>22</width>
-            <height>22</height>
-           </size>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="9" column="1" colspan="2" alignment="Qt::AlignHCenter|Qt::AlignVCenter">
-         <widget class="QPushButton" name="stop_Box1_9">
-          <property name="maximumSize">
-           <size>
-            <width>100</width>
+               <width>300</width>
             <height>16777215</height>
            </size>
           </property>
+                         <item>
+                             <property name="text">
+                                 <string>GoNoGoInterruptExp</string>
+                             </property>
+                         </item>
+         </widget>
+        </item>
+                 <item row="0" column="1">
+                     <widget class="QPushButton" name="startAllButton">
           <property name="text">
-           <string>Stop</string>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
+              <string>Start All</string>
           </property>
          </widget>
         </item>
-        <item row="8" column="2" colspan="2">
-         <widget class="QPlainTextEdit" name="birdEntry_Box1_9">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Maximum">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>200</width>
-            <height>26</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>11</pointsize>
-           </font>
-          </property>
-          <property name="cursor" stdset="0">
-           <cursorShape>IBeamCursor</cursorShape>
-          </property>
-          <property name="verticalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="horizontalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="plainText">
-           <string/>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="2" rowspan="7" colspan="3">
-         <widget class="QTextBrowser" name="statusText_Box1_9">
-          <property name="maximumSize">
-           <size>
-            <width>230</width>
-            <height>180</height>
-           </size>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="7" column="1">
-         <widget class="QLabel" name="paramFileLabel_Box1_9">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>500</width>
-            <height>26</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>File</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1" alignment="Qt::AlignHCenter">
-         <widget class="QLabel" name="label_Box1_9">
-          <property name="text">
-           <string>Box 1</string>
-          </property>
-         </widget>
-        </item>
-        <item row="9" column="3" colspan="2" alignment="Qt::AlignHCenter|Qt::AlignVCenter">
-         <widget class="QPushButton" name="start_Box1_9">
-          <property name="maximumSize">
-           <size>
-            <width>100</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Start</string>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <spacer name="vertSpacer3_Box1_9">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-       </layout>
-      </item>
-      <item row="1" column="6">
-       <layout class="QGridLayout" name="gridLayout_Box1_10">
-        <property name="spacing">
-         <number>6</number>
-        </property>
-        <item row="8" column="2" colspan="2">
-         <widget class="QPlainTextEdit" name="birdEntry_Box1_10">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Maximum">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>200</width>
-            <height>26</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>11</pointsize>
-           </font>
-          </property>
-          <property name="cursor" stdset="0">
-           <cursorShape>IBeamCursor</cursorShape>
-          </property>
-          <property name="verticalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="horizontalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="plainText">
-           <string/>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="2" rowspan="7" colspan="3">
-         <widget class="QTextBrowser" name="statusText_Box1_10">
-          <property name="maximumSize">
-           <size>
-            <width>230</width>
-            <height>180</height>
-           </size>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="1">
-         <spacer name="vertSpacer_Box1_10">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="7" column="4">
-         <widget class="QPushButton" name="paramFileButton_Box1_10">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>26</width>
-            <height>26</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>...</string>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="7" column="1">
-         <widget class="QLabel" name="paramFileLabel_Box1_10">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>500</width>
-            <height>26</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>File</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1" alignment="Qt::AlignHCenter">
-         <widget class="QGraphicsView" name="graphic_Box1_10">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>35</width>
-            <height>35</height>
-           </size>
-          </property>
-          <property name="verticalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="horizontalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="interactive">
-           <bool>false</bool>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="7" column="2" colspan="2">
-         <widget class="QTextEdit" name="paramFile_Box1_10">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>200</width>
-            <height>26</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>11</pointsize>
-           </font>
-          </property>
-          <property name="cursor" stdset="0">
-           <cursorShape>IBeamCursor</cursorShape>
-          </property>
-          <property name="verticalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="horizontalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="6" column="1">
-         <spacer name="vertSpacer2_Box1_10">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="9" column="1" colspan="2" alignment="Qt::AlignHCenter|Qt::AlignVCenter">
-         <widget class="QPushButton" name="stop_Box1_10">
-          <property name="maximumSize">
-           <size>
-            <width>100</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Stop</string>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="9" column="3" colspan="2" alignment="Qt::AlignHCenter|Qt::AlignVCenter">
-         <widget class="QPushButton" name="start_Box1_10">
-          <property name="maximumSize">
-           <size>
-            <width>100</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Start</string>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1" alignment="Qt::AlignHCenter">
-         <widget class="QLabel" name="label_Box1_10">
-          <property name="text">
-           <string>Box 1</string>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="1" alignment="Qt::AlignHCenter">
-         <widget class="QCheckBox" name="checkActive_Box1_10">
-          <property name="maximumSize">
-           <size>
-            <width>22</width>
-            <height>22</height>
-           </size>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="1" alignment="Qt::AlignHCenter">
-         <widget class="QLabel" name="checkActiveLabel_Box1_10">
-          <property name="text">
-           <string>Active</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="8" column="1">
-         <widget class="QLabel" name="birdEntryLabel_Box1_10">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>500</width>
-            <height>26</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Bird</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <spacer name="vertSpacer3_Box1_10">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-       </layout>
-      </item>
-      <item row="3" column="6">
-       <layout class="QGridLayout" name="gridLayout_Box1_11">
-        <property name="spacing">
-         <number>6</number>
-        </property>
-        <item row="0" column="1" alignment="Qt::AlignHCenter">
-         <widget class="QLabel" name="label_Box1_11">
-          <property name="text">
-           <string>Box 1</string>
-          </property>
-         </widget>
-        </item>
-        <item row="7" column="1">
-         <widget class="QLabel" name="paramFileLabel_Box1_11">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>500</width>
-            <height>26</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>File</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="8" column="1">
-         <widget class="QLabel" name="birdEntryLabel_Box1_11">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>500</width>
-            <height>26</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Bird</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="8" column="2" colspan="2">
-         <widget class="QPlainTextEdit" name="birdEntry_Box1_11">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Maximum">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>200</width>
-            <height>26</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>11</pointsize>
-           </font>
-          </property>
-          <property name="cursor" stdset="0">
-           <cursorShape>IBeamCursor</cursorShape>
-          </property>
-          <property name="verticalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="horizontalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="plainText">
-           <string/>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="9" column="1" colspan="2" alignment="Qt::AlignHCenter|Qt::AlignVCenter">
-         <widget class="QPushButton" name="stop_Box1_11">
-          <property name="maximumSize">
-           <size>
-            <width>100</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Stop</string>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="1" alignment="Qt::AlignHCenter">
-         <widget class="QLabel" name="checkActiveLabel_Box1_11">
-          <property name="text">
-           <string>Active</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1" alignment="Qt::AlignHCenter">
-         <widget class="QGraphicsView" name="graphic_Box1_11">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>35</width>
-            <height>35</height>
-           </size>
-          </property>
-          <property name="verticalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="horizontalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="interactive">
-           <bool>false</bool>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="6" column="1">
-         <spacer name="vertSpacer2_Box1_11">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="7" column="2" colspan="2">
-         <widget class="QTextEdit" name="paramFile_Box1_11">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>200</width>
-            <height>26</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>11</pointsize>
-           </font>
-          </property>
-          <property name="cursor" stdset="0">
-           <cursorShape>IBeamCursor</cursorShape>
-          </property>
-          <property name="verticalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="horizontalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="2" rowspan="7" colspan="3">
-         <widget class="QTextBrowser" name="statusText_Box1_11">
-          <property name="maximumSize">
-           <size>
-            <width>230</width>
-            <height>180</height>
-           </size>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="9" column="3" colspan="2" alignment="Qt::AlignHCenter|Qt::AlignVCenter">
-         <widget class="QPushButton" name="start_Box1_11">
-          <property name="maximumSize">
-           <size>
-            <width>100</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Start</string>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="1">
-         <spacer name="vertSpacer_Box1_11">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="7" column="4">
-         <widget class="QPushButton" name="paramFileButton_Box1_11">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>26</width>
-            <height>26</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>...</string>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="1" alignment="Qt::AlignHCenter">
-         <widget class="QCheckBox" name="checkActive_Box1_11">
-          <property name="maximumSize">
-           <size>
-            <width>22</width>
-            <height>22</height>
-           </size>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <spacer name="vertSpacer3_Box1_11">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-       </layout>
-      </item>
-      <item row="5" column="6">
-       <layout class="QGridLayout" name="gridLayout_Box1_12">
-        <property name="spacing">
-         <number>6</number>
-        </property>
-        <item row="4" column="1" alignment="Qt::AlignHCenter">
-         <widget class="QCheckBox" name="checkActive_Box1_12">
-          <property name="maximumSize">
-           <size>
-            <width>22</width>
-            <height>22</height>
-           </size>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="7" column="1">
-         <widget class="QLabel" name="paramFileLabel_Box1_12">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>500</width>
-            <height>26</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>File</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="8" column="1">
-         <widget class="QLabel" name="birdEntryLabel_Box1_12">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>500</width>
-            <height>26</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Bird</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="8" column="2" colspan="2">
-         <widget class="QPlainTextEdit" name="birdEntry_Box1_12">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Maximum">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>200</width>
-            <height>26</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>11</pointsize>
-           </font>
-          </property>
-          <property name="cursor" stdset="0">
-           <cursorShape>IBeamCursor</cursorShape>
-          </property>
-          <property name="verticalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="horizontalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="plainText">
-           <string/>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1" alignment="Qt::AlignHCenter">
-         <widget class="QLabel" name="label_Box1_12">
-          <property name="text">
-           <string>Box 1</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1" alignment="Qt::AlignHCenter">
-         <widget class="QGraphicsView" name="graphic_Box1_12">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>35</width>
-            <height>35</height>
-           </size>
-          </property>
-          <property name="verticalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="horizontalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="interactive">
-           <bool>false</bool>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="9" column="1" colspan="2" alignment="Qt::AlignHCenter|Qt::AlignVCenter">
-         <widget class="QPushButton" name="stop_Box1_12">
-          <property name="maximumSize">
-           <size>
-            <width>100</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Stop</string>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="1">
-         <spacer name="vertSpacer_Box1_12">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="7" column="4">
-         <widget class="QPushButton" name="paramFileButton_Box1_12">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>26</width>
-            <height>26</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>...</string>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="9" column="3" colspan="2" alignment="Qt::AlignHCenter|Qt::AlignVCenter">
-         <widget class="QPushButton" name="start_Box1_12">
-          <property name="maximumSize">
-           <size>
-            <width>100</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Start</string>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="2" rowspan="7" colspan="3">
-         <widget class="QTextBrowser" name="statusText_Box1_12">
-          <property name="maximumSize">
-           <size>
-            <width>230</width>
-            <height>180</height>
-           </size>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="1" alignment="Qt::AlignHCenter">
-         <widget class="QLabel" name="checkActiveLabel_Box1_12">
-          <property name="text">
-           <string>Active</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="7" column="2" colspan="2">
-         <widget class="QTextEdit" name="paramFile_Box1_12">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>200</width>
-            <height>26</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>11</pointsize>
-           </font>
-          </property>
-          <property name="cursor" stdset="0">
-           <cursorShape>IBeamCursor</cursorShape>
-          </property>
-          <property name="verticalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="horizontalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="6" column="1">
-         <spacer name="vertSpacer2_Box1_12">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="1" column="1">
-         <spacer name="vertSpacer3_Box1_12">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-       </layout>
-      </item>
-      <item row="1" column="0">
-       <layout class="QGridLayout" name="gridLayout_Box1">
-        <property name="spacing">
-         <number>6</number>
-        </property>
-        <item row="9" column="0">
-         <widget class="QLabel" name="birdEntryLabel_Box1">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>500</width>
-            <height>26</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Bird</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0" alignment="Qt::AlignHCenter">
-         <widget class="QLabel" name="label_Box1">
-          <property name="text">
-           <string>Box 1</string>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="0" alignment="Qt::AlignHCenter">
-         <widget class="QCheckBox" name="checkActive_Box1">
-          <property name="maximumSize">
-           <size>
-            <width>22</width>
-            <height>22</height>
-           </size>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="6" column="0" alignment="Qt::AlignHCenter">
-         <widget class="QLabel" name="checkActiveLabel_Box1">
-          <property name="text">
-           <string>Active</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="8" column="0">
-         <widget class="QLabel" name="paramFileLabel_Box1">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>500</width>
-            <height>26</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>File</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <spacer name="vertSpacer3_Box1">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="3" column="0" alignment="Qt::AlignHCenter">
-         <widget class="QLabel" name="label">
-          <property name="maximumSize">
-           <size>
-            <width>35</width>
-            <height>35</height>
-           </size>
-          </property>
-          <property name="frameShape">
-           <enum>QFrame::Panel</enum>
-          </property>
-          <property name="frameShadow">
-           <enum>QFrame::Sunken</enum>
-          </property>
-          <property name="midLineWidth">
-           <number>0</number>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-          <property name="pixmap">
-           <pixmap resource="icons/icons.qrc">:/boxIcons/red_stop.svg</pixmap>
-          </property>
-          <property name="scaledContents">
-           <bool>true</bool>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-          <property name="margin">
-           <number>2</number>
-          </property>
-          <property name="textInteractionFlags">
-           <set>Qt::NoTextInteraction</set>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1" rowspan="8" colspan="3">
-         <widget class="QTextBrowser" name="statusText_Box1">
-          <property name="maximumSize">
-           <size>
-            <width>230</width>
-            <height>180</height>
-           </size>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="8" column="3">
-         <widget class="QPushButton" name="paramFileButton_Box1">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>26</width>
-            <height>26</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>...</string>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="0">
-         <spacer name="vertSpacer_Box1">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="7" column="0">
-         <spacer name="vertSpacer2_Box1">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="2" column="0">
-         <widget class="Line" name="line_5">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="10" column="0">
-         <widget class="QPushButton" name="stop_Box1">
-          <property name="maximumSize">
-           <size>
-            <width>100</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Stop</string>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="9" column="1" colspan="2">
-         <widget class="QPlainTextEdit" name="birdEntry_Box1">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Maximum">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>200</width>
-            <height>26</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>11</pointsize>
-           </font>
-          </property>
-          <property name="cursor" stdset="0">
-           <cursorShape>IBeamCursor</cursorShape>
-          </property>
-          <property name="verticalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="horizontalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="plainText">
-           <string/>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="8" column="1" colspan="2">
-         <widget class="QTextEdit" name="paramFile_Box1">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>200</width>
-            <height>26</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>11</pointsize>
-           </font>
-          </property>
-          <property name="cursor" stdset="0">
-           <cursorShape>IBeamCursor</cursorShape>
-          </property>
-          <property name="verticalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="horizontalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="10" column="1">
-         <widget class="QPushButton" name="start_Box1">
-          <property name="maximumSize">
-           <size>
-            <width>100</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Start</string>
-          </property>
-          <property name="HAlign" stdset="0">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="10" column="2" colspan="2">
-         <widget class="QToolButton" name="toolButton">
+                 <item row="0" column="3">
+                     <widget class="QLabel" name="behaviorLabel">
           <property name="minimumSize">
            <size>
-            <width>26</width>
-            <height>26</height>
+               <width>70</width>
+               <height>0</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>56</width>
-            <height>26</height>
+               <width>80</width>
+               <height>80</height>
            </size>
           </property>
           <property name="text">
-           <string/>
+              <string>Behavior</string>
           </property>
-          <property name="icon">
-           <iconset>
-            <normaloff>icons/wrench.svg</normaloff>icons/wrench.svg</iconset>
-          </property>
-          <property name="popupMode">
-           <enum>QToolButton::InstantPopup</enum>
-          </property>
-          <property name="toolButtonStyle">
-           <enum>Qt::ToolButtonIconOnly</enum>
-          </property>
-          <property name="autoRaise">
-           <bool>true</bool>
-          </property>
-          <property name="arrowType">
-           <enum>Qt::NoArrow</enum>
+                         <property name="alignment">
+                             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
           </property>
          </widget>
         </item>
@@ -3881,7 +834,6 @@
     </item>
    </layout>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources>
   <include location="icons/icons.qrc"/>

@@ -149,8 +149,8 @@ class Adlib(object):
         def temp():
             # elapsed_time = (dt.datetime.now() - self.polling_start).total_seconds()
             component.on()
-            responseTime = component.poll(timeout=duration)
-            if responseTime > 0:
+            response = component.poll(timeout=duration)
+            if response:
                 component.off()
                 self.responded_poll = True
                 self.last_response = component.name
@@ -161,7 +161,7 @@ class Adlib(object):
 
         return temp
 
-    def _poll_end(self, component):  # Check that component is back to default state
+    def _poll_end(self, component, *args):  # Check that component is back to default state
         def temp():
             if not component.status():
                 return None

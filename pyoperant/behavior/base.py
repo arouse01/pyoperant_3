@@ -12,7 +12,7 @@ except ImportError:
     import json
 
 
-def _log_except_hook(*exc_info):
+def _log_except_hook(*exc_info):  # How uncaught errors are handled
     text = "".join(traceback.format_exception(*exc_info))
     logging.error("Unhandled exception: %s", text)
 
@@ -52,6 +52,8 @@ class BaseExp(object):
                  *args, **kwargs):
         super(BaseExp, self).__init__()
 
+        self.version = "2.0.0"
+
         self.name = name
         self.description = description
         self.debug = debug
@@ -83,8 +85,6 @@ class BaseExp(object):
         if 'shape' not in self.parameters:  # or self.parameters['shape'] not in ['block1', 'block2', 'block3', 'block4', 'block5']:
             self.parameters['shape'] = None
 
-
-
     def save(self):
         self.snapshot_f = os.path.join(self.parameters['experiment_path'], self.timestamp + '.json')
         with open(self.snapshot_f, 'wb') as config_snap:
@@ -93,6 +93,7 @@ class BaseExp(object):
     def log_config(self):
 
         self.log_file = os.path.join(self.parameters['experiment_path'], self.parameters['subject'] + '.log')
+        self.error_file = os.path.join(self.parameters['experiment_path'], 'error.log')
         log_path = os.path.join(self.parameters['experiment_path'])
         if not os.path.exists(log_path):  # Add path if it doesn't exist
             os.makedirs(log_path)
@@ -108,6 +109,11 @@ class BaseExp(object):
                             level=self.log_level,
                             format='"%(asctime)s","%(levelname)s","%(message)s"')
         self.log = logging.getLogger()
+        errorHandler = logging.FileHandler(self.error_file, mode='w')
+        errorHandler.setLevel(logging.ERROR)
+        errorHandler.setFormatter(logging.Formatter('"%(asctime)s",\n%(message)s'))
+
+        self.log.addHandler(errorHandler)
 
         if 'email' in self.parameters['log_handlers']:
             from pyoperant.local import SMTP_CONFIG
@@ -212,10 +218,13 @@ class BaseExp(object):
         return 'idle'
 
     def pyoperant_close(self):
-        self.log.debug('waiting for response')
-        print "Closing pyoperant, turing off all components"
-        self.panel.trialSens.off()
-        self.panel.respSens.off()
+        try:
+            self.log.debug('waiting for response')
+            print "Closing pyoperant, turing off all components"
+            self.panel.trialSens.off()
+            self.panel.respSens.off()
+        except:
+            pass
 
     # session
 

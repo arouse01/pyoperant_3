@@ -6,10 +6,8 @@ import serial
 import time
 import threading
 import Queue
-# from guppy import hpy
 
-# from mem_top import mem_top
-# import numpy
+# import watchdog
 
 try:
     import simplejson as json
@@ -54,8 +52,8 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         self.experimentPath = ""
         self.purgeActionList = []
         self.primeActionList = []
-        self.openActionList = []
-        self.closeActionList = []
+        self.logModList = []  # Last modification date of log file
+        self.solenoidControlList = []
 
         # Option menu setup
         for boxnumber in self.boxList:
@@ -67,11 +65,8 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             self.primeActionList.append(QtGui.QAction("Prime (5s)", self))
             self.optionMenuList[boxnumber].addAction(self.primeActionList[boxnumber])
 
-            self.openActionList.append(QtGui.QAction("Solenoid Open", self))
-            self.optionMenuList[boxnumber].addAction(self.openActionList[boxnumber])
-
-            self.closeActionList.append(QtGui.QAction("Solenoid Close", self))
-            self.optionMenuList[boxnumber].addAction(self.closeActionList[boxnumber])
+            self.solenoidControlList.append(QtGui.QAction("Solenoid Control", self))
+            self.optionMenuList[boxnumber].addAction(self.solenoidControlList[boxnumber])
 
         for boxnumber in self.boxList:
             # This is only in a separate for loop to visually isolate it from the option menu setup above
@@ -96,6 +91,8 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         for button in self.stopBoxList:
             button.clicked.connect(lambda _, b=i: self.stop_box(boxnumber=b))
             i += 1
+        # for boxnumber in self.boxList:
+        #     self.logModList.append(time.)
 
         # Duplicate this for each menu item, changing names and functions to match
         i = 0
@@ -109,13 +106,8 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             i += 1
 
         i = 0
-        for action in self.openActionList:
-            action.triggered.connect(lambda _, b=i: self.open_water(boxnumber=b, purge_time=5))
-            i += 1
-
-        i = 0
-        for action in self.closeActionList:
-            action.triggered.connect(lambda _, b=i: self.close_water(boxnumber=b, purge_time=5))
+        for action in self.solenoidControlList:
+            action.triggered.connect(lambda _, b=i: self.solenoid_dialog(boxnumber=b))
             i += 1
 
         for boxnumber in self.boxList:  # Attach menus to option buttons
@@ -133,30 +125,68 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             currentPath = existingPathFile[0]
         else:  # Otherwise just start in working directory
             currentPath = os.path.dirname(os.path.realpath(__file__))
-        paramFile = QtGui.QFileDialog.getOpenFileName(self, "Select Preferences File", currentPath, "JSON Files (*.json)")
+        paramFile = QtGui.QFileDialog.getOpenFileName(self, "Select Preferences File", currentPath,
+                                                      "JSON Files (*.json)")
         # execute getOpenFileName dialog and set the directory variable to be equal to the user selected directory
 
         if paramFile:  # if user didn't pick a file don't replace existing path
 
             self.paramFileBoxList[boxnumber].setPlainText(paramFile)  # add file to the listWidget
 
-    def stop_box(self, boxnumber):
-        # stop selected box
+    def get_error(self, boxnumber):
+        # Check output for any errors
+        while True:  # Loop through error codes generated, if any
+            error = ""
+            try:
+                error = '{0}\n{1}'.format(error, self.qList[boxnumber].get(False))
+            except Queue.Empty:
+                break
+        return error
 
+    def error_handler(self, boxnumber):
+        # Take any errors and stop box, if necessary
+        error = self.get_error(boxnumber)
+        if error:
+            if error[
+               0:4] == "ALSA":  # Ignore ALSA errors; they've always occurred and don't interfere (have to do with the sound chip not liking some channels as written)
+                pass
+            elif error[0:5] == 'pydev':  # Ignore pydev errors - thrown automatically during PyCharm debugging
+                pass
+            # elif error[0:5] == 'pydev':  # Add additional exceptions here
+            #     pass
+            else:
+                self.display_message(boxnumber, error)
+                print error
+                self.stop_box(boxnumber, error_mode=True)
+                return True
+        else:
+            return False
+
+    def display_message(self, boxnumber, message):  # quick method for redirecting messages to status box
+        self.statusTextBoxList[boxnumber].setPlainText(''.join(message))
+
+    def stop_box(self, boxnumber, error_mode=False):
+        # stop selected box
         if not self.subprocessBox[boxnumber] == 0:  # Only operate if box is running
-            while True:  # Loop through error codes generated, if any
-                error = ""
+            while True:  # Empty queue so process can end gracefully
                 try:
-                    error = '{0}\n{1}'.format(error, self.qList[boxnumber].get(False))
+                    # error = '{0}\n{1}'.format(error, self.qList[boxnumber].get(False))
+                    self.qList[boxnumber].get(False)
                 except Queue.Empty:
                     break
-            # self.tList[boxnumber].terminate()
-            # self.subprocessBox[boxnumber].stderr.close()
-            # self.subprocessBox[boxnumber].stdout.close()
+        # self.tList[boxnumber].terminate()
+        # self.subprocessBox[boxnumber].stderr.close()
+        # self.subprocessBox[boxnumber].stdout.close()
+        try:
             self.subprocessBox[boxnumber].terminate()
-
-            self.subprocessBox[boxnumber] = 0
-            self.box_enable(boxnumber)
+        except OSError:
+            pass  # OSError is probably that the process is already terminated
+        self.subprocessBox[boxnumber] = 0
+        self.box_enable(boxnumber)
+        self.refreshfile(boxnumber)  # one last time to display any errors sent to the summaryDAT file
+        if error_mode:
+            self.graphicBoxList[boxnumber].setPixmap(self.errorIcon)
+        else:
             self.graphicBoxList[boxnumber].setPixmap(self.redIcon)
 
     def start_box(self, boxnumber):
@@ -168,13 +198,17 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         jsonPath = self.paramFileBoxList[boxnumber].toPlainText()
 
         if not self.checkActiveBoxList[boxnumber].checkState():
-            self.statusTextBoxList[boxnumber].setPlainText("Error: Box not set as Active.")
+            error = "Error: Box not set as Active."
+            self.display_message(boxnumber, error)
         elif not os.path.exists("/dev/teensy%02i" % actualboxnumber):  # check if Teensy is detected:
-            self.statusTextBoxList[boxnumber].setPlainText("Error: Teensy %d not detected." % actualboxnumber)
+            error = "Error: Teensy %d not detected." % actualboxnumber
+            self.display_message(boxnumber, error)
         elif birdName == "":
-            self.statusTextBoxList[boxnumber].setPlainText("Error: Bird name must be entered.")
+            error = "Error: Bird name must be entered."
+            self.display_message(boxnumber, error)
         elif not os.path.isfile(jsonPath):  # Make sure param file is specified
-            self.statusTextBoxList[boxnumber].setPlainText("Error: No parameter file selected.")
+            error = "Error: No parameter file selected."
+            self.display_message(boxnumber, error)
         else:
             try:
                 from pyoperant.local import DATAPATH
@@ -186,7 +220,8 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
                 self.subprocessBox[boxnumber] = subprocess.Popen(
                     ['python', '/home/rouse/Desktop/pyoperant/pyoperant/scripts/behave', '-P',
                      str(boxnumber + 1), '-S', '{0}'.format(birdName), '{0}'.format(self.behaviorField.currentText()),
-                     '-c', '{0}'.format(jsonPath)], stdin=open(os.devnull), stderr=subprocess.PIPE, stdout=open(os.devnull))
+                     '-c', '{0}'.format(jsonPath)], stdin=open(os.devnull), stderr=subprocess.PIPE,
+                    stdout=open(os.devnull))
 
                 self.tList[boxnumber] = threading.Thread(target=self.read_output,
                                                          args=(boxnumber, self.subprocessBox[boxnumber].stderr,
@@ -195,22 +230,22 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
 
                 self.tList[boxnumber].start()
 
-                while True:  # Loop through error codes generated, if any
-                    error = ""
-                    try:
-                        error = '{0}\n{1}'.format(error, self.qList[boxnumber].get(False))
-                    except Queue.Empty:
-                        break
-                if error and not error[0:4] == "ALSA":
-                        self.statusTextBoxList[boxnumber].setPlainText(error)
-                        # msg = QtGui.QMessageBox("Warning", error, QtGui.QMessageBox.Warning,
-                        # QtGui.QMessageBox.Ok, 0, 0)
-                        # msg.exec_()
-                        self.stop_box(boxnumber)
-                        # self.subprocessBox[boxnumber].terminate
-                        # self.subprocessBox[boxnumber].wait
-                        # self.subprocessBox[boxnumber] = 0
-                        # self.graphicBoxList[boxnumber].setPixmap(self.redIcon)
+                # while True:  # Loop through error codes generated, if any
+                #    error = ""
+                #    try:
+                #        error = '{0}\n{1}'.format(error, self.qList[boxnumber].get(False))
+                #    except Queue.Empty:
+                #        break
+
+                error = self.get_error(boxnumber)
+
+                if error and not error[0:4] == "ALSA" and not error[0:5] == 'pydev':
+                    self.display_message(boxnumber, error)
+                    self.stop_box(boxnumber, error_mode=True)
+                    # self.subprocessBox[boxnumber].terminate
+                    # self.subprocessBox[boxnumber].wait
+                    # self.subprocessBox[boxnumber] = 0
+                    # self.graphicBoxList[boxnumber].setPixmap(self.redIcon)
                 else:
                     self.box_disable(boxnumber)  # UI modifications while box is running
                     self.graphicBoxList[boxnumber].setPixmap(self.greenIcon)
@@ -220,8 +255,14 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         while True:
             output = pipe.readline()
             q.put(output)
-            running = self.subprocessBox[boxnumber]
-            if running == 0:
+
+            # Added the following so that the queue stops when the parent thread stops (so it doesn't take off and inflate memory usage)
+            try:
+                running = self.subprocessBox[boxnumber].poll()  # Tried this on 10/22/18
+            except AttributeError:  # If subprocess was already stopped, and the subprocessBox value was already cleared, then poll() will throw an error
+                running = 1
+            # running = self.subprocessBox[boxnumber]
+            if running is not None:
                 break
 
     def read_input(self, write_pipe, in_pipe_name):
@@ -285,86 +326,61 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         device.close()  # close connection
         print "Purged box {0}".format(str(boxnumber))
 
-    def open_water(self, boxnumber, purge_time=20):
+    def solenoid_dialog(self, boxnumber):
         boxnumber = boxnumber + 1  # boxnumber is index, but device name is not
-        print("Opening water system in box %d" % boxnumber)
-        device_name = '/dev/teensy%02i' % boxnumber
-        device = serial.Serial(port=device_name,
-                               baudrate=19200,
-                               timeout=5)
-        if device is None:
-            raise 'Could not open serial device %s' % device_name
-
-        device.readline()
-        device.flushInput()
-        print("Successfully opened device %s" % device_name)
-        # solenoid = channel 16
-        device.write("".join([chr(16), chr(3)]))  # set channel 16 as output
-        # device.write("".join([chr(16), chr(2)]))  # close solenoid, just in case
-        device.write("".join([chr(16), chr(1)]))  # open solenoid
-
-        print "Successfully opened water system in box {0}".format(str(boxnumber))
-
-    def close_water(self, boxnumber, purge_time=20):
-        boxnumber = boxnumber + 1  # boxnumber is index, but device name is not
-        print("Closing water system in box %d" % boxnumber)
-        device_name = '/dev/teensy%02i' % boxnumber
-        device = serial.Serial(port=device_name,
-                               baudrate=19200,
-                               timeout=5)
-        if device is None:
-            raise 'Could not open serial device %s' % device_name
-
-        device.readline()
-        device.flushInput()
-        # solenoid = channel 16
-        device.write("".join([chr(16), chr(3)]))  # set channel 16 as output
-        # device.write("".join([chr(16), chr(2)]))  # close solenoid, just in case
-
-        device.write("".join([chr(16), chr(2)]))  # close solenoid
-        device.close()  # close connection
-        print "Closed water system in box {0}".format(str(boxnumber))
+        print("Opening solenoid control for box %d" % boxnumber)
+        dialog = SolenoidGui(boxnumber)
+        dialog.exec_()
 
     def refreshall(self):
         # print "timer fired"
         # print mem_top()
         for boxnumber in self.boxList:
+
+            # Check for errors and read summary file
             if not self.subprocessBox[boxnumber] == 0:  # If box is running
-                # Check for any errors. If found, stop box and display error
-                while True:  # Loop through error codes generated, if any
-                    error = ""
-                    try:
-                        error = '{0}\n{1}'.format(error, self.qList[boxnumber].get(False))
-                    except Queue.Empty:
-                        break
-                if error and not error[0:4] == "ALSA" and not error[0:5] == 'pydev':
-                    self.statusTextBoxList[boxnumber].setPlainText(error)
-                    print error
-                    self.stop_box(boxnumber)
-                    # self.subprocessBox[boxnumber].terminate
-                    # self.subprocessBox[boxnumber].wait
-                    # self.subprocessBox[boxnumber] = 0
-                    # self.graphicBoxList[boxnumber].setPixmap(self.redIcon)
-                else:
+                # Check if subprocess is still running
+                poll = self.subprocessBox[boxnumber].poll()
+                if poll is None:  # poll() == 0 means the subprocess is still running
                     self.refreshfile(boxnumber)
+                else:
+                    self.stop_box(boxnumber, error_mode=True)
 
     def refreshfile(self, boxnumber):
         birdName = str(self.birdEntryBoxList[boxnumber].toPlainText())
         # experiment_path = str(self.logpathList[boxnumber]+"/")
-        summary_file = os.path.join(self.experimentPath, birdName, "{0}{1}".format(birdName,'.summaryDAT'))
-        # dataPath = os.path.join(self.experimentPath, birdName, birdName + ".log")
-        # print "opening file for box %d (%s)" % (boxnumber + 1, birdName)
-        # dataPath = os.path.join(self.experimentPath, birdName, birdName + ".log")
-        # print "opening file for box %d (%s)" % (boxnumber + 1, birdName)
+        summary_file = os.path.join(self.experimentPath, birdName, "{0}{1}".format(birdName, '.summaryDAT'))
+        error_log = os.path.join(self.experimentPath, birdName, 'error.log')
+        errorData = []  # Initialize to prevent the code from getting tripped up when checking for error text
+
         try:
             f = open(summary_file, 'r')
-        except:
+        except IOError:
             f = False
+
+        try:
+            g = open(error_log, 'r')
+        except IOError:
+            g = False
 
         if f:
             logData = f.readlines()
-            self.statusTextBoxList[boxnumber].setPlainText(''.join(logData[-10:]))
             f.close()
+
+            if g:
+                errorData = g.readlines()
+                g.close()
+            else:
+                g = 0
+
+            if not g == 0 and len(errorData) > 1:
+                # print "error log"
+                self.display_message(boxnumber, errorData)
+                # self.statusTextBoxList[boxnumber].setPlainText(''.join(errorData[-10:]))
+            else:
+                # print 'reg summary'
+                self.display_message(boxnumber, logData)
+                # self.statusTextBoxList[boxnumber].setPlainText(''.join(logData[-10:]))
         else:
             print "{0}{1}".format("Unable to open file for ", birdName)
 
@@ -379,33 +395,43 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             print 'settings.json file detected, loading settings'
             with open(settingsFile, 'r') as f:
                 dictLoaded = json.load(f)
-                if dictLoaded['birds']:
+                if 'birds' in dictLoaded:
                     for i, birdName in dictLoaded['birds']:
                         if birdName:
                             self.birdEntryBoxList[i].setPlainText(birdName)
 
-                if dictLoaded['paramFiles']:
+                if 'paramFiles' in dictLoaded:
                     for i, paramFile in dictLoaded['paramFiles']:
                         if paramFile:
                             self.paramFileBoxList[i].setPlainText(paramFile)
+
+                if 'active' in dictLoaded:
+                    for i, check in dictLoaded['active']:
+                        if check:
+                            self.checkActiveBoxList[i].setChecked(True)
 
     def close_application(self, event):
         ## Save settings to file to reload for next time
         # build dictionary to save
         paramFileList = []
         birdListTemp = []
+        activeListTemp = []
         for boxnumber in self.boxList:
             # Get plain text of both param file path and bird name, then join in a list for each
             paramSingle = str(self.paramFileBoxList[boxnumber].toPlainText())
             paramFileList.append(paramSingle)
             birdSingle = str(self.birdEntryBoxList[boxnumber].toPlainText())
             birdListTemp.append(birdSingle)
+            activeListTemp.append(self.checkActiveBoxList[boxnumber].isChecked())
         paramFiles = zip(self.boxList, paramFileList)
         birds = zip(self.boxList, birdListTemp)
+        active = zip(self.boxList, activeListTemp)
 
-        d = {}
-        d['paramFiles'] = paramFiles
-        d['birds'] = birds
+        d = {'paramFiles': paramFiles, 'birds': birds, 'active': active}
+        # d = {}
+        # d['paramFiles'] = paramFiles
+        # d['birds'] = birds
+        # d['active'] = active
 
         with open('settings.json', 'w') as outfile:
             json.dump(d, outfile, ensure_ascii=False)
@@ -413,7 +439,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         ## Box-specific closing operations
         # Close all serial ports, if available
         for boxnumber in self.boxList:
-            device_name = "{0}{1}".format('/dev/teensy',int(boxnumber + 1))
+            device_name = "{0}{1}".format('/dev/teensy', int(boxnumber + 1))
             try:
                 device = serial.Serial(port=device_name,
                                        baudrate=19200,
@@ -422,7 +448,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
                 if device.isOpen():
                     device.close()
                     # print "Closed device %d" % int(boxnumber + 1)
-            except:
+            except serial.SerialException:
                 pass
 
             # print "Checked device %d" % int(boxnumber + 1)
@@ -430,6 +456,70 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         self.stop_all()
 
         event.accept()  # Accept GUI closing
+
+
+class SolenoidGui(QtGui.QDialog, pyoperant_gui_layout.UiSolenoidControl):
+    """
+    Code for creating and managing dialog that can open and close the solenoid for a given box manually
+    Primarily to aid in water system cleaning process
+    Added 10/20/18 by AR
+    """
+
+    def __init__(self, box_number):
+        super(self.__class__, self).__init__()
+        self.setup_ui(self)  # This is defined in design.py file automatically
+        # It sets up layout and widgets that are defined
+        self.open_Button.clicked.connect(lambda _, b=box_number: self.open_solenoid(b))
+        self.close_Button.clicked.connect(lambda _, b=box_number: self.close_solenoid(b))
+        self.done_Button.clicked.connect(self.accept)
+
+        self.box_name.setText(str("Box %02i" % box_number))
+
+    def open_solenoid(self, boxnumber):
+        print("Opening water system in box %d" % boxnumber)
+        device_name = '/dev/teensy%02i' % boxnumber
+        device = serial.Serial(port=device_name,
+                               baudrate=19200,
+                               timeout=5)
+        if device is None:
+            print 'Could not open serial device %s' % device_name
+            raise 'Could not open serial device %s' % device_name
+        else:
+            device.readline()
+            device.flushInput()
+            # print("Successfully opened device %s" % device_name)
+            # solenoid = channel 16
+            device.write("".join([chr(16), chr(3)]))  # set channel 16 as output
+            # device.write("".join([chr(16), chr(2)]))  # close solenoid, just in case
+            device.write("".join([chr(16), chr(1)]))  # open solenoid
+
+            self.solenoid_Status_Text.setText(str("OPEN"))
+            self.open_Button.setEnabled(False)
+            self.close_Button.setEnabled(True)
+
+    def close_solenoid(self, boxnumber):
+        print("Closing water system in box %d" % boxnumber)
+        device_name = '/dev/teensy%02i' % boxnumber
+        device = serial.Serial(port=device_name,
+                               baudrate=19200,
+                               timeout=5)
+        if device is None:
+            print 'Could not open serial device %s' % device_name
+            raise 'Could not open serial device %s' % device_name
+        else:
+            device.readline()
+            device.flushInput()
+            # solenoid = channel 16
+            device.write("".join([chr(16), chr(3)]))  # set channel 16 as output
+            # device.write("".join([chr(16), chr(2)]))  # close solenoid, just in case
+
+            device.write("".join([chr(16), chr(2)]))  # close solenoid
+            device.close()  # close connection
+            print "Closed water system in box {0}".format(str(boxnumber))
+
+            self.solenoid_Status_Text.setText(str("CLOSED"))
+            self.close_Button.setEnabled(False)
+            self.open_Button.setEnabled(True)
 
 
 def main():
