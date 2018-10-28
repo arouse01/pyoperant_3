@@ -1,42 +1,6 @@
 {
   "Machine": "Rouse",
-  "name": "ZF Isochrony discrimination",
-  "description": "Discriminate regular from irregular patterns of sound",
-  "comments": "json doesn't support comments",
-  "experiment_path": "/home/rouse/bird",
-  "experimenter": {
-    "email": "andrew.rouse@tufts.edu",
-    "name": "Andrew Rouse"
-  },
-  "panel_name": "Rouse1",
-  "subject": "test",
-  "subject_type": "bird",
-  "debug": false,
-  "log_handlers": [
-    "text"
-  ],
-  "shape": false,
-  "free_day_off": true,
-  "classes": {
-    "sPlus": {
-      "component": "respSens",
-      "punish_value": 0.0,
-      "reward_value": 0.15
-    },
-    "sMinus": {
-      "component": "trialSens",
-      "punish_value": 2.0,
-      "reward_value": 0.0
-    },
-    "probePlus": {
-      "punish_value": 0.0,
-      "reward_value": 0.0
-    },
-    "probeMinus": {
-      "punish_value": 0.0,
-      "reward_value": 0.0
-    }
-  },
+  "shape": true,
   "block_design": {
     "blocks": {
       "default": {
@@ -568,77 +532,27 @@
           "secondary": false
         }
       },
-      "shaping phase 0": {
-        "description": "full song stimuli",
+      "shaping": {
+        "description": "initial training; 100, 125, 150",
         "reinforcement": {
           "schedule": "go_interrupt",
           "prob": 1,
           "secondary": false,
-          "passive": true
-        },
-        "conditions": [
-          {
-            "class": "sPlus",
-            "stim_name": "1000"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "1001"
-          }
-        ],
-        "weights": [
-          {
-            "class": "sPlus",
-            "weight": 1
-          },
-          {
-            "class": "sMinus",
-            "weight": 1
-          }
-        ],
-        "queue": "random"
-      },
-      "training phase 1": {
-        "description": "1:1 S+/S- stim, 125 ms",
-        "reinforcement": {
-          "schedule": "go_interrupt",
-          "prob": 1,
-          "secondary": false,
-          "passive": false,
-          "punish": true
+          "passive": false
         },
         "conditions": [
           {
             "class": "sMinus",
-            "stim_name": "61"
-          },
-          {
-            "class": "sPlus",
-            "stim_name": "65"
-          }
-        ],
-        "weights": [
-          {
-            "class": "sPlus",
-            "weight": 1
+            "stim_name": "11"
           },
           {
             "class": "sMinus",
-            "weight": 1
-          }
-        ],
-        "queue": "random"
-      },
-      "training phase 2": {
-        "description": "1:2 S+/S- stim, 125 ms",
-        "reinforcement": {
-          "schedule": "go_interrupt",
-          "prob": 1,
-          "secondary": false,
-          "passive": false,
-          "punish": true
-        },
-        "conditions": [
+            "stim_name": "12"
+          },
+          {
+            "class": "sPlus",
+            "stim_name": "15"
+          },
           {
             "class": "sMinus",
             "stim_name": "61"
@@ -650,117 +564,149 @@
           {
             "class": "sPlus",
             "stim_name": "65"
-          }
-
-        ],
-        "weights": [
-          {
-            "class": "sPlus",
-            "weight": 1
           },
           {
             "class": "sMinus",
-            "weight": 2
-          }
-        ],
-        "queue": "random"
-      },
-      "training phase 3": {
-        "description": "1:4 S+/S- stim, 125 ms",
-        "reinforcement": {
-          "schedule": "go_interrupt",
-          "prob": 1,
-          "secondary": false,
-          "passive": false,
-          "punish": true
-        },
-        "conditions": [
-          {
-            "class": "sMinus",
-            "stim_name": "61"
+            "stim_name": "111"
           },
           {
             "class": "sMinus",
-            "stim_name": "62"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "63"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "64"
+            "stim_name": "112"
           },
           {
             "class": "sPlus",
-            "stim_name": "65"
+            "stim_name": "115"
           }
         ],
         "weights": [
           {
-            "class": "sPlus",
-            "weight": 1
+            "class": "sMinus",
+            "weight": 12
           },
           {
-            "class": "sMinus",
+            "class": "sPlus",
+            "weight": 3
+          },
+          {
+            "class": "probeMinus",
             "weight": 4
+          },
+          {
+            "class": "probePlus",
+            "weight": 1
           }
         ],
-        "queue": "random"
+        "queue": "random",
+        "punish": false
       },
-      "training phase 4": {
-        "description": "1:4 S+/S- stim, 125 ms, 0.8 reinf rate",
+      "1i training": {
+        "description": "training b1i; 100, 125, 150",
         "reinforcement": {
           "schedule": "go_interrupt",
           "prob": 0.8,
-          "secondary": false,
-          "passive": false,
-          "punish": true
+          "secondary": false
         },
         "conditions": [
           {
             "class": "sMinus",
-            "stim_name": "61"
+            "stim_name": "1"
           },
           {
             "class": "sMinus",
-            "stim_name": "62"
+            "stim_name": "2"
           },
           {
             "class": "sMinus",
-            "stim_name": "63"
+            "stim_name": "3"
           },
           {
             "class": "sMinus",
-            "stim_name": "64"
+            "stim_name": "4"
           },
           {
             "class": "sPlus",
-            "stim_name": "65"
-          }
-        ],
-        "weights": [
-          {
-            "class": "sPlus",
-            "weight": 1
+            "stim_name": "5"
           },
           {
             "class": "sMinus",
-            "weight": 4
-          }
-        ],
-        "queue": "random"
-      },
-      "training phase 5": {
-        "description": "5:20 S+/S- stim, 125 ms, 0.8 reinf rate",
-        "reinforcement": {
-          "schedule": "go_interrupt",
-          "prob": 0.8,
-          "secondary": false,
-          "passive": false,
-          "punish": true
-        },
-        "conditions": [
+            "stim_name": "6"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "7"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "8"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "9"
+          },
+          {
+            "class": "sPlus",
+            "stim_name": "10"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "11"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "12"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "13"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "14"
+          },
+          {
+            "class": "sPlus",
+            "stim_name": "15"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "16"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "17"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "18"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "19"
+          },
+          {
+            "class": "sPlus",
+            "stim_name": "20"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "21"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "22"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "23"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "24"
+          },
+          {
+            "class": "sPlus",
+            "stim_name": "25"
+          },
           {
             "class": "sMinus",
             "stim_name": "51"
@@ -860,40 +806,188 @@
           {
             "class": "sPlus",
             "stim_name": "75"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "101"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "102"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "103"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "104"
+          },
+          {
+            "class": "sPlus",
+            "stim_name": "105"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "106"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "107"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "108"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "109"
+          },
+          {
+            "class": "sPlus",
+            "stim_name": "110"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "111"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "112"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "113"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "114"
+          },
+          {
+            "class": "sPlus",
+            "stim_name": "115"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "116"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "117"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "118"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "119"
+          },
+          {
+            "class": "sPlus",
+            "stim_name": "120"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "121"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "122"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "123"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "124"
+          },
+          {
+            "class": "sPlus",
+            "stim_name": "125"
           }
         ],
         "weights": [
           {
-            "class": "sPlus",
-            "weight": 1
+            "class": "sMinus",
+            "weight": 12
           },
           {
-            "class": "sMinus",
+            "class": "sPlus",
+            "weight": 3
+          },
+          {
+            "class": "probeMinus",
             "weight": 4
+          },
+          {
+            "class": "probePlus",
+            "weight": 1
           }
         ],
-        "queue": "random"
+        "queue": "random",
+        "punish": true
       }
     },
     "order": [
-      "shaping phase 0"
+      "shaping",
+      "1i training"
     ]
   },
-
+  "classes": {
+    "sPlus": {
+      "component": "respSens",
+      "punish_value": 0.0,
+      "reward_value": 0.15
+    },
+    "sMinus": {
+      "component": "trialSens",
+      "punish_value": 3.0,
+      "reward_value": 0.0
+    },
+    "probePlus": {
+      "punish_value": 0.0,
+      "reward_value": 0.0
+    },
+    "probeMinus": {
+      "punish_value": 0.0,
+      "reward_value": 0.0
+    }
+  },
+  "comments": "json doesn't support comments",
   "correction_trials": false,
+  "current_scale": 0.25,
+  "debug": false,
+  "description": "Discriminate AB Task",
+  "distribution_type": "amodal",
+  "experiment_path": "/home/rouse/bird",
+  "experimenter": {
+    "email": "andrew.rouse@tufts.edu",
+    "name": "Andrew Rouse"
+  },
   "intertrial_min": 0.1,
-  "response_delay": 0.5,
-  "response_win": 5,
-
   "light_schedule": [
     [
       "08:30",
       "20:30"
     ]
   ],
+  "log_handlers": [
+    "text"
+  ],
+  "name": "AB Context",
+  "panel_name": "Rouse1",
+  "reinforcement": {
+    "schedule": "go_interrupt",
+    "prob": 1,
+    "secondary": false
+  },
+  "response_delay": 0.5,
+  "response_win": 5.0,
   "session_schedule": [
     [
-      "08:30",
+      "8:30",
       "20:30"
     ]
   ],
@@ -905,6 +999,7 @@
     4,
     5
   ],
+  "sr": 44100,
   "stim_path": "/home/rouse/bird/stim",
   "stims": {
     "1": "b1i1_098_ir1.wav",
@@ -1406,10 +1501,14 @@
     "872": "b2s1_152_ir2.wav",
     "873": "b2s1_152_ir3.wav",
     "874": "b2s1_152_ir4.wav",
-    "875": "b2s1_152_reg.wav",
-    "1000": "blu33ylw24_song.wav",
-    "1001": "zf12_song.wav"
+    "875": "b2s1_152_reg.wav"
   },
-  "sr": 44100
-
+  "subject": "test",
+  "subject_type": "bird",
+  "simple_trials_p": 1,
+  "trial_condition": "equal",
+  "forced_choice": false,
+  "inject_test": true,
+  "criterion_correct_num": 5,
+  "criterion_correct_percent": 0.8
 }

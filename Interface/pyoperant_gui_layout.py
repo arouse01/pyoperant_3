@@ -31,6 +31,18 @@ except AttributeError:
 
 class UiMainWindow(object):
 
+    def status_icon(self, boxnumber, icon):
+        if icon == "start":
+            self.graphicBoxList[boxnumber].setPixmap(self.greenIcon)
+        elif icon == "stop":
+            self.graphicBoxList[boxnumber].setPixmap(self.redIcon)
+        elif icon == "error":
+            self.graphicBoxList[boxnumber].setPixmap(self.errorIcon)
+        elif icon == "blank":
+            self.graphicBoxList[boxnumber].setPixmap(self.emptyIcon)
+        else:
+            pass
+
     def setup_ui(self, main_window):
         self.startBoxList = []
         self.stopBoxList = []
@@ -51,6 +63,7 @@ class UiMainWindow(object):
         self.greenIcon = QPixmap("green_circle.svg")
         self.redIcon = QPixmap("red_stop.svg")
         self.errorIcon = QPixmap("error_x.png")
+        self.emptyIcon = QPixmap("not_detected.png")
         self.wrenchIcon = QIcon()
         self.wrenchIcon.addPixmap(QtGui.QPixmap(_fromUtf8("icons/wrench.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
 

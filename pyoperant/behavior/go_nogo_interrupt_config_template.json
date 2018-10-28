@@ -28,7 +28,7 @@
     },
     "sMinus": {
       "component": "trialSens",
-      "punish_value": 8.0,
+      "punish_value": 10.0,
       "reward_value": 0.0
     },
     "probePlus": {
@@ -571,31 +571,31 @@
           "secondary": false
         }
       },
-      "training phase 0": {
-        "description": "S+ only; 100, 125, 150",
+      "shaping phase 0": {
+        "description": "full song stimuli",
         "reinforcement": {
           "schedule": "go_interrupt",
           "prob": 1,
           "secondary": false,
-          "passive": false
+          "passive": true
         },
         "conditions": [
           {
             "class": "sPlus",
-            "stim_name": "15"
+            "stim_name": "1000"
           },
           {
-            "class": "sPlus",
-            "stim_name": "65"
-          },
-          {
-            "class": "sPlus",
-            "stim_name": "115"
+            "class": "sMinus",
+            "stim_name": "1001"
           }
         ],
         "weights": [
           {
             "class": "sPlus",
+            "weight": 1
+          },
+          {
+            "class": "sMinus",
             "weight": 1
           }
         ],
@@ -1412,7 +1412,9 @@
     "872": "b2s1_152_ir2.wav",
     "873": "b2s1_152_ir3.wav",
     "874": "b2s1_152_ir4.wav",
-    "875": "b2s1_152_reg.wav"
+    "875": "b2s1_152_reg.wav",
+    "1000": "blu33ylw24_song.wav",
+    "1001": "zf12_song.wav"
   },
   "sr": 44100
 

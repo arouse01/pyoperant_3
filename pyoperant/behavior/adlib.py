@@ -51,7 +51,7 @@ class Adlib(object):
         #                    -number of actual responses >= reps
         #                    -time is outside of light schedule
         def temp():
-            self.write_summary_shaping()
+            self.write_summary_adlib()
             self.trial_counter = self.trial_counter + 1
             if not utils.check_time(self.parameters['light_schedule']):  # If lights should be off
                 return None  # Break out if lights out
@@ -180,11 +180,11 @@ class Adlib(object):
                         'last_trial_time': [],
                         }
 
-    def write_summary_shaping(self):
+    def write_summary_adlib(self):
         """ takes in a summary dictionary and options and writes to the bird's summaryDAT"""
         summary_file = os.path.join(self.parameters['experiment_path'], self.parameters['subject'] + '.summaryDAT')
         with open(summary_file, 'wb') as f:
-            f.write("Shaping Summary\n\n")
+            f.write("Ad lib Summary\n\n")
             f.write("Feeds today: %s\n" % self.summary['feeds'])
             f.write("Pecks today: %i" % self.summary['responses'])
             # f.write("Feeder ops today: %i\n" % self.summary['feeds'])

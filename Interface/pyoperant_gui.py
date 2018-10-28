@@ -6,6 +6,8 @@ import serial
 import time
 import threading
 import Queue
+import pyudev
+import re
 
 # import watchdog
 
@@ -19,6 +21,8 @@ import pyoperant_gui_layout
 
 
 class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
+    teensy_emit = QtCore.pyqtSignal(int, str)
+
     def __init__(self):
 
         super(self.__class__, self).__init__()
@@ -31,11 +35,22 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         self.timer.timeout.connect(self.refreshall)
         self.timer.start(5000)
 
+        # Monitor when USB devices are connected/disconnected
+        context = pyudev.Context()
+        monitor = pyudev.Monitor.from_netlink(context)
+        monitor.filter_by(subsystem='tty')
+        observer = pyudev.MonitorObserver(monitor, self.usb_monitor, name='usb-observer')
+        observer.daemon = True
+        observer.start()
+
+        self.teensy_emit.connect(
+            (lambda triggered_boxnumber, parameter: self.teensy_control(triggered_boxnumber, parameter)))
+
         # arrays for queues and threads
         self.qList = [0] * self.numberOfBoxes
         self.tList = [0] * self.numberOfBoxes
-        self.qReadList = [0] * self.numberOfBoxes
-        self.tReadList = [0] * self.numberOfBoxes
+        self.qReadList = [0] * self.numberOfBoxes  # list of queues for inputs to subprocesses
+        self.tReadList = [0] * self.numberOfBoxes  # list of queues for inputs to subprocesses
 
         self.startAllButton.clicked.connect(lambda: self.start_all())
         self.stopAllButton.clicked.connect(lambda: self.stop_all())
@@ -52,7 +67,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         self.experimentPath = ""
         self.purgeActionList = []
         self.primeActionList = []
-        self.logModList = []  # Last modification date of log file
+        # self.logModList = []  # Last modification date of log file
         self.solenoidControlList = []
 
         # Option menu setup
@@ -74,7 +89,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
                 boxnumber] = Queue.Queue()  # Queue for running subprocesses and pulling outputs without blocking main script
             # self.qReadList[boxnumber] = Queue.Queue()  # Queue for running log read subprocesses without blocking main script
 
-            # self.tReadList[boxnumber] = threading.Thread(target=self.read_output,
+            # self.tReadList[boxnumber] = threading.Thread(target=self.read_output_box,
             #                                             args=(self.logProcessBox[boxnumber].stdout,
             #                                                   self.qReadList[boxnumber]))
             # self.tReadList[boxnumber].daemon = True
@@ -91,8 +106,6 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         for button in self.stopBoxList:
             button.clicked.connect(lambda _, b=i: self.stop_box(boxnumber=b))
             i += 1
-        # for boxnumber in self.boxList:
-        #     self.logModList.append(time.)
 
         # Duplicate this for each menu item, changing names and functions to match
         i = 0
@@ -114,6 +127,13 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             self.optionButtonBoxList[boxnumber].setMenu(self.optionMenuList[boxnumber])
 
         self.closeEvent = self.close_application
+
+        for boxnumber in self.boxList:
+            actualboxnumber = boxnumber + 1
+            if not os.path.exists("/dev/teensy%02i" % actualboxnumber):  # check if Teensy is detected:
+                self.box_button_control(boxnumber, 'disable')
+        # error = "Error: Teensy %d not detected." % actualboxnumber
+        # self.display_message(boxnumber, error)
 
         self.open_application()
 
@@ -181,13 +201,17 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             self.subprocessBox[boxnumber].terminate()
         except OSError:
             pass  # OSError is probably that the process is already terminated
+        except AttributeError:
+            pass  # Subprocess is stopped and already set to 0
         self.subprocessBox[boxnumber] = 0
-        self.box_enable(boxnumber)
+        self.box_button_control(boxnumber, "stop")
         self.refreshfile(boxnumber)  # one last time to display any errors sent to the summaryDAT file
         if error_mode:
-            self.graphicBoxList[boxnumber].setPixmap(self.errorIcon)
+            # self.graphicBoxList[boxnumber].setPixmap(self.errorIcon)
+            self.status_icon(boxnumber, 'error')
         else:
-            self.graphicBoxList[boxnumber].setPixmap(self.redIcon)
+            # self.graphicBoxList[boxnumber].setPixmap(self.redIcon)
+            self.status_icon(boxnumber, 'stop')
 
     def start_box(self, boxnumber):
         # start selected box
@@ -223,7 +247,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
                      '-c', '{0}'.format(jsonPath)], stdin=open(os.devnull), stderr=subprocess.PIPE,
                     stdout=open(os.devnull))
 
-                self.tList[boxnumber] = threading.Thread(target=self.read_output,
+                self.tList[boxnumber] = threading.Thread(target=self.read_output_box,
                                                          args=(boxnumber, self.subprocessBox[boxnumber].stderr,
                                                                self.qList[boxnumber]))
                 self.tList[boxnumber].daemon = True
@@ -247,10 +271,11 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
                     # self.subprocessBox[boxnumber] = 0
                     # self.graphicBoxList[boxnumber].setPixmap(self.redIcon)
                 else:
-                    self.box_disable(boxnumber)  # UI modifications while box is running
-                    self.graphicBoxList[boxnumber].setPixmap(self.greenIcon)
+                    self.box_button_control(boxnumber, "start")  # UI modifications while box is running
+                    # self.graphicBoxList[boxnumber].setPixmap(self.greenIcon)
+                    self.status_icon(boxnumber, 'start')
 
-    def read_output(self, boxnumber, pipe, q):
+    def read_output_box(self, boxnumber, pipe, q):
 
         while True:
             output = pipe.readline()
@@ -272,6 +297,49 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             with open(in_pipe_name, "r") as f:
                 write_pipe.write(f.read())
 
+    def usb_monitor(self, action, device):
+        if action == 'add':
+            # print 'Connected'
+            deviceString = device.device_links.next()
+            self.check_teensy(deviceString, True)
+        elif action == 'remove':
+            # print 'Removed'
+            deviceString = device.device_links.next()
+            self.check_teensy(deviceString, False)
+
+    def check_teensy(self, device_path, connect=False):
+        # device_path is result from device_paths of device that was connected/disconnected
+        # It needs to be parsed to get the actual box number
+        if device_path[0:4] == '/dev':  # Only pass if device path is valid
+            devicePathSplit = os.path.split(device_path)
+            try:
+                boxLink = devicePathSplit[1]
+                # print boxLink
+                match = re.split('Board(\d*)', boxLink)
+                boxnumber = int(
+                    match[1]) - 1  # Box number as index is indexed from 0, but Teensy numbers are indexed from 1
+                # print boxnumber
+            except:
+                boxnumber = None
+                print 'Error: board not recognized'
+
+            if boxnumber is not None:
+                if connect:
+                    # self.box_button_control(boxnumber, 'enable')
+                    parameter = 'enable'
+                else:
+                    # self.box_button_control(boxnumber, 'disable')
+                    parameter = 'disable'
+                self.teensy_emit.emit(boxnumber, parameter)
+            else:
+                pass
+
+    def teensy_control(self, boxnumber, parameter):
+        # quick method to enable or disable gui buttons and stop pyoperant if teensy is disconnected
+        self.stop_box(boxnumber)
+        # self.checkActiveBoxList[boxnumber].setChecked(False)
+        self.box_button_control(boxnumber, parameter)
+
     def start_all(self):
         # start all checked boxes
         for boxnumber in self.boxList:
@@ -284,19 +352,33 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             if not self.subprocessBox[boxnumber] == 0:
                 self.stop_box(boxnumber)
 
-    def box_disable(self, boxnumber):
-        # Hide and/or disable objects while box is running
-        self.paramFileButtonBoxList[boxnumber].setEnabled(False)
-        self.birdEntryBoxList[boxnumber].setReadOnly(True)
-        self.startBoxList[boxnumber].setEnabled(False)
-        self.stopBoxList[boxnumber].setEnabled(True)
+    def box_button_control(self, boxnumber, parameter):
+        if parameter == 'stop' or parameter == 'enable':
+            # Enable objects when box is not running
+            self.paramFileButtonBoxList[boxnumber].setEnabled(True)
+            self.birdEntryBoxList[boxnumber].setReadOnly(False)
+            self.startBoxList[boxnumber].setEnabled(True)
+            self.stopBoxList[boxnumber].setEnabled(False)
+            # self.graphicBoxList[boxnumber].setPixmap(self.redIcon)
+            self.status_icon(boxnumber, 'stop')
 
-    def box_enable(self, boxnumber):
-        # Enable objects when box is not running
-        self.paramFileButtonBoxList[boxnumber].setEnabled(True)
-        self.birdEntryBoxList[boxnumber].setReadOnly(False)
-        self.startBoxList[boxnumber].setEnabled(True)
-        self.stopBoxList[boxnumber].setEnabled(False)
+        elif parameter == "start":
+            # Hide and/or disable objects while box is running
+            self.paramFileButtonBoxList[boxnumber].setEnabled(False)
+            self.birdEntryBoxList[boxnumber].setReadOnly(True)
+            self.startBoxList[boxnumber].setEnabled(False)
+            self.stopBoxList[boxnumber].setEnabled(True)
+            # self.graphicBoxList[boxnumber].setPixmap(self.greenIcon)
+            self.status_icon(boxnumber, 'start')
+
+        elif parameter == "disable":
+            # For when Teensy isn't connected
+            self.paramFileButtonBoxList[boxnumber].setEnabled(True)
+            self.birdEntryBoxList[boxnumber].setReadOnly(False)
+            self.startBoxList[boxnumber].setEnabled(False)
+            self.stopBoxList[boxnumber].setEnabled(False)
+            # self.graphicBoxList[boxnumber].setPixmap(self.emptyIcon)
+            self.status_icon(boxnumber, 'blank')
 
     def purge_water(self, boxnumber, purge_time=20):
         boxnumber = boxnumber + 1  # boxnumber is index, but device name is not

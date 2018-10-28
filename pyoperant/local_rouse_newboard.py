@@ -16,7 +16,7 @@ _ROUSE_MAP = {
 class RousePanel(panels.BasePanel):
     """class for rouse boxes """
 
-    def __init__(self, panel_id=None, boardtype=None,*args, **kwargs):
+    def __init__(self, panel_id=None, boardtype=None, *args, **kwargs):
         super(RousePanel, self).__init__(*args, **kwargs)
         self.id = panel_id
 
@@ -103,37 +103,38 @@ class RousePanel(panels.BasePanel):
 class Rouse1(RousePanel):
     """Rouse1 panel"""
     def __init__(self, boardtype='v1'):
-        super(Rouse1, self).__init__(panel_id=1, boardtype='v1')
+        super(Rouse1, self).__init__(panel_id=1, boardtype=boardtype)
 
 
 class Rouse2(RousePanel):
     """Rouse2 panel"""
     def __init__(self, boardtype='v1'):
-        super(Rouse2, self).__init__(panel_id=2, boardtype='v1')
+        super(Rouse2, self).__init__(panel_id=2, boardtype=boardtype)
 
 
 class Rouse3(RousePanel):
     """Rouse3 panel"""
     def __init__(self, boardtype='v1'):
-        super(Rouse3, self).__init__(panel_id=3, boardtype='v1')
+        super(Rouse3, self).__init__(panel_id=3, boardtype=boardtype)
 
 
 class Rouse4(RousePanel):
     """Rouse4 panel"""
     def __init__(self, boardtype='v1'):
-        super(Rouse4, self).__init__(panel_id=4, boardtype='v1')
+        super(Rouse4, self).__init__(panel_id=4, boardtype=boardtype)
 
 
 class Rouse5(RousePanel):
     """Rouse4 panel"""
     def __init__(self, boardtype='v1'):
-        super(Rouse5, self).__init__(panel_id=5, boardtype='v1')
+        super(Rouse5, self).__init__(panel_id=5, boardtype=boardtype)
 
 
 class Rouse6(RousePanel):
     """Rouse6 panel"""
     def __init__(self, **kwargs):
-        super(Rouse6, self).__init__(panel_id=6, **kwargs)
+        super(Rouse6, self).__init__(panel_id=6,
+                                     **kwargs)  # Not sure if this is the working setup, or if boardtype=boardtype is
 
 
 # class Rouse7(RousePanel):

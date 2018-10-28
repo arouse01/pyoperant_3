@@ -10,7 +10,7 @@
     ],
     [
       2,
-      false
+      true
     ],
     [
       3,
@@ -36,7 +36,7 @@
     ],
     [
       2,
-      "test3"
+      "g62p26"
     ],
     [
       3,
@@ -58,11 +58,11 @@
     ],
     [
       1,
-      "/home/rouse/Desktop/pyoperant/pyoperant/pyoperant/behavior/go_nogo_interrupt_config_adlib.json"
+      "/home/rouse/Desktop/pyoperant/pyoperant/pyoperant/behavior/go_nogo_interrupt_config_template.json"
     ],
     [
       2,
-      "/home/rouse/Desktop/pyoperant/pyoperant/pyoperant/behavior/go_nogo_interrupt_config_test.json"
+      "/home/rouse/Desktop/pyoperant/pyoperant/pyoperant/behavior/go_nogo_interrupt_config_template.json"
     ],
     [
       3,
