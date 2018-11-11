@@ -1,663 +1,234 @@
 {
-  "definitions": {},
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "http://example.com/root.json",
   "type": "object",
-  "description": "INCOMPLETE - NEEDS WORK (10/20/18 AR)",
-  "title": "The Root Schema",
-  "required": [
-    "Machine",
-    "name",
-    "description",
-    "comments",
-    "experiment_path",
-    "experimenter",
-    "classes",
-    "stims"
-  ],
+  "title": "Go NoGo Interrupt Schema",
   "properties": {
     "Machine": {
-      "$id": "#/properties/Machine",
       "type": "string",
+      "required": true,
       "title": "Computer name"
     },
-    "name": {
-      "$id": "#/properties/name",
+    "experiment_name": {
       "type": "string",
-      "title": "Experiment name",
-      "description": "Experiment name"
+      "required": true,
+      "title": "Experiment Name",
+      "description": "Experiment title"
     },
     "description": {
-      "$id": "#/properties/description",
+      "required": true,
       "type": "string",
-      "title": "Experiment Name"
+      "title": "Experiment description"
     },
     "comments": {
-      "$id": "#/properties/comments",
       "type": "string",
       "title": "Comments",
       "description": "Experiment comments"
     },
     "experiment_path": {
-      "$id": "#/properties/experiment_path",
       "type": "string",
+      "required": true,
+      "title": "Experiment File Path",
       "description": "Path to experiment-related files (.e.g. stimuli, output files)"
     },
     "experimenter": {
-      "$id": "#/properties/experimenter",
       "type": "object",
       "title": "Experimenter Info",
+      "required": true,
       "properties": {
         "email": {
-          "$id": "#/properties/experimenter/properties/email",
           "type": "string",
           "description": "Experimenter info"
         },
         "name": {
-          "$id": "#/properties/experimenter/properties/name",
           "type": "string",
-          "title": "The Name Schema"
+          "required": true,
+          "title": "Experimenter Name"
         }
       }
     },
     "panel_name": {
-      "$id": "#/properties/panel_name",
       "type": "string",
-      "title": "The Panel_name Schema"
+      "title": "Panel Identifier"
     },
     "subject": {
-      "$id": "#/properties/subject",
       "type": "string",
-      "title": "The Subject Schema"
+      "title": "Subject Identifier"
     },
     "subject_type": {
-      "$id": "#/properties/subject_type",
       "type": "string",
-      "title": "The Subject_type Schema"
+      "title": "Subject Type"
     },
     "debug": {
-      "$id": "#/properties/debug",
       "type": "boolean",
-      "title": "The Debug Schema"
+      "title": "Debugging flag"
     },
     "log_handlers": {
-      "$id": "#/properties/log_handlers",
       "type": "array",
-      "title": "The Log_handlers Schema"
+      "title": "Log Handler"
     },
     "shape": {
-      "$id": "#/properties/shape",
       "type": "boolean",
-      "title": "The Shape Schema"
+      "title": "Shaping Flag"
     },
     "free_day_off": {
-      "$id": "#/properties/free_day_off",
       "type": "boolean",
-      "title": "The Free_day_off Schema"
+      "title": "Ad lib water on off days"
     },
     "classes": {
-      "$id": "#/properties/classes",
-      "type": [
-        "object",
-        "array"
-      ],
-      "title": "The Classes Schema",
-      "default": null,
-      "properties": {
-        "sPlus": {
-          "$id": "#/properties/classes/properties/sPlus",
-          "type": "object",
-          "title": "The Splus Schema",
-          "default": null,
-          "properties": {
+      "type": "object",
+      "title": "Classes",
+      "required": true,
+      "patternProperties": {
+        "^.*$": {
+          "type": "array",
+          "items": {
             "component": {
-              "$id": "#/properties/classes/properties/sPlus/properties/component",
               "type": "string",
-              "title": "The Component Schema"
+              "title": "Component Name",
+              "required": false
             },
             "punish_value": {
-              "$id": "#/properties/classes/properties/sPlus/properties/punish_value",
               "type": "number",
-              "title": "The Punish_value Schema"
+              "title": "Punish Value (s)",
+              "required": true
             },
             "reward_value": {
-              "$id": "#/properties/classes/properties/sPlus/properties/reward_value",
               "type": "number",
-              "title": "The Reward_value Schema"
-            }
-          }
-        },
-        "sMinus": {
-          "$id": "#/properties/classes/properties/sMinus",
-          "type": "object",
-          "title": "The Sminus Schema",
-          "properties": {
-            "component": {
-              "$id": "#/properties/classes/properties/sMinus/properties/component",
-              "type": "string",
-              "title": "The Component Schema"
-            },
-            "punish_value": {
-              "$id": "#/properties/classes/properties/sMinus/properties/punish_value",
-              "type": "number",
-              "title": "The Punish_value Schema"
-            },
-            "reward_value": {
-              "$id": "#/properties/classes/properties/sMinus/properties/reward_value",
-              "type": "number",
-              "title": "The Reward_value Schema"
-            }
-          }
-        },
-        "probePlus": {
-          "$id": "#/properties/classes/properties/probePlus",
-          "type": "object",
-          "title": "The Probeplus Schema",
-          "properties": {
-            "punish_value": {
-              "$id": "#/properties/classes/properties/probePlus/properties/punish_value",
-              "type": "number",
-              "title": "The Punish_value Schema"
-            },
-            "reward_value": {
-              "$id": "#/properties/classes/properties/probePlus/properties/reward_value",
-              "type": "number",
-              "title": "The Reward_value Schema"
-            }
-          }
-        },
-        "probeMinus": {
-          "$id": "#/properties/classes/properties/probeMinus",
-          "type": "object",
-          "title": "The Probeminus Schema",
-          "properties": {
-            "punish_value": {
-              "$id": "#/properties/classes/properties/probeMinus/properties/punish_value",
-              "type": "number",
-              "title": "The Punish_value Schema"
-            },
-            "reward_value": {
-              "$id": "#/properties/classes/properties/probeMinus/properties/reward_value",
-              "type": "number",
-              "title": "The Reward_value Schema"
+              "title": "Reward Value (s)",
+              "required": true
             }
           }
         }
       }
     },
     "block_design": {
-      "$id": "#/properties/block_design",
       "type": "object",
-      "title": "The Block_design Schema",
+      "title": "Block Design",
       "properties": {
         "blocks": {
-          "$id": "#/properties/block_design/properties/blocks",
-          "type": "object",
-          "title": "The Blocks Schema",
-          "properties": {
-            "default": {
-              "$id": "#/properties/block_design/properties/blocks/properties/default",
-              "type": "object",
-              "title": "The Default Schema",
-              "properties": {
-                "description": {
-                  "$id": "#/properties/block_design/properties/blocks/properties/default/properties/description",
-                  "type": "string",
-                  "title": "The Description Schema"
-                },
-                "conditions": {
-                  "$id": "#/properties/block_design/properties/blocks/properties/default/properties/conditions",
-                  "type": "array",
-                  "title": "The Conditions Schema"
-                },
-                "weights": {
-                  "$id": "#/properties/block_design/properties/blocks/properties/default/properties/weights",
-                  "type": "array",
-                  "title": "The Weights Schema"
-                },
-                "queue": {
-                  "$id": "#/properties/block_design/properties/blocks/properties/default/properties/queue",
-                  "type": "string",
-                  "title": "The Queue Schema"
-                },
-                "reinforcement": {
-                  "$id": "#/properties/block_design/properties/blocks/properties/default/properties/reinforcement",
-                  "type": "object",
-                  "title": "The Reinforcement Schema",
-                  "properties": {
-                    "schedule": {
-                      "$id": "#/properties/block_design/properties/blocks/properties/default/properties/reinforcement/properties/schedule",
-                      "type": "string",
-                      "title": "The Schedule Schema"
-                    },
-                    "prob": {
-                      "$id": "#/properties/block_design/properties/blocks/properties/default/properties/reinforcement/properties/prob",
-                      "type": "number",
-                      "title": "The Prob Schema"
-                    },
-                    "secondary": {
-                      "$id": "#/properties/block_design/properties/blocks/properties/default/properties/reinforcement/properties/secondary",
-                      "type": "boolean",
-                      "title": "The Secondary Schema"
+          "type": "array",
+          "patternProperties": {
+            "^.*$": {
+              "default": {
+                "type": "object",
+                "properties": {
+                  "description": {
+                    "type": "string",
+                    "title": "The Description Schema"
+                  },
+                  "conditions": {
+                    "type": "array",
+                    "title": "The Conditions Schema",
+                    "properties": {
+                      "class": {
+                        "type": "string"
+                      },
+                      "stim_name": {
+                        "type": "string"
+                      }
                     }
+                  },
+                  "weights": {
+                    "type": "array",
+                    "title": "The Weights Schema",
+                    "properties": {
+                      "class": {
+                        "type": "string"
+                      },
+                      "weight": {
+                        "type": "integer"
+                      }
+                    }
+                  },
+                  "queue": {
+                    "type": "string",
+                    "title": "Trial Queue Type",
+                    "default": "random"
+                  },
+                  "reinforcement": {
+                    "type": "object",
+                    "title": "Reinforcement Schema",
+                    "properties": {
+                      "schedule": {
+                        "type": "string",
+                        "title": "Reinforcement Schedule"
+                      },
+                      "prob": {
+                        "type": "number",
+                        "title": "Reinforcement Probability"
+                      },
+                      "secondary": {
+                        "type": "boolean",
+                        "title": "Secondary Reinforcement Flag"
                   }
                 }
               }
-            },
-            "training phase 0": {
-              "$id": "#/properties/block_design/properties/blocks/properties/training phase 0",
-              "type": "object",
-              "title": "The Training phase 0 Schema",
-              "properties": {
-                "description": {
-                  "$id": "#/properties/block_design/properties/blocks/properties/training phase 0/properties/description",
-                  "type": "string",
-                  "title": "The Description Schema"
-                },
-                "reinforcement": {
-                  "$id": "#/properties/block_design/properties/blocks/properties/training phase 0/properties/reinforcement",
-                  "type": "object",
-                  "title": "The Reinforcement Schema",
-                  "properties": {
-                    "schedule": {
-                      "$id": "#/properties/block_design/properties/blocks/properties/training phase 0/properties/reinforcement/properties/schedule",
-                      "type": "string",
-                      "title": "The Schedule Schema"
-                    },
-                    "prob": {
-                      "$id": "#/properties/block_design/properties/blocks/properties/training phase 0/properties/reinforcement/properties/prob",
-                      "type": "number",
-                      "title": "The Prob Schema"
-                    },
-                    "secondary": {
-                      "$id": "#/properties/block_design/properties/blocks/properties/training phase 0/properties/reinforcement/properties/secondary",
-                      "type": "boolean",
-                      "title": "The Secondary Schema"
-                    },
-                    "passive": {
-                      "$id": "#/properties/block_design/properties/blocks/properties/training phase 0/properties/reinforcement/properties/passive",
-                      "type": "boolean",
-                      "title": "The Passive Schema"
-                    }
-                  }
-                },
-                "conditions": {
-                  "$id": "#/properties/block_design/properties/blocks/properties/training phase 0/properties/conditions",
-                  "type": "array",
-                  "title": "The Conditions Schema"
-                },
-                "weights": {
-                  "$id": "#/properties/block_design/properties/blocks/properties/training phase 0/properties/weights",
-                  "type": "array",
-                  "title": "The Weights Schema"
-                },
-                "queue": {
-                  "$id": "#/properties/block_design/properties/blocks/properties/training phase 0/properties/queue",
-                  "type": "string",
-                  "title": "The Queue Schema"
-                }
-              }
-            },
-            "training phase 1": {
-              "$id": "#/properties/block_design/properties/blocks/properties/training phase 1",
-              "type": "object",
-              "title": "The Training phase 1 Schema",
-              "properties": {
-                "description": {
-                  "$id": "#/properties/block_design/properties/blocks/properties/training phase 1/properties/description",
-                  "type": "string",
-                  "title": "The Description Schema"
-                },
-                "reinforcement": {
-                  "$id": "#/properties/block_design/properties/blocks/properties/training phase 1/properties/reinforcement",
-                  "type": "object",
-                  "title": "The Reinforcement Schema",
-                  "properties": {
-                    "schedule": {
-                      "$id": "#/properties/block_design/properties/blocks/properties/training phase 1/properties/reinforcement/properties/schedule",
-                      "type": "string",
-                      "title": "The Schedule Schema"
-                    },
-                    "prob": {
-                      "$id": "#/properties/block_design/properties/blocks/properties/training phase 1/properties/reinforcement/properties/prob",
-                      "type": "number",
-                      "title": "The Prob Schema"
-                    },
-                    "secondary": {
-                      "$id": "#/properties/block_design/properties/blocks/properties/training phase 1/properties/reinforcement/properties/secondary",
-                      "type": "boolean",
-                      "title": "The Secondary Schema"
-                    },
-                    "passive": {
-                      "$id": "#/properties/block_design/properties/blocks/properties/training phase 1/properties/reinforcement/properties/passive",
-                      "type": "boolean",
-                      "title": "The Passive Schema"
-                    },
-                    "punish": {
-                      "$id": "#/properties/block_design/properties/blocks/properties/training phase 1/properties/reinforcement/properties/punish",
-                      "type": "boolean",
-                      "title": "The Punish Schema"
-                    }
-                  }
-                },
-                "conditions": {
-                  "$id": "#/properties/block_design/properties/blocks/properties/training phase 1/properties/conditions",
-                  "type": "array",
-                  "title": "The Conditions Schema"
-                },
-                "weights": {
-                  "$id": "#/properties/block_design/properties/blocks/properties/training phase 1/properties/weights",
-                  "type": "array",
-                  "title": "The Weights Schema"
-                },
-                "queue": {
-                  "$id": "#/properties/block_design/properties/blocks/properties/training phase 1/properties/queue",
-                  "type": "string",
-                  "title": "The Queue Schema"
-                }
-              }
-            },
-            "training phase 2": {
-              "$id": "#/properties/block_design/properties/blocks/properties/training phase 2",
-              "type": "object",
-              "title": "The Training phase 2 Schema",
-              "properties": {
-                "description": {
-                  "$id": "#/properties/block_design/properties/blocks/properties/training phase 2/properties/description",
-                  "type": "string",
-                  "title": "The Description Schema"
-                },
-                "reinforcement": {
-                  "$id": "#/properties/block_design/properties/blocks/properties/training phase 2/properties/reinforcement",
-                  "type": "object",
-                  "title": "The Reinforcement Schema",
-                  "properties": {
-                    "schedule": {
-                      "$id": "#/properties/block_design/properties/blocks/properties/training phase 2/properties/reinforcement/properties/schedule",
-                      "type": "string",
-                      "title": "The Schedule Schema"
-                    },
-                    "prob": {
-                      "$id": "#/properties/block_design/properties/blocks/properties/training phase 2/properties/reinforcement/properties/prob",
-                      "type": "number",
-                      "title": "The Prob Schema"
-                    },
-                    "secondary": {
-                      "$id": "#/properties/block_design/properties/blocks/properties/training phase 2/properties/reinforcement/properties/secondary",
-                      "type": "boolean",
-                      "title": "The Secondary Schema"
-                    },
-                    "passive": {
-                      "$id": "#/properties/block_design/properties/blocks/properties/training phase 2/properties/reinforcement/properties/passive",
-                      "type": "boolean",
-                      "title": "The Passive Schema"
-                    },
-                    "punish": {
-                      "$id": "#/properties/block_design/properties/blocks/properties/training phase 2/properties/reinforcement/properties/punish",
-                      "type": "boolean",
-                      "title": "The Punish Schema"
-                    }
-                  }
-                },
-                "conditions": {
-                  "$id": "#/properties/block_design/properties/blocks/properties/training phase 2/properties/conditions",
-                  "type": "array",
-                  "title": "The Conditions Schema"
-                },
-                "weights": {
-                  "$id": "#/properties/block_design/properties/blocks/properties/training phase 2/properties/weights",
-                  "type": "array",
-                  "title": "The Weights Schema"
-                },
-                "queue": {
-                  "$id": "#/properties/block_design/properties/blocks/properties/training phase 2/properties/queue",
-                  "type": "string",
-                  "title": "The Queue Schema"
-                }
-              }
-            },
-            "training phase 3": {
-              "$id": "#/properties/block_design/properties/blocks/properties/training phase 3",
-              "type": "object",
-              "title": "The Training phase 3 Schema",
-              "properties": {
-                "description": {
-                  "$id": "#/properties/block_design/properties/blocks/properties/training phase 3/properties/description",
-                  "type": "string",
-                  "title": "The Description Schema"
-                },
-                "reinforcement": {
-                  "$id": "#/properties/block_design/properties/blocks/properties/training phase 3/properties/reinforcement",
-                  "type": "object",
-                  "title": "The Reinforcement Schema",
-                  "properties": {
-                    "schedule": {
-                      "$id": "#/properties/block_design/properties/blocks/properties/training phase 3/properties/reinforcement/properties/schedule",
-                      "type": "string",
-                      "title": "The Schedule Schema"
-                    },
-                    "prob": {
-                      "$id": "#/properties/block_design/properties/blocks/properties/training phase 3/properties/reinforcement/properties/prob",
-                      "type": "number",
-                      "title": "The Prob Schema"
-                    },
-                    "secondary": {
-                      "$id": "#/properties/block_design/properties/blocks/properties/training phase 3/properties/reinforcement/properties/secondary",
-                      "type": "boolean",
-                      "title": "The Secondary Schema"
-                    },
-                    "passive": {
-                      "$id": "#/properties/block_design/properties/blocks/properties/training phase 3/properties/reinforcement/properties/passive",
-                      "type": "boolean",
-                      "title": "The Passive Schema"
-                    },
-                    "punish": {
-                      "$id": "#/properties/block_design/properties/blocks/properties/training phase 3/properties/reinforcement/properties/punish",
-                      "type": "boolean",
-                      "title": "The Punish Schema"
-                    }
-                  }
-                },
-                "conditions": {
-                  "$id": "#/properties/block_design/properties/blocks/properties/training phase 3/properties/conditions",
-                  "type": "array",
-                  "title": "The Conditions Schema"
-                },
-                "weights": {
-                  "$id": "#/properties/block_design/properties/blocks/properties/training phase 3/properties/weights",
-                  "type": "array",
-                  "title": "The Weights Schema"
-                },
-                "queue": {
-                  "$id": "#/properties/block_design/properties/blocks/properties/training phase 3/properties/queue",
-                  "type": "string",
-                  "title": "The Queue Schema"
-                }
-              }
-            },
-            "training phase 4": {
-              "$id": "#/properties/block_design/properties/blocks/properties/training phase 4",
-              "type": "object",
-              "title": "The Training phase 4 Schema",
-              "properties": {
-                "description": {
-                  "$id": "#/properties/block_design/properties/blocks/properties/training phase 4/properties/description",
-                  "type": "string",
-                  "title": "The Description Schema"
-                },
-                "reinforcement": {
-                  "$id": "#/properties/block_design/properties/blocks/properties/training phase 4/properties/reinforcement",
-                  "type": "object",
-                  "title": "The Reinforcement Schema",
-                  "properties": {
-                    "schedule": {
-                      "$id": "#/properties/block_design/properties/blocks/properties/training phase 4/properties/reinforcement/properties/schedule",
-                      "type": "string",
-                      "title": "The Schedule Schema"
-                    },
-                    "prob": {
-                      "$id": "#/properties/block_design/properties/blocks/properties/training phase 4/properties/reinforcement/properties/prob",
-                      "type": "number",
-                      "title": "The Prob Schema"
-                    },
-                    "secondary": {
-                      "$id": "#/properties/block_design/properties/blocks/properties/training phase 4/properties/reinforcement/properties/secondary",
-                      "type": "boolean",
-                      "title": "The Secondary Schema"
-                    },
-                    "passive": {
-                      "$id": "#/properties/block_design/properties/blocks/properties/training phase 4/properties/reinforcement/properties/passive",
-                      "type": "boolean",
-                      "title": "The Passive Schema"
-                    },
-                    "punish": {
-                      "$id": "#/properties/block_design/properties/blocks/properties/training phase 4/properties/reinforcement/properties/punish",
-                      "type": "boolean",
-                      "title": "The Punish Schema"
-                    }
-                  }
-                },
-                "conditions": {
-                  "$id": "#/properties/block_design/properties/blocks/properties/training phase 4/properties/conditions",
-                  "type": "array",
-                  "title": "The Conditions Schema"
-                },
-                "weights": {
-                  "$id": "#/properties/block_design/properties/blocks/properties/training phase 4/properties/weights",
-                  "type": "array",
-                  "title": "The Weights Schema"
-                },
-                "queue": {
-                  "$id": "#/properties/block_design/properties/blocks/properties/training phase 4/properties/queue",
-                  "type": "string",
-                  "title": "The Queue Schema"
-                }
-              }
-            },
-            "training phase 5": {
-              "$id": "#/properties/block_design/properties/blocks/properties/training phase 5",
-              "type": "object",
-              "title": "The Training phase 5 Schema",
-              "properties": {
-                "description": {
-                  "$id": "#/properties/block_design/properties/blocks/properties/training phase 5/properties/description",
-                  "type": "string",
-                  "title": "The Description Schema"
-                },
-                "reinforcement": {
-                  "$id": "#/properties/block_design/properties/blocks/properties/training phase 5/properties/reinforcement",
-                  "type": "object",
-                  "title": "The Reinforcement Schema",
-                  "properties": {
-                    "schedule": {
-                      "$id": "#/properties/block_design/properties/blocks/properties/training phase 5/properties/reinforcement/properties/schedule",
-                      "type": "string",
-                      "title": "The Schedule Schema"
-                    },
-                    "prob": {
-                      "$id": "#/properties/block_design/properties/blocks/properties/training phase 5/properties/reinforcement/properties/prob",
-                      "type": "number",
-                      "title": "The Prob Schema"
-                    },
-                    "secondary": {
-                      "$id": "#/properties/block_design/properties/blocks/properties/training phase 5/properties/reinforcement/properties/secondary",
-                      "type": "boolean",
-                      "title": "The Secondary Schema"
-                    },
-                    "passive": {
-                      "$id": "#/properties/block_design/properties/blocks/properties/training phase 5/properties/reinforcement/properties/passive",
-                      "type": "boolean",
-                      "title": "The Passive Schema"
-                    },
-                    "punish": {
-                      "$id": "#/properties/block_design/properties/blocks/properties/training phase 5/properties/reinforcement/properties/punish",
-                      "type": "boolean",
-                      "title": "The Punish Schema"
-                    }
-                  }
-                },
-                "conditions": {
-                  "$id": "#/properties/block_design/properties/blocks/properties/training phase 5/properties/conditions",
-                  "type": "array",
-                  "title": "The Conditions Schema"
-                },
-                "weights": {
-                  "$id": "#/properties/block_design/properties/blocks/properties/training phase 5/properties/weights",
-                  "type": "array",
-                  "title": "The Weights Schema"
-                },
-                "queue": {
-                  "$id": "#/properties/block_design/properties/blocks/properties/training phase 5/properties/queue",
-                  "type": "string",
-                  "title": "The Queue Schema"
                 }
               }
             }
           }
         },
         "order": {
-          "$id": "#/properties/block_design/properties/order",
           "type": "array",
-          "title": "The Order Schema"
+          "title": "Block Order"
         }
       }
     },
     "correction_trials": {
-      "$id": "#/properties/correction_trials",
       "type": "boolean",
-      "title": "The Correction_trials Schema"
+      "title": "Correction Trial Flag"
     },
     "intertrial_min": {
-      "$id": "#/properties/intertrial_min",
       "type": "number",
-      "title": "The Intertrial_min Schema"
+      "title": "Minimum Intertrial Interval"
     },
     "response_delay": {
-      "$id": "#/properties/response_delay",
       "type": "number",
-      "title": "The Response_delay Schema"
+      "title": "Forced Response Delay"
     },
     "response_win": {
-      "$id": "#/properties/response_win",
       "type": "number",
-      "title": "The Response_win Schema"
+      "title": "Response Window"
     },
     "light_schedule": {
-      "$id": "#/properties/light_schedule",
       "type": "array",
-      "title": "The Light_schedule Schema"
+      "title": "Light Schedule"
     },
     "session_schedule": {
-      "$id": "#/properties/session_schedule",
       "type": "array",
-      "title": "The Session_schedule Schema"
+      "title": "Session Hours",
+      "items": {
+        "type": "number"
+      }
     },
     "session_days": {
-      "$id": "#/properties/session_days",
       "type": "array",
-      "title": "The Session_days Schema"
+      "title": "Days to run sessions",
+      "items": {
+        "type": "number"
+      }
     },
     "stim_path": {
-      "$id": "#/properties/stim_path",
       "type": "string",
-      "title": "The Stim_path Schema"
+      "title": "Stimuli folder path"
     },
     "stims": {
-      "$id": "#/properties/stims",
-      "type": [
-        "object",
-        "array"
-      ],
-      "title": "The Stims Schema",
-      "default": null,
-      "minItems": 1,
-      "additionalItems": true,
-      "items": {}
+      "type": "array",
+      "title": "Stimuli",
+      "items": {
+        "patternProperties": {
+          "^.*$": {
+            "path": {
+              "type": "string"
+            }
+          }
+        }
+      }
+
+
     },
     "sr": {
-      "$id": "#/properties/sr",
       "type": "number",
-      "title": "The Sr Schema"
+      "title": "Stimuli Sampling Rate"
     }
   }
 }

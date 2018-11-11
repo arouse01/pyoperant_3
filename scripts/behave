@@ -45,15 +45,39 @@ def parse_commandline(arg_str=sys.argv[1:]):
                         type=str,
                         dest='panel',
                         required=True,
-                        help='(string) panel identifier'
+                        help='(str) panel identifier'
                         )
     parser.add_argument('-S', '--subject',
                         action='store',
                         type=str,
                         dest='subject',
                         required=True,
-                        help='subject identifier'
+                        help='(str) subject identifier'
                         )
+    # parser.add_argument('-c', '--config',
+    #                     action='store',
+    #                     type=str,
+    #                     dest='config_file',
+    #                     default='config.json',
+    #                     required=False,
+    #                     help='configuration file [default: %(default)s]'
+    #                     )
+    # parser.add_argument('-c', '--config',
+    #                     action='store',
+    #                     type=str,
+    #                     dest='config_file',
+    #                     default='config.json',
+    #                     required=False,
+    #                     help='configuration file [default: %(default)s]'
+    #                     )
+    # parser.add_argument('-c', '--config',
+    #                     action='store',
+    #                     type=str,
+    #                     dest='config_file',
+    #                     default='config.json',
+    #                     required=False,
+    #                     help='configuration file [default: %(default)s]'
+    #                     )
     parser.add_argument('-c', '--config',
                         action='store',
                         type=str,
@@ -106,8 +130,6 @@ def main():
     cmd_line = parse_commandline()
 
     from pyoperant.local import PANELS
-
-
 
     experiment_path = os.path.join(DATAPATH, cmd_line['subject'])
     config_file = os.path.join(experiment_path, cmd_line['config_file'])

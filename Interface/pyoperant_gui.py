@@ -1,15 +1,15 @@
 from PyQt4 import QtCore, QtGui  # Import the PyQt4 module we'll need
 import sys  # We need sys so that we can pass argv to QApplication
 import os
-import subprocess
-import serial
+import subprocess  # So pyoperant can run for each box without blocking the rest of the GUI
+import serial  # To connect directly to Teensys for water control
 import time
-import threading
-import Queue
-import pyudev
-import re
-
-# import watchdog
+import threading  # Support subprocess, allow error messages to be passed out of the subprocess
+import Queue  # Support subprocess, allow error messages to be passed out of the subprocess
+import pyudev  # device monitoring to identify connected Teensys
+import re  # Regex, for parsing device names returned from pyudev to identify connected Teensys
+import argparse  # Parse command line arguments for GUI, primarily to enable debug mode
+from shutil import copyfile  # For creating new json file by copying another
 
 try:
     import simplejson as json
@@ -26,8 +26,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
     def __init__(self):
 
         super(self.__class__, self).__init__()
-        self.setup_ui(self)  # This is defined in design.py file automatically
-        # It sets up layout and widgets that are defined
+        self.setup_ui(self)  # Sets up layout and widgets that are defined
 
         # Number of boxes declared in pyoperant_gui_layout.py
 
@@ -49,81 +48,113 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         # arrays for queues and threads
         self.qList = [0] * self.numberOfBoxes
         self.tList = [0] * self.numberOfBoxes
-        self.qReadList = [0] * self.numberOfBoxes  # list of queues for inputs to subprocesses
-        self.tReadList = [0] * self.numberOfBoxes  # list of queues for inputs to subprocesses
+        # self.qReadList = [0] * self.numberOfBoxes  # list of queues for inputs to subprocesses
+        # self.tReadList = [0] * self.numberOfBoxes  # list of queues for inputs to subprocesses
 
+        # Connect 'global' buttons to functions
         self.startAllButton.clicked.connect(lambda: self.start_all())
         self.stopAllButton.clicked.connect(lambda: self.stop_all())
-
-        self.optionMenuList = []
 
         self.subprocessBox = [0] * self.numberOfBoxes  # stores subprocesses for pyoperant for each box
         self.logProcessBox = [0] * self.numberOfBoxes  # stores subprocesses for log reading for each box
         self.logpathList = [0] * self.numberOfBoxes  # stores log file path for each box
 
-        self.boxList = range(0, self.numberOfBoxes)
-
         # Variable initiation
+        self.boxList = range(0, self.numberOfBoxes)
         self.experimentPath = ""
-        self.purgeActionList = []
+
+        # Option var init
+        self.optionMenuList = []
+        self.solenoidMenuList = []
         self.primeActionList = []
-        # self.logModList = []  # Last modification date of log file
-        self.solenoidControlList = []
+        self.purgeActionList = []
+        self.solenoidManualList = []
+        self.jsonMenuList = []
+        self.openFolderActionList = []
+        self.openSettingsActionList = []
+        self.createNewJsonList = []
+        self.newBirdActionList = []
 
         # Option menu setup
+
+        ## To add an item to the option menu:
+        # - Add a blank list var to the "option var init" section for the action to be stored for each box
+        # - Figure out whether the new option should be in the main option menu or in a submenu
+        # - in the "Option Menu Setup" section, add two lines:
+        #       self.{list var}.append(QtGui.QAction({action name as str}, self)   # or QtGui.QMenu({menu name as str})
+        #       self.{parent menu}[boxnumber].addAction(self.{list var}[boxnumber])  # or addMenu(self.{list var}[boxnumber])
+        # - If adding an action, go to the "Connect functions to buttons/objects" section and add a line to connect
+        # the actual QAction object with the function for each box:
+        #       self.{list var}[boxNumber].triggered.connect(lambda _, b=i: self.{function}(boxnumber=b, {other vars}))
+
         for boxnumber in self.boxList:
+            # Create necessary objects for each box
             self.optionMenuList.append(QtGui.QMenu())
-            # Duplicate the following two lines to add additional menu items, modifying names as needed
-            self.purgeActionList.append(QtGui.QAction("Purge (20s)", self))
-            self.optionMenuList[boxnumber].addAction(self.purgeActionList[boxnumber])
-
+            self.solenoidMenuList.append(QtGui.QMenu("Water Control"))
             self.primeActionList.append(QtGui.QAction("Prime (5s)", self))
-            self.optionMenuList[boxnumber].addAction(self.primeActionList[boxnumber])
+            self.purgeActionList.append(QtGui.QAction("Purge (20s)", self))
+            self.solenoidManualList.append(QtGui.QAction("Manual Control", self))
+            self.jsonMenuList.append(QtGui.QMenu("JSON File"))
+            self.openFolderActionList.append(QtGui.QAction("Open data folder", self))
+            self.openSettingsActionList.append(QtGui.QAction("Edit", self))
+            self.createNewJsonList.append(QtGui.QAction("New from template", self))
+            self.newBirdActionList.append(QtGui.QAction("Change bird", self))
 
-            self.solenoidControlList.append(QtGui.QAction("Solenoid Control", self))
-            self.optionMenuList[boxnumber].addAction(self.solenoidControlList[boxnumber])
+            # Reorder to change order in menu
+            self.optionMenuList[boxnumber].addMenu(self.solenoidMenuList[boxnumber])
+            self.optionMenuList[boxnumber].addMenu(self.jsonMenuList[boxnumber])
+            self.optionMenuList[boxnumber].addSeparator()
+            self.optionMenuList[boxnumber].addAction(self.openFolderActionList[boxnumber])
+            self.optionMenuList[boxnumber].addAction(self.newBirdActionList[boxnumber])
 
+            # JSON submenu
+            self.jsonMenuList[boxnumber].addAction(self.openSettingsActionList[boxnumber])
+            self.jsonMenuList[boxnumber].addAction(self.createNewJsonList[boxnumber])
+
+            # Solenoid submenu
+            self.solenoidMenuList[boxnumber].addAction(self.primeActionList[boxnumber])
+            self.solenoidMenuList[boxnumber].addAction(self.purgeActionList[boxnumber])
+            self.solenoidMenuList[boxnumber].addAction(self.solenoidManualList[boxnumber])
+
+        # Other box-specific var setup
         for boxnumber in self.boxList:
             # This is only in a separate for loop to visually isolate it from the option menu setup above
             self.qList[
                 boxnumber] = Queue.Queue()  # Queue for running subprocesses and pulling outputs without blocking main script
-            # self.qReadList[boxnumber] = Queue.Queue()  # Queue for running log read subprocesses without blocking main script
+            ## The following lines are only if we want to implement the ability for a running pyoperant subprocess to
+            #  accept external input from the GUI
 
+            # self.qReadList[boxnumber] = Queue.Queue()  # Queue for running log read subprocesses without blocking main script
+            #
             # self.tReadList[boxnumber] = threading.Thread(target=self.read_output_box,
             #                                             args=(self.logProcessBox[boxnumber].stdout,
             #                                                   self.qReadList[boxnumber]))
             # self.tReadList[boxnumber].daemon = True
 
-        i = 0
-        for button in self.paramFileButtonBoxList:
-            button.clicked.connect(lambda _, b=i: self.param_file_select(boxnumber=b))
-            i += 1
-        i = 0
-        for button in self.startBoxList:
-            button.clicked.connect(lambda _, b=i: self.start_box(boxnumber=b))
-            i += 1
-        i = 0
-        for button in self.stopBoxList:
-            button.clicked.connect(lambda _, b=i: self.stop_box(boxnumber=b))
-            i += 1
+        # Connect functions to buttons/objects
+        for boxnumber in self.boxList:
+            self.paramFileButtonBoxList[boxnumber].clicked.connect(
+                lambda _, b=boxnumber: self.param_file_select(boxnumber=b))
+            self.startBoxList[boxnumber].clicked.connect(lambda _, b=boxnumber: self.start_box(boxnumber=b))
+            self.stopBoxList[boxnumber].clicked.connect(lambda _, b=boxnumber: self.stop_box(boxnumber=b))
 
-        # Duplicate this for each menu item, changing names and functions to match
-        i = 0
-        for action in self.purgeActionList:
-            action.triggered.connect(lambda _, b=i: self.purge_water(boxnumber=b, purge_time=20))
-            i += 1
+            # Option menu
+            self.purgeActionList[boxnumber].triggered.connect(
+                lambda _, b=boxnumber: self.purge_water(boxnumber=b, purge_time=20))
+            self.primeActionList[boxnumber].triggered.connect(
+                lambda _, b=boxnumber: self.purge_water(boxnumber=b, purge_time=5))
+            self.solenoidManualList[boxnumber].triggered.connect(
+                lambda _, b=boxnumber: self.solenoid_dialog(boxnumber=b))
+            self.openFolderActionList[boxnumber].triggered.connect(
+                lambda _, b=boxnumber: self.open_box_folder(boxnumber=b))
+            self.openSettingsActionList[boxnumber].triggered.connect(
+                lambda _, b=boxnumber: self.open_json_file(boxnumber=b))
+            self.createNewJsonList[boxnumber].triggered.connect(
+                lambda _, b=boxnumber: self.create_json_file(boxnumber=b))
+            self.newBirdActionList[boxnumber].triggered.connect(
+                lambda _, b=boxnumber: self.create_new_bird(boxnumber=b))
 
-        i = 0
-        for action in self.primeActionList:
-            action.triggered.connect(lambda _, b=i: self.purge_water(boxnumber=b, purge_time=5))
-            i += 1
-
-        i = 0
-        for action in self.solenoidControlList:
-            action.triggered.connect(lambda _, b=i: self.solenoid_dialog(boxnumber=b))
-            i += 1
-
-        for boxnumber in self.boxList:  # Attach menus to option buttons
+            # Attach menu to physical option button
             self.optionButtonBoxList[boxnumber].setMenu(self.optionMenuList[boxnumber])
 
         self.closeEvent = self.close_application
@@ -136,6 +167,8 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         # self.display_message(boxnumber, error)
 
         self.open_application()
+
+    # region GUI button/object handling
 
     def param_file_select(self, boxnumber):
 
@@ -153,37 +186,97 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
 
             self.paramFileBoxList[boxnumber].setPlainText(paramFile)  # add file to the listWidget
 
-    def get_error(self, boxnumber):
-        # Check output for any errors
-        while True:  # Loop through error codes generated, if any
-            error = ""
-            try:
-                error = '{0}\n{1}'.format(error, self.qList[boxnumber].get(False))
-            except Queue.Empty:
-                break
-        return error
+    def box_button_control(self, boxnumber, parameter):
+        if parameter == 'stop' or parameter == 'enable':
+            # Enable objects when box is not running
+            self.paramFileButtonBoxList[boxnumber].setEnabled(True)
+            self.birdEntryBoxList[boxnumber].setReadOnly(False)
+            self.startBoxList[boxnumber].setEnabled(True)
+            self.stopBoxList[boxnumber].setEnabled(False)
+            # self.graphicBoxList[boxnumber].setPixmap(self.redIcon)
+            self.status_icon(boxnumber, 'stop')
 
-    def error_handler(self, boxnumber):
-        # Take any errors and stop box, if necessary
-        error = self.get_error(boxnumber)
-        if error:
-            if error[
-               0:4] == "ALSA":  # Ignore ALSA errors; they've always occurred and don't interfere (have to do with the sound chip not liking some channels as written)
-                pass
-            elif error[0:5] == 'pydev':  # Ignore pydev errors - thrown automatically during PyCharm debugging
-                pass
-            # elif error[0:5] == 'pydev':  # Add additional exceptions here
-            #     pass
-            else:
-                self.display_message(boxnumber, error)
-                print error
-                self.stop_box(boxnumber, error_mode=True)
-                return True
+        elif parameter == "start":
+            # Hide and/or disable objects while box is running
+            self.paramFileButtonBoxList[boxnumber].setEnabled(False)
+            self.birdEntryBoxList[boxnumber].setReadOnly(True)
+            self.startBoxList[boxnumber].setEnabled(False)
+            self.stopBoxList[boxnumber].setEnabled(True)
+            # self.graphicBoxList[boxnumber].setPixmap(self.greenIcon)
+            self.status_icon(boxnumber, 'start')
+
+        elif parameter == "disable":
+            # For when Teensy isn't connected
+            self.paramFileButtonBoxList[boxnumber].setEnabled(True)
+            self.birdEntryBoxList[boxnumber].setReadOnly(False)
+            self.startBoxList[boxnumber].setEnabled(False)
+            self.stopBoxList[boxnumber].setEnabled(False)
+            # self.graphicBoxList[boxnumber].setPixmap(self.emptyIcon)
+            self.status_icon(boxnumber, 'blank')
+
+    def open_box_folder(self, boxnumber):
+        settingsPath = str(self.paramFileBoxList[boxnumber].toPlainText())
+        folderPath = os.path.split(settingsPath)
+        if os.path.exists(folderPath[0]):
+            subprocess.call("nautilus %s" % folderPath[0], shell=True)
         else:
-            return False
+            msg = QtGui.QMessageBox()
+            msg.setIcon(2)
+            msg.setText('Warning: Folder not found')
+            msg.setStandardButtons(QtGui.QMessageBox.Ok)
+            msg.exec_()
 
-    def display_message(self, boxnumber, message):  # quick method for redirecting messages to status box
-        self.statusTextBoxList[boxnumber].setPlainText(''.join(message))
+    def open_json_file(self, boxnumber):
+        jsonPath = str(self.paramFileBoxList[boxnumber].toPlainText())
+        if os.path.exists(jsonPath):
+            subprocess.call("geany %s" % jsonPath, shell=True)
+        else:
+            msg = QtGui.QMessageBox()
+            msg.setIcon(2)
+            msg.setText('Warning: File not found')
+            msg.setStandardButtons(QtGui.QMessageBox.Ok)
+            msg.exec_()
+
+    def create_json_file(self, boxnumber, birdname=''):
+        currentPath = os.path.dirname('/home/rouse/Desktop/pyoperant/pyoperant/pyoperant/behavior/')
+        paramFile = QtGui.QFileDialog.getOpenFileName(self, "Select Template for Settings", currentPath,
+                                                      "JSON Files (*.json)")
+        if paramFile:  # if user didn't pick a file don't replace existing path
+            # build new data folder path
+            if not birdname:
+                birdname = str(self.birdEntryBoxList[boxnumber].toPlainText())
+            else:
+                birdname = str(birdname)
+
+            try:
+                from pyoperant.local import DATAPATH
+            except ImportError:
+                DATAPATH = '/home/rouse/bird/data'
+            data_dir = os.path.join(DATAPATH, birdname)
+
+            if not os.path.exists(data_dir):
+                os.mkdir(data_dir)
+
+            newParamFile = birdname + "_config.json"
+            newParamPath = os.path.join(data_dir, newParamFile)
+
+            # Copy template file to new data directory
+            copyfile(paramFile, newParamPath)
+            self.paramFileBoxList[boxnumber].setPlainText(newParamPath)
+            return True
+        return False
+
+    def create_new_bird(self, boxnumber):
+
+        newBird, ok = QtGui.QInputDialog.getText(self, 'Change Bird', 'Bird ID:')
+        if newBird and ok:  # User entered bird name and clicked OK
+            jsonSuccess = self.create_json_file(boxnumber, newBird)
+            if jsonSuccess:
+                self.birdEntryBoxList[boxnumber].setPlainText(newBird)
+
+    # endregion
+
+    # region Pyoperant stop/start functions
 
     def stop_box(self, boxnumber, error_mode=False):
         # stop selected box
@@ -215,23 +308,22 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
 
     def start_box(self, boxnumber):
         # start selected box
-        actualboxnumber = boxnumber + 1
+        actualboxnumber = boxnumber + 1  # Boxnumber is index, but actual box number starts from 1
 
         # Error checking: make sure all relevant boxes are filled and files are found:
         birdName = self.birdEntryBoxList[boxnumber].toPlainText()
         jsonPath = self.paramFileBoxList[boxnumber].toPlainText()
-
-        if not self.checkActiveBoxList[boxnumber].checkState():
+        if not self.checkActiveBoxList[boxnumber].checkState():  # Box needs to be marked as active
             error = "Error: Box not set as Active."
             self.display_message(boxnumber, error)
-        elif not os.path.exists("/dev/teensy%02i" % actualboxnumber):  # check if Teensy is detected:
-            error = "Error: Teensy %d not detected." % actualboxnumber
-            self.display_message(boxnumber, error)
-        elif birdName == "":
+        elif birdName == "":  # Need a bird specified
             error = "Error: Bird name must be entered."
             self.display_message(boxnumber, error)
         elif not os.path.isfile(jsonPath):  # Make sure param file is specified
             error = "Error: No parameter file selected."
+            self.display_message(boxnumber, error)
+        elif not os.path.exists("/dev/teensy%02i" % actualboxnumber):  # check if Teensy is detected:
+            error = "Error: Teensy %d not detected." % actualboxnumber
             self.display_message(boxnumber, error)
         else:
             try:
@@ -275,6 +367,18 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
                     # self.graphicBoxList[boxnumber].setPixmap(self.greenIcon)
                     self.status_icon(boxnumber, 'start')
 
+    def start_all(self):
+        # start all checked boxes
+        for boxnumber in self.boxList:
+            if self.subprocessBox[boxnumber] == 0 and self.checkActiveBoxList[boxnumber].checkState():
+                self.start_box(boxnumber)
+
+    def stop_all(self):
+        # stop all running boxes
+        for boxnumber in self.boxList:
+            if not self.subprocessBox[boxnumber] == 0:
+                self.stop_box(boxnumber)
+
     def read_output_box(self, boxnumber, pipe, q):
 
         while True:
@@ -290,6 +394,9 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             if running is not None:
                 break
 
+    # endregion
+
+    # region Unused function
     def read_input(self, write_pipe, in_pipe_name):
         """reads input from a pipe with name `read_pipe_name`,
         writing this input straight into `write_pipe`"""
@@ -297,6 +404,9 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             with open(in_pipe_name, "r") as f:
                 write_pipe.write(f.read())
 
+    # endregion
+
+    # region Physical device monitoring
     def usb_monitor(self, action, device):
         if action == 'add':
             # print 'Connected'
@@ -319,7 +429,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
                 boxnumber = int(
                     match[1]) - 1  # Box number as index is indexed from 0, but Teensy numbers are indexed from 1
                 # print boxnumber
-            except:
+            except IndexError:
                 boxnumber = None
                 print 'Error: board not recognized'
 
@@ -337,49 +447,11 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
     def teensy_control(self, boxnumber, parameter):
         # quick method to enable or disable gui buttons and stop pyoperant if teensy is disconnected
         self.stop_box(boxnumber)
-        # self.checkActiveBoxList[boxnumber].setChecked(False)
         self.box_button_control(boxnumber, parameter)
 
-    def start_all(self):
-        # start all checked boxes
-        for boxnumber in self.boxList:
-            if self.subprocessBox[boxnumber] == 0 and self.checkActiveBoxList[boxnumber].checkState():
-                self.start_box(boxnumber)
+    # endregion
 
-    def stop_all(self):
-        # stop all running boxes
-        for boxnumber in self.boxList:
-            if not self.subprocessBox[boxnumber] == 0:
-                self.stop_box(boxnumber)
-
-    def box_button_control(self, boxnumber, parameter):
-        if parameter == 'stop' or parameter == 'enable':
-            # Enable objects when box is not running
-            self.paramFileButtonBoxList[boxnumber].setEnabled(True)
-            self.birdEntryBoxList[boxnumber].setReadOnly(False)
-            self.startBoxList[boxnumber].setEnabled(True)
-            self.stopBoxList[boxnumber].setEnabled(False)
-            # self.graphicBoxList[boxnumber].setPixmap(self.redIcon)
-            self.status_icon(boxnumber, 'stop')
-
-        elif parameter == "start":
-            # Hide and/or disable objects while box is running
-            self.paramFileButtonBoxList[boxnumber].setEnabled(False)
-            self.birdEntryBoxList[boxnumber].setReadOnly(True)
-            self.startBoxList[boxnumber].setEnabled(False)
-            self.stopBoxList[boxnumber].setEnabled(True)
-            # self.graphicBoxList[boxnumber].setPixmap(self.greenIcon)
-            self.status_icon(boxnumber, 'start')
-
-        elif parameter == "disable":
-            # For when Teensy isn't connected
-            self.paramFileButtonBoxList[boxnumber].setEnabled(True)
-            self.birdEntryBoxList[boxnumber].setReadOnly(False)
-            self.startBoxList[boxnumber].setEnabled(False)
-            self.stopBoxList[boxnumber].setEnabled(False)
-            # self.graphicBoxList[boxnumber].setPixmap(self.emptyIcon)
-            self.status_icon(boxnumber, 'blank')
-
+    # region Water system functions
     def purge_water(self, boxnumber, purge_time=20):
         boxnumber = boxnumber + 1  # boxnumber is index, but device name is not
         print("Purging water system in box %d" % boxnumber)
@@ -392,7 +464,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
 
         device.readline()
         device.flushInput()
-        print("Successfully opened device %s" % device_name)
+        # print("Successfully opened device %s" % device_name)
         # solenoid = channel 16
         device.write("".join([chr(16), chr(3)]))  # set channel 16 as output
         # device.write("".join([chr(16), chr(2)]))  # close solenoid, just in case
@@ -410,10 +482,13 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
 
     def solenoid_dialog(self, boxnumber):
         boxnumber = boxnumber + 1  # boxnumber is index, but device name is not
-        print("Opening solenoid control for box %d" % boxnumber)
+        # print("Opening solenoid control for box %d" % boxnumber)
         dialog = SolenoidGui(boxnumber)
         dialog.exec_()
 
+    # endregion
+
+    # region Box updating functions
     def refreshall(self):
         # print "timer fired"
         # print mem_top()
@@ -471,7 +546,54 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         # self.statusTextBoxList[boxnumber].setPlainText('\n'.join(logData[-10:]))
         # f.close()
 
+    # endregion
+
+    # region Error handling
+
+    def get_error(self, boxnumber):
+        # Check output for any errors
+        while True:  # Loop through error codes generated, if any
+            error = ""
+            try:
+                error = '{0}\n{1}'.format(error, self.qList[boxnumber].get(False))
+            except Queue.Empty:
+                break
+        return error
+
+    def error_handler(self, boxnumber):
+        # Take any errors and stop box, if necessary
+        error = self.get_error(boxnumber)
+        if error:
+            if error[
+               0:4] == "ALSA":
+                # Ignore ALSA errors; they've always occurred and don't interfere (have to do with the sound chip not
+                # liking some channels as written)
+                pass
+            elif error[0:5] == 'pydev':
+                # Ignore pydev errors - thrown automatically during PyCharm debugging
+                pass
+            # elif error[0:5] == 'pydev':  # Add additional exceptions here
+            #     pass
+            else:
+                self.display_message(boxnumber, error)
+                print error
+                self.stop_box(boxnumber, error_mode=True)
+                return True
+        else:
+            return False
+
+    def display_message(self, boxnumber, message):  # quick method for redirecting messages to status box
+        self.statusTextBoxList[boxnumber].setPlainText(''.join(message))
+
+    # endregion
+
+    # region GUI application functions
     def open_application(self):
+        # Command line argument parsing
+        args = self.parse_commandline()
+
+        shutdownPrev = True  # Define first then settings file overwrites, if present
+
         settingsFile = 'settings.json'
         if os.path.isfile(settingsFile):  # Make sure param file is specified
             print 'settings.json file detected, loading settings'
@@ -491,6 +613,24 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
                     for i, check in dictLoaded['active']:
                         if check:
                             self.checkActiveBoxList[i].setChecked(True)
+                # Whether last shutdown was done properly
+                if 'shutdownProper' in dictLoaded:
+                    shutdownPrev = dictLoaded['shutdownProper']
+
+            ## Power outage handling ##
+            # Set shutdownProper to False when GUI is opened, set it to true when it's properly closed.
+            # That way if it doesn't get closed properly, shutdownProper still reads False and the GUI will
+            # automatically start all checked boxes on startup (in case of power outage)
+
+            # Write False to shutdownProper in the settings file
+            dictLoaded['shutdownProper'] = False
+            with open('settings.json', 'w') as outfile:
+                json.dump(dictLoaded, outfile, ensure_ascii=False)
+
+            # If last shutdown was improper, start all checked boxes
+            if not shutdownPrev:
+                if args['debug'] is False:
+                    self.start_all()
 
     def close_application(self, event):
         ## Save settings to file to reload for next time
@@ -508,8 +648,9 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         paramFiles = zip(self.boxList, paramFileList)
         birds = zip(self.boxList, birdListTemp)
         active = zip(self.boxList, activeListTemp)
+        shutdownProper = True
 
-        d = {'paramFiles': paramFiles, 'birds': birds, 'active': active}
+        d = {'paramFiles': paramFiles, 'birds': birds, 'active': active, 'shutdownProper': shutdownProper}
         # d = {}
         # d['paramFiles'] = paramFiles
         # d['birds'] = birds
@@ -538,6 +679,18 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         self.stop_all()
 
         event.accept()  # Accept GUI closing
+
+    def parse_commandline(self, arg_str=sys.argv[1:]):
+        parser = argparse.ArgumentParser(description='Start the Pyoperant GUI')
+
+        parser.add_argument('-d', '--debug',
+                            action='store_true',
+                            default=False,
+                            help='Turn on debug mode'
+                            )
+        args = parser.parse_args(arg_str)
+        return vars(args)
+    # endregion
 
 
 class SolenoidGui(QtGui.QDialog, pyoperant_gui_layout.UiSolenoidControl):

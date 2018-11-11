@@ -64,7 +64,7 @@ __Regular variables__
     sr: [num] sample rate of playback in Hz
 
 
-*Unsure
+*Unsure, logic handled in base.py
 
 
 __Removed__ (These were in the original json file that came with pyoperant but are irrelevant for my experiment)

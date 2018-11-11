@@ -16,7 +16,7 @@
     "text"
   ],
   "shape": false,
-  "free_day_off": true,
+  "free_day_off": false,
   "classes": {
     "sPlus": {
       "component": "respSens",
@@ -574,7 +574,8 @@
           "schedule": "go_interrupt",
           "prob": 1,
           "secondary": false,
-          "passive": true
+          "passive": false,
+          "punish": false
         },
         "conditions": [
           {
@@ -903,7 +904,8 @@
     2,
     3,
     4,
-    5
+    5,
+    6
   ],
   "stim_path": "/home/rouse/bird/stim",
   "stims": {

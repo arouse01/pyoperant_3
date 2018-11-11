@@ -22,21 +22,47 @@
     ],
     [
       5,
-      false
+      true
+    ]
+  ],
+  "paramFiles": [
+    [
+      0,
+      "/home/rouse/bird/data/w60w59/w60w59_config.json"
+    ],
+    [
+      1,
+      "/home/rouse/bird/data/r15r17/r15r17_config.json"
+    ],
+    [
+      2,
+      "/home/rouse/bird/data/r14w14/r14w14_config.json"
+    ],
+    [
+      3,
+      "/home/rouse/bird/data/r54r55/r54r55_config.json"
+    ],
+    [
+      4,
+      "/home/rouse/bird/data/k63o12/go_nogo_interrupt_config_shaping.json"
+    ],
+    [
+      5,
+      "/home/rouse/bird/data/y18r8/y18r8_config.json"
     ]
   ],
   "birds": [
     [
       0,
-      "k64k65"
+      "w60w59"
     ],
     [
       1,
-      "r21w24"
+      "r15r17"
     ],
     [
       2,
-      "g62p26"
+      "r14w14"
     ],
     [
       3,
@@ -48,33 +74,8 @@
     ],
     [
       5,
-      "test6"
+      "y18r8"
     ]
   ],
-  "paramFiles": [
-    [
-      0,
-      "/home/rouse/Desktop/pyoperant/pyoperant/pyoperant/behavior/go_nogo_interrupt_config_template.json"
-    ],
-    [
-      1,
-      "/home/rouse/Desktop/pyoperant/pyoperant/pyoperant/behavior/go_nogo_interrupt_config_template.json"
-    ],
-    [
-      2,
-      "/home/rouse/Desktop/pyoperant/pyoperant/pyoperant/behavior/go_nogo_interrupt_config_template.json"
-    ],
-    [
-      3,
-      "/home/rouse/Desktop/pyoperant/pyoperant/pyoperant/behavior/go_nogo_interrupt_config_template.json"
-    ],
-    [
-      4,
-      "/home/rouse/Desktop/pyoperant/pyoperant/pyoperant/behavior/go_nogo_interrupt_config_template.json"
-    ],
-    [
-      5,
-      "/home/rouse/Desktop/pyoperant/pyoperant/pyoperant/behavior/go_nogo_interrupt_config_adlib.json"
-    ]
-  ]
+  "shutdownProper": false
 }

@@ -1,0 +1,98 @@
+{
+  "Machine": "Rouse",
+  "name": "ZF Isochrony discrimination",
+  "description": "Discriminate regular from irregular patterns of sound",
+  "comments": "json doesn't support comments",
+  "experiment_path": "/home/rouse/bird",
+  "experimenter": {
+    "email": "andrew.rouse@tufts.edu",
+    "name": "Andrew Rouse"
+  },
+  "panel_name": "Rouse1",
+  "subject": "test",
+  "subject_type": "bird",
+  "debug": false,
+  "log_handlers": [
+    "text"
+  ],
+  "shape": false,
+  "free_day_off": true,
+  "classes": {
+    "sPlus": {
+      "component": "respSens",
+      "punish_value": 0.0,
+      "reward_value": 0.15
+    },
+    "sMinus": {
+      "component": "trialSens",
+      "punish_value": 10.0,
+      "reward_value": 0.0
+    }
+  },
+  "block_design": {
+    "blocks": {
+      "default": {
+        "description": "all from b1i1",
+        "conditions": [
+          {
+            "class": "sMinus",
+            "stim_name": "1"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "2"
+          }
+        ],
+        "weights": [
+          {
+            "class": "sMinus",
+            "weight": 12
+          },
+          {
+            "class": "sPlus",
+            "weight": 8
+          }
+        ],
+        "queue": "random",
+        "reinforcement": {
+          "schedule": "go_interrupt",
+          "prob": 1,
+          "secondary": false
+        }
+      }
+    },
+    "order": [
+      "default"
+    ]
+  },
+  "correction_trials": false,
+  "intertrial_min": 0.1,
+  "response_delay": 0.5,
+  "response_win": 5,
+  "light_schedule": [
+    [
+      "08:30",
+      "20:30"
+    ]
+  ],
+  "session_schedule": [
+    [
+      "08:30",
+      "20:30"
+    ]
+  ],
+  "session_days": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "stim_path": "/home/rouse/bird/stim",
+  "stims": {
+    "1": "b1i1_098_ir1.wav",
+    "2": "b1i1_098_ir2.wav"
+  },
+  "sr": 44100
+}

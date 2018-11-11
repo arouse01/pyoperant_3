@@ -86,7 +86,10 @@ class BaseExp(object):
             self.parameters['shape'] = None
 
     def save(self):
-        self.snapshot_f = os.path.join(self.parameters['experiment_path'], self.timestamp + '.json')
+        json_path = os.path.join(self.parameters['experiment_path'], 'settings_files')
+        if not os.path.exists(json_path):
+            os.mkdir(json_path)
+        self.snapshot_f = os.path.join(json_path, self.timestamp + '.json')
         with open(self.snapshot_f, 'wb') as config_snap:
             json.dump(self.parameters, config_snap, sort_keys=True, indent=4)
 
@@ -157,6 +160,7 @@ class BaseExp(object):
         for attr in self.req_panel_attr:
             assert hasattr(self.panel, attr)
         self.panel_reset()
+
         self.save()
         self.init_summary()
 
@@ -275,7 +279,7 @@ class BaseExp(object):
             f.write("TrlSw\t%i\t%i\n" % (self.summary['misses'], self.summary['correct_rejections']))
             f.write("d': %1.2f\n" % self.summary['dprime'])
             #f.write("Feeder ops today: %i\n" % self.summary['feeds'])
-            f.write("\nLast trial run @: %s" % self.summary['last_trial_time'])
+            f.write("\nLast trial @: %s" % self.summary['last_trial_time'])
 
     def write_summary_shaping(self):
         """ takes in a summary dictionary and options and writes to the bird's summaryDAT"""

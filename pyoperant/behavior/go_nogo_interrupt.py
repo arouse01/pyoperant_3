@@ -80,8 +80,11 @@ class GoNoGoInterruptExp(base.BaseExp):
         self.trial_q = None
         self.session_q = None
 
-        self.data_csv = os.path.join(self.parameters['experiment_path'],
-                                     self.parameters['subject'] + '_trialdata_' + self.timestamp + '.csv')
+        data_dir = os.path.join(self.parameters['experiment_path'], 'trialdata')
+
+        if not os.path.exists(data_dir):
+            os.mkdir(data_dir)
+        self.data_csv = os.path.join(data_dir, self.parameters['subject'] + '_trialdata_' + self.timestamp + '.csv')
         self.make_data_csv()
 
         if 'block_design' not in self.parameters:
@@ -115,6 +118,7 @@ class GoNoGoInterruptExp(base.BaseExp):
         This creates a new csv file at experiment.data_csv and writes a header row 
         with the fields in experiment.fields_to_save
         """
+
         with open(self.data_csv, 'wb') as data_fh:
             trialWriter = csv.writer(data_fh)
             trialWriter.writerow(self.fields_to_save)

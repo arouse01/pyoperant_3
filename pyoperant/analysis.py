@@ -20,15 +20,19 @@ def dprime(confusion_matrix):
         hit_rate = confusion_matrix[0, 0] / confusion_matrix[0, :].sum()
         fa_rate = confusion_matrix[1, 0] / confusion_matrix[1, :].sum()
 
-        nudge = 0.0001
+        # Correction if hit_rate or fa_rate equals 0 or 1 (following suggestion of Macmillan & Kaplan 1985)
+
+        nudge_hit = 1.0 / (2.0 * confusion_matrix[0, :].sum())
+        nudge_fa = 1.0 / (2.0 * confusion_matrix[1, :].sum())
+
         if hit_rate >= 1:
-            hit_rate = 1 - nudge
+            hit_rate = 1 - nudge_hit
         if hit_rate <= 0:
-            hit_rate = 0 + nudge
+            hit_rate = 0 + nudge_hit
         if fa_rate >= 1:
-            fa_rate = 1 - nudge
+            fa_rate = 1 - nudge_fa
         if fa_rate <= 0:
-            fa_rate = 0 + nudge
+            fa_rate = 0 + nudge_fa
 
         dp = norm.ppf(hit_rate) - norm.ppf(fa_rate)
         return dp

@@ -28,7 +28,7 @@
     },
     "sMinus": {
       "component": "trialSens",
-      "punish_value": 10.0,
+      "punish_value": 2.0,
       "reward_value": 0.0
     },
     "probePlus": {
@@ -571,13 +571,14 @@
           "secondary": false
         }
       },
-      "shaping phase 0": {
-        "description": "full song stimuli",
+      "shaping 1": {
+        "description": "full song stimuli, passive water",
         "reinforcement": {
           "schedule": "go_interrupt",
           "prob": 1,
           "secondary": false,
-          "passive": true
+          "passive": true,
+          "punish": false
         },
         "conditions": [
           {
@@ -601,7 +602,69 @@
         ],
         "queue": "random"
       },
-      "training phase 1": {
+      "shaping 2": {
+        "description": "full song stimuli, no passive, no lights out",
+        "reinforcement": {
+          "schedule": "go_interrupt",
+          "prob": 1,
+          "secondary": false,
+          "passive": false,
+          "punish": false
+        },
+        "conditions": [
+          {
+            "class": "sPlus",
+            "stim_name": "1000"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "1001"
+          }
+        ],
+        "weights": [
+          {
+            "class": "sPlus",
+            "weight": 1
+          },
+          {
+            "class": "sMinus",
+            "weight": 1
+          }
+        ],
+        "queue": "random"
+      },
+      "shaping 3": {
+        "description": "full song stimuli, lights out punishment",
+        "reinforcement": {
+          "schedule": "go_interrupt",
+          "prob": 1,
+          "secondary": false,
+          "passive": false,
+          "punish": true
+        },
+        "conditions": [
+          {
+            "class": "sPlus",
+            "stim_name": "1000"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "1001"
+          }
+        ],
+        "weights": [
+          {
+            "class": "sPlus",
+            "weight": 1
+          },
+          {
+            "class": "sMinus",
+            "weight": 1
+          }
+        ],
+        "queue": "random"
+      },
+      "training 1": {
         "description": "1:1 S+/S- stim, 125 ms",
         "reinforcement": {
           "schedule": "go_interrupt",
@@ -632,7 +695,7 @@
         ],
         "queue": "random"
       },
-      "training phase 2": {
+      "training 2": {
         "description": "1:2 S+/S- stim, 125 ms",
         "reinforcement": {
           "schedule": "go_interrupt",
@@ -668,7 +731,7 @@
         ],
         "queue": "random"
       },
-      "training phase 3": {
+      "training 3": {
         "description": "1:4 S+/S- stim, 125 ms",
         "reinforcement": {
           "schedule": "go_interrupt",
@@ -712,7 +775,7 @@
         ],
         "queue": "random"
       },
-      "training phase 4": {
+      "training 4": {
         "description": "1:4 S+/S- stim, 125 ms, 0.8 reinf rate",
         "reinforcement": {
           "schedule": "go_interrupt",
@@ -756,7 +819,7 @@
         ],
         "queue": "random"
       },
-      "training phase 5": {
+      "training 5": {
         "description": "5:20 S+/S- stim, 125 ms, 0.8 reinf rate",
         "reinforcement": {
           "schedule": "go_interrupt",
@@ -881,7 +944,9 @@
       }
     },
     "order": [
-      "training phase 1"
+      "shaping 1",
+      "shaping 2",
+      "shaping 3"
     ]
   },
 
