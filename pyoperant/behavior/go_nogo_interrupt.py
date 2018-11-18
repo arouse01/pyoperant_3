@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 import os
 import csv
 import copy
@@ -112,6 +114,10 @@ class GoNoGoInterruptExp(base.BaseExp):
         if 'subject_type' not in self.parameters:
             self.parameters['subject_type'] = 'bird'
 
+    def reconnect_panel(self):
+        # If hardware connection is interrupted, like serial communication fails,
+        pass
+
     def make_data_csv(self):
         """ Create the csv file to save trial data
 
@@ -129,7 +135,8 @@ class GoNoGoInterruptExp(base.BaseExp):
             assert hasattr(self.panel, attr)
         self.panel_reset()
         self.save()
-        self.init_summary()
+        if self.session_q is None:  # Skip summary overwriting if resuming session
+            self.init_summary()
 
         self.log.info('%s: running %s with parameters in %s' % (self.name,
                                                                 self.__class__.__name__,
@@ -170,23 +177,42 @@ class GoNoGoInterruptExp(base.BaseExp):
 
     def init_summary(self):
         """ initializes an empty summary dictionary """
-        self.summary = {'trials': 0,
+        self.summary = {'phase': '',
+                        'trials': 0,
                         'responses': 0,
                         'feeds': 0,
                         'correct_responses': 0,
                         'false_alarms': 0,
                         'misses': 0,
                         'correct_rejections': 0,
-                        'cr_rate': 0,
-                        'fa_rate': 0,
                         'last_trial_time': [],
                         'dprime': 0,
+                        'bias': 0,
                         'sminus_trials': 0,
-                        'splus_trials': 0
+                        'splus_trials': 0,
+                        'sminus_nr': 0,
+                        'splus_nr': 0
                         }
         summary_file = os.path.join(self.parameters['experiment_path'], self.parameters['subject'] + '.summaryDAT')
         with open(summary_file, 'wb') as f:
             f.write("Welcome to pyoperant v%s." % self.version)
+
+    def write_summary(self):
+        """ takes in a summary dictionary and options and writes to the bird's summaryDAT"""
+        summary_file = os.path.join(self.parameters['experiment_path'], self.parameters['subject'] + '.summaryDAT')
+        with open(summary_file, 'wb') as f:
+            f.write("Session: %s\n" % self.summary['phase'])
+            f.write("    Trials this session: %s\n" % self.summary['trials'])
+            f.write("    Rf'd responses: %i\n" % self.summary['feeds'])
+            f.write("\n")
+            f.write("    \tS+\tS-\n")
+            f.write("    RespSw\t%i\t%i\n" % (self.summary['correct_responses'], self.summary['false_alarms']))
+            f.write("    TrlSw\t%i(%i)\t%i(%i)\n" % (self.summary['misses'], self.summary['splus_nr'], self.summary[
+                'correct_rejections'], self.summary['sminus_nr']))
+            f.write("    d': %1.2f\t" % self.summary['dprime'])
+            f.write((u"β: %1.2f\n" % self.summary['bias']).encode('utf8'))
+            # f.write("Feeder ops today: %i\n" % self.summary['feeds'])
+            f.write("\nLast trial: %s" % self.summary['last_trial_time'])
 
     ## session flow
     def session_pre(self):
@@ -242,7 +268,7 @@ class GoNoGoInterruptExp(base.BaseExp):
                 self.do_correction = False
                 self.session_id += 1
                 self.log.info('starting session %s: %s' % (self.session_id, sn_cond))
-
+                self.summary['phase'] = sn_cond
                 # grab the block details
                 blk = copy.deepcopy(self.parameters['block_design']['blocks'][sn_cond])
 
@@ -404,10 +430,16 @@ class GoNoGoInterruptExp(base.BaseExp):
 
     def analyze_trial(self):
         # TODO: calculate reaction times
-        matrix = [[self.summary['correct_responses'], self.summary['misses']],
-                  [self.summary['false_alarms'], self.summary['correct_rejections']]]
-        conf_matrix = analysis.create_conf_matrix_summary(matrix)
-        self.summary['dprime'] = analysis.dprime(conf_matrix)
+        # matrix = [[self.summary['correct_responses'], self.summary['misses']], [self.summary['false_alarms'],
+        # self.summary['correct_rejections']]]
+        # conf_matrix = analysis.create_conf_matrix_summary(matrix)
+
+        # self.summary['dprime'] = analysis.dprime(conf_matrix)
+        # self.summary['bias'] = analysis.bias(conf_matrix)
+        stats = analysis.Performance([[self.summary['correct_responses'], self.summary['misses']],
+                                      [self.summary['false_alarms'], self.summary['correct_rejections']]])
+        self.summary['dprime'] = stats.dprime()
+        self.summary['bias'] = stats.bias()
 
     def save_trial(self, trial):
         """write trial results to CSV"""
@@ -567,8 +599,12 @@ class GoNoGoInterruptExp(base.BaseExp):
                 self.this_trial.correct = True  # Mark correct response to probe as correct
                 self.summary['correct_responses'] += 1
                 self.this_trial.responseType = "correct_response"
+            elif self.this_trial.response == "sMinus":
+                self.summary['misses'] += 1
+                self.this_trial.responseType = "miss"
             else:
-                # could also individually code this_trial.responseType as no_response, if desired
+                # No response
+                self.summary['splus_nr'] += 1
                 self.summary['misses'] += 1
                 self.this_trial.responseType = "miss"
 
@@ -577,10 +613,15 @@ class GoNoGoInterruptExp(base.BaseExp):
             if self.this_trial.response == "sPlus":
                 self.summary['false_alarms'] += 1
                 self.this_trial.responseType = "false_alarm"
-            else:
-                # could also individually code this_trial.responseType as no_response, if desired
+            elif self.this_trial.response == "sMinus":
                 self.this_trial.correct = True  # Mark correct response to probe as correct
                 self.summary['correct_rejections'] += 1
+                self.this_trial.responseType = "correct_reject"
+            else:
+                # No response
+                self.this_trial.correct = True  # Mark correct response to probe as correct
+                self.summary['correct_rejections'] += 1
+                self.summary['sminus_nr'] += 1
                 self.this_trial.responseType = "correct_reject"
 
     def consequence_main(self):

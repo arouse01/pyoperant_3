@@ -143,9 +143,9 @@ def main():
 
     BehaviorProtocol = find_protocol(cmd_line['protocol'])
 
-    if ('debug' in parameters) and parameters['debug']:
-        print(parameters)
-        print(PANELS)
+    # if ('debug' in parameters) and parameters['debug']:
+    # print("debug message: %s" % parameters)
+    # print("debug message: %s" % PANELS)
 
     for k in ['subject', 'panel_name', 'experiment_path']:
         parameters.pop(k) if k in parameters.keys() else None

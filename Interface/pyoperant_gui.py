@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 from PyQt4 import QtCore, QtGui  # Import the PyQt4 module we'll need
 import sys  # We need sys so that we can pass argv to QApplication
 import os
@@ -16,6 +18,12 @@ try:
 
 except ImportError:
     import json
+
+try:  # Allows proper formatting of UTF-8 characters from summaryDAT file
+    _from_utf8 = QtCore.QString.fromUtf8
+except AttributeError:
+    def _from_utf8(s):
+        return s
 
 import pyoperant_gui_layout
 
@@ -218,7 +226,8 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         settingsPath = str(self.paramFileBoxList[boxnumber].toPlainText())
         folderPath = os.path.split(settingsPath)
         if os.path.exists(folderPath[0]):
-            subprocess.call("nautilus %s" % folderPath[0], shell=True)
+            # print folderPath[0]
+            subprocess.Popen(["xdg-open", folderPath[0]])
         else:
             msg = QtGui.QMessageBox()
             msg.setIcon(2)
@@ -229,7 +238,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
     def open_json_file(self, boxnumber):
         jsonPath = str(self.paramFileBoxList[boxnumber].toPlainText())
         if os.path.exists(jsonPath):
-            subprocess.call("geany %s" % jsonPath, shell=True)
+            subprocess.Popen(["geany", jsonPath])
         else:
             msg = QtGui.QMessageBox()
             msg.setIcon(2)
@@ -267,7 +276,6 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         return False
 
     def create_new_bird(self, boxnumber):
-
         newBird, ok = QtGui.QInputDialog.getText(self, 'Change Bird', 'Bird ID:')
         if newBird and ok:  # User entered bird name and clicked OK
             jsonSuccess = self.create_json_file(boxnumber, newBird)
@@ -355,7 +363,8 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
 
                 error = self.get_error(boxnumber)
 
-                if error and not error[0:4] == "ALSA" and not error[0:5] == 'pydev':
+                if error and not error[0:4] == "ALSA" and not error[0:5] == 'pydev' and not error[0:5] == 'debug':
+                    print error
                     self.display_message(boxnumber, error)
                     self.stop_box(boxnumber, error_mode=True)
                     # self.subprocessBox[boxnumber].terminate
@@ -453,38 +462,44 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
 
     # region Water system functions
     def purge_water(self, boxnumber, purge_time=20):
-        boxnumber = boxnumber + 1  # boxnumber is index, but device name is not
-        print("Purging water system in box %d" % boxnumber)
-        device_name = '/dev/teensy%02i' % boxnumber
-        device = serial.Serial(port=device_name,
-                               baudrate=19200,
-                               timeout=5)
-        if device is None:
-            raise 'Could not open serial device %s' % device_name
+        if self.subprocessBox[boxnumber] == 0:  # If box is not running
+            boxnumber = boxnumber + 1  # boxnumber is index, but device name is not
+            print("Purging water system in box %d" % boxnumber)
+            device_name = '/dev/teensy%02i' % boxnumber
+            device = serial.Serial(port=device_name,
+                                   baudrate=19200,
+                                   timeout=5)
+            if device is None:
+                raise 'Could not open serial device %s' % device_name
 
-        device.readline()
-        device.flushInput()
-        # print("Successfully opened device %s" % device_name)
-        # solenoid = channel 16
-        device.write("".join([chr(16), chr(3)]))  # set channel 16 as output
-        # device.write("".join([chr(16), chr(2)]))  # close solenoid, just in case
-        device.write("".join([chr(16), chr(1)]))  # open solenoid
-        startTime = time.time()
+            device.readline()
+            device.flushInput()
+            # print("Successfully opened device %s" % device_name)
+            # solenoid = channel 16
+            device.write("".join([chr(16), chr(3)]))  # set channel 16 as output
+            # device.write("".join([chr(16), chr(2)]))  # close solenoid, just in case
+            device.write("".join([chr(16), chr(1)]))  # open solenoid
+            startTime = time.time()
 
-        while True:
-            elapsedTime = time.time() - startTime
-            if purge_time <= elapsedTime:
-                break
+            while True:
+                elapsedTime = time.time() - startTime
+                if purge_time <= elapsedTime:
+                    break
 
-        device.write("".join([chr(16), chr(2)]))  # close solenoid
-        device.close()  # close connection
-        print "Purged box {0}".format(str(boxnumber))
+            device.write("".join([chr(16), chr(2)]))  # close solenoid
+            device.close()  # close connection
+            print "Purged box {0}".format(str(boxnumber))
+        else:
+            print "Cannot open solenoid: Box {0} is currently running".format(str(boxnumber))
 
     def solenoid_dialog(self, boxnumber):
-        boxnumber = boxnumber + 1  # boxnumber is index, but device name is not
-        # print("Opening solenoid control for box %d" % boxnumber)
-        dialog = SolenoidGui(boxnumber)
-        dialog.exec_()
+        if self.subprocessBox[boxnumber] == 0:  # If box is not running
+            boxnumber = boxnumber + 1  # boxnumber is index, but device name is not
+            # print("Opening solenoid control for box %d" % boxnumber)
+            dialog = SolenoidGui(boxnumber)
+            dialog.exec_()
+        else:
+            print "Cannot open solenoid: Box {0} is currently running".format(str(boxnumber))
 
     # endregion
 
@@ -498,7 +513,8 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             if not self.subprocessBox[boxnumber] == 0:  # If box is running
                 # Check if subprocess is still running
                 poll = self.subprocessBox[boxnumber].poll()
-                if poll is None:  # poll() == 0 means the subprocess is still running
+                if poll is None:  # or self.args['debug'] is not False:  # poll() == 0 means the subprocess is still
+                    # running
                     self.refreshfile(boxnumber)
                 else:
                     self.stop_box(boxnumber, error_mode=True)
@@ -533,11 +549,9 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             if not g == 0 and len(errorData) > 1:
                 # print "error log"
                 self.display_message(boxnumber, errorData)
-                # self.statusTextBoxList[boxnumber].setPlainText(''.join(errorData[-10:]))
             else:
                 # print 'reg summary'
                 self.display_message(boxnumber, logData)
-                # self.statusTextBoxList[boxnumber].setPlainText(''.join(logData[-10:]))
         else:
             print "{0}{1}".format("Unable to open file for ", birdName)
 
@@ -572,6 +586,8 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             elif error[0:5] == 'pydev':
                 # Ignore pydev errors - thrown automatically during PyCharm debugging
                 pass
+            elif error[0:5] == 'debug':  # Add additional exceptions here
+                pass
             # elif error[0:5] == 'pydev':  # Add additional exceptions here
             #     pass
             else:
@@ -583,14 +599,21 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             return False
 
     def display_message(self, boxnumber, message):  # quick method for redirecting messages to status box
-        self.statusTextBoxList[boxnumber].setPlainText(''.join(message))
+        if isinstance(message, list):
+            messageFormatted = ''.join(message)
+            messageFormatted = _from_utf8(messageFormatted)
+        else:
+            messageFormatted = _from_utf8(message)
+        self.statusTextBoxList[boxnumber].setText(messageFormatted)
 
     # endregion
 
     # region GUI application functions
     def open_application(self):
         # Command line argument parsing
-        args = self.parse_commandline()
+        # message = u'β123'#.decode('utf8')
+        # self.statusTextBoxList[1].setPlainText(message)
+        self.args = self.parse_commandline()
 
         shutdownPrev = True  # Define first then settings file overwrites, if present
 
@@ -629,7 +652,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
 
             # If last shutdown was improper, start all checked boxes
             if not shutdownPrev:
-                if args['debug'] is False:
+                if self.args['debug'] is False:
                     self.start_all()
 
     def close_application(self, event):

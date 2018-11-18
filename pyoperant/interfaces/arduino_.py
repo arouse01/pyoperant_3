@@ -71,9 +71,14 @@ class ArduinoInterface(base_.BaseInterface):
         """
 
         logger.debug("Opening device %s" % self)
-        self.device = serial.Serial(port=self.device_name,
-                                    baudrate=self.baud_rate,
-                                    timeout=5)
+        # self.device = serial.Serial(port=self.device_name, baudrate=self.baud_rate, timeout=5)
+        self.device = serial.Serial()
+        self.device.port = self.device_name
+        self.device.baudrate = self.baud_rate
+        self.device.timeout = 5
+        self.device.setDTR(False)
+        self.device.open()
+
         if self.device is None:
             raise InterfaceError('Could not open serial device %s' % self.device_name)
 
@@ -152,7 +157,8 @@ class ArduinoInterface(base_.BaseInterface):
             except serial.SerialException:
                 # This is to make it robust in case it accidentally disconnects or you try to access the arduino in
                 # multiple ways
-                pass
+                logger.error('Serial connection not responding')
+                break
             except TypeError:
                 ArduinoException("Could not read from arduino device")
 

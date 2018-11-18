@@ -259,8 +259,6 @@ class BaseExp(object):
                         'false_alarms': 0,
                         'misses': 0,
                         'correct_rejections': 0,
-                        'cr_rate': 0,
-                        'fa_rate': 0,
                         'last_trial_time': [],
                         'dprime': 0,
                         'sminus_trials': 0,

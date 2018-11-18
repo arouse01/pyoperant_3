@@ -1,7 +1,9 @@
 import numpy as np
 from scipy.stats import norm
 from scipy.stats import beta
-#from matplotlib import mlab
+
+
+# from matplotlib import mlab
 
 
 # d-prime
@@ -36,6 +38,37 @@ def dprime(confusion_matrix):
 
         dp = norm.ppf(hit_rate) - norm.ppf(fa_rate)
         return dp
+
+
+# bias measurement
+def bias(confusion_matrix):
+    if max(confusion_matrix.shape) > 2:
+        return False
+    else:
+        hit_rate = confusion_matrix[0, 0] / confusion_matrix[0, :].sum()
+        fa_rate = confusion_matrix[1, 0] / confusion_matrix[1, :].sum()
+
+        # Correction if hit_rate or fa_rate equals 0 or 1 (following suggestion of Macmillan & Kaplan 1985)
+
+        nudge_hit = 1.0 / (2.0 * confusion_matrix[0, :].sum())
+        nudge_fa = 1.0 / (2.0 * confusion_matrix[1, :].sum())
+
+        if hit_rate >= 1:
+            hit_rate = 1 - nudge_hit
+        if hit_rate <= 0:
+            hit_rate = 0 + nudge_hit
+        if fa_rate >= 1:
+            fa_rate = 1 - nudge_fa
+        if fa_rate <= 0:
+            fa_rate = 0 + nudge_fa
+
+        bias_c = -0.5 * (norm.ppf(hit_rate) + norm.ppf(fa_rate))
+
+        dp = dprime(confusion_matrix)
+
+        bias_beta = np.exp(dp * bias_c)
+
+        return bias_beta
 
 
 # accuracy (% correct)
@@ -124,17 +157,21 @@ def create_conf_matrix_summary(matrix):
     m = mArray.astype(float)
     return m
 
+
 class Performance:
     """ use this to compute performance metrics """
 
-    def __init__(self, expected, predicted):
-        self.confusion_matrix = create_conf_matrix(expected, predicted)
+    def __init__(self, matrix):
+        self.confusion_matrix = create_conf_matrix_summary(matrix)
 
     def n_classes(self):
         return max(self.confusion_matrix.shape)
 
     def dprime(self):
         return dprime(self.confusion_matrix)
+
+    def bias(self):
+        return bias(self.confusion_matrix)
 
     def acc(self):
         return acc(self.confusion_matrix)
