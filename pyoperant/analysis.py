@@ -1,6 +1,16 @@
+import os
+import csv
+import copy
+import datetime as dt
 import numpy as np
 from scipy.stats import norm
 from scipy.stats import beta
+import pandas as pd
+
+try:
+    import simplejson as json
+except ImportError:
+    import json
 
 
 # from matplotlib import mlab
@@ -158,7 +168,7 @@ def create_conf_matrix_summary(matrix):
     return m
 
 
-class Performance:
+class Analysis:
     """ use this to compute performance metrics """
 
     def __init__(self, matrix):
@@ -189,3 +199,322 @@ class Session(object):
     def __init__(self, arg):
         super(Session, self).__init__()
         self.arg = arg
+
+
+class Performance(object):  # Longer-term performance analysis
+
+    def __init__(self, experiment_folder):
+        # Validate input folder
+        if not os.path.exists(experiment_folder):
+            print "invalid input folder"
+            return
+
+        self.data_dir = os.path.join(experiment_folder, 'trialdata')
+        if not os.path.exists(self.data_dir):
+            print "data folder (%s) not found" % self.data_dir
+            return
+
+        self.json_dir = os.path.join(experiment_folder, 'settings_files')
+        if not os.path.exists(self.json_dir):
+            print "json folder (%s) not found" % self.json_dir
+            return
+
+        dataDict = {'File': [],
+                    'Subject': [],
+                    'Session': [],
+                    'Block': [],
+                    'Index': [],
+                    'Time': [],
+                    'Stimulus': [],
+                    'Class': [],
+                    'Response': [],
+                    'RT': [],
+                    'Reward': [],
+                    'Punish': []
+                    }
+        self.gather_raw_data(dataDict)
+
+    def gather_raw_data(self, data_dict):
+
+        csvList = os.listdir(self.data_dir)
+        csvCount = len(csvList)
+
+        for i in range(csvCount):
+            csvPath = os.path.join(self.data_dir, csvList[i])
+            with open(csvPath) as data_file:
+                csv_reader = csv.reader(data_file, delimiter=',')
+                rowCount = len(list(csv_reader)) - 1  # check if csv has data beyond header
+                if rowCount < 1:
+                    fileEmpty = True
+                else:
+                    fileEmpty = False
+
+            if fileEmpty is False:  # Separated from above to allow data_file to close and be reopened for actual 
+                # scanning
+                with open(csvPath) as data_file:
+                    csv_reader = csv.reader(data_file, delimiter=',')
+                    currentLine = 0
+                    for row in csv_reader:
+                        if currentLine == 0:
+                            pass
+                        else:
+                            data_dict['Index'].append(row[1])
+                            data_dict['Stimulus'].append(row[3])
+                            data_dict['Class'].append(row[4])
+                            data_dict['Response'].append(row[5])
+                            data_dict['RT'].append(row[7])
+                            data_dict['Reward'].append(row[8])
+                            data_dict['Punish'].append(row[9])
+                            data_dict['Time'].append(row[10])
+                            data_dict['Session'].append(i)
+                            data_dict['File'].append(csvList[i])
+                            data_dict['Subject'].append(csvList[i].partition('_')[0])
+                        currentLine += 1
+
+                jsonFile = os.path.splitext(csvList[i])[0].rpartition('_')[2] + '.json'
+                jsonPath = os.path.join(self.json_dir, jsonFile)
+                with open(jsonPath, 'r') as f:
+                    jsonData = json.load(f)
+                blockName = jsonData['block_design']['order'][0]
+                for j in range(currentLine - 1):
+                    data_dict['Block'].append(blockName)
+
+        # Double check that each key in dict has same length
+        trial_count = len(data_dict['Index'])  # 'Index' is arbitrary, just need total count of trials
+        keyLengths = [len(x) for x in data_dict.values()]
+        if not self.dict_len_is_equal(keyLengths):
+            raise Exception('Columns are not equal length')
+
+        # # Get result of each trial
+        if trial_count < 1:
+            print 'No trials found'
+        else:
+            response_hit = [0] * trial_count
+            response_FA = [0] * trial_count
+            response_Miss = [0] * trial_count
+            response_CR = [0] * trial_count
+            response_Miss_NR = [0] * trial_count
+            response_CR_NR = [0] * trial_count
+            response_tot = [1] * trial_count  # To end up being the trials/day field
+
+            for i in range(trial_count):
+                if data_dict['Response'][i] == "ERR":
+                    pass
+                elif data_dict['Class'][i] == "probePlus" or data_dict['Class'][i] == "sPlus":
+                    if data_dict['Response'][i] == "sPlus":
+                        response_hit[i] = 1
+                    elif data_dict['Response'][i] == "sMinus":
+                        response_Miss[i] = 1
+                    else:
+                        # No response
+                        response_Miss_NR[i] = 1
+
+                elif data_dict['Class'][i] == "probeMinus" or data_dict['Class'][i] == "sMinus":
+                    if data_dict['Response'][i] == "sPlus":
+                        response_FA[i] = 1
+                    elif data_dict['Response'][i] == "sMinus":
+                        response_CR[i] = 1
+                    else:
+                        # No response
+                        response_CR_NR[i] = 1
+
+            data_dict['Hit'] = response_hit
+            data_dict['FA'] = response_FA
+            data_dict['Miss'] = response_Miss
+            data_dict['CR'] = response_CR
+            data_dict['Miss_NR'] = response_Miss_NR
+            data_dict['CR_NR'] = response_CR_NR
+            data_dict['Trial_Count'] = response_tot
+            self.raw_trial_data = pd.DataFrame.from_dict(data_dict)  # Convert to data frame
+            self.raw_trial_data['Date'] = pd.to_datetime(self.raw_trial_data['Time'], format='%Y/%m/%d')
+            self.raw_trial_data['Time'] = pd.to_datetime(self.raw_trial_data['Time'], format='%Y-%m-%d %H:%M:%S')
+            self.raw_trial_data.set_index('Date', inplace=True)  # inplace so change is saved to same variable
+            self.raw_trial_data.sort_index(inplace=True)  # inplace so change is saved to same variable
+
+    def dict_len_is_equal(self, list_to_check):
+        return not list_to_check or list_to_check.count(list_to_check[0]) == len(list_to_check)
+
+    def filter_data(self, **kwargs):
+        # Only takes self.raw_trial_data as input data: unfiltered
+        # kwargs are filter type and settings
+        parameters = kwargs
+        filtered_data = self.raw_trial_data
+        if 'startdate' in parameters:
+            # Filter sessions prior to start date
+            filtered_data = filtered_data[filtered_data['Time'] > parameters['startdate']]
+        if 'block' in parameters:
+            filtered_data = filtered_data[filtered_data['Block'] == parameters['block']]
+
+        self.filtered_data = filtered_data
+
+    def summarize(self, inputdata='raw'):
+        # produces summary dataframe that just contains date, block, and responses
+        if inputdata == 'raw':  # Summarize raw data
+            trialdata = self.raw_trial_data
+        elif inputdata == 'filtered' or inputdata == 'filt':
+            trialdata = self.filtered_data
+        elif isinstance(inputdata, pd.DataFrame):  # If inputing different dataframe than preprocessed
+            trialdata = inputdata
+        else:
+            return
+        performanceData = pd.DataFrame()
+        performanceData['Time'] = trialdata['Time']
+        performanceData['Block'] = trialdata['Block']
+        performanceData['Hit'] = trialdata['Hit']
+        performanceData['Miss'] = trialdata['Miss']
+        performanceData['Miss_NR'] = trialdata['Miss_NR']
+        performanceData['FA'] = trialdata['FA']
+        performanceData['CR'] = trialdata['CR']
+        performanceData['CR_NR'] = trialdata['CR_NR']
+
+        performanceData['Trials'] = trialdata['Trial_Count']
+        performanceData.sort_values(by='Date')
+        self.summaryData = performanceData
+
+    def analyze(self, input_data, option='day'):
+
+        if option == 'day':
+            # Now have all trials in lists, need to group them
+            groupData = input_data.groupby([input_data['Time'].dt.date, input_data['Block']]).sum()
+            groupCount = len(groupData)
+            dprimes = []
+            dprimes_NR = []
+            sPlus_correct = []
+            sPlus_NR_correct = []
+            sMinus_correct = []
+            sMinus_NR_correct = []
+            total_correct = []
+            total_NR_correct = []
+            for k in range(groupCount):
+                hitCount = float(groupData['Hit'][k])
+                missCount = float(groupData['Miss'][k])
+                missNRCount = float(groupData['Miss_NR'][k])
+                FACount = float(groupData['FA'][k])
+                CRCount = float(groupData['CR'][k])
+                CRNRCount = float(groupData['CR_NR'][k])
+                totalTrials = float(groupData['Trials'][k])
+                dayDprime = round(Analysis([[hitCount, missCount], [FACount, CRCount]]).dprime(), 3)
+                dprimes.append(dayDprime)
+                dayDprime_NR = round(Analysis([[hitCount, (missCount + missNRCount)],
+                                               [FACount, (CRCount + CRNRCount)]]).dprime(), 3)
+                dprimes_NR.append(dayDprime_NR)
+                if missCount == float(0):
+                    missCount = 0.001
+                if missNRCount == float(0):
+                    missNRCount = 0.001
+                if FACount == float(0):
+                    FACount = 0.001
+                sPlus_correct.append(round(hitCount / (hitCount + missCount), 5))
+                sPlus_NR_correct.append(round(hitCount / (hitCount + missCount + missNRCount), 5))
+                sMinus_correct.append(round(CRCount / (CRCount + FACount), 5))
+                sMinus_NR_correct.append(round((CRCount + CRNRCount) / (FACount + CRCount + CRNRCount), 5))
+                total_correct.append(round((hitCount + CRCount) / (hitCount + CRCount + missCount + FACount), 5))
+                total_NR_correct.append(round((hitCount + CRCount + CRNRCount) / totalTrials, 5))
+
+            groupData['dPrime'] = dprimes
+            groupData['dPrime_NR'] = dprimes_NR
+            groupData['sPlus'] = sPlus_correct
+            groupData['sPlus_NR'] = sPlus_NR_correct
+            groupData['sMinus'] = sMinus_correct
+            groupData['sMinus_NR'] = sMinus_NR_correct
+            groupData['totalCorr'] = total_correct
+            groupData['totalNRCorr'] = total_NR_correct
+
+            return groupData
+
+    def check_criteria(self, trialdata, criteria=None, verbose=False):
+        # parse criteria for: number of days prior to check, which block, dprime threshold, etc
+        # returns True if criteria met on all days, otherwise False
+        # trialdata = dataframe of summarized, filtered, analyzed data to check
+        # criteria = dict of criteria settings
+        # Start with assumption that each day is True, then reject if any criteria are not met
+        if not isinstance(trialdata, pd.DataFrame):
+            return 'Error: not dataframe'
+        if criteria is None:
+            return False
+
+        rowcount = len(trialdata.index)
+        criteria_result = [True] * rowcount  # List of whether each row meets criteria
+        i = 0
+
+        if 'NR' in criteria:
+            use_NR = criteria['NR']
+        else:
+            use_NR = True
+
+        for index, row in trialdata.iterrows():
+            if criteria_result[i] is not False:  # skip next check if already failed previous criteria
+                if 'trialcount' in criteria:  # minimum trial count of specific trial type or overall
+                    if 'mintrials' in criteria['trialcount']:
+                        trialThreshold = criteria['trialcount']['mintrials']
+                        if 'type' in criteria['trialcount']:
+                            ntrials = row[criteria['trialcount']['type']]
+                        elif use_NR:
+                            ntrials = row['Trials']  # if type not specified, just compare to total trialcount
+                        else:
+                            ntrials = row['Trials']  # if type not specified, just compare to total trialcount
+
+                        if ntrials < trialThreshold:
+                            criteria_result[i] = False
+                            if verbose:
+                                print 'Record %d does not meet trial count criteria (%d trials vs %d minimum)' % \
+                                      (i, ntrials, trialThreshold)
+
+            if criteria_result[i] is not False:  # skip next check if already failed previous criteria
+                if 'dprime' in criteria:
+                    if use_NR:
+                        dprime_actual = row['dPrime_NR']
+                        dprime_min = criteria['dPrime_NR']
+                    else:
+                        dprime_actual = row['dPrime']
+                        dprime_min = criteria['dPrime']
+
+                    if dprime_actual < dprime_min:
+                        criteria_result[i] = False
+                        if verbose:
+                            print "Record %d failed d' criteria (%d actual vs %d minimum)" % \
+                                  (i, dprime_actual, dprime_min)
+
+            if criteria_result[i] is not False:  # skip next check if already failed previous criteria
+                if 'propCorrect' in criteria:
+                    for category in criteria['propCorrect']:
+                        if 'type' in category:
+                            proportion = row[category['type']]
+                            stim_type = category['type']
+                        elif use_NR:
+                            proportion = row['totalNRCorr']
+                            stim_type = 'Total_NR'
+                        else:
+                            proportion = row['totalCorr']
+                            stim_type = 'Total'
+
+                        if proportion < category['minimum']:
+                            criteria_result[i] = False
+                            if verbose:
+                                print "Category %s failed proportion correct criteria (%0.3f actual vs %0.3f " \
+                                      "minimum)" % (stim_type, proportion, category['minimum'])
+
+            i += 1
+
+        if 'days' in criteria:  # criteria not met on at least 'days' days
+            num_days = sum(criteria_result)
+            min_days = criteria['days']
+        else:  # otherwise if ANY days don't meet criteria,
+            num_days = sum(criteria_result)
+            min_days = len(criteria_result)
+            # return false
+        if num_days < min_days:
+            if verbose:
+                print "Not enough days meeting criteria (%d days, %d min)" % (num_days, min_days)
+            return False
+
+        # Otherwise, return true
+        if verbose:
+            print "Meets all criteria!"
+        return True
+
+# datapath = '/home/rouse/bird/data/y18r8'
+# perform = Performance(datapath).gather_raw_data()
+# stats = perform.analyze('raw')
+# stats.to_csv(os.path.join(datapath,'test.csv'))
+# print stats

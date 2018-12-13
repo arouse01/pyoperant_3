@@ -13,23 +13,30 @@ __Paths__
 
 
 __Regular variables__
-    panel_name: [str] which panel to use (as defined in local file) - usually overwritten by behave script command line parameter
+    panel_name: [str] which panel to use (as defined in local file) - usually overwritten by behave script command line
+                      parameter
     experimenter: [obj] experimenter details, only relevant if emailing results
         email: [str] experimenter's email address. Used if log_handlers is set to email
         name: [str] experimenter name
     subject: [str] subject ID or name - usually overwritten by behave script command line parameter
-    subject_type: [str] "bird" or "human" - human has a few small changes to process (e.g. light blinks when block is completed)
+    subject_type: [str] "bird" or "human" - human has a few small changes to process (e.g. light blinks when block is
+                        completed)
 
     log_handlers*: [obj] SMTP config details if log files will be emailed to experimenter (?)
 
     debug: [bool] enable/disable debug logging
 
     shape: [bool] (opt) enable/disable shaping process (default is false)
-    free_day_off: [bool] (opt) whether ad lib water should be given outside of scheduled sessions (e.g. on off days) (default is false
+    free_day_off: [bool] (opt) whether ad lib water should be given outside of scheduled sessions (e.g. on off days)
+                               (default is False)
 
-    classes: [obj] Defines stimulus classes (pyoperant currently only supports two classes *6/14/18 AR - Noted in behavior file, but not sure why it's true, and the three_ac_matching_config.json file has three entries here)
+    classes: [obj] Defines stimulus classes (pyoperant currently only supports two classes *6/14/18 AR - Noted in
+                   behavior file, but not sure why it's true, and the three_ac_matching_config.json file has three
+                   entries here)
         (class Name): member, [obj] variable name is user-defined
-            component: [str] (opt) component (as defined in local* file) related to stimulus class, should be unique (multiple classes assigned to the same component will overwrite each other and not register correctly)
+            component: [str] (opt) component (as defined in local* file) related to stimulus class, should be unique
+                                   (multiple classes assigned to the same component will overwrite each other and not
+                                   register correctly)
             punish_value: [num] value passed to punish subroutine when subject is punished for this stimulus class
             reward_value: [num] value passed to reward subroutine when subject responds correctly to this stimulus class
     block_design: [obj] Defines stimulus blocks for experiment - default should be defined in behavior file
@@ -44,23 +51,48 @@ __Regular variables__
                     class: [str] class name, as defined in "classes"
                     weight: [int] weight of that class. Must be positive integer (not a fraction or probability)
                 reinforcement: [obj] defines reinforcement-related parameters for block
-                    schedule (opt): [str] reinforcement schedule to use. Options are: variable_ratio, fixed_ratio, percent_reinf (default is continuous reinforcement)
+                    schedule (opt): [str] reinforcement schedule to use. Options are: variable_ratio, fixed_ratio,
+                                          percent_reinf (default is continuous reinforcement)
                     secondary: [bool] enable/disable delivery of secondary reinforcement, if implemented
-                    punish (opt): [bool] enable/disable punishment for incorrect responses (default is true, e.g. punishment enabled)
-                    passive (opt): [bool] enable/disable automatic reward delivery at end of S+ trials if no choice was made (default is false)
-                    prob (opt): [num] value between 0 and 1 that defines the percent of time that a correect trial is rewarded (Used with PercentReinforcement)
-                    ratio (opt): [num] value that defines reinforcement ratio (1=every trial, 2=every 2nd trial) (Used with VariableRatioSchedule, FixedRatioSchedule)
+                    punish (opt): [bool] enable/disable punishment for incorrect responses (default is true, e.g.
+                                         punishment enabled)
+                    passive (opt): [bool] enable/disable automatic reward delivery at end of S+ trials if no choice was
+                                          made (default is false)
+                    prob (opt): [num] value between 0 and 1 that defines the percent of time that a correect trial is
+                                      rewarded (Used with PercentReinforcement)
+                    ratio (opt): [num] value that defines reinforcement ratio (1=every trial, 2=every 2nd trial)
+                                       (Used with VariableRatioSchedule, FixedRatioSchedule)
+                criteria: [obj] criteria to move onto next block. All parameters are optional and can be mixed. Code
+                                considers data between current date and five days prior.
+                    NR: [bool] Whether to include "no response" trials in calcuations. Default is True
+                    days: [int] Number of days all criteria must be met to move on. Default is all days
+                    trialcount: [obj] Minimum trial count required. Only one type can be specified at the moment
+                        type: [str] Trial type to check. Options are Hit, Miss, Miss_NR, FA, CR, CR_NR. If blank, will
+                                    use all trials.
+                        mintrials: [int] Minimum number of trials to move on
+                    dprime: [num] Minimum d' value to proceed. If NR is True or not specified, dprime will be compared
+                                  to the d' value that includes "no response" trials.
+                    propCorrect: [obj] array. For specifying a minimum proportion correct for certain types of trials
+                        type: [str] Trial type to compare. Options are 'sPlus', 'sPlus_NR', 'sMinus', and 'sMinus_NR'.
+                                    Can also omit to check against total proportion correct (across all trials).
+                                    (Total count affected by NR)
+                        minimum: [num] Minimum proportion.
 
     correction_trials: [bool] enable/disable correction trials on incorrect response
     intertrial_min: [num] minimum intertrial interval (in s)
     response_delay: [num] time in seconds to wait between start of stimulus playback and allowing a response
     response_win: [num] time in seconds, starting with stimulus onset, that subject has to respond to stimulus
 
-    light_schedule: [str] array. paired values that define when lights should turn on and off (count of values should even). Times should be formatted as HH:MM
-    session_schedule: [str] array. elements are times (in HH:MM format) to start and stop trials (and should be in pairs)
-    session_days: [num]/[str] array. elements are days of the week to run trials. Elements can be either integers (Monday = 1, Tuesday = 2, etc.), strings of full day names, or strings of the three-letter abbreviations. Case insensitive.
+    light_schedule: [str] array. paired values that define when lights should turn on and off (number of values should
+                          even number). Times should be formatted as HH:MM
+    session_schedule: [str] array. elements are times (in HH:MM format) to start and stop trials (and should be in
+                            pairs)
+    session_days: [num]/[str] array. elements are days of the week to run trials. Elements can be either integers
+                  (Monday = 1, Tuesday = 2, etc.), strings of full day names, or strings of the three-letter
+                  abbreviations. Case insensitive.
 
-    stims: [obj] members are pairs of values and stimulus file names (e.g., "1": "test1i_long.wav"), should list every stimulus in folder (even if not actually used) because interface file works much simpler that way
+    stims: [obj] members are pairs of values and stimulus file names (e.g., "1": "test1i_long.wav"), should list every
+                 stimulus in folder (even if not actually used) because interface file works much simpler that way
     sr: [num] sample rate of playback in Hz
 
 
@@ -75,7 +107,9 @@ __Removed__ (These were in the original json file that came with pyoperant but a
     current_scale: [num] ?
     distribution_type: [str] Chooses distribution to pull stimuli from?
     simple_trials_p: [num] ?
-    category_conditions: object array. defines conditions within block - each stimulus must have its own element **NOTE: Not referenced anywhere except the json file and this guide, removed from JSON
+    category_conditions: object array. defines conditions within block - each stimulus must have its own element
+                         **NOTE: Not referenced anywhere except the json file and this guide, removed from JSON
         class: [str] class name, as defined in "classes"
         stim_name: [str] stimulus file value, as defined in "stims"
-    reinforcement: [obj] old way of determining reinforcement for stim classes, but at experiment level (have since modified pyoperant to evaluate at block level)
+    reinforcement: [obj] old way of determining reinforcement for stim classes, but at experiment level (have since
+                         modified pyoperant to evaluate at block level)

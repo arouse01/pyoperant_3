@@ -12,6 +12,9 @@ import pyudev  # device monitoring to identify connected Teensys
 import re  # Regex, for parsing device names returned from pyudev to identify connected Teensys
 import argparse  # Parse command line arguments for GUI, primarily to enable debug mode
 from shutil import copyfile  # For creating new json file by copying another
+from pyoperant import analysis
+import pandas as pd
+import csv
 
 try:
     import simplejson as json
@@ -82,6 +85,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         self.openSettingsActionList = []
         self.createNewJsonList = []
         self.newBirdActionList = []
+        self.statsActionList = []
 
         # Option menu setup
 
@@ -107,13 +111,17 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             self.openSettingsActionList.append(QtGui.QAction("Edit", self))
             self.createNewJsonList.append(QtGui.QAction("New from template", self))
             self.newBirdActionList.append(QtGui.QAction("Change bird", self))
+            self.statsActionList.append(QtGui.QAction("Performance", self))
 
             # Reorder to change order in menu
             self.optionMenuList[boxnumber].addMenu(self.solenoidMenuList[boxnumber])
+            self.optionMenuList[boxnumber].addSeparator()
             self.optionMenuList[boxnumber].addMenu(self.jsonMenuList[boxnumber])
             self.optionMenuList[boxnumber].addSeparator()
             self.optionMenuList[boxnumber].addAction(self.openFolderActionList[boxnumber])
             self.optionMenuList[boxnumber].addAction(self.newBirdActionList[boxnumber])
+            self.optionMenuList[boxnumber].addSeparator()
+            self.optionMenuList[boxnumber].addAction(self.statsActionList[boxnumber])
 
             # JSON submenu
             self.jsonMenuList[boxnumber].addAction(self.openSettingsActionList[boxnumber])
@@ -161,6 +169,8 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
                 lambda _, b=boxnumber: self.create_json_file(boxnumber=b))
             self.newBirdActionList[boxnumber].triggered.connect(
                 lambda _, b=boxnumber: self.create_new_bird(boxnumber=b))
+            self.statsActionList[boxnumber].triggered.connect(
+                lambda _, b=boxnumber: self.analyze_performance(boxnumber=b))
 
             # Attach menu to physical option button
             self.optionButtonBoxList[boxnumber].setMenu(self.optionMenuList[boxnumber])
@@ -608,6 +618,15 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
 
     # endregion
 
+    # region data analysis
+    def analyze_performance(self, boxnumber):
+        dataFolder = os.path.dirname(str(self.paramFileBoxList[boxnumber].toPlainText()))
+        bird_name = self.birdEntryBoxList[boxnumber].toPlainText()
+        dialog = StatsGui(dataFolder, bird_name)
+        dialog.exec_()
+
+    # endregion
+
     # region GUI application functions
     def open_application(self):
         # Command line argument parsing
@@ -778,6 +797,52 @@ class SolenoidGui(QtGui.QDialog, pyoperant_gui_layout.UiSolenoidControl):
             self.solenoid_Status_Text.setText(str("CLOSED"))
             self.close_Button.setEnabled(False)
             self.open_Button.setEnabled(True)
+
+
+class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
+    """
+    Code for creating and managing dialog that displays bird's performance stats
+    Added 11/30/18 by AR
+    """
+
+    def __init__(self, data_folder, bird_name):
+        super(self.__class__, self).__init__()
+        self.setup_ui(self)  # This is defined in design.py file automatically
+        # It sets up layout and widgets that are defined
+        self.export_Button.clicked.connect(lambda _, b=data_folder: self.export(b))
+        self.done_Button.clicked.connect(self.accept)
+        # bird_name = self.birdEntryBoxList[boxnumber].toPlainText()
+        self.bird_name.setText(str("Performance for %s" % bird_name))
+
+        perform = analysis.Performance(data_folder)
+        perform.summarize('raw')
+        self.outputData = perform.analyze(perform.summaryData, 'day')
+        outputFile = 'performanceSummary.csv'
+        output_path = os.path.join(data_folder, outputFile)
+        self.outputData.to_csv(str(output_path))
+        # print 'saved to %s' % output_path
+
+        # reimport the data from csv because moving directly from dataframe is a pain
+        self.model = QtGui.QStandardItemModel(self)
+
+        with open(output_path, 'rb') as inputFile:
+            i = 1
+            for row in csv.reader(inputFile):
+                if i == 1:
+                    self.model.setHorizontalHeaderLabels(row)
+                else:
+                    items = [QtGui.QStandardItem(field)
+                             for field in row]
+                    self.model.appendRow(items)
+                i += 1
+        self.performance_Table.setModel(self.model)
+        self.performance_Table.resizeColumnsToContents()
+
+    def export(self, output_folder):
+        output_path = QtGui.QFileDialog.getSaveFileName(self, "Save As...", output_folder, "CSV Files (*.csv)")
+        if output_path:
+            self.outputData.to_csv(str(output_path))
+            print 'saved to %s' % output_path
 
 
 def main():

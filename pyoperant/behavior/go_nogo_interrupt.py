@@ -5,8 +5,13 @@ import csv
 import copy
 import datetime as dt
 from pyoperant.behavior import base, shape, adlib
-from pyoperant.errors import EndSession, EndBlock
+from pyoperant.errors import EndSession, EndBlock, InterfaceError, ArduinoException
 from pyoperant import components, utils, reinf, queues, analysis
+
+try:
+    import simplejson as json
+except ImportError:
+    import json
 
 
 class GoNoGoInterruptExp(base.BaseExp):
@@ -116,7 +121,58 @@ class GoNoGoInterruptExp(base.BaseExp):
 
     def reconnect_panel(self):
         # If hardware connection is interrupted, like serial communication fails,
-        pass
+        """:return: None
+        """
+        device_name = self.panel.interfaces['arduino'].device_name
+        device = self.panel.interfaces['arduino'].device
+        self.log.info('Serial device %s not responding, reconnecting' % device_name)
+        self.panel.interfaces['arduino'].device.close()
+        try:
+            self.panel.interfaces['arduino'].device.open()
+        except (InterfaceError, ArduinoException):
+            try:
+                utils.wait(0.5)
+                self.panel.interfaces['arduino'].device.open()
+            except (InterfaceError, ArduinoException):
+                raise InterfaceError('Could not open serial device %s' % device_name)
+
+        self.log.debug("Waiting for device to open")
+        device.readline()
+        device.flushInput()
+        self.log.info("Successfully reopened device %s" % device_name)
+
+        # Reinitiate the inputs and outputs
+        for reInput in self.panel.inputs:
+            reInput.config()
+        for reOutput in self.panel.outputs:
+            reOutput.config()
+        # Reconnect sound
+        self.reconnect_audio()
+        # audioDevice = self.panel.speaker.interface
+        # audioDevice.close()
+        # try:
+        #     audioDevice.open()
+        # except:
+        #     raise InterfaceError('could not find pyaudio device %s' % self.device_name)
+        #
+        # self.log.info("Successfully reconnected sound for device %s" % device_name)
+        #
+        # self.panel.speaker = hwio.AudioOutput(interface=self.interfaces['pyaudio'])
+
+    def reconnect_audio(self):
+        # If hardware connection is interrupted, like serial communication fails,
+        """:return: None
+        """
+        audioDevice = self.panel.speaker.interface
+        audioDevice.close()
+        try:
+            audioDevice.open()
+        except:
+            raise InterfaceError('could not find pyaudio device %s' % self.device_name)
+
+        self.log.info("Successfully reconnected sound for device %s" % device_name)
+
+        # self.panel.speaker = hwio.AudioOutput(interface=self.interfaces['pyaudio'])
 
     def make_data_csv(self):
         """ Create the csv file to save trial data
@@ -263,17 +319,19 @@ class GoNoGoInterruptExp(base.BaseExp):
 
         if self.trial_q is None:
             for sn_cond in self.session_q:
-
+                self.condition = sn_cond
                 self.trials = []
                 self.do_correction = False
                 self.session_id += 1
                 self.log.info('starting session %s: %s' % (self.session_id, sn_cond))
-                self.summary['phase'] = sn_cond
+                self.summary['phase'] = self.condition
                 # grab the block details
                 blk = copy.deepcopy(self.parameters['block_design']['blocks'][sn_cond])
 
                 # load the block details into the trial queue
                 blk.pop('description')  # remove the "description" entry from the dictionary so queues doesn't complain
+                if 'criteria' in blk:
+                    blk.pop('criteria')
                 q_type = blk.pop('queue')
 
                 # Define reinforcement parameters
@@ -341,6 +399,8 @@ class GoNoGoInterruptExp(base.BaseExp):
                 self.panel.reward(value=.5)
                 # utils.wait(0.5)
         else:
+            self.condition = self.parameters['block_design']['order'][0]
+            self.summary['phase'] = self.condition
             self.log.info('continuing last session')
             try:
                 run_trial_queue()
@@ -436,8 +496,8 @@ class GoNoGoInterruptExp(base.BaseExp):
 
         # self.summary['dprime'] = analysis.dprime(conf_matrix)
         # self.summary['bias'] = analysis.bias(conf_matrix)
-        stats = analysis.Performance([[self.summary['correct_responses'], self.summary['misses']],
-                                      [self.summary['false_alarms'], self.summary['correct_rejections']]])
+        stats = analysis.Analysis([[self.summary['correct_responses'], self.summary['misses']],
+                                   [self.summary['false_alarms'], self.summary['correct_rejections']]])
         self.summary['dprime'] = stats.dprime()
         self.summary['bias'] = stats.bias()
 
@@ -496,7 +556,16 @@ class GoNoGoInterruptExp(base.BaseExp):
 
         utils.wait(self.parameters['intertrial_min'])
 
-        # TODO: check performance here to see if session should be ended (for training sessions)
+        # if len(self.parameters['block_design']['order']) > 1:  # Only check if there's more than one block in list (
+        #     # so the session won't end because the last block was removed)
+        #     if 'criteria' in self.parameters['block_design']['blocks'][self.condition]:  # Only check if criteria are
+        #         # specified in json file, otherwise just continue with session
+        #         if self.check_performance():
+        #             self.parameters['block_design']['order'].pop(0)  # Remove block from order
+        #             with open(self.parameters['config_file'], 'wb') as config_snap:
+        #                 json.dump(self.parameters, config_snap, sort_keys=False, indent=4)
+        #                 self.log.info('Stage %s complete!' % self.condition)
+        #                 raise EndSession
 
         # # determine if next trial should be a correction trial
         # self.do_correction = True
@@ -515,26 +584,52 @@ class GoNoGoInterruptExp(base.BaseExp):
         if not self.check_session_schedule():
             raise EndSession
 
+    def check_performance(self):
+        criteria = self.parameters['block_design']['blocks'][self.condition]['criteria']
+        perform = analysis.Performance(self.parameters['experiment_path'])
+        five_days_ago = dt.datetime.now() - dt.timedelta(days=5)
+        perform.filter_data(startdate=five_days_ago, block=self.condition)
+        perform.summarize('filtered')
+        analyzed_data = perform.analyze(perform.summaryData)
+        perform_result = perform.check_criteria(analyzed_data, criteria)
+        # print perform_result
+        return perform_result
+
     def stimulus_pre(self):
         # wait for bird to peck
         self.log.debug("presenting stimulus %s" % self.this_trial.stimulus)
         self.log.debug("from file %s" % self.this_trial.stimulus_event.file_origin)
         self.panel.speaker.queue(self.this_trial.stimulus_event.file_origin)
         self.log.debug('waiting for peck...')
-        self.panel.trialSens.on()
+        try:
+            self.panel.trialSens.on()
+        except (ArduinoException, InterfaceError):
+            self.reconnect_panel()
+            self.panel.trialSens.on()
         trial_time = None
         while trial_time is None:
             if not self.check_session_schedule():
-                self.panel.trialSens.off()
                 self.panel.speaker.stop()
+                try:
+                    self.panel.trialSens.off()
+                except (ArduinoException, InterfaceError):
+                    self.reconnect_panel()
+                    self.panel.trialSens.off()
                 self.update_adaptive_queue(presented=False)
                 raise EndSession
             else:
-                trial_time = self.panel.trialSens.poll(timeout=60.0)
+                try:
+                    trial_time = self.panel.trialSens.poll(timeout=15.0)
+                except (ArduinoException, InterfaceError):
+                    self.reconnect_panel()
 
         self.this_trial.time = trial_time
 
-        self.panel.trialSens.off()
+        try:
+            self.panel.trialSens.off()
+        except (ArduinoException, InterfaceError):
+            self.reconnect_panel()
+            self.panel.trialSens.off()
         self.this_trial.events.append(utils.Event(name='trialSens',
                                                   label='peck',
                                                   time=0.0,
@@ -572,18 +667,34 @@ class GoNoGoInterruptExp(base.BaseExp):
                 self.log.info('no response')
                 return
             for class_, port in self.class_assoc.items():
-                if port.status():
+                try:  # Check that Teensy is still connected, and reconnect if necessary
+                    trial_response = port.status()
+                except (ArduinoException, InterfaceError):  # Trial interrupted by Teensy disconnect, discard trial
+                    self.reconnect_panel()
                     self.this_trial.rt = (dt.datetime.now() - response_start).total_seconds()
                     self.panel.speaker.stop()
-                    self.this_trial.response = class_
-                    self.summary['responses'] += 1
+                    self.this_trial.response = 'ERR'
+
                     response_event = utils.Event(name=self.parameters['classes'][class_]['component'],
-                                                 label='peck',
+                                                 label='error',
                                                  time=elapsed_time,
                                                  )
                     self.this_trial.events.append(response_event)
                     self.log.info('response: %s' % self.this_trial.response)
                     return
+                else:
+                    if trial_response:
+                        self.this_trial.rt = (dt.datetime.now() - response_start).total_seconds()
+                        self.panel.speaker.stop()
+                        self.this_trial.response = class_
+                        self.summary['responses'] += 1
+                        response_event = utils.Event(name=self.parameters['classes'][class_]['component'],
+                                                     label='peck',
+                                                     time=elapsed_time,
+                                                     )
+                        self.this_trial.events.append(response_event)
+                        self.log.info('response: %s' % self.this_trial.response)
+                        return
             utils.wait(.015)
 
     def response_post(self):
@@ -593,7 +704,9 @@ class GoNoGoInterruptExp(base.BaseExp):
     ## consequence flow
     def consequence_pre(self):
         # Calculate response type, add to total of response types
-        if self.this_trial.class_ == "probePlus" or self.this_trial.class_ == "sPlus":
+        if self.this_trial.response == "ERR":
+            pass
+        elif self.this_trial.class_ == "probePlus" or self.this_trial.class_ == "sPlus":
             self.summary['splus_trials'] += 1
             if self.this_trial.response == "sPlus":
                 self.this_trial.correct = True  # Mark correct response to probe as correct
@@ -625,6 +738,8 @@ class GoNoGoInterruptExp(base.BaseExp):
                 self.this_trial.responseType = "correct_reject"
 
     def consequence_main(self):
+        if self.this_trial.response == "ERR":
+            pass  # if trial is error, skip consequating and move onto next trial
         # treat probe trials regardless of response
         if self.this_trial.class_[0:5] == "probe":
             # self.reward_pre()
@@ -687,7 +802,11 @@ class GoNoGoInterruptExp(base.BaseExp):
         self.summary['feeds'] += 1
         try:
             value = self.parameters['classes'][self.this_trial.class_]['reward_value']
-            reward_event = self.panel.reward(value=value)
+            try:  # Check that Teensy is still connected, and reconnect if necessary
+                reward_event = self.panel.reward(value=value)
+            except (ArduinoException, InterfaceError):
+                self.reconnect_panel()
+                reward_event = self.panel.reward(value=value)
             self.this_trial.reward = True
 
         # but catch the reward errors
@@ -722,7 +841,11 @@ class GoNoGoInterruptExp(base.BaseExp):
             # self.panel.reset()
 
         finally:
-            self.panel.house_light.on()
+            try:
+                self.panel.house_light.on()
+            except (ArduinoException, InterfaceError):
+                self.reconnect_panel()
+                self.panel.house_light.on()
 
     def reward_post(self):
         pass
@@ -737,7 +860,11 @@ class GoNoGoInterruptExp(base.BaseExp):
     def punish_main(self):
         value = self.parameters['classes'][self.this_trial.class_]['punish_value']
         if self.punish_bool:
-            punish_event = self.panel.punish(value=value)
+            try:  # Check that Teensy is still connected, and reconnect if necessary
+                punish_event = self.panel.punish(value=value)
+            except (InterfaceError, ArduinoException):
+                self.reconnect_panel()
+                punish_event = self.panel.punish(value=value)
         self.this_trial.punish = True
 
     def punish_post(self):

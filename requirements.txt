@@ -1,3 +1,4 @@
+pandas
 pyserial
 pyaudio
 numpy

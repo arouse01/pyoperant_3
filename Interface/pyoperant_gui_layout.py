@@ -415,3 +415,64 @@ class UiSolenoidControl(object):
         self.open_Button.setText(_translate("solenoid_control", "Open Solenoid", None))
         self.close_Button.setText(_translate("solenoid_control", "Close Solenoid", None))
         self.done_Button.setText(_translate("solenoid_control", "Done", None))
+
+
+class StatsWindow(object):
+    def setup_ui(self, stats_window):
+        stats_window.setObjectName(_from_utf8("stats_window"))
+        stats_window.resize(1000, 600)
+        sizePolicy_fixed = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+        sizePolicy_fixed.setHorizontalStretch(0)
+        sizePolicy_fixed.setVerticalStretch(0)
+        sizePolicy_exp = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        sizePolicy_exp.setHorizontalStretch(0)
+        sizePolicy_exp.setVerticalStretch(0)
+
+        stats_window.setSizePolicy(sizePolicy_exp)
+        stats_window.setMaximumSize(QtCore.QSize(1600, 900))
+        font = QtGui.QFont()
+        font.setPointSize(11)
+
+        self.gridLayout = QtGui.QGridLayout(stats_window)
+        self.gridLayout.setObjectName(_from_utf8("gridLayout"))
+
+        self.bird_name = QtGui.QLabel(stats_window)
+        self.bird_name.setSizePolicy(sizePolicy_exp)
+        self.bird_name.setMaximumSize(QtCore.QSize(280, 24))
+        self.bird_name.setBaseSize(QtCore.QSize(50, 18))
+        self.bird_name.setFont(font)
+        self.bird_name.setAlignment(QtCore.Qt.AlignLeft)
+        self.bird_name.setObjectName(_from_utf8("bird_name"))
+
+        self.performance_Table = QtGui.QTableView(stats_window)
+        # self.performance_Table.setSizePolicy(sizePolicy_exp)
+        self.performance_Table.setMinimumSize(QtCore.QSize(800, 200))
+        self.performance_Table.setMaximumSize(QtCore.QSize(1600, 1000))
+        self.performance_Table.setFont(font)
+        # self.performance_Table.setAlignment(QtCore.Qt.AlignCenter)
+        self.performance_Table.setObjectName(_from_utf8("performance_Table"))
+        self.performance_Table.setSelectionMode(2)
+
+        self.export_Button = QtGui.QPushButton(stats_window)
+        self.export_Button.setMinimumSize(QtCore.QSize(0, 27))
+        self.export_Button.setMaximumSize(QtCore.QSize(136, 27))
+        self.export_Button.setObjectName(_from_utf8("export_Button"))
+
+        self.done_Button = QtGui.QPushButton(stats_window)
+        self.done_Button.setSizePolicy(sizePolicy_fixed)
+        self.done_Button.setMaximumSize(QtCore.QSize(1800, 27))
+        self.done_Button.setObjectName(_from_utf8("done_Button"))
+
+        self.gridLayout.addWidget(self.bird_name, 0, 0, 1, 1)
+        self.gridLayout.addWidget(self.export_Button, 0, 1, 1, 1)
+        self.gridLayout.addWidget(self.performance_Table, 1, 0, 1, 2)
+
+        self.gridLayout.addWidget(self.done_Button, 2, 0, 1, 2)
+
+        self.retranslate_ui(stats_window)
+        QtCore.QMetaObject.connectSlotsByName(stats_window)
+
+    def retranslate_ui(self, stats_window):
+        stats_window.setWindowTitle(_translate("stats_window", "Performance", None))
+        self.export_Button.setText(_translate("stats_window", "Export", None))
+        self.done_Button.setText(_translate("stats_window", "Done", None))

@@ -3,13 +3,16 @@
 __all__ = ["get_info","show"]
 
 
+
 import os
 import sys
 
 extra_dll_dir = os.path.join(os.path.dirname(__file__), '.libs')
+
 if sys.platform == 'win32' and os.path.isdir(extra_dll_dir):
     os.environ.setdefault('PATH', '')
     os.environ['PATH'] += os.pathsep + extra_dll_dir
+
 lapack_opt_info={'libraries': ['openblas', 'openblas'], 'library_dirs': ['/usr/local/lib'], 'language': 'c', 'define_macros': [('HAVE_CBLAS', None)]}
 blas_opt_info={'libraries': ['openblas', 'openblas'], 'library_dirs': ['/usr/local/lib'], 'language': 'c', 'define_macros': [('HAVE_CBLAS', None)]}
 blis_info={}

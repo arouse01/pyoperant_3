@@ -41,3 +41,6 @@ class ComponentError(Exception):
     """
     pass
 
+
+class ArduinoException(Exception):
+    pass

@@ -1,7 +1,7 @@
 ## Last Modified: 1/17/18 (AR) Added LED indicator, water reinforcement classes
 
 import datetime
-from pyoperant import hwio, utils, ComponentError
+from pyoperant import hwio, utils, ComponentError, InterfaceError
 
 
 class BaseComponent(object):
@@ -231,7 +231,10 @@ class PeckPort(BaseComponent):
         bool
             True if beam is broken
         """
-        return self.IR.read()
+        try:
+            return self.IR.read()
+        except InterfaceError:
+            raise InterfaceError("Serial connection not responding")
 
     def off(self):
         """ Turns the LED off 

@@ -3,14 +3,12 @@ import datetime
 import serial
 import logging
 from pyoperant.interfaces import base_
-from pyoperant import utils, InterfaceError
+from pyoperant import utils, InterfaceError, ArduinoException
 
 logger = logging.getLogger(__name__)
 
 
-# TODO: Smart find arduinos using something like this:
-#    http://stackoverflow.com/questions/19809867/how-to-check-if-serial-port-is-already-open-by-another-process-in-linux-using
-# TODO: Attempt to reconnect device if it can't be reached
+## TODO: Attempt to reconnect device if it can't be reached
 # TODO: Allow device to be connected to through multiple python instances.
 #       This kind of works but needs to be tested thoroughly.
 # TODO: Polling pins
@@ -35,7 +33,7 @@ class ArduinoInterface(base_.BaseInterface):
                           held=False,
                           )
 
-    def __init__(self, device_name, baud_rate=19200, inputs=None, outputs=None, *args, **kwargs):
+    def __init__(self, device_name, baud_rate=115200, inputs=None, outputs=None, *args, **kwargs):
 
         super(ArduinoInterface, self).__init__(*args, **kwargs)
 
@@ -72,10 +70,10 @@ class ArduinoInterface(base_.BaseInterface):
 
         logger.debug("Opening device %s" % self)
         # self.device = serial.Serial(port=self.device_name, baudrate=self.baud_rate, timeout=5)
-        self.device = serial.Serial()
+        self.device = serial.Serial(exclusive=True)
         self.device.port = self.device_name
         self.device.baudrate = self.baud_rate
-        self.device.timeout = 5
+        self.device.timeout = 1
         self.device.setDTR(False)
         self.device.open()
 
@@ -157,10 +155,11 @@ class ArduinoInterface(base_.BaseInterface):
             except serial.SerialException:
                 # This is to make it robust in case it accidentally disconnects or you try to access the arduino in
                 # multiple ways
-                logger.error('Serial connection not responding')
-                break
+                # self.reconnect_panel()
+                raise ArduinoException("Serial connection interrupted")
             except TypeError:
                 ArduinoException("Could not read from arduino device")
+                # raise InterfaceError("Serial connection not responding")
 
         logger.debug("Read value of %d from channel %d on %s" % (v, channel, self))
         if v in [0, 1]:
@@ -187,7 +186,12 @@ class ArduinoInterface(base_.BaseInterface):
 
         logger.debug("Begin polling from device %s" % self.device_name)
         while True:
-            if not self._read_bool(channel):
+            try:
+                result = self._read_bool(channel)
+            except InterfaceError:
+                # self.reconnect_panel()
+                raise ArduinoException('Serial device reconnected')
+            if not result:
                 logger.debug("Polling: %s" % False)
                 # Read returned False. If the channel was previously "held" then that flag is removed
                 if self._state[channel]["held"]:
@@ -230,7 +234,8 @@ class ArduinoInterface(base_.BaseInterface):
         if s:
             return value
         else:
-            raise InterfaceError('Could not write to serial device %s, channel %d' % (self.device, channel))
+            # self.reconnect_panel()
+            raise ArduinoException('Could not write to serial device %s, channel %d' % (self.device, channel))
 
     # # ENABLE IF USING TEENSY WAV PLAYBACK
     # def _play_wav(self, value, **kwargs):
@@ -276,6 +281,39 @@ class ArduinoInterface(base_.BaseInterface):
     #     # Not used but required by pyoperant
     #     return
 
+    def reconnect_panel(self):
+        # If hardware connection is interrupted, like serial communication fails,
+        """:return: None
+        """
+        logger.info('Serial device %s not responding, reconnecting' % self.device_name)
+        self.device.close()
+        try:
+            self.device.open()
+        except:
+            raise InterfaceError('Could not open serial device %s' % self.device_name)
+
+        logger.debug("Waiting for device to open")
+        self.device.readline()
+        self.device.flushInput()
+        logger.info("Successfully reopened device %s" % self.device_name)
+
+        # Reinitiate the inputs and outputs
+        for channelIn in self.inputs:
+            self._config_read(channelIn)
+        for channelOut in self.outputs:
+            self._config_write(channelOut)
+        # Reconnect sound
+        # audioDevice = self.panel.interfaces['pyaudio'].device
+        # audioDevice.close()
+        # try:
+        #     audioDevice.open()
+        # except:
+        #     raise InterfaceError('could not find pyaudio device %s' % self.device_name)
+
+        # logger.info("Successfully reconnected sound for device %s" % self.device_name)
+
+        # self.speaker = hwio.AudioOutput(interface=self.interfaces['pyaudio'])
+
     @staticmethod
     def _make_arg(channel, value):
         """ Turns a channel and boolean value into a 2 byte hex string to be fed to the arduino
@@ -285,5 +323,3 @@ class ArduinoInterface(base_.BaseInterface):
         return "".join([chr(channel), chr(value)])
 
 
-class ArduinoException(Exception):
-    pass

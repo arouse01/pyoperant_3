@@ -150,6 +150,8 @@ def main():
     for k in ['subject', 'panel_name', 'experiment_path']:
         parameters.pop(k) if k in parameters.keys() else None
 
+    parameters['config_file'] = config_file
+
     stimuli_path = parameters.pop('stim_path') if 'stim_path' in parameters else stimuli_path
 
     if 'board_version' not in parameters:
