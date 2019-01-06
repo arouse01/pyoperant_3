@@ -8,6 +8,8 @@ from pyoperant.behavior import base, shape, adlib
 from pyoperant.errors import EndSession, EndBlock, InterfaceError, ArduinoException
 from pyoperant import components, utils, reinf, queues, analysis
 
+# from collections import OrderedDict  # If we want to export json in some sort of ordered way
+
 try:
     import simplejson as json
 except ImportError:
@@ -159,6 +161,14 @@ class GoNoGoInterruptExp(base.BaseExp):
         #
         # self.panel.speaker = hwio.AudioOutput(interface=self.interfaces['pyaudio'])
 
+    def try_panel_function(self, function, *args, **kwargs):
+        # Function for automatically trying Teensy-related function and reconnecting if Teensy isn't responding
+        try:
+            return function(*args, **kwargs)
+        except (ArduinoException, InterfaceError):
+            self.reconnect_panel()
+            return function(*args, **kwargs)
+
     def reconnect_audio(self):
         # If hardware connection is interrupted, like serial communication fails,
         """:return: None
@@ -244,10 +254,20 @@ class GoNoGoInterruptExp(base.BaseExp):
                         'last_trial_time': [],
                         'dprime': 0,
                         'bias': 0,
+                        'bias_description': '',
                         'sminus_trials': 0,
                         'splus_trials': 0,
                         'sminus_nr': 0,
-                        'splus_nr': 0
+                        'splus_nr': 0,
+                        'probe_trials': 0,
+                        'probe_plus': 0,
+                        'probe_minus': 0,
+                        'probe_hit': 0,
+                        'probe_miss': 0,
+                        'probe_miss_nr': 0,
+                        'probe_FA': 0,
+                        'probe_CR': 0,
+                        'probe_CR_nr': 0
                         }
         summary_file = os.path.join(self.parameters['experiment_path'], self.parameters['subject'] + '.summaryDAT')
         with open(summary_file, 'wb') as f:
@@ -256,19 +276,28 @@ class GoNoGoInterruptExp(base.BaseExp):
     def write_summary(self):
         """ takes in a summary dictionary and options and writes to the bird's summaryDAT"""
         summary_file = os.path.join(self.parameters['experiment_path'], self.parameters['subject'] + '.summaryDAT')
-        with open(summary_file, 'wb') as f:
-            f.write("Session: %s\n" % self.summary['phase'])
-            f.write("    Trials this session: %s\n" % self.summary['trials'])
-            f.write("    Rf'd responses: %i\n" % self.summary['feeds'])
-            f.write("\n")
-            f.write("    \tS+\tS-\n")
-            f.write("    RespSw\t%i\t%i\n" % (self.summary['correct_responses'], self.summary['false_alarms']))
-            f.write("    TrlSw\t%i(%i)\t%i(%i)\n" % (self.summary['misses'], self.summary['splus_nr'], self.summary[
-                'correct_rejections'], self.summary['sminus_nr']))
-            f.write("    d': %1.2f\t" % self.summary['dprime'])
-            f.write((u"β: %1.2f\n" % self.summary['bias']).encode('utf8'))
-            # f.write("Feeder ops today: %i\n" % self.summary['feeds'])
-            f.write("\nLast trial: %s" % self.summary['last_trial_time'])
+        with open(summary_file, 'w') as f:
+            json.dump(self.summary, f, ensure_ascii=False)
+        # with open(summary_file, 'wb') as f:
+        #     f.write("Session: %s\n" % self.summary['phase'])
+        #     f.write("Trials this session: %s   Probe trials: %i\n" % (self.summary['trials'], self.summary[
+        #         'probe_trials']))
+        #     f.write("Rf'd responses: %i\n" % self.summary['feeds'])
+        #     f.write("\n")
+        #     f.write("\tS+\tS-\tPrb+\tPrb-\n")
+        #     f.write("RespSw\t%i\t%i\t%i\t%i\n" % (self.summary['correct_responses'], self.summary[
+        #         'false_alarms'], self.summary['probe_hit'], self.summary['probe_FA']))
+        #
+        #     f.write("TrlSw\t%i(%i)\t%i(%i)\t" % (self.summary['misses'], self.summary[
+        #         'splus_nr'], self.summary['correct_rejections'], self.summary['sminus_nr']))
+        #     f.write("%i(%i)\t%i(%i)\n" % (self.summary['probe_miss'], self.summary[
+        #         'probe_miss_nr'], self.summary['probe_CR'], self.summary['probe_CR_nr']))
+        #
+        #     f.write("d': %1.2f\t" % self.summary['dprime'])
+        #     f.write((u"β: %1.2f %s\n" % (self.summary['bias'], self.summary['bias_description'])).encode('utf8'))
+        #     # f.write("Feeder ops today: %i\n" % self.summary['feeds'])
+        #
+        #     f.write("Last trial: %s" % self.summary['last_trial_time'])
 
     ## session flow
     def session_pre(self):
@@ -402,6 +431,18 @@ class GoNoGoInterruptExp(base.BaseExp):
             self.condition = self.parameters['block_design']['order'][0]
             self.summary['phase'] = self.condition
             self.log.info('continuing last session')
+            # Check if criteria met for moving to next phase/block
+            # if 'auto_advance' in self.parameters['block_design'] and self.parameters['block_design']['auto_advance']:
+            #     if len(self.parameters['block_design']['order']) > 1:  # Only check if there's more than one block in list (
+            #         # so the session won't end because the last block was removed)
+            #         if 'criteria' in self.parameters['block_design']['blocks'][self.condition]:  # Only check if criteria are
+            #             # specified in json file, otherwise just continue with session
+            #             if self.check_performance():
+            #                 self.parameters['block_design']['order'].pop(0)  # Remove block from order
+            #                 with open(self.parameters['config_file'], 'wb') as config_snap:
+            #                     json.dump(self.parameters, config_snap, sort_keys=True, indent=4)
+            #                     self.log.info('Stage %s complete!' % self.condition)
+            #                     raise EndSession
             try:
                 run_trial_queue()
             except EndSession:
@@ -500,6 +541,12 @@ class GoNoGoInterruptExp(base.BaseExp):
                                    [self.summary['false_alarms'], self.summary['correct_rejections']]])
         self.summary['dprime'] = stats.dprime()
         self.summary['bias'] = stats.bias()
+        if self.summary['bias'] > 1.001:
+            self.summary['bias_description'] = '(Conservative)'
+        elif self.summary['bias'] < 0.999:
+            self.summary['bias_description'] = '(Liberal)'
+        else:
+            self.summary['bias_description'] = ''
 
     def save_trial(self, trial):
         """write trial results to CSV"""
@@ -556,17 +603,6 @@ class GoNoGoInterruptExp(base.BaseExp):
 
         utils.wait(self.parameters['intertrial_min'])
 
-        # if len(self.parameters['block_design']['order']) > 1:  # Only check if there's more than one block in list (
-        #     # so the session won't end because the last block was removed)
-        #     if 'criteria' in self.parameters['block_design']['blocks'][self.condition]:  # Only check if criteria are
-        #         # specified in json file, otherwise just continue with session
-        #         if self.check_performance():
-        #             self.parameters['block_design']['order'].pop(0)  # Remove block from order
-        #             with open(self.parameters['config_file'], 'wb') as config_snap:
-        #                 json.dump(self.parameters, config_snap, sort_keys=False, indent=4)
-        #                 self.log.info('Stage %s complete!' % self.condition)
-        #                 raise EndSession
-
         # # determine if next trial should be a correction trial
         # self.do_correction = True
         # if len(self.trials) > 0:
@@ -599,37 +635,42 @@ class GoNoGoInterruptExp(base.BaseExp):
         # wait for bird to peck
         self.log.debug("presenting stimulus %s" % self.this_trial.stimulus)
         self.log.debug("from file %s" % self.this_trial.stimulus_event.file_origin)
-        self.panel.speaker.queue(self.this_trial.stimulus_event.file_origin)
+        self.try_panel_function(self.panel.speaker.queue, self.this_trial.stimulus_event.file_origin)
+        # self.panel.speaker.queue(self.this_trial.stimulus_event.file_origin)
         self.log.debug('waiting for peck...')
-        try:
-            self.panel.trialSens.on()
-        except (ArduinoException, InterfaceError):
-            self.reconnect_panel()
-            self.panel.trialSens.on()
+        self.try_panel_function(self.panel.trialSens.on)
+        # try:
+        #     self.panel.trialSens.on()
+        # except (ArduinoException, InterfaceError):
+        #     self.reconnect_panel()
+        #     self.panel.trialSens.on()
         trial_time = None
         while trial_time is None:
             if not self.check_session_schedule():
-                self.panel.speaker.stop()
-                try:
-                    self.panel.trialSens.off()
-                except (ArduinoException, InterfaceError):
-                    self.reconnect_panel()
-                    self.panel.trialSens.off()
+                self.try_panel_function(self.panel.speaker.stop)
+                self.try_panel_function(self.panel.trialSens.off)
+                # try:
+                #     self.panel.trialSens.off()
+                # except (ArduinoException, InterfaceError):
+                #     self.reconnect_panel()
+                #     self.panel.trialSens.off()
                 self.update_adaptive_queue(presented=False)
                 raise EndSession
             else:
-                try:
-                    trial_time = self.panel.trialSens.poll(timeout=15.0)
-                except (ArduinoException, InterfaceError):
-                    self.reconnect_panel()
+                trial_time = self.try_panel_function(self.panel.trialSens.poll, timeout=15.0)
+                # try:
+                #     trial_time = self.panel.trialSens.poll(timeout=15.0)
+                # except (ArduinoException, InterfaceError):
+                #     self.reconnect_panel()
 
         self.this_trial.time = trial_time
 
-        try:
-            self.panel.trialSens.off()
-        except (ArduinoException, InterfaceError):
-            self.reconnect_panel()
-            self.panel.trialSens.off()
+        self.try_panel_function(self.panel.trialSens.off)
+        # try:
+        #     self.panel.trialSens.off()
+        # except (ArduinoException, InterfaceError):
+        #     self.reconnect_panel()
+        #     self.panel.trialSens.off()
         self.this_trial.events.append(utils.Event(name='trialSens',
                                                   label='peck',
                                                   time=0.0,
@@ -638,13 +679,15 @@ class GoNoGoInterruptExp(base.BaseExp):
 
         # record trial initiation
         self.summary['trials'] += 1
+        if self.this_trial.class_[0:5] == "probe":
+            self.summary['probe_trials'] += 1
         self.summary['last_trial_time'] = self.this_trial.time.ctime()
         self.log.info("trial started at %s" % self.this_trial.time.ctime())
 
     def stimulus_main(self):
         stim_start = dt.datetime.now()
         self.this_trial.stimulus_event.time = (stim_start - self.this_trial.time).total_seconds()
-        self.panel.speaker.play()  # already queued in stimulus_pre()
+        self.try_panel_function(self.panel.speaker.play)  # already queued in stimulus_pre()
 
     def stimulus_post(self):
         self.log.debug('waiting %s secs...' % self.this_trial.annotations['min_wait'])
@@ -653,7 +696,8 @@ class GoNoGoInterruptExp(base.BaseExp):
     # response flow
     def response_pre(self):
         for class_, port in self.class_assoc.items():
-            port.on()
+            self.try_panel_function(port.on)
+            # port.on()
         self.log.debug('waiting for response')
 
     def response_main(self):
@@ -662,7 +706,8 @@ class GoNoGoInterruptExp(base.BaseExp):
             elapsed_time = (dt.datetime.now() - self.this_trial.time).total_seconds()
             response_time = elapsed_time - self.this_trial.stimulus_event.time
             if response_time > self.this_trial.annotations['max_wait']:
-                self.panel.speaker.stop()
+                self.try_panel_function(self.panel.speaker.stop)
+                # self.panel.speaker.stop()
                 self.this_trial.response = 'none'
                 self.log.info('no response')
                 return
@@ -685,7 +730,8 @@ class GoNoGoInterruptExp(base.BaseExp):
                 else:
                     if trial_response:
                         self.this_trial.rt = (dt.datetime.now() - response_start).total_seconds()
-                        self.panel.speaker.stop()
+                        self.try_panel_function(self.panel.speaker.stop)
+                        # self.panel.speaker.stop()
                         self.this_trial.response = class_
                         self.summary['responses'] += 1
                         response_event = utils.Event(name=self.parameters['classes'][class_]['component'],
@@ -699,43 +745,65 @@ class GoNoGoInterruptExp(base.BaseExp):
 
     def response_post(self):
         for class_, port in self.class_assoc.items():
-            port.off()
+            self.try_panel_function(port.off)
+            # port.off()
 
     ## consequence flow
     def consequence_pre(self):
         # Calculate response type, add to total of response types
         if self.this_trial.response == "ERR":
             pass
-        elif self.this_trial.class_ == "probePlus" or self.this_trial.class_ == "sPlus":
+        elif self.this_trial.class_ == "probePlus":
+            self.summary['probe_plus'] += 1
+
+            if self.this_trial.response == "sPlus":
+                self.this_trial.correct = True  # Mark correct response to probe as correct
+                self.summary['probe_hit'] += 1
+                self.this_trial.responseType = "correct_response"
+            else:
+                self.summary['probe_miss'] += 1
+                self.this_trial.responseType = "miss"
+                if self.this_trial.response != "sMinus":  # No response
+                    self.summary['probe_miss_nr'] += 1
+
+        elif self.this_trial.class_ == "sPlus":
             self.summary['splus_trials'] += 1
+
             if self.this_trial.response == "sPlus":
                 self.this_trial.correct = True  # Mark correct response to probe as correct
                 self.summary['correct_responses'] += 1
                 self.this_trial.responseType = "correct_response"
-            elif self.this_trial.response == "sMinus":
-                self.summary['misses'] += 1
-                self.this_trial.responseType = "miss"
             else:
-                # No response
-                self.summary['splus_nr'] += 1
                 self.summary['misses'] += 1
                 self.this_trial.responseType = "miss"
+                if self.this_trial.response != "sMinus":  # No response
+                    self.summary['splus_nr'] += 1
 
-        elif self.this_trial.class_ == "probeMinus" or self.this_trial.class_ == "sMinus":
+        elif self.this_trial.class_ == "probeMinus":
+            self.summary['probe_minus'] += 1
+            if self.this_trial.response == "sPlus":
+                self.summary['probe_FA'] += 1
+                self.this_trial.responseType = "false_alarm"
+            else:
+                self.this_trial.correct = True  # Mark correct response to probe as correct
+                self.summary['probe_CR'] += 1
+                self.this_trial.responseType = "correct_reject"
+                if self.this_trial.response != "sMinus":  # No response
+                    # No response
+                    self.summary['probe_CR_nr'] += 1
+
+        elif self.this_trial.class_ == "sMinus":
             self.summary['sminus_trials'] += 1
             if self.this_trial.response == "sPlus":
                 self.summary['false_alarms'] += 1
                 self.this_trial.responseType = "false_alarm"
-            elif self.this_trial.response == "sMinus":
-                self.this_trial.correct = True  # Mark correct response to probe as correct
-                self.summary['correct_rejections'] += 1
-                self.this_trial.responseType = "correct_reject"
             else:
-                # No response
                 self.this_trial.correct = True  # Mark correct response to probe as correct
                 self.summary['correct_rejections'] += 1
-                self.summary['sminus_nr'] += 1
                 self.this_trial.responseType = "correct_reject"
+                if self.this_trial.response != "sMinus":  # No response
+                    # No response
+                    self.summary['sminus_nr'] += 1
 
     def consequence_main(self):
         if self.this_trial.response == "ERR":
@@ -775,7 +843,7 @@ class GoNoGoInterruptExp(base.BaseExp):
 
             # incorrect trial
             else:
-                self.this_trial.correct = False
+                self.this_trial.correct = False  # This might be redundant - 12/14/18 AR
                 if self.reinf_sched.consequate(trial=self.this_trial):
                     self.punish_pre()
                     self.punish_main()
@@ -802,30 +870,31 @@ class GoNoGoInterruptExp(base.BaseExp):
         self.summary['feeds'] += 1
         try:
             value = self.parameters['classes'][self.this_trial.class_]['reward_value']
-            try:  # Check that Teensy is still connected, and reconnect if necessary
-                reward_event = self.panel.reward(value=value)
-            except (ArduinoException, InterfaceError):
-                self.reconnect_panel()
-                reward_event = self.panel.reward(value=value)
+            self.try_panel_function(self.panel.reward, value=value)
+            # try:  # Check that Teensy is still connected, and reconnect if necessary
+            #     reward_event = self.panel.reward(value=value)
+            # except (ArduinoException, InterfaceError):
+            #     self.reconnect_panel()
+            #     reward_event = self.panel.reward(value=value)
             self.this_trial.reward = True
 
         # but catch the reward errors
 
         ## note: this is quite specific to the Gentner Lab. consider
         ## ways to abstract this
-        except components.HopperAlreadyUpError as err:
-            self.this_trial.reward = True
-            self.summary['hopper_already_up'] += 1
-            self.log.warning("hopper already up on panel %s" % str(err))
-            utils.wait(self.parameters['classes'][self.this_trial.class_]['reward_value'])
-            # self.panel.reset()
-
-        except components.HopperWontComeUpError as err:
-            self.this_trial.reward = 'error'
-            self.summary['hopper_failures'] += 1
-            self.log.error("hopper didn't come up on panel %s" % str(err))
-            utils.wait(self.parameters['classes'][self.this_trial.class_]['reward_value'])
-            self.panel.reset()
+        # except components.HopperAlreadyUpError as err:
+        #     self.this_trial.reward = True
+        #     self.summary['hopper_already_up'] += 1
+        #     self.log.warning("hopper already up on panel %s" % str(err))
+        #     utils.wait(self.parameters['classes'][self.this_trial.class_]['reward_value'])
+        #     # self.panel.reset()
+        #
+        # except components.HopperWontComeUpError as err:
+        #     self.this_trial.reward = 'error'
+        #     self.summary['hopper_failures'] += 1
+        #     self.log.error("hopper didn't come up on panel %s" % str(err))
+        #     utils.wait(self.parameters['classes'][self.this_trial.class_]['reward_value'])
+        #     self.panel.reset()
 
         # except components.ResponseDuringFeedError as err:
         #     trial['reward'] = 'Error'
@@ -834,18 +903,19 @@ class GoNoGoInterruptExp(base.BaseExp):
         #     utils.wait(self.reward_dur[trial['class']])
         #     self.panel.reset()
 
-        except components.HopperWontDropError as err:
-            self.this_trial.reward = 'error'
-            self.summary['hopper_wont_go_down'] += 1
-            self.log.warning("hopper didn't go down on panel %s" % str(err))
-            # self.panel.reset()
+        # except components.HopperWontDropError as err:
+        #     self.this_trial.reward = 'error'
+        #     self.summary['hopper_wont_go_down'] += 1
+        #     self.log.warning("hopper didn't go down on panel %s" % str(err))
+        #     # self.panel.reset()
 
         finally:
-            try:
-                self.panel.house_light.on()
-            except (ArduinoException, InterfaceError):
-                self.reconnect_panel()
-                self.panel.house_light.on()
+            self.try_panel_function(self.panel.house_light.on)
+            # try:
+            #     self.panel.house_light.on()
+            # except (ArduinoException, InterfaceError):
+            #     self.reconnect_panel()
+            #     self.panel.house_light.on()
 
     def reward_post(self):
         pass
@@ -860,11 +930,12 @@ class GoNoGoInterruptExp(base.BaseExp):
     def punish_main(self):
         value = self.parameters['classes'][self.this_trial.class_]['punish_value']
         if self.punish_bool:
-            try:  # Check that Teensy is still connected, and reconnect if necessary
-                punish_event = self.panel.punish(value=value)
-            except (InterfaceError, ArduinoException):
-                self.reconnect_panel()
-                punish_event = self.panel.punish(value=value)
+            self.try_panel_function(self.panel.punish, value=value)
+            # try:  # Check that Teensy is still connected, and reconnect if necessary
+            #     punish_event = self.panel.punish(value=value)
+            # except (InterfaceError, ArduinoException):
+            #     self.reconnect_panel()
+            #     punish_event = self.panel.punish(value=value)
         self.this_trial.punish = True
 
     def punish_post(self):

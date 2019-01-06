@@ -12,9 +12,12 @@ import pyudev  # device monitoring to identify connected Teensys
 import re  # Regex, for parsing device names returned from pyudev to identify connected Teensys
 import argparse  # Parse command line arguments for GUI, primarily to enable debug mode
 from shutil import copyfile  # For creating new json file by copying another
-from pyoperant import analysis
-import pandas as pd
-import csv
+
+import datetime as dt  # For auto sleep
+
+from pyoperant import analysis  # Analysis creates the data summary tables
+import pandas as pd  # Dataframes for data summary tables
+import csv  # For exporting data summaries as csv files
 
 try:
     import simplejson as json
@@ -44,6 +47,8 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.refreshall)
         self.timer.start(5000)
+
+        self.globalSchedule = ["08:30", "20:30"]
 
         # Monitor when USB devices are connected/disconnected
         context = pyudev.Context()
@@ -87,6 +92,8 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         self.newBirdActionList = []
         self.statsActionList = []
 
+        self.schedule = []
+
         # Option menu setup
 
         ## To add an item to the option menu:
@@ -120,8 +127,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             self.optionMenuList[boxnumber].addSeparator()
             self.optionMenuList[boxnumber].addAction(self.openFolderActionList[boxnumber])
             self.optionMenuList[boxnumber].addAction(self.newBirdActionList[boxnumber])
-            self.optionMenuList[boxnumber].addSeparator()
-            self.optionMenuList[boxnumber].addAction(self.statsActionList[boxnumber])
+            # self.optionMenuList[boxnumber].addSeparator()
 
             # JSON submenu
             self.jsonMenuList[boxnumber].addAction(self.openSettingsActionList[boxnumber])
@@ -151,6 +157,8 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         for boxnumber in self.boxList:
             self.paramFileButtonBoxList[boxnumber].clicked.connect(
                 lambda _, b=boxnumber: self.param_file_select(boxnumber=b))
+            self.performanceBoxList[boxnumber].clicked.connect(
+                lambda _, b=boxnumber: self.analyze_performance(boxnumber=b))
             self.startBoxList[boxnumber].clicked.connect(lambda _, b=boxnumber: self.start_box(boxnumber=b))
             self.stopBoxList[boxnumber].clicked.connect(lambda _, b=boxnumber: self.stop_box(boxnumber=b))
 
@@ -169,11 +177,12 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
                 lambda _, b=boxnumber: self.create_json_file(boxnumber=b))
             self.newBirdActionList[boxnumber].triggered.connect(
                 lambda _, b=boxnumber: self.create_new_bird(boxnumber=b))
-            self.statsActionList[boxnumber].triggered.connect(
-                lambda _, b=boxnumber: self.analyze_performance(boxnumber=b))
 
             # Attach menu to physical option button
             self.optionButtonBoxList[boxnumber].setMenu(self.optionMenuList[boxnumber])
+
+            # Fill sleep schedule var with None
+            self.schedule.append(None)
 
         self.closeEvent = self.close_application
 
@@ -296,7 +305,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
 
     # region Pyoperant stop/start functions
 
-    def stop_box(self, boxnumber, error_mode=False):
+    def stop_box(self, boxnumber, error_mode=False, sleep_mode=False):
         # stop selected box
         if not self.subprocessBox[boxnumber] == 0:  # Only operate if box is running
             while True:  # Empty queue so process can end gracefully
@@ -314,7 +323,11 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             pass  # OSError is probably that the process is already terminated
         except AttributeError:
             pass  # Subprocess is stopped and already set to 0
-        self.subprocessBox[boxnumber] = 0
+        if sleep_mode:
+            self.subprocessBox[boxnumber] = 1
+        else:
+            self.subprocessBox[boxnumber] = 0
+            self.schedule[boxnumber] = None
         self.box_button_control(boxnumber, "stop")
         self.refreshfile(boxnumber)  # one last time to display any errors sent to the summaryDAT file
         if error_mode:
@@ -333,16 +346,16 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         jsonPath = self.paramFileBoxList[boxnumber].toPlainText()
         if not self.checkActiveBoxList[boxnumber].checkState():  # Box needs to be marked as active
             error = "Error: Box not set as Active."
-            self.display_message(boxnumber, error)
+            self.display_message(boxnumber, error, target='status')
         elif birdName == "":  # Need a bird specified
             error = "Error: Bird name must be entered."
-            self.display_message(boxnumber, error)
+            self.display_message(boxnumber, error, target='status')
         elif not os.path.isfile(jsonPath):  # Make sure param file is specified
             error = "Error: No parameter file selected."
-            self.display_message(boxnumber, error)
+            self.display_message(boxnumber, error, target='status')
         elif not os.path.exists("/dev/teensy%02i" % actualboxnumber):  # check if Teensy is detected:
             error = "Error: Teensy %d not detected." % actualboxnumber
-            self.display_message(boxnumber, error)
+            self.display_message(boxnumber, error, target='status')
         else:
             try:
                 from pyoperant.local import DATAPATH
@@ -375,22 +388,27 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
 
                 if error and not error[0:4] == "ALSA" and not error[0:5] == 'pydev' and not error[0:5] == 'debug':
                     print error
-                    self.display_message(boxnumber, error)
+                    self.display_message(boxnumber, error, target='status')
                     self.stop_box(boxnumber, error_mode=True)
                     # self.subprocessBox[boxnumber].terminate
                     # self.subprocessBox[boxnumber].wait
                     # self.subprocessBox[boxnumber] = 0
                     # self.graphicBoxList[boxnumber].setPixmap(self.redIcon)
-                else:
+                else:  # Successfully started
                     self.box_button_control(boxnumber, "start")  # UI modifications while box is running
                     # self.graphicBoxList[boxnumber].setPixmap(self.greenIcon)
                     self.status_icon(boxnumber, 'start')
+
+                    # with open(jsonPath, 'r') as f:
+                    #     jsonLoaded = json.load(f)
+                    #     self.schedule[boxnumber] = {jsonLoaded["session_schedule"],jsonLoaded["light_schedule"]}
 
     def start_all(self):
         # start all checked boxes
         for boxnumber in self.boxList:
             if self.subprocessBox[boxnumber] == 0 and self.checkActiveBoxList[boxnumber].checkState():
                 self.start_box(boxnumber)
+                time.sleep(1)
 
     def stop_all(self):
         # stop all running boxes
@@ -519,6 +537,9 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         # print mem_top()
         for boxnumber in self.boxList:
 
+            # Box sleep check
+            # if not self.check_time(self.globalSchedule):
+            self.refreshfile(boxnumber)
             # Check for errors and read summary file
             if not self.subprocessBox[boxnumber] == 0:  # If box is running
                 # Check if subprocess is still running
@@ -530,11 +551,15 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
                     self.stop_box(boxnumber, error_mode=True)
 
     def refreshfile(self, boxnumber):
+        debug = True
+        if debug:
+            self.experimentPath = '/home/rouse/bird/data'
         birdName = str(self.birdEntryBoxList[boxnumber].toPlainText())
         # experiment_path = str(self.logpathList[boxnumber]+"/")
         summary_file = os.path.join(self.experimentPath, birdName, "{0}{1}".format(birdName, '.summaryDAT'))
         error_log = os.path.join(self.experimentPath, birdName, 'error.log')
         errorData = []  # Initialize to prevent the code from getting tripped up when checking for error text
+
 
         try:
             f = open(summary_file, 'r')
@@ -549,26 +574,124 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         if f:
             logData = f.readlines()
             f.close()
+            if isinstance(logData, list):
+                messageFormatted = ''.join(logData)
+                messageFormatted = _from_utf8(messageFormatted)
+                if len(logData[0]) > 50:
+                    logData = json.loads(str(messageFormatted))
+                    logFull = True  # full summary loaded, not just single message
+                else:
+                    logData = messageFormatted
+                    logFull = False
+            else:
+                logData = _from_utf8(logData)
+                logFull = False
+                # logData = f.readlines()
+                # f.close()
 
             if g:
                 errorData = g.readlines()
                 g.close()
+                errorSuccess = True
             else:
-                g = 0
+                errorSuccess = False
 
-            if not g == 0 and len(errorData) > 1:
+            if errorSuccess and len(errorData) > 1:  # If error file correctly opened and there is an error
                 # print "error log"
-                self.display_message(boxnumber, errorData)
+                self.display_message(boxnumber, errorData, target='status')
             else:
-                # print 'reg summary'
-                self.display_message(boxnumber, logData)
+                if logFull:
+                    # self.display_message(boxnumber, logData)
+                    self.display_message(boxnumber, logData['phase'], target='phase')
+                    self.display_message(boxnumber, 'Last Trial: ' + logData['last_trial_time'], target='time')
+                    logTotalsMessage = "Training Trials: {trials}   Probe trials: {probe_trials}\n" \
+                                       "Rf'd responses: {feeds}".format(**logData)
+                    logTotalsMessage.encode('utf8')
+                    self.display_message(boxnumber, logTotalsMessage, target='status')
+
+                    self.logRawCounts = QtGui.QStandardItemModel(self)
+                    self.logRawCounts.setHorizontalHeaderLabels(["S+", "S-", "Prb+", "Prb-"])
+                    self.logRawCounts.setVerticalHeaderLabels(["RespSw", "TrlSw"])
+
+                    rawCounts = [
+                        [
+                            str(logData["correct_responses"]),
+                            str(logData["false_alarms"]),
+                            str(logData["probe_hit"]),
+                            str(logData["probe_FA"])
+                        ],
+                        [
+                            (str(logData["misses"]) + " (" + str(logData["splus_nr"]) + ")"),
+                            (str(logData["correct_rejections"]) + " (" + str(logData["sminus_nr"]) + ")"),
+                            (str(logData["probe_miss"]) + " (" + str(logData["probe_miss_nr"]) + ")"),
+                            (str(logData["probe_CR"]) + " (" + str(logData["probe_CR_nr"]) + ")")
+                        ]
+                    ]
+                    for row in range(len(rawCounts)):
+                        for column in range(len(rawCounts[row])):
+                            item = QtGui.QStandardItem(rawCounts[row][column])
+                            self.logRawCounts.setItem(row, column, QtGui.QStandardItem(rawCounts[row][column]))
+
+                    self.statusTableBoxList[boxnumber].setModel(self.logRawCounts)
+                    self.statusTableBoxList[boxnumber].horizontalHeader().setResizeMode(
+                        QtGui.QHeaderView.ResizeToContents)
+                    self.statusTableBoxList[boxnumber].horizontalHeader().setStretchLastSection(True)
+                    self.statusTableBoxList[boxnumber].verticalHeader().setResizeMode(
+                        QtGui.QHeaderView.Stretch)
+
+                    # logRawCounts = "\tS+\tS-\tPrb+\tPrb-\n" \
+                    #                "RespSw\t{correct_responses}\t{false_alarms}\t{probe_hit}\t{probe_FA}\n" \
+                    #                "TrlSw\t{misses}({splus_nr})\t{correct_rejections}({sminus_nr})\t" \
+                    #                "{probe_miss}({probe_miss_nr})\t{probe_CR}({probe_CR_nr})".format(**logData)
+                    # logTotalsMessage.encode('utf8')
+                    # self.display_message(boxnumber, logTotalsMessage, target='statusRaw')
+
+                    logStats = u"d': {dprime:1.2f}\tβ: {bias:1.2f} {bias_description}".format(**logData)
+                    logStats.encode('utf8')
+                    self.display_message(boxnumber, logStats, target='statusStats')
+
+                else:
+                    self.display_message(boxnumber, logData, target='status')
         else:
             print "{0}{1}".format("Unable to open file for ", birdName)
 
         # with open(summary_file, 'r') as f:
         # logData = f.readlines()
-        # self.statusTextBoxList[boxnumber].setPlainText('\n'.join(logData[-10:]))
+        # self.statusTotalsBoxList[boxnumber].setPlainText('\n'.join(logData[-10:]))
         # f.close()
+
+    def check_time(self, schedule, fmt="%H:%M", **kwargs):
+        """ Determine whether current time is within $schedule
+        Primary use: determine whether trials should be done given the current time and light schedule or session schedule
+
+        returns Boolean if current time meets schedule
+
+        schedule='sun' will change lights according to local sunrise and sunset
+
+        schedule=[('07:00','17:00')] will have lights on between 7am and 5pm
+        schedule=[('06:00','12:00'),('18:00','24:00')] will have lights on between
+
+        """
+
+        if schedule == 'sun':
+            if is_day(kwargs):
+                return True
+        else:
+            for epoch in schedule:
+                assert len(epoch) is 2
+                now = dt.datetime.time(dt.datetime.now())
+                start = dt.datetime.time(dt.datetime.strptime(epoch[0], fmt))
+                end = dt.datetime.time(dt.datetime.strptime(epoch[1], fmt))
+                if self.time_in_range(start, end, now):
+                    return True
+        return False
+
+    def time_in_range(self, start, end, x):
+        """Return true if x is in the range [start, end]"""
+        if start <= end:
+            return start <= x <= end
+        else:
+            return start <= x or x <= end
 
     # endregion
 
@@ -588,15 +711,14 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         # Take any errors and stop box, if necessary
         error = self.get_error(boxnumber)
         if error:
-            if error[
-               0:4] == "ALSA":
+            if error[0:4] == "ALSA":
                 # Ignore ALSA errors; they've always occurred and don't interfere (have to do with the sound chip not
                 # liking some channels as written)
                 pass
             elif error[0:5] == 'pydev':
                 # Ignore pydev errors - thrown automatically during PyCharm debugging
                 pass
-            elif error[0:5] == 'debug':  # Add additional exceptions here
+            elif error[0:5] == 'debug':  #
                 pass
             # elif error[0:5] == 'pydev':  # Add additional exceptions here
             #     pass
@@ -608,13 +730,24 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         else:
             return False
 
-    def display_message(self, boxnumber, message):  # quick method for redirecting messages to status box
+    def display_message(self, boxnumber, message, target='status'):  # quick method for redirecting messages to status
+        # box
         if isinstance(message, list):
             messageFormatted = ''.join(message)
             messageFormatted = _from_utf8(messageFormatted)
         else:
             messageFormatted = _from_utf8(message)
-        self.statusTextBoxList[boxnumber].setText(messageFormatted)
+
+        if target == 'status':
+            self.statusTotalsBoxList[boxnumber].setText(messageFormatted)
+        elif target == 'statusRaw':
+            self.statusTableBoxList[boxnumber].setText(messageFormatted)
+        elif target == 'statusStats':
+            self.statusStatsBoxList[boxnumber].setText(messageFormatted)
+        elif target == 'phase':
+            self.phaseBoxList[boxnumber].setText(messageFormatted)
+        elif target == 'time':
+            self.lastTrialLabelList[boxnumber].setText(messageFormatted)
 
     # endregion
 
@@ -631,7 +764,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
     def open_application(self):
         # Command line argument parsing
         # message = u'β123'#.decode('utf8')
-        # self.statusTextBoxList[1].setPlainText(message)
+        # self.statusTotalsBoxList[1].setPlainText(message)
         self.args = self.parse_commandline()
 
         shutdownPrev = True  # Define first then settings file overwrites, if present
@@ -807,21 +940,40 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
 
     def __init__(self, data_folder, bird_name):
         super(self.__class__, self).__init__()
-        self.setup_ui(self)  # This is defined in design.py file automatically
-        # It sets up layout and widgets that are defined
+        self.setup_ui(self)  # This is defined in pyoperant_gui_layout.py file
+
         self.export_Button.clicked.connect(lambda _, b=data_folder: self.export(b))
         self.done_Button.clicked.connect(self.accept)
-        # bird_name = self.birdEntryBoxList[boxnumber].toPlainText()
-        self.bird_name.setText(str("Performance for %s" % bird_name))
+        self.noResponse_Checkbox.stateChanged.connect(lambda _, b=data_folder: self.recalculate(b))
+        self.probe_Checkbox.stateChanged.connect(lambda _, b=data_folder: self.recalculate(b))
+        self.raw_Checkbox.stateChanged.connect(lambda _, b=data_folder: self.recalculate(b))
 
+        self.setWindowTitle(str("Performance for %s" % bird_name))
+
+        self.recalculate(data_folder)
+
+    def export(self, output_folder):
+        output_path = QtGui.QFileDialog.getSaveFileName(self, "Save As...", output_folder, "CSV Files (*.csv)")
+        if output_path:
+            self.outputData.to_csv(str(output_path))
+            print 'saved to %s' % output_path
+
+    def recalculate(self, data_folder):
+        include_NR = self.noResponse_Checkbox.isChecked()
+        include_Probe = self.probe_Checkbox.isChecked()
+        include_raw = self.raw_Checkbox.isChecked()
         perform = analysis.Performance(data_folder)
         perform.summarize('raw')
-        self.outputData = perform.analyze(perform.summaryData, 'day')
+        self.outputData = perform.analyze(perform.summaryData, groupBy='day', NRTrials=include_NR,
+                                          probeTrials=include_Probe, rawTrials=include_raw)
+        # self.outputData = perform.analyze(perform.summaryData, groupBy='day')
         outputFile = 'performanceSummary.csv'
         output_path = os.path.join(data_folder, outputFile)
         self.outputData.to_csv(str(output_path))
         # print 'saved to %s' % output_path
+        self.refresh_table(output_path)
 
+    def refresh_table(self, output_path):
         # reimport the data from csv because moving directly from dataframe is a pain
         self.model = QtGui.QStandardItemModel(self)
 
@@ -835,14 +987,10 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
                              for field in row]
                     self.model.appendRow(items)
                 i += 1
-        self.performance_Table.setModel(self.model)
-        self.performance_Table.resizeColumnsToContents()
 
-    def export(self, output_folder):
-        output_path = QtGui.QFileDialog.getSaveFileName(self, "Save As...", output_folder, "CSV Files (*.csv)")
-        if output_path:
-            self.outputData.to_csv(str(output_path))
-            print 'saved to %s' % output_path
+        self.performance_Table.setModel(self.model)
+
+        self.performance_Table.resizeColumnsToContents()
 
 
 def main():

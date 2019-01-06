@@ -1,3 +1,4 @@
+pyudev
 pandas
 pyserial
 pyaudio

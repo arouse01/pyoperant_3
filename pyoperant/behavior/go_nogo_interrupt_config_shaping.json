@@ -8,20 +8,23 @@
     "email": "andrew.rouse@tufts.edu",
     "name": "Andrew Rouse"
   },
+
   "panel_name": "Rouse1",
   "subject": "test",
   "subject_type": "bird",
+
   "debug": false,
   "log_handlers": [
     "text"
   ],
   "shape": false,
   "free_day_off": false,
+
   "classes": {
     "sPlus": {
       "component": "respSens",
       "punish_value": 0.0,
-      "reward_value": 0.15
+      "reward_value": 0.075
     },
     "sMinus": {
       "component": "trialSens",
@@ -39,552 +42,29 @@
   },
   "block_design": {
     "blocks": {
-      "default": {
-        "description": "all from b1i1",
-        "conditions": [
-          {
-            "class": "sMinus",
-            "stim_name": "1"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "2"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "3"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "4"
-          },
-          {
-            "class": "sPlus",
-            "stim_name": "5"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "6"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "7"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "8"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "9"
-          },
-          {
-            "class": "sPlus",
-            "stim_name": "10"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "11"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "12"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "13"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "14"
-          },
-          {
-            "class": "sPlus",
-            "stim_name": "15"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "16"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "17"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "18"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "19"
-          },
-          {
-            "class": "sPlus",
-            "stim_name": "20"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "21"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "22"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "23"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "24"
-          },
-          {
-            "class": "sPlus",
-            "stim_name": "25"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "26"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "27"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "28"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "29"
-          },
-          {
-            "class": "sPlus",
-            "stim_name": "30"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "31"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "32"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "33"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "34"
-          },
-          {
-            "class": "sPlus",
-            "stim_name": "35"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "36"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "37"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "38"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "39"
-          },
-          {
-            "class": "sPlus",
-            "stim_name": "40"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "41"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "42"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "43"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "44"
-          },
-          {
-            "class": "sPlus",
-            "stim_name": "45"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "46"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "47"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "48"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "49"
-          },
-          {
-            "class": "sPlus",
-            "stim_name": "50"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "51"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "52"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "53"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "54"
-          },
-          {
-            "class": "sPlus",
-            "stim_name": "55"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "56"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "57"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "58"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "59"
-          },
-          {
-            "class": "sPlus",
-            "stim_name": "60"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "61"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "62"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "63"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "64"
-          },
-          {
-            "class": "sPlus",
-            "stim_name": "65"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "66"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "67"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "68"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "69"
-          },
-          {
-            "class": "sPlus",
-            "stim_name": "70"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "71"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "72"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "73"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "74"
-          },
-          {
-            "class": "sPlus",
-            "stim_name": "75"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "76"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "77"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "78"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "79"
-          },
-          {
-            "class": "sPlus",
-            "stim_name": "80"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "81"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "82"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "83"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "84"
-          },
-          {
-            "class": "sPlus",
-            "stim_name": "85"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "86"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "87"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "88"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "89"
-          },
-          {
-            "class": "sPlus",
-            "stim_name": "90"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "91"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "92"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "93"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "94"
-          },
-          {
-            "class": "sPlus",
-            "stim_name": "95"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "96"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "97"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "98"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "99"
-          },
-          {
-            "class": "sPlus",
-            "stim_name": "100"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "101"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "102"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "103"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "104"
-          },
-          {
-            "class": "sPlus",
-            "stim_name": "105"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "106"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "107"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "108"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "109"
-          },
-          {
-            "class": "sPlus",
-            "stim_name": "110"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "111"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "112"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "113"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "114"
-          },
-          {
-            "class": "sPlus",
-            "stim_name": "115"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "116"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "117"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "118"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "119"
-          },
-          {
-            "class": "sPlus",
-            "stim_name": "120"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "121"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "122"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "123"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "124"
-          },
-          {
-            "class": "sPlus",
-            "stim_name": "125"
-          }
-        ],
-        "weights": [
-          {
-            "class": "sMinus",
-            "weight": 12
-          },
-          {
-            "class": "sPlus",
-            "weight": 8
-          },
-          {
-            "class": "probeMinus",
-            "weight": 3
-          },
-          {
-            "class": "probePlus",
-            "weight": 2
-          }
-        ],
-        "queue": "random",
-        "reinforcement": {
-          "schedule": "go_interrupt",
-          "prob": 1,
-          "secondary": false
-        }
-      },
-      "shaping phase 0": {
-        "description": "full song stimuli",
+      "shaping 1": {
+        "description": "full song stimuli, passive water",
         "reinforcement": {
           "schedule": "go_interrupt",
           "prob": 1,
           "secondary": false,
-          "passive": false,
+          "passive": true,
           "punish": false
+        },
+        "criteria": {
+          "trialcount": {
+            "mintrials": 10,
+            "type": "Hit"
+          }
         },
         "conditions": [
           {
             "class": "sPlus",
-            "stim_name": "1000"
+            "stim_name": "5000"
           },
           {
             "class": "sMinus",
-            "stim_name": "1001"
+            "stim_name": "5001"
           }
         ],
         "weights": [
@@ -599,7 +79,95 @@
         ],
         "queue": "random"
       },
-      "training phase 1": {
+      "shaping 2": {
+        "description": "full song stimuli, no passive, no lights out",
+        "reinforcement": {
+          "schedule": "go_interrupt",
+          "prob": 1,
+          "secondary": false,
+          "passive": false,
+          "punish": false
+        },
+        "criteria": {
+          "days": 2,
+          "trialcount": {
+            "mintrials": 50,
+            "class": "Hit"
+          }
+        },
+        "conditions": [
+          {
+            "class": "sPlus",
+            "stim_name": "5000"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "5001"
+          }
+        ],
+        "weights": [
+          {
+            "class": "sPlus",
+            "weight": 1
+          },
+          {
+            "class": "sMinus",
+            "weight": 1
+          }
+        ],
+        "queue": "random"
+      },
+      "shaping 3": {
+        "description": "full song stimuli, lights out punishment",
+        "reinforcement": {
+          "schedule": "go_interrupt",
+          "prob": 1,
+          "secondary": false,
+          "passive": false,
+          "punish": true
+        },
+        "criteria": {
+          "days": 3,
+          "trialcount": {
+            "mintrials": 100
+          },
+          "propCorrect": [
+            {
+              "type": "sPlus_NR",
+              "minimum": 0.60
+            },
+            {
+              "type": "sMinus_NR",
+              "minimum": 0.60
+            },
+            {
+              "minimum": 0.75
+            }
+          ]
+        },
+        "conditions": [
+          {
+            "class": "sPlus",
+            "stim_name": "5000"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "5001"
+          }
+        ],
+        "weights": [
+          {
+            "class": "sPlus",
+            "weight": 1
+          },
+          {
+            "class": "sMinus",
+            "weight": 1
+          }
+        ],
+        "queue": "random"
+      },
+      "training 1": {
         "description": "1:1 S+/S- stim, 125 ms",
         "reinforcement": {
           "schedule": "go_interrupt",
@@ -608,14 +176,33 @@
           "passive": false,
           "punish": true
         },
+        "criteria": {
+          "days": 2,
+          "trialcount": {
+            "mintrials": 100
+          },
+          "propCorrect": [
+            {
+              "type": "sPlus_NR",
+              "minimum": 0.60
+            },
+            {
+              "type": "sMinus_NR",
+              "minimum": 0.60
+            },
+            {
+              "minimum": 0.75
+            }
+          ]
+        },
         "conditions": [
           {
             "class": "sMinus",
-            "stim_name": "61"
+            "stim_name": "813"
           },
           {
             "class": "sPlus",
-            "stim_name": "65"
+            "stim_name": "815"
           }
         ],
         "weights": [
@@ -630,8 +217,8 @@
         ],
         "queue": "random"
       },
-      "training phase 2": {
-        "description": "1:2 S+/S- stim, 125 ms",
+      "training 2": {
+        "description": "1:1 S+/S- stim, 150 ms",
         "reinforcement": {
           "schedule": "go_interrupt",
           "prob": 1,
@@ -639,20 +226,34 @@
           "passive": false,
           "punish": true
         },
+        "criteria": {
+          "days": 2,
+          "trialcount": {
+            "mintrials": 100
+          },
+          "propCorrect": [
+            {
+              "type": "sPlus_NR",
+              "minimum": 0.60
+            },
+            {
+              "type": "sMinus_NR",
+              "minimum": 0.60
+            },
+            {
+              "minimum": 0.75
+            }
+          ]
+        },
         "conditions": [
           {
             "class": "sMinus",
-            "stim_name": "61"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "62"
+            "stim_name": "861"
           },
           {
             "class": "sPlus",
-            "stim_name": "65"
+            "stim_name": "865"
           }
-
         ],
         "weights": [
           {
@@ -661,13 +262,13 @@
           },
           {
             "class": "sMinus",
-            "weight": 2
+            "weight": 1
           }
         ],
         "queue": "random"
       },
-      "training phase 3": {
-        "description": "1:4 S+/S- stim, 125 ms",
+      "training 3": {
+        "description": "1:1 S+/S- stim, 125 and 150 ms",
         "reinforcement": {
           "schedule": "go_interrupt",
           "prob": 1,
@@ -675,26 +276,41 @@
           "passive": false,
           "punish": true
         },
+        "criteria": {
+          "days": 2,
+          "trialcount": {
+            "mintrials": 100
+          },
+          "propCorrect": [
+            {
+              "type": "sPlus_NR",
+              "minimum": 0.60
+            },
+            {
+              "type": "sMinus_NR",
+              "minimum": 0.60
+            },
+            {
+              "minimum": 0.75
+            }
+          ]
+        },
         "conditions": [
           {
             "class": "sMinus",
-            "stim_name": "61"
+            "stim_name": "813"
           },
           {
             "class": "sMinus",
-            "stim_name": "62"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "63"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "64"
+            "stim_name": "861"
           },
           {
             "class": "sPlus",
-            "stim_name": "65"
+            "stim_name": "815"
+          },
+          {
+            "class": "sPlus",
+            "stim_name": "865"
           }
         ],
         "weights": [
@@ -704,13 +320,245 @@
           },
           {
             "class": "sMinus",
-            "weight": 4
+            "weight": 1
           }
         ],
         "queue": "random"
       },
-      "training phase 4": {
-        "description": "1:4 S+/S- stim, 125 ms, 0.8 reinf rate",
+      "training 4": {
+        "description": "1:1 S+/S- stim, 100 ms",
+        "reinforcement": {
+          "schedule": "go_interrupt",
+          "prob": 1,
+          "secondary": false,
+          "passive": false,
+          "punish": true
+        },
+        "criteria": {
+          "days": 2,
+          "trialcount": {
+            "mintrials": 100
+          },
+          "propCorrect": [
+            {
+              "type": "sPlus_NR",
+              "minimum": 0.60
+            },
+            {
+              "type": "sMinus_NR",
+              "minimum": 0.60
+            },
+            {
+              "minimum": 0.75
+            }
+          ]
+        },
+        "conditions": [
+          {
+            "class": "sMinus",
+            "stim_name": "761"
+          },
+          {
+            "class": "sPlus",
+            "stim_name": "765"
+          }
+        ],
+        "weights": [
+          {
+            "class": "sPlus",
+            "weight": 1
+          },
+          {
+            "class": "sMinus",
+            "weight": 1
+          }
+        ],
+        "queue": "random"
+      },
+      "training 4b": {
+        "description": "1:1 S+/S- stim, 175 ms",
+        "reinforcement": {
+          "schedule": "go_interrupt",
+          "prob": 1,
+          "secondary": false,
+          "passive": false,
+          "punish": true
+        },
+        "criteria": {
+          "days": 2,
+          "trialcount": {
+            "mintrials": 100
+          },
+          "propCorrect": [
+            {
+              "type": "sPlus_NR",
+              "minimum": 0.60
+            },
+            {
+              "type": "sMinus_NR",
+              "minimum": 0.60
+            },
+            {
+              "minimum": 0.75
+            }
+          ]
+        },
+        "conditions": [
+          {
+            "class": "sMinus",
+            "stim_name": "2011"
+          },
+          {
+            "class": "sPlus",
+            "stim_name": "2015"
+          }
+        ],
+        "weights": [
+          {
+            "class": "sPlus",
+            "weight": 1
+          },
+          {
+            "class": "sMinus",
+            "weight": 1
+          }
+        ],
+        "queue": "random"
+      },
+      "training 5": {
+        "description": "1:1 S+/S- stim, 100 ms, 125 ms, 150 ms",
+        "reinforcement": {
+          "schedule": "go_interrupt",
+          "prob": 1,
+          "secondary": false,
+          "passive": false,
+          "punish": true
+        },
+        "criteria": {
+          "days": 2,
+          "trialcount": {
+            "mintrials": 100
+          },
+          "propCorrect": [
+            {
+              "type": "sPlus_NR",
+              "minimum": 0.60
+            },
+            {
+              "type": "sMinus_NR",
+              "minimum": 0.60
+            },
+            {
+              "minimum": 0.75
+            }
+          ]
+        },
+        "conditions": [
+          {
+            "class": "sMinus",
+            "stim_name": "761"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "813"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "861"
+          },
+          {
+            "class": "sPlus",
+            "stim_name": "765"
+          },
+          {
+            "class": "sPlus",
+            "stim_name": "815"
+          },
+          {
+            "class": "sPlus",
+            "stim_name": "865"
+          }
+        ],
+        "weights": [
+          {
+            "class": "sPlus",
+            "weight": 1
+          },
+          {
+            "class": "sMinus",
+            "weight": 1
+          }
+        ],
+        "queue": "random"
+      },
+      "training 5b": {
+        "description": "1:1 S+/S- stim, 125 ms, 150 ms, 175 ms",
+        "reinforcement": {
+          "schedule": "go_interrupt",
+          "prob": 1,
+          "secondary": false,
+          "passive": false,
+          "punish": true
+        },
+        "criteria": {
+          "days": 2,
+          "trialcount": {
+            "mintrials": 100
+          },
+          "propCorrect": [
+            {
+              "type": "sPlus_NR",
+              "minimum": 0.60
+            },
+            {
+              "type": "sMinus_NR",
+              "minimum": 0.60
+            },
+            {
+              "minimum": 0.75
+            }
+          ]
+        },
+        "conditions": [
+          {
+            "class": "sMinus",
+            "stim_name": "2011"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "813"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "861"
+          },
+          {
+            "class": "sPlus",
+            "stim_name": "2015"
+          },
+          {
+            "class": "sPlus",
+            "stim_name": "815"
+          },
+          {
+            "class": "sPlus",
+            "stim_name": "865"
+          }
+        ],
+        "weights": [
+          {
+            "class": "sPlus",
+            "weight": 1
+          },
+          {
+            "class": "sMinus",
+            "weight": 1
+          }
+        ],
+        "queue": "random"
+      },
+      "training 6": {
+        "description": "1:1 S+/S- stim, 125/150/100 ms, 0.8 reinf rate",
         "reinforcement": {
           "schedule": "go_interrupt",
           "prob": 0.8,
@@ -718,26 +566,49 @@
           "passive": false,
           "punish": true
         },
+        "criteria": {
+          "days": 2,
+          "trialcount": {
+            "mintrials": 100
+          },
+          "propCorrect": [
+            {
+              "type": "sPlus_NR",
+              "minimum": 0.60
+            },
+            {
+              "type": "sMinus_NR",
+              "minimum": 0.60
+            },
+            {
+              "minimum": 0.75
+            }
+          ]
+        },
         "conditions": [
           {
             "class": "sMinus",
-            "stim_name": "61"
+            "stim_name": "761"
           },
           {
             "class": "sMinus",
-            "stim_name": "62"
+            "stim_name": "813"
           },
           {
             "class": "sMinus",
-            "stim_name": "63"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "64"
+            "stim_name": "861"
           },
           {
             "class": "sPlus",
-            "stim_name": "65"
+            "stim_name": "765"
+          },
+          {
+            "class": "sPlus",
+            "stim_name": "815"
+          },
+          {
+            "class": "sPlus",
+            "stim_name": "865"
           }
         ],
         "weights": [
@@ -747,13 +618,13 @@
           },
           {
             "class": "sMinus",
-            "weight": 4
+            "weight": 1
           }
         ],
         "queue": "random"
       },
-      "training phase 5": {
-        "description": "5:20 S+/S- stim, 125 ms, 0.8 reinf rate",
+      "training 6b": {
+        "description": "1:1 S+/S- stim, 125 ms, 150 ms, 175 ms",
         "reinforcement": {
           "schedule": "go_interrupt",
           "prob": 0.8,
@@ -761,106 +632,49 @@
           "passive": false,
           "punish": true
         },
+        "criteria": {
+          "days": 2,
+          "trialcount": {
+            "mintrials": 100
+          },
+          "propCorrect": [
+            {
+              "type": "sPlus_NR",
+              "minimum": 0.60
+            },
+            {
+              "type": "sMinus_NR",
+              "minimum": 0.60
+            },
+            {
+              "minimum": 0.75
+            }
+          ]
+        },
         "conditions": [
           {
             "class": "sMinus",
-            "stim_name": "51"
+            "stim_name": "2011"
           },
           {
             "class": "sMinus",
-            "stim_name": "52"
+            "stim_name": "813"
           },
           {
             "class": "sMinus",
-            "stim_name": "53"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "54"
+            "stim_name": "861"
           },
           {
             "class": "sPlus",
-            "stim_name": "55"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "56"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "57"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "58"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "59"
+            "stim_name": "2015"
           },
           {
             "class": "sPlus",
-            "stim_name": "60"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "61"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "62"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "63"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "64"
+            "stim_name": "815"
           },
           {
             "class": "sPlus",
-            "stim_name": "65"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "66"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "67"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "68"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "69"
-          },
-          {
-            "class": "sPlus",
-            "stim_name": "70"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "71"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "72"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "73"
-          },
-          {
-            "class": "sMinus",
-            "stim_name": "74"
-          },
-          {
-            "class": "sPlus",
-            "stim_name": "75"
+            "stim_name": "865"
           }
         ],
         "weights": [
@@ -870,14 +684,186 @@
           },
           {
             "class": "sMinus",
+            "weight": 1
+          }
+        ],
+        "queue": "random"
+      },
+      "testing 175": {
+        "description": "1:1 S+/S- stim, 125/150/100 ms, 0.8 reinf rate, novel 175 ms",
+        "reinforcement": {
+          "schedule": "go_interrupt",
+          "prob": 1,
+          "secondary": false,
+          "passive": false,
+          "punish": true
+        },
+        "criteria": {
+          "days": 2,
+          "trialcount": {
+            "mintrials": 100
+          },
+          "propCorrect": [
+            {
+              "type": "sPlus_NR",
+              "minimum": 0.60
+            },
+            {
+              "type": "sMinus_NR",
+              "minimum": 0.60
+            },
+            {
+              "minimum": 0.75
+            }
+          ]
+        },
+        "conditions": [
+          {
+            "class": "sMinus",
+            "stim_name": "761"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "813"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "861"
+          },
+          {
+            "class": "sPlus",
+            "stim_name": "765"
+          },
+          {
+            "class": "sPlus",
+            "stim_name": "815"
+          },
+          {
+            "class": "sPlus",
+            "stim_name": "865"
+          },
+          {
+            "class": "probeMinus",
+            "stim_name": "2011"
+          },
+          {
+            "class": "probePlus",
+            "stim_name": "2015"
+          }
+        ],
+        "weights": [
+          {
+            "class": "sPlus",
             "weight": 4
+          },
+          {
+            "class": "sMinus",
+            "weight": 4
+          },
+          {
+            "class": "probePlus",
+            "weight": 1
+          },
+          {
+            "class": "probeMinus",
+            "weight": 1
+          }
+        ],
+        "queue": "random"
+      },
+      "testing 137": {
+        "description": "1:1 S+/S- stim, 125/150/175 ms, 0.8 reinf rate, novel 137 ms",
+        "reinforcement": {
+          "schedule": "go_interrupt",
+          "prob": 1,
+          "secondary": false,
+          "passive": false,
+          "punish": true
+        },
+        "criteria": {
+          "days": 2,
+          "trialcount": {
+            "mintrials": 100
+          },
+          "propCorrect": [
+            {
+              "type": "sPlus_NR",
+              "minimum": 0.60
+            },
+            {
+              "type": "sMinus_NR",
+              "minimum": 0.60
+            },
+            {
+              "minimum": 0.75
+            }
+          ]
+        },
+        "conditions": [
+          {
+            "class": "sMinus",
+            "stim_name": "2011"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "813"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "861"
+          },
+          {
+            "class": "sPlus",
+            "stim_name": "2015"
+          },
+          {
+            "class": "sPlus",
+            "stim_name": "815"
+          },
+          {
+            "class": "sPlus",
+            "stim_name": "865"
+          },
+          {
+            "class": "probeMinus",
+            "stim_name": "831"
+          },
+          {
+            "class": "probePlus",
+            "stim_name": "835"
+          }
+        ],
+        "weights": [
+          {
+            "class": "sPlus",
+            "weight": 4
+          },
+          {
+            "class": "sMinus",
+            "weight": 4
+          },
+          {
+            "class": "probePlus",
+            "weight": 1
+          },
+          {
+            "class": "probeMinus",
+            "weight": 1
           }
         ],
         "queue": "random"
       }
     },
     "order": [
-      "shaping phase 0"
+      "shaping 2",
+      "shaping 3",
+      "training 1",
+      "training 2",
+      "training 3",
+      "training 4b",
+      "training 5b",
+      "training 6b",
+      "testing 137"
     ]
   },
 
@@ -910,7 +896,7 @@
   "stim_path": "/home/rouse/bird/stim",
   "stims": {
     "1": "b1i1_098_ir1.wav",
-    "2": "b1i1_098_ir2.wav",
+	"2": "b1i1_098_ir2.wav",
     "3": "b1i1_098_ir3.wav",
     "4": "b1i1_098_ir4.wav",
     "5": "b1i1_098_reg.wav",
@@ -1409,9 +1395,35 @@
     "873": "b2s1_152_ir3.wav",
     "874": "b2s1_152_ir4.wav",
     "875": "b2s1_152_reg.wav",
-    "1000": "blu33ylw24_song.wav",
-    "1001": "zf12_song.wav"
+    "2001": "b2s1_173_ir1.wav",
+    "2002": "b2s1_173_ir2.wav",
+    "2003": "b2s1_173_ir3.wav",
+    "2004": "b2s1_173_ir4.wav",
+    "2005": "b2s1_173_reg.wav",
+    "2006": "b2s1_174_ir1.wav",
+    "2007": "b2s1_174_ir2.wav",
+    "2008": "b2s1_174_ir3.wav",
+    "2009": "b2s1_174_ir4.wav",
+    "2010": "b2s1_174_reg.wav",
+    "2011": "b2s1_175_ir1.wav",
+    "2012": "b2s1_175_ir2.wav",
+    "2013": "b2s1_175_ir3.wav",
+    "2014": "b2s1_175_ir4.wav",
+    "2015": "b2s1_175_reg.wav",
+    "2016": "b2s1_176_ir1.wav",
+    "2017": "b2s1_176_ir2.wav",
+    "2018": "b2s1_176_ir3.wav",
+    "2019": "b2s1_176_ir4.wav",
+    "2020": "b2s1_176_reg.wav",
+    "2021": "b2s1_177_ir1.wav",
+    "2022": "b2s1_177_ir2.wav",
+    "2023": "b2s1_177_ir3.wav",
+    "2024": "b2s1_177_ir4.wav",
+    "2025": "b2s1_177_reg.wav",
+    "5000": "blu33ylw24_song.wav",
+    "5001": "zf12_song.wav"
   },
   "sr": 44100
 
 }
+
