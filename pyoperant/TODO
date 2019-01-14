@@ -10,3 +10,7 @@ TODO
 - define FemxBox(Box) class w/ :
   * methods for checking perching, playing on a certain speaker
 
+- Change GUI to output errors to text file so console doesn't need to be displayed
+
+-
+

@@ -42,13 +42,13 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         super(self.__class__, self).__init__()
         self.setup_ui(self)  # Sets up layout and widgets that are defined
 
+        self.debug = False
+
         # Number of boxes declared in pyoperant_gui_layout.py
 
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.refreshall)
         self.timer.start(5000)
-
-        self.globalSchedule = ["08:30", "20:30"]
 
         # Monitor when USB devices are connected/disconnected
         context = pyudev.Context()
@@ -91,11 +91,13 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         self.createNewJsonList = []
         self.newBirdActionList = []
         self.statsActionList = []
+        self.useNRList = []
+        self.autoSleepList = []
 
-        self.schedule = []
+        self.sleepScheduleList = []  # schedule is none if box not active, set when box started
+        self.defaultSleepSchedule = [["08:30", "22:30"]]
 
-        # Option menu setup
-
+        # region Option menu setup
         ## To add an item to the option menu:
         # - Add a blank list var to the "option var init" section for the action to be stored for each box
         # - Figure out whether the new option should be in the main option menu or in a submenu
@@ -119,6 +121,11 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             self.createNewJsonList.append(QtGui.QAction("New from template", self))
             self.newBirdActionList.append(QtGui.QAction("Change bird", self))
             self.statsActionList.append(QtGui.QAction("Performance", self))
+            self.useNRList.append(QtGui.QAction("Use NR Trials", self))
+            self.useNRList[boxnumber].setCheckable(True)
+            self.autoSleepList.append(QtGui.QAction("Autosleep", self))
+            self.autoSleepList[boxnumber].setCheckable(True)
+            self.autoSleepList[boxnumber].setChecked(True)
 
             # Reorder to change order in menu
             self.optionMenuList[boxnumber].addMenu(self.solenoidMenuList[boxnumber])
@@ -127,7 +134,10 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             self.optionMenuList[boxnumber].addSeparator()
             self.optionMenuList[boxnumber].addAction(self.openFolderActionList[boxnumber])
             self.optionMenuList[boxnumber].addAction(self.newBirdActionList[boxnumber])
-            # self.optionMenuList[boxnumber].addSeparator()
+            self.optionMenuList[boxnumber].addSeparator()
+            self.optionMenuList[boxnumber].addAction(self.useNRList[boxnumber])
+            self.optionMenuList[boxnumber].addSeparator()
+            self.optionMenuList[boxnumber].addAction(self.autoSleepList[boxnumber])
 
             # JSON submenu
             self.jsonMenuList[boxnumber].addAction(self.openSettingsActionList[boxnumber])
@@ -137,12 +147,16 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             self.solenoidMenuList[boxnumber].addAction(self.primeActionList[boxnumber])
             self.solenoidMenuList[boxnumber].addAction(self.purgeActionList[boxnumber])
             self.solenoidMenuList[boxnumber].addAction(self.solenoidManualList[boxnumber])
+        # endregion
 
-        # Other box-specific var setup
+        # region Other box-specific var setup
         for boxnumber in self.boxList:
-            # This is only in a separate for loop to visually isolate it from the option menu setup above
-            self.qList[
-                boxnumber] = Queue.Queue()  # Queue for running subprocesses and pulling outputs without blocking main script
+            # Fill sleep schedule var with None to start, and fill later when box is started
+            self.sleepScheduleList.append(None)
+
+            # Queue for running subprocesses and pulling outputs without blocking main script
+            self.qList[boxnumber] = Queue.Queue()
+
             ## The following lines are only if we want to implement the ability for a running pyoperant subprocess to
             #  accept external input from the GUI
 
@@ -152,8 +166,9 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             #                                             args=(self.logProcessBox[boxnumber].stdout,
             #                                                   self.qReadList[boxnumber]))
             # self.tReadList[boxnumber].daemon = True
+        # endregion
 
-        # Connect functions to buttons/objects
+        # region Connect functions to buttons/objects
         for boxnumber in self.boxList:
             self.paramFileButtonBoxList[boxnumber].clicked.connect(
                 lambda _, b=boxnumber: self.param_file_select(boxnumber=b))
@@ -177,12 +192,14 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
                 lambda _, b=boxnumber: self.create_json_file(boxnumber=b))
             self.newBirdActionList[boxnumber].triggered.connect(
                 lambda _, b=boxnumber: self.create_new_bird(boxnumber=b))
+            self.useNRList[boxnumber].triggered.connect(
+                lambda _, b=boxnumber: self.use_nr_trials(boxnumber=b))
+            self.autoSleepList[boxnumber].triggered.connect(
+                lambda _, b=boxnumber: self.auto_sleep_set(boxnumber=b))
 
             # Attach menu to physical option button
             self.optionButtonBoxList[boxnumber].setMenu(self.optionMenuList[boxnumber])
-
-            # Fill sleep schedule var with None
-            self.schedule.append(None)
+        # endregion
 
         self.closeEvent = self.close_application
 
@@ -196,7 +213,6 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         self.open_application()
 
     # region GUI button/object handling
-
     def param_file_select(self, boxnumber):
 
         existingFile = self.paramFileBoxList[boxnumber].toPlainText()
@@ -295,16 +311,14 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         return False
 
     def create_new_bird(self, boxnumber):
-        newBird, ok = QtGui.QInputDialog.getText(self, 'Change Bird', 'Bird ID:')
+        newBird, ok = QtGui.QInputDialog.getText(self, 'Change Bird', 'Bird ID:', QtGui.QLineEdit.Normal, "")
         if newBird and ok:  # User entered bird name and clicked OK
             jsonSuccess = self.create_json_file(boxnumber, newBird)
             if jsonSuccess:
                 self.birdEntryBoxList[boxnumber].setPlainText(newBird)
-
     # endregion
 
     # region Pyoperant stop/start functions
-
     def stop_box(self, boxnumber, error_mode=False, sleep_mode=False):
         # stop selected box
         if not self.subprocessBox[boxnumber] == 0:  # Only operate if box is running
@@ -323,18 +337,23 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             pass  # OSError is probably that the process is already terminated
         except AttributeError:
             pass  # Subprocess is stopped and already set to 0
+
         if sleep_mode:
             self.subprocessBox[boxnumber] = 1
+            self.sleep_box(boxnumber)
         else:
             self.subprocessBox[boxnumber] = 0
-            self.schedule[boxnumber] = None
-        self.box_button_control(boxnumber, "stop")
+            self.sleepScheduleList[boxnumber] = None
+
+        self.box_button_control(boxnumber, 'stop')
         self.refreshfile(boxnumber)  # one last time to display any errors sent to the summaryDAT file
+
+        # set icon
         if error_mode:
-            # self.graphicBoxList[boxnumber].setPixmap(self.errorIcon)
             self.status_icon(boxnumber, 'error')
+        elif sleep_mode:
+            self.status_icon(boxnumber, 'sleep')
         else:
-            # self.graphicBoxList[boxnumber].setPixmap(self.redIcon)
             self.status_icon(boxnumber, 'stop')
 
     def start_box(self, boxnumber):
@@ -363,7 +382,8 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
                 DATAPATH = '/home/rouse/bird/data'
             self.experimentPath = DATAPATH
 
-            if self.subprocessBox[boxnumber] == 0:  # Make sure box isn't already running
+            if self.subprocessBox[boxnumber] == 0 or self.subprocessBox[boxnumber] == 1:  # Make sure box isn't already
+                # running or sleeping
                 self.subprocessBox[boxnumber] = subprocess.Popen(
                     ['python', '/home/rouse/Desktop/pyoperant/pyoperant/scripts/behave', '-P',
                      str(boxnumber + 1), '-S', '{0}'.format(birdName), '{0}'.format(self.behaviorField.currentText()),
@@ -399,9 +419,10 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
                     # self.graphicBoxList[boxnumber].setPixmap(self.greenIcon)
                     self.status_icon(boxnumber, 'start')
 
+                    self.sleepScheduleList[boxnumber] = self.defaultSleepSchedule
                     # with open(jsonPath, 'r') as f:
                     #     jsonLoaded = json.load(f)
-                    #     self.schedule[boxnumber] = {jsonLoaded["session_schedule"],jsonLoaded["light_schedule"]}
+                    #     self.sleepScheduleList[boxnumber] = {jsonLoaded["session_schedule"],jsonLoaded["light_schedule"]}
 
     def start_all(self):
         # start all checked boxes
@@ -431,6 +452,38 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             if running is not None:
                 break
 
+    def sleep_box(self, boxnumber):
+        # Turn off house light
+        boxnumber = boxnumber + 1
+        print("Box %d going to sleep" % boxnumber)
+        device_name = '/dev/teensy%02i' % boxnumber
+        device = serial.Serial(port=device_name, baudrate=19200, timeout=5)
+        if device is None:
+            print 'Could not open serial device %s' % device_name
+            raise 'Could not open serial device %s' % device_name
+        else:
+            device.readline()
+            device.flushInput()
+            device.write("".join([chr(3), chr(3)]))  # set channel 3 (house light) as output
+            device.write("".join([chr(3), chr(1)]))  # turn off house lights
+            device.close()  # close connection
+
+    def wake_box(self, boxnumber):
+        print("Box %d waking up" % boxnumber)
+        device_name = '/dev/teensy%02i' % boxnumber
+        device = serial.Serial(port=device_name,
+                               baudrate=19200,
+                               timeout=5)
+        if device is None:
+            print 'Could not open serial device %s' % device_name
+            raise 'Could not open serial device %s' % device_name
+        else:
+            device.readline()
+            device.flushInput()
+            device.write("".join([chr(3), chr(3)]))  # set channel 3 (house light) as output
+            device.write("".join([chr(3), chr(2)]))  # turn on house lights
+            device.close()  # close connection
+
     # endregion
 
     # region Unused function
@@ -440,7 +493,6 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         while True:
             with open(in_pipe_name, "r") as f:
                 write_pipe.write(f.read())
-
     # endregion
 
     # region Physical device monitoring
@@ -462,7 +514,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             try:
                 boxLink = devicePathSplit[1]
                 # print boxLink
-                match = re.split('Board(\d*)', boxLink)
+                match = re.split('Board(\\d*)', boxLink)
                 boxnumber = int(
                     match[1]) - 1  # Box number as index is indexed from 0, but Teensy numbers are indexed from 1
                 # print boxnumber
@@ -485,7 +537,6 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         # quick method to enable or disable gui buttons and stop pyoperant if teensy is disconnected
         self.stop_box(boxnumber)
         self.box_button_control(boxnumber, parameter)
-
     # endregion
 
     # region Water system functions
@@ -528,38 +579,52 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             dialog.exec_()
         else:
             print "Cannot open solenoid: Box {0} is currently running".format(str(boxnumber))
-
     # endregion
 
     # region Box updating functions
     def refreshall(self):
+        # refresh each box, checking for run status, checking if box should sleep
+
         # print "timer fired"
         # print mem_top()
         for boxnumber in self.boxList:
+            if self.debug:
+                self.refreshfile(boxnumber)
 
-            # Box sleep check
-            # if not self.check_time(self.globalSchedule):
-            self.refreshfile(boxnumber)
-            # Check for errors and read summary file
-            if not self.subprocessBox[boxnumber] == 0:  # If box is running
+            # If box is still running, check
+            if not self.subprocessBox[boxnumber] == 0:  # If box is supposed to be running or sleeping
+                # Check sleep first
+                if self.autoSleepList[boxnumber].isChecked() and self.sleepScheduleList[boxnumber] is not None:
+                    schedule = self.sleepScheduleList[boxnumber]
+                    if self.check_time(schedule):  # box should be awake
+                        if self.subprocessBox[boxnumber] == 1:  # subprocessBox set to 1 when sleeping
+                            # Box not awake, make it awake
+                            self.start_box(boxnumber)
+                    else:  # box should be asleep
+                        if not self.subprocessBox[boxnumber] == 1:  # subprocessBox set to 1 when sleeping
+                            # Box not asleep, make it sleep
+                            self.stop_box(boxnumber, sleep_mode=True)
+
                 # Check if subprocess is still running
-                poll = self.subprocessBox[boxnumber].poll()
-                if poll is None:  # or self.args['debug'] is not False:  # poll() == 0 means the subprocess is still
-                    # running
-                    self.refreshfile(boxnumber)
-                else:
-                    self.stop_box(boxnumber, error_mode=True)
+                if self.subprocessBox[boxnumber] != 1:  # subprocessBox set to 1 when sleeping, so don't check that
+                    # it's still running
+                    poll = self.subprocessBox[boxnumber].poll()
+                    if poll is None:  # or self.args['debug'] is not False:  # poll() == 0 means the subprocess is still
+                        # running
+                        self.refreshfile(boxnumber)
+
+                    else:
+                        self.stop_box(boxnumber, error_mode=True)
 
     def refreshfile(self, boxnumber):
-        debug = True
-        if debug:
+
+        if self.debug:
             self.experimentPath = '/home/rouse/bird/data'
         birdName = str(self.birdEntryBoxList[boxnumber].toPlainText())
         # experiment_path = str(self.logpathList[boxnumber]+"/")
         summary_file = os.path.join(self.experimentPath, birdName, "{0}{1}".format(birdName, '.summaryDAT'))
         error_log = os.path.join(self.experimentPath, birdName, 'error.log')
         errorData = []  # Initialize to prevent the code from getting tripped up when checking for error text
-
 
         try:
             f = open(summary_file, 'r')
@@ -621,15 +686,14 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
                             str(logData["probe_FA"])
                         ],
                         [
-                            (str(logData["misses"]) + " (" + str(logData["splus_nr"]) + ")"),
-                            (str(logData["correct_rejections"]) + " (" + str(logData["sminus_nr"]) + ")"),
-                            (str(logData["probe_miss"]) + " (" + str(logData["probe_miss_nr"]) + ")"),
-                            (str(logData["probe_CR"]) + " (" + str(logData["probe_CR_nr"]) + ")")
+                            ("{0} ({1})".format(logData["misses"], logData["splus_nr"])),
+                            ("{0} ({1})".format(logData["correct_rejections"], logData["sminus_nr"])),
+                            ("{0} ({1})".format(logData["probe_miss"], logData["probe_miss_nr"])),
+                            ("{0} ({1})".format(logData["probe_CR"], logData["probe_CR_nr"]))
                         ]
                     ]
                     for row in range(len(rawCounts)):
                         for column in range(len(rawCounts[row])):
-                            item = QtGui.QStandardItem(rawCounts[row][column])
                             self.logRawCounts.setItem(row, column, QtGui.QStandardItem(rawCounts[row][column]))
 
                     self.statusTableBoxList[boxnumber].setModel(self.logRawCounts)
@@ -646,8 +710,12 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
                     # logTotalsMessage.encode('utf8')
                     # self.display_message(boxnumber, logTotalsMessage, target='statusRaw')
 
-                    logStats = u"d': {dprime:1.2f}\tβ: {bias:1.2f} {bias_description}".format(**logData)
-                    logStats.encode('utf8')
+                    if self.useNRList[boxnumber].isChecked():
+                        logStats = "d' (NR): {dprime_NR:1.2f}      β (NR): {bias_NR:1.2f} {bias_description_NR}".format(
+                            **logData)
+                    else:
+                        logStats = "d': {dprime:1.2f}      β: {bias:1.2f} {bias_description}".format(**logData)
+                    logStats.decode('utf8')
                     self.display_message(boxnumber, logStats, target='statusStats')
 
                 else:
@@ -660,6 +728,9 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         # self.statusTotalsBoxList[boxnumber].setPlainText('\n'.join(logData[-10:]))
         # f.close()
 
+    # endregion
+
+    # region Utility functions
     def check_time(self, schedule, fmt="%H:%M", **kwargs):
         """ Determine whether current time is within $schedule
         Primary use: determine whether trials should be done given the current time and light schedule or session schedule
@@ -693,10 +764,14 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         else:
             return start <= x or x <= end
 
+    def use_nr_trials(self, boxnumber):
+        self.useNRList[boxnumber].setChecked(self.useNRList[boxnumber].isChecked())
+
+    def auto_sleep_set(self, boxnumber):
+        self.autoSleepList[boxnumber].setChecked(self.autoSleepList[boxnumber].isChecked())
     # endregion
 
     # region Error handling
-
     def get_error(self, boxnumber):
         # Check output for any errors
         while True:  # Loop through error codes generated, if any
@@ -748,7 +823,6 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             self.phaseBoxList[boxnumber].setText(messageFormatted)
         elif target == 'time':
             self.lastTrialLabelList[boxnumber].setText(messageFormatted)
-
     # endregion
 
     # region data analysis
@@ -757,7 +831,6 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         bird_name = self.birdEntryBoxList[boxnumber].toPlainText()
         dialog = StatsGui(dataFolder, bird_name)
         dialog.exec_()
-
     # endregion
 
     # region GUI application functions
@@ -969,7 +1042,7 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
         # self.outputData = perform.analyze(perform.summaryData, groupBy='day')
         outputFile = 'performanceSummary.csv'
         output_path = os.path.join(data_folder, outputFile)
-        self.outputData.to_csv(str(output_path))
+        self.outputData.to_csv(str(output_path), encoding='utf-8')
         # print 'saved to %s' % output_path
         self.refresh_table(output_path)
 
@@ -980,15 +1053,19 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
         with open(output_path, 'rb') as inputFile:
             i = 1
             for row in csv.reader(inputFile):
-                if i == 1:
+                if i == 1:  # set headers of table
+                    for column in range(len(row)):
+                        # reencode each item in header list as utf-8 so beta can be displayed properly
+                        row[column] = row[column].decode('utf-8')
                     self.model.setHorizontalHeaderLabels(row)
-                else:
+
+                else:  # set items in rows of table
                     items = [QtGui.QStandardItem(field)
                              for field in row]
                     self.model.appendRow(items)
                 i += 1
 
-        self.performance_Table.setModel(self.model)
+        self.performance_Table.setModel(self.model)  # apply constructed model to tableview object
 
         self.performance_Table.resizeColumnsToContents()
 
@@ -1003,3 +1080,10 @@ def main():
 
 if __name__ == '__main__':  # if we're running file directly and not importing it
     main()  # run the main function
+
+# subprocessBox is a variable that tracks the subprocess ID of a subprocess. In this case specifically, it tracks the
+# pyoperant subprocess. It is set to 0 when the subprocess has been stopped and should not be running (i.e. if user
+# clicked "stop box" or pyoperant crashed, which was caught by the GUI.
+# Alternatively it gets set to 1 if the box should be set to 'sleep' mode, meaning pyoperant should be stopped
+# temporarily and restarted in the morning. This was added to help combat the intermittent and unexplained instances
+# of Teensys ceasing to respond to computer input

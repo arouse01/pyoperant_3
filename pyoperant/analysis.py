@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 import os
 import csv
 import copy
@@ -63,14 +65,21 @@ def bias(confusion_matrix):
     if max(confusion_matrix.shape) > 2:
         return False
     else:
-        hit_rate = confusion_matrix[0, 0] / confusion_matrix[0, :].sum()
-        fa_rate = confusion_matrix[1, 0] / confusion_matrix[1, :].sum()
+        if confusion_matrix[0, :].sum() == 0:
+            hit_rate = 0
+            nudge_hit = 1e-10
+        else:
+            hit_rate = confusion_matrix[0, 0] / confusion_matrix[0, :].sum()
+            nudge_hit = 1.0 / (2.0 * confusion_matrix[0, :].sum())
+
+        if confusion_matrix[1, :].sum() == 0:
+            fa_rate = 0
+            nudge_fa = 1e-10
+        else:
+            fa_rate = confusion_matrix[1, 0] / confusion_matrix[1, :].sum()
+            nudge_fa = 1.0 / (2.0 * confusion_matrix[1, :].sum())
 
         # Correction if hit_rate or fa_rate equals 0 or 1 (following suggestion of Macmillan & Kaplan 1985)
-
-        nudge_hit = 1.0 / (2.0 * confusion_matrix[0, :].sum())
-        nudge_fa = 1.0 / (2.0 * confusion_matrix[1, :].sum())
-
         if hit_rate >= 1:
             hit_rate = 1 - nudge_hit
         if hit_rate <= 0:
@@ -362,16 +371,16 @@ class Performance(object):  # Longer-term performance analysis
             data_dict['FA'] = response_FA
             data_dict['Miss'] = response_Miss
             data_dict['CR'] = response_CR
-            data_dict['Miss (NR)'] = response_Miss_NR
-            data_dict['CR (NR)'] = response_CR_NR
+            data_dict['Miss\n(NR)'] = response_Miss_NR
+            data_dict['CR\n(NR)'] = response_CR_NR
             data_dict['Trial Count'] = response_tot
             data_dict['Probe Hit'] = probe_hit
             data_dict['Probe FA'] = probe_FA
             data_dict['Probe Miss'] = probe_Miss
             data_dict['Probe CR'] = probe_CR
-            data_dict['Probe Miss (NR)'] = probe_Miss_NR
-            data_dict['Probe CR (NR)'] = probe_CR_NR
-            data_dict['Probe Count'] = probe_tot
+            data_dict['Probe Miss\n(NR)'] = probe_Miss_NR
+            data_dict['Probe CR\n(NR)'] = probe_CR_NR
+            data_dict['Probe Trials'] = probe_tot
             self.raw_trial_data = pd.DataFrame.from_dict(data_dict)  # Convert to data frame
             self.raw_trial_data['Date'] = pd.to_datetime(self.raw_trial_data['Time'], format='%Y/%m/%d')
             self.raw_trial_data['Time'] = pd.to_datetime(self.raw_trial_data['Time'], format='%Y-%m-%d %H:%M:%S')
@@ -380,6 +389,13 @@ class Performance(object):  # Longer-term performance analysis
 
     def dict_len_is_equal(self, list_to_check):
         return not list_to_check or list_to_check.count(list_to_check[0]) == len(list_to_check)
+
+    def divide_by_zero(self, numerator, denominator, roundto=3):
+        try:
+            result = round(float(numerator) / float(denominator), roundto)
+        except ZeroDivisionError:
+            result = None
+        return result
 
     def filter_data(self, **kwargs):
         # Only takes self.raw_trial_data as input data: unfiltered
@@ -409,22 +425,22 @@ class Performance(object):  # Longer-term performance analysis
         performanceData['Block'] = trialdata['Block']
         performanceData['Hit'] = trialdata['Hit']
         performanceData['Miss'] = trialdata['Miss']
-        performanceData['Miss (NR)'] = trialdata['Miss (NR)']
+        performanceData['Miss\n(NR)'] = trialdata['Miss\n(NR)']
         performanceData['FA'] = trialdata['FA']
         performanceData['CR'] = trialdata['CR']
-        performanceData['CR (NR)'] = trialdata['CR (NR)']
+        performanceData['CR\n(NR)'] = trialdata['CR\n(NR)']
 
         performanceData['Trials'] = trialdata['Trial Count']
 
         performanceData['Probe Hit'] = trialdata['Probe Hit']
         performanceData['Probe Miss'] = trialdata['Probe Miss']
-        performanceData['Probe Miss (NR)'] = trialdata['Probe Miss (NR)']
+        performanceData['Probe Miss\n(NR)'] = trialdata['Probe Miss\n(NR)']
         performanceData['Probe FA'] = trialdata['Probe FA']
         performanceData['Probe CR'] = trialdata['Probe CR']
-        performanceData['Probe CR (NR)'] = trialdata['Probe CR (NR)']
+        performanceData['Probe CR\n(NR)'] = trialdata['Probe CR\n(NR)']
 
-        performanceData['Probe Count'] = trialdata['Probe Count']
-        
+        performanceData['Probe Trials'] = trialdata['Probe Trials']
+
         performanceData.sort_values(by='Date')
         self.summaryData = performanceData
 
@@ -435,24 +451,30 @@ class Performance(object):  # Longer-term performance analysis
                 groupData = input_data.groupby([input_data['Time'].dt.date, input_data['Block']]).sum()
                 groupCount = len(groupData)
             elif kwargs['groupBy'] == 'hour':
-                groupData = input_data.groupby([input_data['Time'].dt.date, input_data['Time'].dt.hour, input_data[
-                    'Block']]).sum()
+                groupData = input_data.groupby([input_data['Time'].dt.date, input_data['Time'].dt.hour,
+                                                input_data['Block']]).sum()
                 groupCount = len(groupData)
             else:  # catch all other cases, can fill out later
                 groupData = input_data.groupby([input_data['Time'].dt.date, input_data['Block']]).sum()
                 groupCount = len(groupData)
-        else:  # If no grouping specified
+        else:  # If no grouping specified, use date as default
             groupData = input_data.groupby([input_data['Time'].dt.date, input_data['Block']]).sum()
             groupCount = len(groupData)
 
         dprimes = []
         dprimes_NR = []
+        betas = []
+        betas_NR = []
         sPlus_correct = []
         sPlus_NR_correct = []
         sMinus_correct = []
         sMinus_NR_correct = []
         total_correct = []
         total_NR_correct = []
+        probeDprimes = []
+        probeDprimes_NR = []
+        probeBetas = []
+        probeBetas_NR = []
         probePlus_correct = []
         probePlus_NR_correct = []
         probeMinus_correct = []
@@ -462,23 +484,62 @@ class Performance(object):  # Longer-term performance analysis
         for k in range(groupCount):
             hitCount = float(groupData['Hit'][k])
             missCount = float(groupData['Miss'][k])
-            missNRCount = float(groupData['Miss (NR)'][k])
+            missNRCount = float(groupData['Miss\n(NR)'][k])
             FACount = float(groupData['FA'][k])
             CRCount = float(groupData['CR'][k])
-            CRNRCount = float(groupData['CR (NR)'][k])
+            CRNRCount = float(groupData['CR\n(NR)'][k])
             totalTrials = float(groupData['Trials'][k])
             probeHitCount = float(groupData['Probe Hit'][k])
             probeMissCount = float(groupData['Probe Miss'][k])
-            probeMissNRCount = float(groupData['Probe Miss (NR)'][k])
+            probeMissNRCount = float(groupData['Probe Miss\n(NR)'][k])
             probeFACount = float(groupData['Probe FA'][k])
             probeCRCount = float(groupData['Probe CR'][k])
-            probeCRNRCount = float(groupData['Probe CR (NR)'][k])
-            probetotalTrials = float(groupData['Probe Count'][k])
+            probeCRNRCount = float(groupData['Probe CR\n(NR)'][k])
+            probeTotalTrials = float(groupData['Probe Trials'][k])
+
             dayDprime = round(Analysis([[hitCount, missCount], [FACount, CRCount]]).dprime(), 3)
             dprimes.append(dayDprime)
+
             dayDprime_NR = round(Analysis([[hitCount, (missCount + missNRCount)],
                                            [FACount, (CRCount + CRNRCount)]]).dprime(), 3)
             dprimes_NR.append(dayDprime_NR)
+
+            if totalTrials < 10:
+                dayBeta = 'n/a'
+            else:
+                dayBeta = round(Analysis([[hitCount, missCount], [FACount, CRCount]]).bias(), 3)
+            betas.append(dayBeta)
+
+            if totalTrials < 10:
+                dayBeta_NR = 'n/a'
+            else:
+                dayBeta_NR = round(Analysis([[hitCount, (missCount + missNRCount)],
+                                             [FACount, (CRCount + CRNRCount)]]).bias(), 3)
+            betas_NR.append(dayBeta_NR)
+
+            # Probe stats
+            dayProbeDprime = round(Analysis([[probeHitCount, probeMissCount],
+                                             [probeFACount, probeCRCount]]).dprime(), 3)
+            probeDprimes.append(dayProbeDprime)
+
+            dayProbeDprime_NR = round(Analysis([[probeHitCount, (probeMissCount + probeMissNRCount)],
+                                                [probeFACount, (probeCRCount + probeCRNRCount)]]).dprime(), 3)
+            probeDprimes_NR.append(dayProbeDprime_NR)
+
+            if probeTotalTrials < 10:
+                dayProbeBeta = 'n/a'
+            else:
+                dayProbeBeta = round(Analysis([[probeHitCount, probeMissCount], [probeFACount, probeCRCount]]).bias(),
+                                     3)
+            probeBetas.append(dayProbeBeta)
+
+            if probeTotalTrials < 10:
+                dayProbeBeta_NR = 'n/a'
+            else:
+                dayProbeBeta_NR = round(Analysis([[probeHitCount, (probeMissCount + probeMissNRCount)],
+                                                  [probeFACount, (probeCRCount + probeCRNRCount)]]).bias(), 3)
+            probeBetas_NR.append(dayProbeBeta_NR)
+
             if missCount == float(0):
                 missCount = 0.001
             if missNRCount == float(0):
@@ -486,88 +547,80 @@ class Performance(object):  # Longer-term performance analysis
             if FACount == float(0):
                 FACount = 0.001
 
-            sPlus_correct.append(round(hitCount / (hitCount + missCount), 5))
-            sPlus_NR_correct.append(round(hitCount / (hitCount + missCount + missNRCount), 5))
-            sMinus_correct.append(round(CRCount / (CRCount + FACount), 5))
-            sMinus_NR_correct.append(round((CRCount + CRNRCount) / (FACount + CRCount + CRNRCount), 5))
-            total_correct.append(round((hitCount + CRCount) / (hitCount + CRCount + missCount + FACount), 5))
-            total_NR_correct.append(round((hitCount + CRCount + CRNRCount) / totalTrials, 5))
+            sPlus_correct.append(self.divide_by_zero(hitCount, (hitCount + missCount), 5))
+            sPlus_NR_correct.append(self.divide_by_zero(hitCount, (hitCount + missCount + missNRCount), 5))
+            sMinus_correct.append(self.divide_by_zero(CRCount, (CRCount + FACount), 5))
+            sMinus_NR_correct.append(self.divide_by_zero((CRCount + CRNRCount), (FACount + CRCount + CRNRCount), 5))
+            total_correct.append(self.divide_by_zero((hitCount + CRCount),
+                                                     (hitCount + CRCount + missCount + FACount), 5))
+            total_NR_correct.append(self.divide_by_zero((hitCount + CRCount + CRNRCount), totalTrials, 5))
 
-            try:
-                probePlus_correct.append(round(probeHitCount / (probeHitCount + probeMissCount), 5))
-            except ZeroDivisionError:
-                probePlus_correct.append(None)
-            try:
-                probePlus_NR_correct.append(
-                    round(probeHitCount / (probeHitCount + probeMissCount + probeMissNRCount), 5))
-            except ZeroDivisionError:
-                probePlus_NR_correct.append(None)
-            try:
-                probeMinus_correct.append(round(probeCRCount / (probeCRCount + probeFACount), 5))
-            except ZeroDivisionError:
-                probeMinus_correct.append(None)
-            try:
-                probeMinus_NR_correct.append(
-                    round((probeCRCount + probeCRNRCount) / (probeFACount + probeCRCount + probeCRNRCount), 5))
-            except ZeroDivisionError:
-                probeMinus_NR_correct.append(None)
-            try:
-                total_probe_correct.append(round(
-                    (probeHitCount + probeCRCount) / (probeHitCount + probeCRCount + probeMissCount + probeFACount),
-                    5))
-            except ZeroDivisionError:
-                total_probe_correct.append(None)
-            try:
-                total_probe_NR_correct.append(
-                    round((probeHitCount + probeCRCount + probeCRNRCount) / probetotalTrials,
-                          5))
-            except ZeroDivisionError:
-                total_probe_NR_correct.append(None)
+            probePlus_correct.append(self.divide_by_zero(probeHitCount, (probeHitCount + probeMissCount), 5))
+            probePlus_NR_correct.append(self.divide_by_zero(probeHitCount,
+                                                            (probeHitCount + probeMissCount + probeMissNRCount), 5))
+            probeMinus_correct.append(self.divide_by_zero(probeCRCount, (probeCRCount + probeFACount), 5))
+            probeMinus_NR_correct.append(self.divide_by_zero((probeCRCount + probeCRNRCount),
+                                                             (probeFACount + probeCRCount + probeCRNRCount), 5))
+            total_probe_correct.append(
+                self.divide_by_zero((probeHitCount + probeCRCount),
+                                    (probeHitCount + probeCRCount + probeMissCount + probeFACount), 5))
+            total_probe_NR_correct.append(self.divide_by_zero((probeHitCount + probeCRCount + probeCRNRCount),
+                                                              probeTotalTrials, 5))
 
         groupData["d'"] = dprimes
-        groupData["d' (NR)"] = dprimes_NR
+        groupData["d'\n(NR)"] = dprimes_NR
+        groupData['β'] = betas
+        groupData['β\n(NR)'] = betas_NR
         groupData['S+'] = sPlus_correct
-        groupData['S+ (NR)'] = sPlus_NR_correct
+        groupData['S+\n(NR)'] = sPlus_NR_correct
         groupData['S-'] = sMinus_correct
-        groupData['S- (NR)'] = sMinus_NR_correct
-        groupData['Correct'] = total_correct
-        groupData['Correct (NR)'] = total_NR_correct
+        groupData['S-\n(NR)'] = sMinus_NR_correct
+        groupData['Total Corr'] = total_correct
+        groupData['Total Corr\n(NR)'] = total_NR_correct
+        groupData["Probe d'"] = probeDprimes
+        groupData["Probe d'\n(NR)"] = probeDprimes_NR
+        groupData['Probe β'] = probeBetas
+        groupData['Probe β\n(NR)'] = probeBetas_NR
         groupData['Probe S+'] = probePlus_correct
-        groupData['Probe S+ (NR)'] = probePlus_NR_correct
+        groupData['Probe S+\n(NR)'] = probePlus_NR_correct
         groupData['Probe S-'] = probeMinus_correct
-        groupData['Probe S- (NR)'] = probeMinus_NR_correct
+        groupData['Probe S-\n(NR)'] = probeMinus_NR_correct
         groupData['Probe Tot Corr'] = total_probe_correct
-        groupData['Probe Tot Corr (NR)'] = total_probe_NR_correct
+        groupData['Probe Tot Corr\n(NR)'] = total_probe_NR_correct
 
         # Get list of columns to remove
         dropColumns = []
         if 'NRTrials' in kwargs:
             if kwargs['NRTrials']:
-                dropColumns += ["d'", 'S+', 'S-', 'Correct', 'Probe S+', 'Probe S-', 'Probe Tot Corr']
+                dropColumns += ["d'", 'β', 'S+', 'S-', 'Total Corr',
+                                "Probe d'", 'Probe β', 'Probe S+', 'Probe S-', 'Probe Tot Corr']
             else:
-                dropColumns += ["d' (NR)", 'S+ (NR)', 'S- (NR)', 'Correct (NR)',
-                                'Probe S+ (NR)', 'Probe S- (NR)', 'Probe Tot Corr (NR)']
+                dropColumns += ["d'\n(NR)", 'β\n(NR)', 'S+\n(NR)', 'S-\n(NR)', 'Total Corr\n(NR)',
+                                "Probe d'\n(NR)", 'Probe β\n(NR)', 'Probe S+\n(NR)', 'Probe S-\n(NR)',
+                                'Probe Tot Corr\n(NR)']
 
         if 'probeTrials' in kwargs:
             if not kwargs['probeTrials']:
-                dropColumns += ['Probe Count', 'Probe Hit', 'Probe Miss', 'Probe Miss (NR)', 'Probe FA', 'Probe CR',
-                                'Probe CR (NR)', 'Probe S+', 'Probe S+ (NR)', 'Probe S-', 'Probe S- (NR)',
-                                'Probe Tot Corr', 'Probe Tot Corr (NR)']
+                dropColumns += ["Probe d'", "Probe d'\n(NR)", 'Probe β', 'Probe β\n(NR)', 'Probe Trials', 'Probe Hit',
+                                'Probe Miss', 'Probe Miss\n(NR)', 'Probe FA', 'Probe CR', 'Probe CR\n(NR)', 'Probe S+',
+                                'Probe S+\n(NR)', 'Probe S-', 'Probe S-\n(NR)', 'Probe Tot Corr',
+                                'Probe Tot Corr\n(NR)']
 
         if 'rawTrials' in kwargs:
             if not kwargs['rawTrials']:
-                dropColumns += ['Hit', 'Miss', 'Miss (NR)', 'FA', 'CR', 'CR (NR)',
-                                'Probe Hit', 'Probe Miss', 'Probe Miss (NR)', 'Probe FA', 'Probe CR', 'Probe CR (NR)']
+                dropColumns += ['Hit', 'Miss', 'Miss\n(NR)', 'FA', 'CR', 'CR\n(NR)',
+                                'Probe Hit', 'Probe Miss', 'Probe Miss\n(NR)', 'Probe FA', 'Probe CR', 'Probe CR\n(NR)']
 
         dropColumns = list(set(dropColumns))  # Remove duplicates
 
         # Set column order
 
-        sortedColumns = ["d'", "d' (NR)", 'Trials', 'Probe Count', 'S+', 'S+ (NR)', 'S-', 'S- (NR)', 'Correct',
-                         'Correct (NR)', 'Probe S+', 'Probe S+ (NR)', 'Probe S-', 'Probe S- (''NR)',
-                         'Probe Tot Corr', 'Probe Tot Corr (NR)', 'Hit', 'Miss', 'Miss (NR)', 'FA', 'CR',
-                         'CR (NR)', 'Probe Hit', 'Probe Miss', 'Probe Miss (NR)', 'Probe FA', 'Probe CR',
-                         'Probe CR (NR)'
+        sortedColumns = ["d'", "d'\n(NR)", 'β', 'β\n(NR)', "Probe d'", "Probe d'\n(NR)", 'Probe β', 'Probe β\n(NR)',
+                         'Trials', 'Probe Trials', 'S+', 'S+\n(NR)', 'S-', 'S-\n(NR)',
+                         'Total Corr', 'Total Corr\n(NR)', 'Probe S+', 'Probe S+\n(NR)', 'Probe S-', 'Probe S-\n(NR)',
+                         'Probe Tot Corr', 'Probe Tot Corr\n(NR)', 'Hit', 'Miss', 'Miss\n(NR)', 'FA', 'CR',
+                         'CR\n(NR)', 'Probe Hit', 'Probe Miss', 'Probe Miss\n(NR)', 'Probe FA', 'Probe CR',
+                         'Probe CR\n(NR)'
                          ]  # All columns in sorted order
 
         remainingColumns = list(filter(lambda a: a not in dropColumns, sortedColumns))  # Get list of remaining columns

@@ -40,6 +40,8 @@ class UiMainWindow(object):
             self.graphicBoxList[boxnumber].setPixmap(self.errorIcon)
         elif icon == "blank":
             self.graphicBoxList[boxnumber].setPixmap(self.emptyIcon)
+        elif icon == "sleep":
+            self.graphicBoxList[boxnumber].setPixmap(self.sleepIcon)
         else:
             pass
 
@@ -72,6 +74,7 @@ class UiMainWindow(object):
         self.redIcon = QPixmap("red_stop.svg")
         self.errorIcon = QPixmap("error_x.png")
         self.emptyIcon = QPixmap("not_detected.png")
+        self.sleepIcon = QPixmap("sleep.png")
         self.wrenchIcon = QIcon()
         self.wrenchIcon.addPixmap(QtGui.QPixmap(_from_utf8("icons/wrench.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
 
@@ -199,7 +202,7 @@ class UiMainWindow(object):
             self.performanceBoxList.append(QtGui.QPushButton(self.gridLayoutWidget))
             self.statusTotalsBoxList.append(QtGui.QTextBrowser(self.gridLayoutWidget))
             self.statusTableBoxList.append(QtGui.QTableView(self.gridLayoutWidget))
-            self.statusStatsBoxList.append(QtGui.QTextBrowser(self.gridLayoutWidget))
+            self.statusStatsBoxList.append(QtGui.QLabel(self.gridLayoutWidget))
             self.stopBoxList.append(QtGui.QPushButton(self.gridLayoutWidget))
             self.lastTrialLabelList.append(QtGui.QLabel(self.gridLayoutWidget))
             self.lastTrialBoxList.append(QtGui.QLabel(self.gridLayoutWidget))
@@ -237,38 +240,35 @@ class UiMainWindow(object):
                 self.gridLayoutBoxList[box].addWidget(line, 0, boxGrid[1], 0, boxGrid[1] + 1, QtCore.Qt.AlignLeft |
                                                       QtCore.Qt.AlignLeft)
             """
-            # Layout
+            # Layout schematic
              
                  0	        1	        2	        3	        4
-              ________________________________________________________
-            0|   Box	|phaseLbl	|phase	          	    |
-             |__________|___________|_______________________|
-            1|		    |statusTop	          	          	|
-             |__________|                                   |
-            2|graphic	|          	          	          	|
-             |__________|___________________________________|
-            3|		    |statusMain                         |
-             |__________|                                   |
-            4|chkAct	|          	         	          	|
-             |__________|___________________________________|
-            5|chkLbl	|statusStats                        |
-             |__________|___________________________________|
-            6|		    |lastTrlLbl	|lastTrial	        	|
-             |__________|___________|_______________________|__________
-            7|parmLbl	|parmEntry	                        |parmBtn
-             |__________|___________________________________|__________
-            8|birdLbl	|birdEntry	                        |
-             |__________|___________________________________|__________
-            9|          pfrmBtn	    |start      |stop	    |optionBtn
-             |______________________|___________|___________|__________
+             ┌──────────┬───────────┬───────────────────────┬─────────┐
+            0│boxLbl   	│phaseLbl	│phase	          	    │         │
+             ├──────────╔═══════════╧═══════════════════════╗─────────┤
+            1│		    ║statusTop	        (statusLayout)  ║         │
+             ├──────────╢                                   ╟─────────┤
+            2│graphic	║          	          	          	║         │
+             ├──────────╫───────────────────────────────────╫─────────┤
+            3│		    ║statusMain                         ║         │
+             ├──────────╢                                   ╟─────────┤
+            4│chkAct	║          	         	          	║         │
+             ├──────────╫───────────────────────────────────╫─────────┤
+            5│chkLbl	║statusStats                        ║         │
+             ├──────────╚═══════════╤═══════════════════════╝─────────┤
+            6│		    │lastTrlLbl	│lastTrial	        	│         │
+             ├──────────┼───────────┴───────────────────────┼─────────┤
+            7│parmLbl	│parmEntry	                        │parmBtn  │
+             ├──────────┼───────────────────────────────────┼─────────┤
+            8│birdLbl	│birdEntry	                        │         │
+             ├──────────┴───────────┬───────────┬───────────┼─────────┤
+            9│       pfrmBtn	    │start      │stop	    │optionBtn│
+             └──────────────────────┴───────────┴───────────┴─────────┘
             """
             self.gridLayoutBoxList[box].addWidget(self.labelBoxList[box], 0, 0, 1, 1)
             self.gridLayoutBoxList[box].addWidget(self.phaseLabelList[box], 0, 1, 1, 1, QtCore.Qt.AlignRight)
             self.gridLayoutBoxList[box].addWidget(self.phaseBoxList[box], 0, 2, 1, 2)
-            # self.gridLayoutBoxList[box].addWidget(self.statusTotalsBoxList[box], 1, 1, 2, 3)
             self.gridLayoutBoxList[box].addLayout(self.statusLayoutBoxList[box], 1, 1, 5, 3)
-            # self.gridLayoutBoxList[box].addWidget(self.statusTableBoxList[box], 3, 1, 2, 3)
-            # self.gridLayoutBoxList[box].addWidget(self.statusStatsBoxList[box], 5, 1, 1, 3)
             self.gridLayoutBoxList[box].addWidget(self.graphicBoxList[box], 2, 0, 1, 1, QtCore.Qt.AlignCenter)
             self.gridLayoutBoxList[box].addWidget(self.checkActiveBoxList[box], 4, 0, 1, 1, QtCore.Qt.AlignCenter)
             self.gridLayoutBoxList[box].addWidget(self.checkActiveLabelBoxList[box], 5, 0, 1, 1, QtCore.Qt.AlignCenter)
@@ -302,6 +302,7 @@ class UiMainWindow(object):
             self.statusTotalsBoxList[box].setMaximumSize(QtCore.QSize(340, lineHeightBuffer + (textLnHgt * 2)))
             self.statusTotalsBoxList[box].setObjectName(_from_utf8("statusTotalsText_Box%d" % box))
             self.statusTotalsBoxList[box].setSizePolicy(sizePolicy_Fixed)
+            self.statusTotalsBoxList[box].setStyleSheet("border: 0px;")
             self.statusTotalsBoxList[box].setTabStopWidth(60)
 
             self.statusTableBoxList[box].setFont(font11)
@@ -313,16 +314,17 @@ class UiMainWindow(object):
             self.statusTableBoxList[box].setSizePolicy(sizePolicy_Fixed)
             self.statusTableBoxList[box].setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
             self.statusTableBoxList[box].setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+            self.statusTableBoxList[box].setStyleSheet("border: 0px;")
             self.statusTableBoxList[box].horizontalHeader().setMinimumSectionSize(50)
 
             self.statusStatsBoxList[box].setFont(font11)
-            self.statusStatsBoxList[box].setMinimumSize(
-                QtCore.QSize(280, lineHeightBuffer + textLnHgt))
-            self.statusStatsBoxList[box].setMaximumSize(
-                QtCore.QSize(340, lineHeightBuffer + textLnHgt))
+            self.statusStatsBoxList[box].setMinimumSize(QtCore.QSize(280, lineHeightBuffer + textLnHgt))
+            self.statusStatsBoxList[box].setMaximumSize(QtCore.QSize(340, lineHeightBuffer + textLnHgt))
             self.statusStatsBoxList[box].setObjectName(_from_utf8("statusStatsText_Box%d" % box))
             self.statusStatsBoxList[box].setSizePolicy(sizePolicy_Fixed)
-            self.statusStatsBoxList[box].setTabStopWidth(60)
+            self.statusStatsBoxList[box].setStyleSheet("border: 0px; background: white; text-align: center;")
+            # self.statusStatsBoxList[box].setTabStopWidth(60)
+            self.statusStatsBoxList[box].setAlignment(QtCore.Qt.AlignCenter)
 
             self.birdEntryBoxList[box].setFont(font11)
             self.birdEntryBoxList[box].setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
@@ -626,12 +628,12 @@ class StatsWindow(object):
         self.export_Button = QtGui.QPushButton(stats_window)
         self.export_Button.setSizePolicy(sizePolicy_fixed)
         self.export_Button.setMinimumSize(QtCore.QSize(0, 27))
-        self.export_Button.setMaximumSize(QtCore.QSize(500, 27))
+        self.export_Button.setMaximumSize(QtCore.QSize(300, 27))
         self.export_Button.setObjectName(_from_utf8("export_Button"))
 
         self.done_Button = QtGui.QPushButton(stats_window)
         self.done_Button.setSizePolicy(sizePolicy_fixed)
-        self.done_Button.setMaximumSize(QtCore.QSize(500, 27))
+        self.done_Button.setMaximumSize(QtCore.QSize(300, 27))
         self.done_Button.setObjectName(_from_utf8("done_Button"))
 
         # Analysis Settings
@@ -640,6 +642,7 @@ class StatsWindow(object):
         # self.optionGrid.setSizePolicy(sizePolicy_fixed)
         self.optionGrid.setObjectName(_from_utf8("optionGrid"))
         self.optionGrid.setLabelAlignment(QtCore.Qt.AlignRight)
+        self.optionGrid.setSizeConstraint(QtGui.QLayout.SetFixedSize)
 
         self.menuGrid = QtGui.QHBoxLayout()
         # self.optionGrid.setSizePolicy(sizePolicy_fixed)
@@ -666,18 +669,14 @@ class StatsWindow(object):
 
         self.optionGrid.addRow(QLabel("Include 'No Response' Trials"), self.noResponse_Checkbox)
         self.optionGrid.addRow(QLabel("Include Probe Trials"), self.probe_Checkbox)
-        self.optionGrid.addRow(QLabel("Include Trial Counts"), self.raw_Checkbox)
+        self.optionGrid.addRow(QLabel("Include Raw Trial Counts"), self.raw_Checkbox)
 
-        self.gridLayout.addWidget(self.performance_Table, 0, 0, 1, 3)
-        self.gridLayout.addItem(QtGui.QSpacerItem(20, 20, QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed),
-                                1, 0, 1, 1)
-        self.gridLayout.addLayout(self.optionGrid, 0, 3, 2, 1)
-        self.gridLayout.addItem(QtGui.QSpacerItem(20, 20, QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed),
-                                3, 2, 1, 1)
         self.menuGrid.addWidget(self.export_Button)
-        self.menuGrid.addItem(QtGui.QSpacerItem(20, 20, QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed))
         self.menuGrid.addWidget(self.done_Button)
-        self.gridLayout.addLayout(self.menuGrid, 2, 0, 1, 4)
+
+        self.gridLayout.addWidget(self.performance_Table, 0, 0, 1, 1)
+        self.gridLayout.addLayout(self.optionGrid, 0, 1, 1, 1)
+        self.gridLayout.addLayout(self.menuGrid, 2, 0, 1, 1)
 
         self.retranslate_ui(stats_window)
         QtCore.QMetaObject.connectSlotsByName(stats_window)

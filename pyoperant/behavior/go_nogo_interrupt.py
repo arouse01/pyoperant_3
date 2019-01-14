@@ -253,8 +253,11 @@ class GoNoGoInterruptExp(base.BaseExp):
                         'correct_rejections': 0,
                         'last_trial_time': [],
                         'dprime': 0,
+                        'dprime_NR': 0,
                         'bias': 0,
                         'bias_description': '',
+                        'bias_NR': 0,
+                        'bias_description_NR': '',
                         'sminus_trials': 0,
                         'splus_trials': 0,
                         'sminus_nr': 0,
@@ -537,8 +540,10 @@ class GoNoGoInterruptExp(base.BaseExp):
 
         # self.summary['dprime'] = analysis.dprime(conf_matrix)
         # self.summary['bias'] = analysis.bias(conf_matrix)
-        stats = analysis.Analysis([[self.summary['correct_responses'], self.summary['misses']],
-                                   [self.summary['false_alarms'], self.summary['correct_rejections']]])
+        stats = analysis.Analysis([[self.summary['correct_responses'],
+                                    self.summary['misses']],
+                                   [self.summary['false_alarms'],
+                                    self.summary['correct_rejections']]])
         self.summary['dprime'] = stats.dprime()
         self.summary['bias'] = stats.bias()
         if self.summary['bias'] > 1.001:
@@ -547,6 +552,24 @@ class GoNoGoInterruptExp(base.BaseExp):
             self.summary['bias_description'] = '(Liberal)'
         else:
             self.summary['bias_description'] = ''
+
+        # Including NR trials
+        stats = analysis.Analysis([[self.summary['correct_responses'],
+                                    self.summary['misses'] + self.summary['splus_nr']],
+                                   [self.summary['false_alarms'],
+                                    self.summary['correct_rejections'] + self.summary['sminus_nr']]])
+        self.summary['dprime_NR'] = stats.dprime()
+        if self.summary['trials'] < 10:  # bias will be unnecessarily large, so don't calculate
+            self.summary['bias_NR'] = 'n/a'
+            self.summary['bias_description_NR'] = '(low n)'
+        else:
+            self.summary['bias_NR'] = stats.bias()
+            if self.summary['bias_NR'] > 1.001:
+                self.summary['bias_description_NR'] = '(Conservative)'
+            elif self.summary['bias_NR'] < 0.999:
+                self.summary['bias_description_NR'] = '(Liberal)'
+            else:
+                self.summary['bias_description_NR'] = ''
 
     def save_trial(self, trial):
         """write trial results to CSV"""
