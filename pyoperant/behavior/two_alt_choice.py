@@ -388,7 +388,7 @@ class TwoAltChoiceExp(base.BaseExp):
         self.panel.center.off()
         self.this_trial.events.append(utils.Event(name='center',
                                                   label='peck',
-                                                  time=0.0,
+                                                  event_time=0.0,
                                                   )
                                       )
 
@@ -413,7 +413,7 @@ class TwoAltChoiceExp(base.BaseExp):
             self.panel.cue.off()
             cue_dur = (dt.datetime.now() - cue_start).total_seconds()
             cue_time = (cue_start - self.this_trial.time).total_seconds()
-            cue_event = utils.Event(time=cue_time,
+            cue_event = utils.Event(event_time=cue_time,
                                     duration=cue_dur,
                                     label='cue',
                                     name=cue,
@@ -454,7 +454,7 @@ class TwoAltChoiceExp(base.BaseExp):
                     self.summary['responses'] += 1
                     response_event = utils.Event(name=self.parameters['classes'][class_]['component'],
                                                  label='peck',
-                                                 time=elapsed_time,
+                                                 event_time=elapsed_time,
                                                  )
                     self.this_trial.events.append(response_event)
                     self.log.info('response: %s' % self.this_trial.response)

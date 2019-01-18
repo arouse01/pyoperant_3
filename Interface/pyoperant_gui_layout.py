@@ -32,6 +32,7 @@ except AttributeError:
 class UiMainWindow(object):
 
     def status_icon(self, boxnumber, icon):
+        # Function for changing status icon to keep image changes within the layout file
         if icon == "start":
             self.graphicBoxList[boxnumber].setPixmap(self.greenIcon)
         elif icon == "stop":
@@ -46,6 +47,8 @@ class UiMainWindow(object):
             pass
 
     def setup_ui(self, main_window):
+
+        # region Variable init
         self.labelBoxList = []  # Array for the box name label
         self.phaseLabelList = []  # Array for the current phase label
         self.phaseBoxList = []  # Array for the current phase
@@ -69,16 +72,22 @@ class UiMainWindow(object):
         self.startBoxList = []  # Array for "start box" button
         self.stopBoxList = []  # Array for "stop box" button
         self.lineList = []  # Array for window dividng lines
+        # endregion
 
-        self.greenIcon = QPixmap("green_circle.svg")
-        self.redIcon = QPixmap("red_stop.svg")
-        self.errorIcon = QPixmap("error_x.png")
-        self.emptyIcon = QPixmap("not_detected.png")
-        self.sleepIcon = QPixmap("sleep.png")
+        # region Icons
+        # region Status icons
+        self.greenIcon = QPixmap("icons/green_circle.svg")
+        self.redIcon = QPixmap("icons/red_stop.svg")
+        self.errorIcon = QPixmap("icons/error_x.png")
+        self.emptyIcon = QPixmap("icons/not_detected.png")
+        self.sleepIcon = QPixmap("icons/sleep.png")
+        # endregion
+
         self.wrenchIcon = QIcon()
         self.wrenchIcon.addPixmap(QtGui.QPixmap(_from_utf8("icons/wrench.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        # endregion
 
-        # Variable setting
+        # region Layout vars
         # Object location-specific variables
         self.numberOfBoxes = 6
 
@@ -90,6 +99,11 @@ class UiMainWindow(object):
         numHorizontalLines = self.numberOfBoxes
         numVerticalLines = columnCount - 1
 
+        lineHeightBuffer = 10  # Padding around text to ensure it will fit in a text box (so text box size will be
+        # buffer + (textLnHgt * lineCount)
+        # endregion
+
+        # region Formatting templates
         # Text formatting
         font10 = QtGui.QFont()
         font10.setPointSizeF(10.9)
@@ -105,9 +119,6 @@ class UiMainWindow(object):
         font11Under.setPointSize(11)
         font11Under.setUnderline(True)
 
-        lineHeightBuffer = 10  # Padding around text to ensure it will fit in a text box (so text box size will be
-        # buffer + (textLnHgt * lineCount)
-
         # Size policies
         sizePolicy_Fixed = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         sizePolicy_Fixed.setHorizontalStretch(0)
@@ -120,8 +131,9 @@ class UiMainWindow(object):
         sizePolicy_max = QtGui.QSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Maximum)
         sizePolicy_max.setHorizontalStretch(0)
         sizePolicy_max.setVerticalStretch(0)
+        # endregion
 
-        # Make main window
+        # region Main window setup
         main_window.setObjectName(_from_utf8("main_window"))
         main_window.setSizePolicy(sizePolicy_Fixed)
         # main_window.setMaximumSize(QtCore.QSize(1200, 1000))
@@ -162,8 +174,9 @@ class UiMainWindow(object):
         self.menuGrid.addItem(QtGui.QSpacerItem(20, 20, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding), 0, 2,
                               1, 1)
         self.mainGrid.addLayout(self.menuGrid, 2*rowCount, 0, 1, 2*columnCount-1)
+        # endregion
 
-        ### Layout dividing lines
+        # region Layout dividing lines
         for i in range(0, numHorizontalLines):  # Horizontal lines
             self.lineList.append(QtGui.QFrame(self.gridLayoutWidget))
             self.lineList[i].setFrameShape(QtGui.QFrame.HLine)
@@ -181,7 +194,9 @@ class UiMainWindow(object):
             self.lineList[i].setObjectName(_from_utf8("vline_%d" % i))
             self.mainGrid.addWidget(self.lineList[i], 0, (i - numHorizontalLines) * 2 + 1, 2 * rowCount, 1)
 
-        ### Individual section elements
+        # endregion
+
+        # region Individual section elements
         for box in range(0, self.numberOfBoxes):
             # Object creation
             self.gridLayoutBoxList.append(QtGui.QGridLayout())
@@ -438,7 +453,7 @@ class UiMainWindow(object):
 
             # Alignments
             # self.gridLayoutBoxList[box].setAlignment(QtCore.Qt.AlignCenter)
-
+        # endregion
         main_window.setCentralWidget(self.centralwidget)
 
         # Set window and grid size based on content

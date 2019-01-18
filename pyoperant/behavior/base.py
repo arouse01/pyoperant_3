@@ -82,7 +82,8 @@ class BaseExp(object):
 
         atexit.register(self.pyoperant_close)
 
-        if 'shape' not in self.parameters:  # or self.parameters['shape'] not in ['block1', 'block2', 'block3', 'block4', 'block5']:
+        if 'shape' not in self.parameters:
+            # or self.parameters['shape'] not in ['block1', 'block2', 'block3', 'block4', 'block5']:
             self.parameters['shape'] = None
 
     def save(self):
@@ -276,7 +277,7 @@ class BaseExp(object):
             f.write("RespSw\t%i\t%i\n" % (self.summary['correct_responses'], self.summary['false_alarms']))
             f.write("TrlSw\t%i\t%i\n" % (self.summary['misses'], self.summary['correct_rejections']))
             f.write("d': %1.2f\n" % self.summary['dprime'])
-            #f.write("Feeder ops today: %i\n" % self.summary['feeds'])
+            # f.write("Feeder ops today: %i\n" % self.summary['feeds'])
             f.write("\nLast trial @: %s" % self.summary['last_trial_time'])
 
     def write_summary_shaping(self):

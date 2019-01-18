@@ -12,7 +12,7 @@ import pyudev  # device monitoring to identify connected Teensys
 import re  # Regex, for parsing device names returned from pyudev to identify connected Teensys
 import argparse  # Parse command line arguments for GUI, primarily to enable debug mode
 from shutil import copyfile  # For creating new json file by copying another
-
+import logging
 import datetime as dt  # For auto sleep
 
 from pyoperant import analysis  # Analysis creates the data summary tables
@@ -34,6 +34,11 @@ except AttributeError:
 import pyoperant_gui_layout
 
 
+def _log_except_hook(*exc_info):  # How uncaught errors are handled
+    text = "".join(traceback.format_exception(*exc_info))
+    logging.error("Unhandled exception: {}".format(text))
+
+
 class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
     teensy_emit = QtCore.pyqtSignal(int, str)
 
@@ -49,6 +54,8 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.refreshall)
         self.timer.start(5000)
+
+        self.log_config()
 
         # Monitor when USB devices are connected/disconnected
         context = pyudev.Context()
@@ -103,7 +110,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         # - Figure out whether the new option should be in the main option menu or in a submenu
         # - in the "Option Menu Setup" section, add two lines:
         #       self.{list var}.append(QtGui.QAction({action name as str}, self)   # or QtGui.QMenu({menu name as str})
-        #       self.{parent menu}[boxnumber].addAction(self.{list var}[boxnumber])  # or addMenu(self.{list var}[boxnumber])
+        #       self.{parent menu}[boxnumber].addAction(self.{list var}[boxnumber])  # or addMenu
         # - If adding an action, go to the "Connect functions to buttons/objects" section and add a line to connect
         # the actual QAction object with the function for each box:
         #       self.{list var}[boxNumber].triggered.connect(lambda _, b=i: self.{function}(boxnumber=b, {other vars}))
@@ -160,7 +167,8 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             ## The following lines are only if we want to implement the ability for a running pyoperant subprocess to
             #  accept external input from the GUI
 
-            # self.qReadList[boxnumber] = Queue.Queue()  # Queue for running log read subprocesses without blocking main script
+            # self.qReadList[boxnumber] = Queue.Queue()  # Queue for running log-read subprocesses without blocking
+            # # main script
             #
             # self.tReadList[boxnumber] = threading.Thread(target=self.read_output_box,
             #                                             args=(self.logProcessBox[boxnumber].stdout,
@@ -179,11 +187,11 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
 
             # Option menu
             self.purgeActionList[boxnumber].triggered.connect(
-                lambda _, b=boxnumber: self.purge_water(boxnumber=b, purge_time=20))
+                lambda _, b=boxnumber: self.water_control(boxnumber=b, parameter='purge', purge_time=20))
             self.primeActionList[boxnumber].triggered.connect(
-                lambda _, b=boxnumber: self.purge_water(boxnumber=b, purge_time=5))
+                lambda _, b=boxnumber: self.water_control(boxnumber=b, parameter='purge', purge_time=5))
             self.solenoidManualList[boxnumber].triggered.connect(
-                lambda _, b=boxnumber: self.solenoid_dialog(boxnumber=b))
+                lambda _, b=boxnumber: self.water_control(boxnumber=b, parameter='dialog'))
             self.openFolderActionList[boxnumber].triggered.connect(
                 lambda _, b=boxnumber: self.open_box_folder(boxnumber=b))
             self.openSettingsActionList[boxnumber].triggered.connect(
@@ -205,10 +213,10 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
 
         for boxnumber in self.boxList:
             actualboxnumber = boxnumber + 1
-            if not os.path.exists("/dev/teensy%02i" % actualboxnumber):  # check if Teensy is detected:
+            if not os.path.exists("/dev/teensy{:02d}".format(actualboxnumber)):  # check if Teensy is detected:
                 self.box_button_control(boxnumber, 'disable')
-        # error = "Error: Teensy %d not detected." % actualboxnumber
-        # self.display_message(boxnumber, error)
+            # else:
+            #     self.log.error("Error: Teensy {:02d} not detected.".format(actualboxnumber))
 
         self.open_application()
 
@@ -237,6 +245,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             self.startBoxList[boxnumber].setEnabled(True)
             self.stopBoxList[boxnumber].setEnabled(False)
             # self.graphicBoxList[boxnumber].setPixmap(self.redIcon)
+            self.log.debug("Setting status icon to 'stop'")
             self.status_icon(boxnumber, 'stop')
 
         elif parameter == "start":
@@ -246,6 +255,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             self.startBoxList[boxnumber].setEnabled(False)
             self.stopBoxList[boxnumber].setEnabled(True)
             # self.graphicBoxList[boxnumber].setPixmap(self.greenIcon)
+            self.log.debug("Setting status icon to 'start'")
             self.status_icon(boxnumber, 'start')
 
         elif parameter == "disable":
@@ -255,6 +265,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             self.startBoxList[boxnumber].setEnabled(False)
             self.stopBoxList[boxnumber].setEnabled(False)
             # self.graphicBoxList[boxnumber].setPixmap(self.emptyIcon)
+            self.log.debug("Setting status icon to 'blank'")
             self.status_icon(boxnumber, 'blank')
 
     def open_box_folder(self, boxnumber):
@@ -262,6 +273,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         folderPath = os.path.split(settingsPath)
         if os.path.exists(folderPath[0]):
             # print folderPath[0]
+            # self.log.info(folderPath[0])
             subprocess.Popen(["xdg-open", folderPath[0]])
         else:
             msg = QtGui.QMessageBox()
@@ -269,6 +281,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             msg.setText('Warning: Folder not found')
             msg.setStandardButtons(QtGui.QMessageBox.Ok)
             msg.exec_()
+            self.log.error('Warning: Data folder not found: ({})'.format(folderPath[0]))
 
     def open_json_file(self, boxnumber):
         jsonPath = str(self.paramFileBoxList[boxnumber].toPlainText())
@@ -280,6 +293,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             msg.setText('Warning: File not found')
             msg.setStandardButtons(QtGui.QMessageBox.Ok)
             msg.exec_()
+            self.log.error('Warning: Settings file not found: ({})'.format(jsonPath))
 
     def create_json_file(self, boxnumber, birdname=''):
         currentPath = os.path.dirname('/home/rouse/Desktop/pyoperant/pyoperant/pyoperant/behavior/')
@@ -316,6 +330,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             jsonSuccess = self.create_json_file(boxnumber, newBird)
             if jsonSuccess:
                 self.birdEntryBoxList[boxnumber].setPlainText(newBird)
+
     # endregion
 
     # region Pyoperant stop/start functions
@@ -350,10 +365,13 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
 
         # set icon
         if error_mode:
+            self.log.debug("Setting status icon to 'error'")
             self.status_icon(boxnumber, 'error')
         elif sleep_mode:
+            self.log.debug("Setting status icon to 'sleep'")
             self.status_icon(boxnumber, 'sleep')
         else:
+            self.log.debug("Setting status icon to 'stop'")
             self.status_icon(boxnumber, 'stop')
 
     def start_box(self, boxnumber):
@@ -372,8 +390,8 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         elif not os.path.isfile(jsonPath):  # Make sure param file is specified
             error = "Error: No parameter file selected."
             self.display_message(boxnumber, error, target='status')
-        elif not os.path.exists("/dev/teensy%02i" % actualboxnumber):  # check if Teensy is detected:
-            error = "Error: Teensy %d not detected." % actualboxnumber
+        elif not os.path.exists("/dev/teensy{:02d}".format(actualboxnumber)):  # check if Teensy is detected:
+            error = "Error: Teensy {:02d} not detected.".format(actualboxnumber)
             self.display_message(boxnumber, error, target='status')
         else:
             try:
@@ -408,6 +426,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
 
                 if error and not error[0:4] == "ALSA" and not error[0:5] == 'pydev' and not error[0:5] == 'debug':
                     print error
+                    self.log.info(error)
                     self.display_message(boxnumber, error, target='status')
                     self.stop_box(boxnumber, error_mode=True)
                     # self.subprocessBox[boxnumber].terminate
@@ -417,12 +436,14 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
                 else:  # Successfully started
                     self.box_button_control(boxnumber, "start")  # UI modifications while box is running
                     # self.graphicBoxList[boxnumber].setPixmap(self.greenIcon)
+                    self.log.debug("Setting status icon to 'start'")
                     self.status_icon(boxnumber, 'start')
 
                     self.sleepScheduleList[boxnumber] = self.defaultSleepSchedule
                     # with open(jsonPath, 'r') as f:
                     #     jsonLoaded = json.load(f)
-                    #     self.sleepScheduleList[boxnumber] = {jsonLoaded["session_schedule"],jsonLoaded["light_schedule"]}
+                    #     self.sleepScheduleList[boxnumber] = {jsonLoaded["session_schedule"],
+                    #                                          jsonLoaded["light_schedule"]}
 
     def start_all(self):
         # start all checked boxes
@@ -443,10 +464,13 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             output = pipe.readline()
             q.put(output)
 
-            # Added the following so that the queue stops when the parent thread stops (so it doesn't take off and inflate memory usage)
+            # Added the following so that the queue stops when the parent thread stops
+            # (so it doesn't take off and inflate memory usage)
             try:
                 running = self.subprocessBox[boxnumber].poll()  # Tried this on 10/22/18
-            except AttributeError:  # If subprocess was already stopped, and the subprocessBox value was already cleared, then poll() will throw an error
+            except AttributeError:
+                # If subprocess was already stopped, and the subprocessBox value was already cleared,
+                # then poll() will throw an error
                 running = 1
             # running = self.subprocessBox[boxnumber]
             if running is not None:
@@ -455,12 +479,14 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
     def sleep_box(self, boxnumber):
         # Turn off house light
         boxnumber = boxnumber + 1
-        print("Box %d going to sleep" % boxnumber)
-        device_name = '/dev/teensy%02i' % boxnumber
+        print("Box {:d} going to sleep".format(boxnumber))
+        self.log.info("Box {:d} going to sleep".format(boxnumber))
+        device_name = '/dev/teensy{:02d}'.format(boxnumber)
         device = serial.Serial(port=device_name, baudrate=19200, timeout=5)
         if device is None:
-            print 'Could not open serial device %s' % device_name
-            raise 'Could not open serial device %s' % device_name
+            print 'Could not open serial device {}'.format(device_name)
+            self.log.info('Could not open serial device {}'.format(device_name))
+            raise 'Could not open serial device {}'.format(device_name)
         else:
             device.readline()
             device.flushInput()
@@ -469,14 +495,15 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             device.close()  # close connection
 
     def wake_box(self, boxnumber):
-        print("Box %d waking up" % boxnumber)
-        device_name = '/dev/teensy%02i' % boxnumber
+        print("Box {:d} waking up".format(boxnumber))
+        self.log.info("Box {:d} waking up".format(boxnumber))
+        device_name = '/dev/teensy{:02d}'.format(boxnumber)
         device = serial.Serial(port=device_name,
                                baudrate=19200,
                                timeout=5)
         if device is None:
-            print 'Could not open serial device %s' % device_name
-            raise 'Could not open serial device %s' % device_name
+            self.log.error('Could not open serial device {}'.format(device_name))
+            raise 'Could not open serial device {}'.format(device_name)
         else:
             device.readline()
             device.flushInput()
@@ -493,16 +520,19 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         while True:
             with open(in_pipe_name, "r") as f:
                 write_pipe.write(f.read())
+
     # endregion
 
     # region Physical device monitoring
     def usb_monitor(self, action, device):
         if action == 'add':
             # print 'Connected'
+            self.log.debug('USB device connected')
             deviceString = device.device_links.next()
             self.check_teensy(deviceString, True)
         elif action == 'remove':
             # print 'Removed'
+            self.log.debug('USB device disconnected')
             deviceString = device.device_links.next()
             self.check_teensy(deviceString, False)
 
@@ -514,13 +544,16 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             try:
                 boxLink = devicePathSplit[1]
                 # print boxLink
+                # self.log.info(boxLink)
                 match = re.split('Board(\\d*)', boxLink)
                 boxnumber = int(
                     match[1]) - 1  # Box number as index is indexed from 0, but Teensy numbers are indexed from 1
                 # print boxnumber
+                # self.log.info(boxnumber)
             except IndexError:
                 boxnumber = None
                 print 'Error: board not recognized'
+                self.log.error('Error: board not recognized')
 
             if boxnumber is not None:
                 if connect:
@@ -529,6 +562,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
                 else:
                     # self.box_button_control(boxnumber, 'disable')
                     parameter = 'disable'
+                self.log.debug("Teensy {:02d} recognized, status set to {}".format(boxnumber, parameter))
                 self.teensy_emit.emit(boxnumber, parameter)
             else:
                 pass
@@ -537,48 +571,56 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         # quick method to enable or disable gui buttons and stop pyoperant if teensy is disconnected
         self.stop_box(boxnumber)
         self.box_button_control(boxnumber, parameter)
+
     # endregion
 
     # region Water system functions
-    def purge_water(self, boxnumber, purge_time=20):
+    def water_control(self, boxnumber, parameter='purge', purge_time=20):
+
         if self.subprocessBox[boxnumber] == 0:  # If box is not running
             boxnumber = boxnumber + 1  # boxnumber is index, but device name is not
-            print("Purging water system in box %d" % boxnumber)
-            device_name = '/dev/teensy%02i' % boxnumber
-            device = serial.Serial(port=device_name,
-                                   baudrate=19200,
-                                   timeout=5)
-            if device is None:
-                raise 'Could not open serial device %s' % device_name
+            if parameter == 'dialog':
+                dialog = SolenoidGui(boxnumber)
+                dialog.exec_()
+            elif parameter == 'purge':
+                self.log.info("Purging water system in box {:d} for {:d} s".format(boxnumber, purge_time))
+                device_name = '/dev/teensy{:02d}'.format(boxnumber)
+                device = serial.Serial(port=device_name, baudrate=19200, timeout=5)
+                if device is None:
+                    self.log.error('Water error: Could not open serial device {}'.format(device_name))
+                    raise 'Could not open serial device {}'.format(device_name)
 
-            device.readline()
-            device.flushInput()
-            # print("Successfully opened device %s" % device_name)
-            # solenoid = channel 16
-            device.write("".join([chr(16), chr(3)]))  # set channel 16 as output
-            # device.write("".join([chr(16), chr(2)]))  # close solenoid, just in case
-            device.write("".join([chr(16), chr(1)]))  # open solenoid
-            startTime = time.time()
+                device.readline()
+                device.flushInput()
+                self.log.debug("Successfully opened device {}".format(device_name))
+                device.write("".join([chr(16), chr(3)]))  # set channel 16 (solenoid) as output
+                # device.write("".join([chr(16), chr(2)]))  # close solenoid, just in case
+                device.write("".join([chr(16), chr(1)]))  # open solenoid
+                startTime = time.time()
 
-            while True:
-                elapsedTime = time.time() - startTime
-                if purge_time <= elapsedTime:
-                    break
+                while True:
+                    elapsedTime = time.time() - startTime
+                    if purge_time <= elapsedTime:
+                        break
 
-            device.write("".join([chr(16), chr(2)]))  # close solenoid
-            device.close()  # close connection
-            print "Purged box {0}".format(str(boxnumber))
+                device.write("".join([chr(16), chr(2)]))  # close solenoid
+                device.close()  # close connection
+                print "Purged box {:02d}".format(boxnumber)
+                self.log.info("Purged box {:02d}".format(boxnumber))
         else:
             print "Cannot open solenoid: Box {0} is currently running".format(str(boxnumber))
+            self.log.error("Water error: Cannot open solenoid: Box {0} is currently running".format(str(boxnumber)))
 
-    def solenoid_dialog(self, boxnumber):
-        if self.subprocessBox[boxnumber] == 0:  # If box is not running
-            boxnumber = boxnumber + 1  # boxnumber is index, but device name is not
-            # print("Opening solenoid control for box %d" % boxnumber)
-            dialog = SolenoidGui(boxnumber)
-            dialog.exec_()
-        else:
-            print "Cannot open solenoid: Box {0} is currently running".format(str(boxnumber))
+    # def solenoid_dialog(self, boxnumber):
+    #     if self.subprocessBox[boxnumber] == 0:  # If box is not running
+    #         boxnumber = boxnumber + 1  # boxnumber is index, but device name is not
+    #         # print("Opening solenoid control for box {:d}".format(boxnumber))
+    #         # self.log.info("Opening solenoid control for box {:d}".format(boxnumber))
+    #         dialog = SolenoidGui(boxnumber)
+    #         dialog.exec_()
+    #     else:
+    #         print "Cannot open solenoid: Box {0} is currently running".format(str(boxnumber))
+    #         self.log.error("Water error: Cannot open solenoid: Box {0} is currently running".format(str(boxnumber)))
     # endregion
 
     # region Box updating functions
@@ -586,6 +628,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         # refresh each box, checking for run status, checking if box should sleep
 
         # print "timer fired"
+        # self.log.info("timer fired")
         # print mem_top()
         for boxnumber in self.boxList:
             if self.debug:
@@ -663,6 +706,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
 
             if errorSuccess and len(errorData) > 1:  # If error file correctly opened and there is an error
                 # print "error log"
+                # self.log.info("error log")
                 self.display_message(boxnumber, errorData, target='status')
             else:
                 if logFull:
@@ -722,6 +766,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
                     self.display_message(boxnumber, logData, target='status')
         else:
             print "{0}{1}".format("Unable to open file for ", birdName)
+            self.log.info("{0}{1}".format("Unable to open file for ", birdName))
 
         # with open(summary_file, 'r') as f:
         # logData = f.readlines()
@@ -733,7 +778,8 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
     # region Utility functions
     def check_time(self, schedule, fmt="%H:%M", **kwargs):
         """ Determine whether current time is within $schedule
-        Primary use: determine whether trials should be done given the current time and light schedule or session schedule
+        Primary use: determine whether trials should be done given the current time and light schedule or
+        session schedule
 
         returns Boolean if current time meets schedule
 
@@ -769,6 +815,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
 
     def auto_sleep_set(self, boxnumber):
         self.autoSleepList[boxnumber].setChecked(self.autoSleepList[boxnumber].isChecked())
+
     # endregion
 
     # region Error handling
@@ -789,7 +836,9 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             if error[0:4] == "ALSA":
                 # Ignore ALSA errors; they've always occurred and don't interfere (have to do with the sound chip not
                 # liking some channels as written)
-                pass
+                self.display_message(boxnumber, error)
+                print error
+                self.log.error(error)
             elif error[0:5] == 'pydev':
                 # Ignore pydev errors - thrown automatically during PyCharm debugging
                 pass
@@ -800,6 +849,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             else:
                 self.display_message(boxnumber, error)
                 print error
+                self.log.error(error)
                 self.stop_box(boxnumber, error_mode=True)
                 return True
         else:
@@ -823,6 +873,32 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             self.phaseBoxList[boxnumber].setText(messageFormatted)
         elif target == 'time':
             self.lastTrialLabelList[boxnumber].setText(messageFormatted)
+
+    def log_config(self):
+        # capture all terminal output and send to log file instead
+        self.log_file = os.path.join(os.getcwd(), 'GUI_log.log')
+        self.error_file = os.path.join(os.getcwd(), 'GUI_error.log')
+        log_path = os.path.join(os.getcwd())
+        if not os.path.exists(log_path):  # Add path if it doesn't exist
+            os.makedirs(log_path)
+
+        if self.debug:
+            self.log_level = logging.DEBUG
+        else:
+            self.log_level = logging.INFO
+
+        sys.excepthook = _log_except_hook  # send uncaught exceptions to log file
+
+        logging.basicConfig(filename=self.log_file,
+                            level=self.log_level,
+                            format='"%(asctime)s","%(levelname)s","%(message)s"')
+        self.log = logging.getLogger()
+        errorHandler = logging.FileHandler(self.error_file, mode='w')
+        errorHandler.setLevel(logging.ERROR)
+        errorHandler.setFormatter(logging.Formatter('"%(asctime)s",\n%(message)s'))
+
+        self.log.addHandler(errorHandler)
+
     # endregion
 
     # region data analysis
@@ -831,6 +907,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         bird_name = self.birdEntryBoxList[boxnumber].toPlainText()
         dialog = StatsGui(dataFolder, bird_name)
         dialog.exec_()
+
     # endregion
 
     # region GUI application functions
@@ -844,7 +921,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
 
         settingsFile = 'settings.json'
         if os.path.isfile(settingsFile):  # Make sure param file is specified
-            print 'settings.json file detected, loading settings'
+            self.log.info('settings.json file detected, loading settings')
             with open(settingsFile, 'r') as f:
                 dictLoaded = json.load(f)
                 if 'birds' in dictLoaded:
@@ -905,7 +982,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         # d['active'] = active
 
         with open('settings.json', 'w') as outfile:
-            json.dump(d, outfile, ensure_ascii=False)
+            json.dump(d, outfile, ensure_ascii=False, indent=4, separators=(',', ': '))
 
         ## Box-specific closing operations
         # Close all serial ports, if available
@@ -918,11 +995,13 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
 
                 if device.isOpen():
                     device.close()
-                    # print "Closed device %d" % int(boxnumber + 1)
+                    # print "Closed device {:d}".format(int(boxnumber + 1))
+                    self.log.debug("Closed device {:d}".format(int(boxnumber + 1)))
             except serial.SerialException:
                 pass
 
-            # print "Checked device %d" % int(boxnumber + 1)
+            # print "Checked device {:d}".format(int(boxnumber + 1))
+            self.log.debug("Checked device {:d}".format(int(boxnumber + 1)))
         # Stop running sessions
         self.stop_all()
 
@@ -956,21 +1035,21 @@ class SolenoidGui(QtGui.QDialog, pyoperant_gui_layout.UiSolenoidControl):
         self.close_Button.clicked.connect(lambda _, b=box_number: self.close_solenoid(b))
         self.done_Button.clicked.connect(self.accept)
 
-        self.box_name.setText(str("Box %02i" % box_number))
+        self.box_name.setText(str("Box {:02d}".format(box_number)))
 
     def open_solenoid(self, boxnumber):
-        print("Opening water system in box %d" % boxnumber)
-        device_name = '/dev/teensy%02i' % boxnumber
+        self.log.info("Opening water system in box {:d}".format(boxnumber))
+        device_name = '/dev/teensy{:02d}'.format(boxnumber)
         device = serial.Serial(port=device_name,
                                baudrate=19200,
                                timeout=5)
         if device is None:
-            print 'Could not open serial device %s' % device_name
-            raise 'Could not open serial device %s' % device_name
+            self.log.error('Could not open serial device {}'.format(device_name))
+            raise 'Could not open serial device {}'.format(device_name)
         else:
             device.readline()
             device.flushInput()
-            # print("Successfully opened device %s" % device_name)
+            self.log.debug("Successfully opened device {}".format(device_name))
             # solenoid = channel 16
             device.write("".join([chr(16), chr(3)]))  # set channel 16 as output
             # device.write("".join([chr(16), chr(2)]))  # close solenoid, just in case
@@ -981,14 +1060,14 @@ class SolenoidGui(QtGui.QDialog, pyoperant_gui_layout.UiSolenoidControl):
             self.close_Button.setEnabled(True)
 
     def close_solenoid(self, boxnumber):
-        print("Closing water system in box %d" % boxnumber)
-        device_name = '/dev/teensy%02i' % boxnumber
+        self.log.info("Closing water system in box {:d}".format(boxnumber))
+        device_name = '/dev/teensy{:02d}'.format(boxnumber)
         device = serial.Serial(port=device_name,
                                baudrate=19200,
                                timeout=5)
         if device is None:
-            print 'Could not open serial device %s' % device_name
-            raise 'Could not open serial device %s' % device_name
+            self.log.error('Could not open serial device {}'.format(device_name))
+            raise 'Could not open serial device {}'.format(device_name)
         else:
             device.readline()
             device.flushInput()
@@ -1021,7 +1100,7 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
         self.probe_Checkbox.stateChanged.connect(lambda _, b=data_folder: self.recalculate(b))
         self.raw_Checkbox.stateChanged.connect(lambda _, b=data_folder: self.recalculate(b))
 
-        self.setWindowTitle(str("Performance for %s" % bird_name))
+        self.setWindowTitle(str("Performance for {}".format(bird_name)))
 
         self.recalculate(data_folder)
 
@@ -1029,7 +1108,7 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
         output_path = QtGui.QFileDialog.getSaveFileName(self, "Save As...", output_folder, "CSV Files (*.csv)")
         if output_path:
             self.outputData.to_csv(str(output_path))
-            print 'saved to %s' % output_path
+            print 'saved to {}'.format(output_path)
 
     def recalculate(self, data_folder):
         include_NR = self.noResponse_Checkbox.isChecked()
@@ -1043,7 +1122,6 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
         outputFile = 'performanceSummary.csv'
         output_path = os.path.join(data_folder, outputFile)
         self.outputData.to_csv(str(output_path), encoding='utf-8')
-        # print 'saved to %s' % output_path
         self.refresh_table(output_path)
 
     def refresh_table(self, output_path):

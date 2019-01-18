@@ -18,7 +18,6 @@ from contextlib import closing
 from argparse import ArgumentParser
 from pyoperant import Error
 
-
 try:
     import simplejson as json
 except ImportError:
@@ -49,10 +48,10 @@ class NumpyAwareJSONEncoder(json.JSONEncoder):
 class Event(object):
     """docstring for Event"""
 
-    def __init__(self, time=None, duration=None, label='', name=None, description=None, file_origin=None, *args,
+    def __init__(self, event_time=None, duration=None, label='', name=None, description=None, file_origin=None, *args,
                  **kwargs):
         super(Event, self).__init__()
-        self.time = time
+        self.time = event_time
         self.duration = duration
         self.label = label
         self.name = name
@@ -214,15 +213,13 @@ def check_cmdline_params(parameters, cmd_line):
     nodigs = allchars.translate(allchars, string.digits)
     if not ('box' not in cmd_line or cmd_line['box'] == int(
             parameters['panel_name'].encode('ascii', 'ignore').translate(allchars, nodigs))):
-        print(
-            "box number doesn't match config and command line")  # changed to parenthetical (print function has changed apparently) 1/17/18 AR
+        print("box number doesn't match config and command line")
         return False
     if not ('subj' not in cmd_line or int(
             cmd_line['subj'].encode('ascii', 'ignore').translate(allchars, nodigs)) == int(
-            parameters['subject'].encode('ascii', 'ignore').translate(allchars, nodigs))):
-            print(
-                "subject number doesn't match config and command line")  # changed to parenthetical (print function has changed apparently) 1/17/18 AR
-            return False
+        parameters['subject'].encode('ascii', 'ignore').translate(allchars, nodigs))):
+        print("subject number doesn't match config and command line")
+        return False
     return True
 
 
@@ -311,11 +308,12 @@ def check_day(schedule):
         else:
             return False
     elif schedule == 'daily':
-            return True
-    else:   # Match current day of week to session_days parameter
+        return True
+    else:  # Match current day of week to session_days parameter
         todayDate = dt.datetime.today()
         for eachDay in schedule:
-            if eachDay == today or eachDay == todayDate.strftime("%A").lower() or eachDay == todayDate.strftime("%a").lower():
+            if eachDay == today or eachDay == todayDate.strftime("%A").lower() or \
+                    eachDay == todayDate.strftime("%a").lower():
                 return True
     return False
 
@@ -475,12 +473,12 @@ def rand_from_log_shape_dist(alpha=10):
 class NoCityMatchError(Exception):
     """Raised for is_day() when no matching city is found in the ephem module
     """
-    #print 'No city matches entered text. Try using coords instead (lat=xxx, lon=yyy)'
+    # print 'No city matches entered text. Try using coords instead (lat=xxx, lon=yyy)'
     pass
 
 
 class VarTypeError(Exception):
     """Raised for is_day() when coords are entered as values
     """
-    #print 'No city matches entered text. Try using coords instead (lat=xxx, lon=yyy)'
+    # print 'No city matches entered text. Try using coords instead (lat=xxx, lon=yyy)'
     pass

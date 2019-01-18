@@ -107,7 +107,8 @@ class Adlib(object):
         return temp
 
     def _poll(self, component, duration, next_state, reward_state=None, poll_state=None):
-        if poll_state is None:  # If no specific poll function specified, run poll without turning component on/off (like if no light)
+        if poll_state is None:
+            # If no specific poll function specified, run poll without turning component on/off (like if no light)
             poll_state = self._poll_main
 
         def temp():
@@ -193,7 +194,8 @@ class Adlib(object):
 
 class ShaperFree(Adlib):
     """
-    Special shaping paradigm for providing ad-lib water on non-experimental days (days not listed in the session_days parameter)
+    Special shaping paradigm for providing ad-lib water on non-experimental days
+    (days not listed in the session_days parameter)
     Free water available from response port. Light on resp port is lit while port is accessible.
     """
 

@@ -5,7 +5,9 @@ import copy
 from pyoperant import panels
 from pyoperant import utils
 from pyoperant import queues
-#from pyoperant.behavior import base
+
+
+# from pyoperant.behavior import base
 
 
 class Shaper(object):
@@ -63,8 +65,7 @@ class Shaper(object):
                                 block2=self.block2,
                                 block3=self.block3,
                                 block4=self.block4,
-                                block5=self.block5
-                               )
+                                block5=self.block5)
         self.log.warning('Stopping ad-lib water procedure.')
 
     def _null_block(self, block_num):
@@ -224,7 +225,8 @@ class Shaper(object):
         return temp
 
     def _poll(self, component, duration, next_state, reward_state=None, poll_state=None):
-        if poll_state is None:  # If no specific poll function specified, run poll without turning component on/off (like if no light)
+        if poll_state is None:
+            # If no specific poll function specified, run poll without turning component on/off (like if no light)
             poll_state = self._poll_main
 
         def temp():
@@ -243,7 +245,8 @@ class Shaper(object):
 
     def _poll_dual(self, component1, component2, duration, trial_state, timeout_state=None, resp_state=None,
                    poll_state=None):
-        if poll_state is None:  # If no specific poll function specified, run poll without turning component on/off (like if no light)
+        if poll_state is None:
+            # If no specific poll function specified, run poll without turning component on/off (like if no light)
             poll_state = self._poll_main
 
         def temp():
@@ -482,7 +485,8 @@ class Shaper(object):
 
 class ShaperFree(Shaper):
     """
-    Special shaping paradigm for providing ad-lib water on non-experimental days (days not listed in the session_days parameter)
+    Special shaping paradigm for providing ad-lib water on non-experimental days
+    (days not listed in the session_days parameter)
     Free water available from response port. Light on resp port is lit while port is accessible.
     """
 
@@ -821,8 +825,10 @@ class Shaper3ACMatching(Shaper3AC):
 class ShaperGoNogoInterrupt(Shaper):
     """accomodate go/nogo terminal procedure along with one or two hopper 2choice procedures
     Go/Nogo shaping works like this:
-    Block 1:  Water opens (for 15 ms) for the first day that the animal is in the apparatus at random intervals so that animal can learn to drink from water port
-    Block 2:  Playback begins when trial switch is pecked. Water is dispensed with a correct response to S+, or at end of S+ playback. No punishment for incorrect responses.
+    Block 1:  Water opens (for 15 ms) for the first day that the animal is in the apparatus at random intervals so that
+    animal can learn to drink from water port
+    Block 2:  Playback begins when trial switch is pecked. Water is dispensed with a correct response to S+, or at end
+    of S+ playback. No punishment for incorrect responses.
     NOTE:     sPlus and sMinus names might be deprecated or changed, check documentation and other code
     """
 
@@ -841,16 +847,17 @@ class ShaperGoNogoInterrupt(Shaper):
         def temp():
             self.recent_state = block_num
             self.log.warning('Starting %s' % (self.block_name(block_num)))
-            utils.run_state_machine(start_in='init',
-                                    error_state='wait',
-                                    error_callback=self.error_callback,
-                                    init=self._block_init('check'),
-                                    check=self._check_block_log('silent_resp', reps, float('inf')), # next_state, reps, revert_timeout
-                                    # wait=self._wait_block(10, 40, 'reward'),  # wait between 10 and 40 seconds
-                                    silent_resp=self._random_light_poll(self.panel.respSens, 600, 1200, 'reward', 'pre_reward'),
-                                    pre_reward=self._pre_reward_log('reward'),
-                                    reward=self.reward_log(0.15, 'trial_end'),  # Reward for .15 second
-                                    trial_end=self._poll_not(self.panel.respSens, float('inf'), 'check'))
+            utils.run_state_machine(
+                start_in='init',
+                error_state='wait',
+                error_callback=self.error_callback,
+                init=self._block_init('check'),
+                check=self._check_block_log('silent_resp', reps, float('inf')),  # next_state, reps, revert_timeout
+                # wait=self._wait_block(10, 40, 'reward'),  # wait between 10 and 40 seconds
+                silent_resp=self._random_light_poll(self.panel.respSens, 600, 1200, 'reward', 'pre_reward'),
+                pre_reward=self._pre_reward_log('reward'),
+                reward=self.reward_log(0.15, 'trial_end'),  # Reward for .15 second
+                trial_end=self._poll_not(self.panel.respSens, float('inf'), 'check'))
             if not utils.check_time(self.parameters['light_schedule']):
                 return 'sleep_block'
             return self.block_name(block_num + 1)
@@ -859,7 +866,8 @@ class ShaperGoNogoInterrupt(Shaper):
 
     def _water_block(self, block_num, reps=50000):
         """
-        Block 1:  Water is only dispensed if resp port is accessed. Light on resp port is lit while port is accessible."""
+        Block 1:  Water is only dispensed if resp port is accessed. Light on resp port is lit while port is accessible.
+        """
 
         def temp():
             self.recent_state = block_num
@@ -883,6 +891,7 @@ class ShaperGoNogoInterrupt(Shaper):
         def temp():
             self.trial_counter = self.trial_counter + 1
             return next_state
+
         return temp()
 
     def _sensor_check(self, component, next_state):
@@ -952,16 +961,17 @@ class ShaperGoNogoInterruptMisc(Shaper):
         def temp():
             self.recent_state = block_num
             self.log.warning('Starting %s' % (self.block_name(block_num)))
-            utils.run_state_machine(start_in='init',
-                                    error_state='wait',
-                                    error_callback=self.error_callback,
-                                    init=self._block_init('check'),
-                                    check=self._check_block('wait', 100, float('inf')),
-                                    # next_state, reps, revert_timeout
-                                    wait=self._wait_block(10, 40, 'pre_reward'),  # wait between 10 and 40 seconds
-                                    # silent_resp=self._random_poll(self.panel.respSens, 10, 40, 'reward', 'pre_reward'),
-                                    pre_reward=self._pre_reward('reward'),
-                                    reward=self.reward(1, 'check'))  # Reward for 1 second
+            utils.run_state_machine(
+                start_in='init',
+                error_state='wait',
+                error_callback=self.error_callback,
+                init=self._block_init('check'),
+                check=self._check_block('wait', 100, float('inf')),
+                # next_state, reps, revert_timeout
+                wait=self._wait_block(10, 40, 'pre_reward'),  # wait between 10 and 40 seconds
+                # silent_resp=self._random_poll(self.panel.respSens, 10, 40, 'reward', 'pre_reward'),
+                pre_reward=self._pre_reward('reward'),
+                reward=self.reward(1, 'check'))  # Reward for 1 second
             if not utils.check_time(self.parameters['light_schedule']):
                 return 'sleep_block'
             return self.block_name(block_num + 1)
@@ -976,15 +986,16 @@ class ShaperGoNogoInterruptMisc(Shaper):
         def temp():
             self.recent_state = block_num
             self.log.warning('Starting %s' % (self.block_name(block_num)))
-            utils.run_state_machine(start_in='init',
-                                    error_state='wait',
-                                    error_callback=self.error_callback,
-                                    init=self._block_init('check'),
-                                    check=self._check_block_log('silent_resp', reps, float('inf')), # next_state, reps, revert_timeout
-                                    # wait=self._wait_block(10, 40, 'reward'),  # wait between 10 and 40 seconds
-                                    silent_resp=self._random_poll(self.panel.respSens, 600, 1200, 'reward', 'pre_reward'),
-                                    pre_reward=self._pre_reward_log('reward'),
-                                    reward=self.reward_log(0.15, 'check'))  # Reward for 1 second
+            utils.run_state_machine(
+                start_in='init',
+                error_state='wait',
+                error_callback=self.error_callback,
+                init=self._block_init('check'),
+                check=self._check_block_log('silent_resp', reps, float('inf')),  # next_state, reps, revert_timeout
+                # wait=self._wait_block(10, 40, 'reward'),  # wait between 10 and 40 seconds
+                silent_resp=self._random_poll(self.panel.respSens, 600, 1200, 'reward', 'pre_reward'),
+                pre_reward=self._pre_reward_log('reward'),
+                reward=self.reward_log(0.15, 'check'))  # Reward for 1 second
             if not utils.check_time(self.parameters['light_schedule']):
                 return 'sleep_block'
             return self.block_name(block_num + 1)
@@ -1086,7 +1097,7 @@ class ShaperGoNogoInterruptMisc(Shaper):
 
         return temp
 
-    def _water_block_no_passiveOLD(self, block_num, reps=200):
+    def _water_block_no_passive_old(self, block_num, reps=200):
         """
         Block 4:  Trial light turns on. Playback starts when switch is pressed. Both switches are inactive for first
         200ms of playback.
@@ -1186,7 +1197,7 @@ class ShaperGoNogoInterruptMisc(Shaper):
         def temp():
             conditions = self.parameters['block_design']['blocks']['shaping']['conditions']
             weights = self.parameters['block_design']['blocks']['shaping']['weights']
-            self.trial_list = queues.random_queue(conditions,reps,weights)
+            self.trial_list = queues.random_queue(conditions, reps, weights)
             self.recent_state = block_num
             self.log.warning('Starting %s' % (self.block_name(block_num)))
             utils.run_state_machine(start_in='init',
@@ -1197,8 +1208,8 @@ class ShaperGoNogoInterruptMisc(Shaper):
                                     poll_trial=self._light_poll(self.panel.trialSens, 10, 'check',
                                                                 'audio_play'),  # poll for 10 on loop
                                     audio_play=self._play_audio('sPlus_pause_buffer', 'sMinus_pause_buffer'),
-                                    #coin_flip=self._rand_state(('audio_sPlus', 'audio_sMinus')),
-                                    #audio_sPlus=self._play_audio('sPlus_pause_buffer', 'sPlus'),
+                                    # coin_flip=self._rand_state(('audio_sPlus', 'audio_sMinus')),
+                                    # audio_sPlus=self._play_audio('sPlus_pause_buffer', 'sPlus'),
                                     sPlus_pause_buffer=self._wait_block(.2, .2, 'sPlus_trial'),
                                     sPlus_trial=self._light_poll_dual(self.panel.trialSens, self.panel.respSens, 5,
                                                                       'trialResp_sPlus_stop', 'no_resp_sPlus_stop'
@@ -1206,7 +1217,7 @@ class ShaperGoNogoInterruptMisc(Shaper):
                                     trialResp_sPlus_stop=self._close_audio('trial_end_wait'),
                                     no_resp_sPlus_stop=self._close_audio('reward'),
                                     respResp_sPlus_stop=self._close_audio('pre_reward'),
-                                    #audio_sMinus=self._play_audio('sMinus_pause_buffer', 'sMinus'),
+                                    # audio_sMinus=self._play_audio('sMinus_pause_buffer', 'sMinus'),
                                     sMinus_pause_buffer=self._wait_block(.2, .2, 'sMinus_trial'),
                                     sMinus_trial=self._light_poll_dual(self.panel.trialSens, self.panel.respSens, 5,
                                                                        'trialResp_sMinus_stop', 'no_resp_sMinus_stop'
@@ -1267,7 +1278,7 @@ class ShaperGoNogoInterruptMisc(Shaper):
 
         return temp
 
-    def _play_audioOLD(self, next_state, trial_class):
+    def _play_audio_old(self, next_state, trial_class):
         def temp():
             trial_stim, trial_motifs = self.get_stimuli(trial_class)
             self.log.debug("presenting stimulus %s" % trial_stim.name)
@@ -1277,17 +1288,18 @@ class ShaperGoNogoInterruptMisc(Shaper):
 
         return temp
 
-    def _close_audioOLD(self, next_state):
+    def _close_audio_old(self, next_state):
         def temp():
             self.panel.speaker.stop()
             return next_state
 
         return temp
 
-    def _play_audio(self, class1_state, class2_state):  # Play next shaping trial, return next state based on trial class
+    def _play_audio(self, class1_state, class2_state):
+        # Play next shaping trial, return next state based on trial class
         def temp():
-            #trial = utils.Trial(index=self.trial_counter)
-            #trial.class_ = self.conditions['class']
+            # trial = utils.Trial(index=self.trial_counter)
+            # trial.class_ = self.conditions['class']
             # trial_stim, trial_motifs = self.get_stimuli(**conditions)
             current_trial = self.trial_list[self.trial_counter]
             trial_stim = self.get_stimuli(current_trial)
@@ -1318,7 +1330,7 @@ class ShaperGoNogoInterruptMisc(Shaper):
 
         """
         # TODO: default stimulus selection
-        #stim_name = self.conditions
+        # stim_name = self.conditions
         stim_name = conditions['stim_name']
         stim_file = self.parameters['stims'][stim_name]
         self.log.debug(stim_file)
@@ -1471,5 +1483,3 @@ class ShaperGoInterruptOneStep(Shaper):
             return next_state
 
         return temp
-
-

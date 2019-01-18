@@ -34,7 +34,8 @@ def random_queue(conditions, tr_max=5000, weights=None, **kwargs):
             currWeight = int(w['weight'])
             for ww in range(currWeight):
                 classes_weighted.append(w['class'])
-        # classes_weighted is a weighted list of classes, so that randomly picking a condition will yield that condition at the expected probability
+        # classes_weighted is a weighted list of classes, so that randomly picking a condition will yield that
+        # condition at the expected probability
 
         conditionsList = {}
         for cond in conditions:

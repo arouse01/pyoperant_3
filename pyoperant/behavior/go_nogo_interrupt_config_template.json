@@ -814,7 +814,7 @@
         "queue": "random"
       },
       "training 125 5:5": {
-        "description": "1:1 S+/S- stim, 124/125/126 ms",
+        "description": "1:1 S+/S- stim, 123/124/125/126/127 ms",
         "reinforcement": {
           "schedule": "go_interrupt",
           "prob": 1,

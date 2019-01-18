@@ -5,6 +5,7 @@ import importlib
 import os
 import signal
 import sys
+import collections
 
 # append this folder to working directory
 sys.path.append('/home/rouse/Desktop/pyoperant/pyoperant/pyoperant')
@@ -137,7 +138,8 @@ def main():
     # print(experiment_path)
     try:
         with open(config_file, 'rb') as config:
-            parameters = json.load(config)
+            parameters = json.load(config, object_pairs_hook=collections.OrderedDict)  # object_pairs_hook is to
+            # preserve field order, creates an orderedDict instead of a regular one
     except IOError:
         parameters = {}
 

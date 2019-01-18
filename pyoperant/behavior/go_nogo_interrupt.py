@@ -50,7 +50,8 @@ class GoNoGoInterruptExp(base.BaseExp):
         if self.parameters['shape']:
             self.shaper = shape.ShaperGoNogoInterrupt(self.panel, self.log, self.parameters, self.log_error_callback)
 
-        if 'free_day_off' not in self.parameters:  # or self.parameters['shape'] not in ['block1', 'block2', 'block3', 'block4', 'block5']:
+        if 'free_day_off' not in self.parameters:
+            # or self.parameters['shape'] not in ['block1', 'block2', 'block3', 'block4', 'block5']:
             self.parameters['free_day_off'] = False
 
         # self.shaper = shape.ShaperGoNogoInterrupt(self.panel, self.log, self.parameters, self.log_error_callback)
@@ -166,6 +167,7 @@ class GoNoGoInterruptExp(base.BaseExp):
         try:
             return function(*args, **kwargs)
         except (ArduinoException, InterfaceError):
+            self.log.info('Teensy function failed, trying to reconnect')
             self.reconnect_panel()
             return function(*args, **kwargs)
 
@@ -180,7 +182,7 @@ class GoNoGoInterruptExp(base.BaseExp):
         except:
             raise InterfaceError('could not find pyaudio device %s' % self.device_name)
 
-        self.log.info("Successfully reconnected sound for device %s" % device_name)
+        self.log.info("Successfully reconnected sound for device %s" % self.device_name)
 
         # self.panel.speaker = hwio.AudioOutput(interface=self.interfaces['pyaudio'])
 
@@ -229,7 +231,8 @@ class GoNoGoInterruptExp(base.BaseExp):
             # If session should be running
             return 'session'
         elif self.parameters['free_day_off']:
-            # By this point, established that lights should be on and session shouldn't be running. Therefore if day off parameter is active, start adlib procedure
+            # By this point, established that lights should be on and session shouldn't be running. Therefore if day
+            # off parameter is active, start adlib procedure
             return 'dayoff'
         else:
             self.panel_reset()
@@ -346,11 +349,44 @@ class GoNoGoInterruptExp(base.BaseExp):
             self.trial_q = None
 
         if self.session_q is None:
+            # Check if criteria met for moving to next phase/block
+            if 'auto_advance' in self.parameters['block_design'] and self.parameters['block_design']['auto_advance']:
+                if len(self.parameters['block_design']['order']) > 1:  # Only check if there's more than one block in
+                    # list (so the pyoperant doesn't quit because the last block was removed)
+                    if 'criteria' in self.parameters['block_design']['blocks'][self.condition]:  # Only check
+                        # criteria if actually specified
+                        if self.check_performance():
+                            self.parameters['block_design']['order'].pop(0)  # Remove block from order
+                            # with open(self.parameters['config_file'], 'wb') as config_snap:
+                            #     json.load(config)
+                            with open(self.parameters['config_file'], 'wb') as config_snap:
+                                json.dump(self.parameters, config_snap, sort_keys=True, indent=4)
+                                self.log.info('Stage %s complete!' % self.condition)
+
             self.log.info('Next sessions: %s' % self.parameters['block_design']['order'])
             self.session_q = queues.block_queue(self.parameters['block_design']['order'])
 
         if self.trial_q is None:
             for sn_cond in self.session_q:
+                # region Skip blocks where criteria has been met
+                # Still in progress, need to decide whether to have the whole block list preserved and have
+                # pyoperant cycle through list each time (and skip completed blocks) or remove each block from the
+                # list as it's completed
+                # block_complete = False  # initialize to false, only gets set to true if criteria have been met
+                #
+                # if 'auto_advance' in self.parameters['block_design']:  # only if settings file specifies
+                #     if self.parameters['block_design']['auto_advance']:  # only if settings file specifies
+                #         if len(self.parameters['block_design']['order']) > 1:
+                #             # Only check if there's more than one block in list (so the pyoperant doesn't quit because
+                #             # the last block was removed)
+                #             if 'criteria' in self.parameters['block_design']['blocks'][self.condition]:
+                #                 # Only check criteria if actually specified
+                #                 if self.check_performance():
+                #                     block_complete = True
+                # # endregion
+                # if block_complete:
+                #     pass  # skip completed blocks
+                # else:
                 self.condition = sn_cond
                 self.trials = []
                 self.do_correction = False
@@ -361,7 +397,8 @@ class GoNoGoInterruptExp(base.BaseExp):
                 blk = copy.deepcopy(self.parameters['block_design']['blocks'][sn_cond])
 
                 # load the block details into the trial queue
-                blk.pop('description')  # remove the "description" entry from the dictionary so queues doesn't complain
+                blk.pop(
+                    'description')  # remove the "description" entry from the dictionary so queues doesn't complain
                 if 'criteria' in blk:
                     blk.pop('criteria')
                 q_type = blk.pop('queue')
@@ -436,10 +473,10 @@ class GoNoGoInterruptExp(base.BaseExp):
             self.log.info('continuing last session')
             # Check if criteria met for moving to next phase/block
             # if 'auto_advance' in self.parameters['block_design'] and self.parameters['block_design']['auto_advance']:
-            #     if len(self.parameters['block_design']['order']) > 1:  # Only check if there's more than one block in list (
-            #         # so the session won't end because the last block was removed)
-            #         if 'criteria' in self.parameters['block_design']['blocks'][self.condition]:  # Only check if criteria are
-            #             # specified in json file, otherwise just continue with session
+            #     if len(self.parameters['block_design']['order']) > 1:  # Only check if there's more than one block in
+            #         # list (so the session won't end because the last block was removed)
+            #         if 'criteria' in self.parameters['block_design']['blocks'][self.condition]:  # Only check if
+            #             # criteria are specified in json file, otherwise just continue with session
             #             if self.check_performance():
             #                 self.parameters['block_design']['order'].pop(0)  # Remove block from order
             #                 with open(self.parameters['config_file'], 'wb') as config_snap:
@@ -696,7 +733,7 @@ class GoNoGoInterruptExp(base.BaseExp):
         #     self.panel.trialSens.off()
         self.this_trial.events.append(utils.Event(name='trialSens',
                                                   label='peck',
-                                                  time=0.0,
+                                                  event_time=0.0,
                                                   )
                                       )
 
@@ -745,7 +782,7 @@ class GoNoGoInterruptExp(base.BaseExp):
 
                     response_event = utils.Event(name=self.parameters['classes'][class_]['component'],
                                                  label='error',
-                                                 time=elapsed_time,
+                                                 event_time=elapsed_time,
                                                  )
                     self.this_trial.events.append(response_event)
                     self.log.info('response: %s' % self.this_trial.response)
@@ -759,7 +796,7 @@ class GoNoGoInterruptExp(base.BaseExp):
                         self.summary['responses'] += 1
                         response_event = utils.Event(name=self.parameters['classes'][class_]['component'],
                                                      label='peck',
-                                                     time=elapsed_time,
+                                                     event_time=elapsed_time,
                                                      )
                         self.this_trial.events.append(response_event)
                         self.log.info('response: %s' % self.this_trial.response)
@@ -858,7 +895,8 @@ class GoNoGoInterruptExp(base.BaseExp):
                 if self.this_trial.type_ == 'correction':
                     self._run_correction_reward()
                 # elif self.this_trial.class_ == 'sMinus':  # correct reject (trial is S- and bird hits trial switch)
-                #     pass  # nothing, end trial and move to next  # NOTE: not necessary, since reward/punish_value in json can be set to 0
+                #     pass  # nothing, end trial and move to next
+                #     # NOTE: not necessary, since reward/punish_value in json can be set to 0
                 elif self.reinf_sched.consequate(trial=self.this_trial):
                     self.reward_pre()
                     self.reward_main()  # provide a reward

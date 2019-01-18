@@ -221,7 +221,8 @@ class Session(object):
         self.arg = arg
 
 
-class Performance(object):  # Longer-term performance analysis
+class Performance(object):
+    # Longer-term performance analysis
 
     def __init__(self, experiment_folder):
         # Validate input folder
@@ -239,6 +240,7 @@ class Performance(object):  # Longer-term performance analysis
             print "json folder (%s) not found" % self.json_dir
             return
 
+        # Each row in dataDict will be a single
         dataDict = {'File': [],
                     'Subject': [],
                     'Session': [],
@@ -255,10 +257,12 @@ class Performance(object):  # Longer-term performance analysis
         self.gather_raw_data(dataDict)
 
     def gather_raw_data(self, data_dict):
+        # Pull data from across multiple csv files, keeping notation for phase (which comes from the json file)
 
         csvList = os.listdir(self.data_dir)
         csvCount = len(csvList)
 
+        # region Read each CSV file
         for i in range(csvCount):
             csvPath = os.path.join(self.data_dir, csvList[i])
             with open(csvPath) as data_file:
@@ -273,10 +277,10 @@ class Performance(object):  # Longer-term performance analysis
                 # scanning
                 with open(csvPath) as data_file:
                     csv_reader = csv.reader(data_file, delimiter=',')
-                    currentLine = 0
+                    currentLine = 0  # resets each time so later we can tell how many lines were imported
                     for row in csv_reader:
                         if currentLine == 0:
-                            pass
+                            pass  # ignore first line (headers)
                         else:
                             data_dict['Index'].append(row[1])
                             data_dict['Stimulus'].append(row[3])
@@ -298,6 +302,7 @@ class Performance(object):  # Longer-term performance analysis
                 blockName = jsonData['block_design']['order'][0]
                 for j in range(currentLine - 1):
                     data_dict['Block'].append(blockName)
+        # endregion
 
         # Double check that each key in dict has same length
         trial_count = len(data_dict['Index'])  # 'Index' is arbitrary, just need total count of trials
@@ -305,7 +310,7 @@ class Performance(object):  # Longer-term performance analysis
         if not self.dict_len_is_equal(keyLengths):
             raise Exception('Columns are not equal length')
 
-        # # Get result of each trial
+        # region Get result of each trial
         if trial_count < 1:
             print 'No trials found'
         else:
@@ -386,11 +391,14 @@ class Performance(object):  # Longer-term performance analysis
             self.raw_trial_data['Time'] = pd.to_datetime(self.raw_trial_data['Time'], format='%Y-%m-%d %H:%M:%S')
             self.raw_trial_data.set_index('Date', inplace=True)  # inplace so change is saved to same variable
             self.raw_trial_data.sort_index(inplace=True)  # inplace so change is saved to same variable
+        # endregion
 
     def dict_len_is_equal(self, list_to_check):
+        # Quick function to validate that each item in a list has the same length
         return not list_to_check or list_to_check.count(list_to_check[0]) == len(list_to_check)
 
     def divide_by_zero(self, numerator, denominator, roundto=3):
+        # error catching for ZeroDivisionError so I don't have to catch the exception every single time manually
         try:
             result = round(float(numerator) / float(denominator), roundto)
         except ZeroDivisionError:
@@ -398,7 +406,9 @@ class Performance(object):  # Longer-term performance analysis
         return result
 
     def filter_data(self, **kwargs):
+        # Filter the raw data, like restrict to date range or specific block
         # Only takes self.raw_trial_data as input data: unfiltered
+        #
         # kwargs are filter type and settings
         parameters = kwargs
         filtered_data = self.raw_trial_data
@@ -412,17 +422,25 @@ class Performance(object):  # Longer-term performance analysis
 
     def summarize(self, inputdata='raw'):
         # produces summary dataframe that just contains date, block, and responses
+        # Can accept raw (unfiltered) data or the filtered data returned from self.filter_data
+        # parameter is string
+
+        # region Parse input parameter to choose correct data to summarize
         if inputdata == 'raw':  # Summarize raw data
             trialdata = self.raw_trial_data
-        elif inputdata == 'filtered' or inputdata == 'filt':
+        elif inputdata == 'filtered' or inputdata == 'filt':  # If using filtered data
             trialdata = self.filtered_data
-        elif isinstance(inputdata, pd.DataFrame):  # If inputing different dataframe than preprocessed
+        elif isinstance(inputdata, pd.DataFrame):  # If inputting different dataframe than preprocessed
             trialdata = inputdata
         else:
             return
+        # endregion
+
+        # region Create new dataframe with only relevant fields
         performanceData = pd.DataFrame()
         performanceData['Time'] = trialdata['Time']
         performanceData['Block'] = trialdata['Block']
+
         performanceData['Hit'] = trialdata['Hit']
         performanceData['Miss'] = trialdata['Miss']
         performanceData['Miss\n(NR)'] = trialdata['Miss\n(NR)']
@@ -440,12 +458,17 @@ class Performance(object):  # Longer-term performance analysis
         performanceData['Probe CR\n(NR)'] = trialdata['Probe CR\n(NR)']
 
         performanceData['Probe Trials'] = trialdata['Probe Trials']
+        # endregion
 
         performanceData.sort_values(by='Date')
+
         self.summaryData = performanceData
 
     def analyze(self, input_data, **kwargs):
+        # Calculate d' scores for summarized data
         # Now have all trials in lists, need to group them in some way (by day, day/hour, etc.)
+
+        # region Summarize input data based on kwargs, or by default (date and block)
         if 'groupBy' in kwargs:
             if kwargs['groupBy'] == 'day':
                 groupData = input_data.groupby([input_data['Time'].dt.date, input_data['Block']]).sum()
@@ -460,7 +483,9 @@ class Performance(object):  # Longer-term performance analysis
         else:  # If no grouping specified, use date as default
             groupData = input_data.groupby([input_data['Time'].dt.date, input_data['Block']]).sum()
             groupCount = len(groupData)
+        # endregion
 
+        # region Variable init
         dprimes = []
         dprimes_NR = []
         betas = []
@@ -481,6 +506,9 @@ class Performance(object):  # Longer-term performance analysis
         probeMinus_NR_correct = []
         total_probe_correct = []
         total_probe_NR_correct = []
+        # endregion
+
+        # region Calculate stats for each summary group
         for k in range(groupCount):
             hitCount = float(groupData['Hit'][k])
             missCount = float(groupData['Miss'][k])
@@ -500,6 +528,7 @@ class Performance(object):  # Longer-term performance analysis
             dayDprime = round(Analysis([[hitCount, missCount], [FACount, CRCount]]).dprime(), 3)
             dprimes.append(dayDprime)
 
+            # region Training trial stats
             dayDprime_NR = round(Analysis([[hitCount, (missCount + missNRCount)],
                                            [FACount, (CRCount + CRNRCount)]]).dprime(), 3)
             dprimes_NR.append(dayDprime_NR)
@@ -516,8 +545,9 @@ class Performance(object):  # Longer-term performance analysis
                 dayBeta_NR = round(Analysis([[hitCount, (missCount + missNRCount)],
                                              [FACount, (CRCount + CRNRCount)]]).bias(), 3)
             betas_NR.append(dayBeta_NR)
+            # endregion
 
-            # Probe stats
+            # region Probe trial stats
             dayProbeDprime = round(Analysis([[probeHitCount, probeMissCount],
                                              [probeFACount, probeCRCount]]).dprime(), 3)
             probeDprimes.append(dayProbeDprime)
@@ -539,6 +569,7 @@ class Performance(object):  # Longer-term performance analysis
                 dayProbeBeta_NR = round(Analysis([[probeHitCount, (probeMissCount + probeMissNRCount)],
                                                   [probeFACount, (probeCRCount + probeCRNRCount)]]).bias(), 3)
             probeBetas_NR.append(dayProbeBeta_NR)
+            # endregion
 
             if missCount == float(0):
                 missCount = 0.001
@@ -566,7 +597,9 @@ class Performance(object):  # Longer-term performance analysis
                                     (probeHitCount + probeCRCount + probeMissCount + probeFACount), 5))
             total_probe_NR_correct.append(self.divide_by_zero((probeHitCount + probeCRCount + probeCRNRCount),
                                                               probeTotalTrials, 5))
+        # endregion
 
+        # region Add calculated stats to summarized dataframe
         groupData["d'"] = dprimes
         groupData["d'\n(NR)"] = dprimes_NR
         groupData['β'] = betas
@@ -587,7 +620,9 @@ class Performance(object):  # Longer-term performance analysis
         groupData['Probe S-\n(NR)'] = probeMinus_NR_correct
         groupData['Probe Tot Corr'] = total_probe_correct
         groupData['Probe Tot Corr\n(NR)'] = total_probe_NR_correct
+        # endregion
 
+        # region Filter out unwanted fields (e.g., NR trials, probe trials)
         # Get list of columns to remove
         dropColumns = []
         if 'NRTrials' in kwargs:
@@ -624,6 +659,7 @@ class Performance(object):  # Longer-term performance analysis
                          ]  # All columns in sorted order
 
         remainingColumns = list(filter(lambda a: a not in dropColumns, sortedColumns))  # Get list of remaining columns
+        # endregion
 
         outputData = groupData[remainingColumns]  # Pull remaining columns from groupData
 
