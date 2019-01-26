@@ -113,7 +113,8 @@ class BaseExp(object):
                             level=self.log_level,
                             format='"%(asctime)s","%(levelname)s","%(message)s"')
         self.log = logging.getLogger()
-        errorHandler = logging.FileHandler(self.error_file, mode='w')
+        errorHandler = logging.FileHandler(self.error_file, mode='w')  # mode 'w' means messages replace existing
+        # contents of file
         errorHandler.setLevel(logging.ERROR)
         errorHandler.setFormatter(logging.Formatter('"%(asctime)s",\n%(message)s'))
 

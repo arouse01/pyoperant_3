@@ -12,7 +12,7 @@ import pyudev  # device monitoring to identify connected Teensys
 import re  # Regex, for parsing device names returned from pyudev to identify connected Teensys
 import argparse  # Parse command line arguments for GUI, primarily to enable debug mode
 from shutil import copyfile  # For creating new json file by copying another
-import logging
+import logging, traceback
 import datetime as dt  # For auto sleep
 
 from pyoperant import analysis  # Analysis creates the data summary tables
@@ -51,13 +51,34 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
 
         # Number of boxes declared in pyoperant_gui_layout.py
 
+        # region Menu bar
+        mainMenu = QtGui.QMenuBar()
+        fileMenu = mainMenu.addMenu('&File')
+
+        quitGuiAction = QtGui.QAction("&Quit", self)
+        quitGuiAction.triggered.connect(self.close)
+        fileMenu.addAction(quitGuiAction)
+
+        optionsMenu = mainMenu.addMenu('Options')
+
+        viewGuiLogAction = QtGui.QAction("View GUI Log", self)
+        viewGuiLogAction.triggered.connect(lambda _, b='guilog': self.open_text_file(0, whichfile=b))
+        viewGuiErrorAction = QtGui.QAction("View GUI Error Log", self)
+        viewGuiErrorAction.triggered.connect(lambda _, b='guierror': self.open_text_file(0, whichfile=b))
+
+        optionsMenu.addAction(viewGuiLogAction)
+        optionsMenu.addAction(viewGuiErrorAction)
+
+        self.setMenuBar(mainMenu)
+        # endregion
+
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.refreshall)
         self.timer.start(5000)
 
         self.log_config()
 
-        # Monitor when USB devices are connected/disconnected
+        # region Monitor when USB devices are connected/disconnected
         context = pyudev.Context()
         monitor = pyudev.Monitor.from_netlink(context)
         monitor.filter_by(subsystem='tty')
@@ -67,6 +88,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
 
         self.teensy_emit.connect(
             (lambda triggered_boxnumber, parameter: self.teensy_control(triggered_boxnumber, parameter)))
+        # endregion
 
         # arrays for queues and threads
         self.qList = [0] * self.numberOfBoxes
@@ -87,24 +109,28 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         self.experimentPath = ""
 
         # Option var init
-        self.optionMenuList = []
+        self.boxMenuList = []
         self.solenoidMenuList = []
         self.primeActionList = []
         self.purgeActionList = []
         self.solenoidManualList = []
-        self.jsonMenuList = []
+        self.optionsMenuList = []
         self.openFolderActionList = []
         self.openSettingsActionList = []
         self.createNewJsonList = []
         self.newBirdActionList = []
         self.statsActionList = []
+        self.rawTrialActionList = []
         self.useNRList = []
         self.autoSleepList = []
+        self.openBoxLogActionList = []
 
         self.sleepScheduleList = []  # schedule is none if box not active, set when box started
         self.defaultSleepSchedule = [["08:30", "22:30"]]
 
-        # region Option menu setup
+        # TODO: Main menu options to set all boxes to "use NR", autosleep, change defaults for performance window
+
+        # region Individual option menu setup
         ## To add an item to the option menu:
         # - Add a blank list var to the "option var init" section for the action to be stored for each box
         # - Figure out whether the new option should be in the main option menu or in a submenu
@@ -117,38 +143,66 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
 
         for boxnumber in self.boxList:
             # Create necessary objects for each box
-            self.optionMenuList.append(QtGui.QMenu())
+            self.statsActionList.append(QtGui.QAction("Performance", self))
+
+            # menu-specific
+            self.boxMenuList.append(QtGui.QMenu())
             self.solenoidMenuList.append(QtGui.QMenu("Water Control"))
             self.primeActionList.append(QtGui.QAction("Prime (5s)", self))
             self.purgeActionList.append(QtGui.QAction("Purge (20s)", self))
             self.solenoidManualList.append(QtGui.QAction("Manual Control", self))
-            self.jsonMenuList.append(QtGui.QMenu("JSON File"))
-            self.openFolderActionList.append(QtGui.QAction("Open data folder", self))
-            self.openSettingsActionList.append(QtGui.QAction("Edit", self))
-            self.createNewJsonList.append(QtGui.QAction("New from template", self))
-            self.newBirdActionList.append(QtGui.QAction("Change bird", self))
-            self.statsActionList.append(QtGui.QAction("Performance", self))
-            self.useNRList.append(QtGui.QAction("Use NR Trials", self))
+            self.optionsMenuList.append(QtGui.QMenu("Options"))
+            self.rawTrialActionList.append(QtGui.QAction("Get Raw Trial Data", self))
+            self.openFolderActionList.append(QtGui.QAction("Open &Data folder", self))
+            self.openSettingsActionList.append(QtGui.QAction("Open &Settings file", self))
+            self.openBoxLogActionList.append(QtGui.QAction("Open &Log file", self))
+            self.createNewJsonList.append(QtGui.QAction("New &Settings file", self))
+            self.newBirdActionList.append(QtGui.QAction("New &Bird", self))
+            self.useNRList.append(QtGui.QAction("Use &NR Trials", self))
+            self.autoSleepList.append(QtGui.QAction("&Autosleep", self))
+
             self.useNRList[boxnumber].setCheckable(True)
-            self.autoSleepList.append(QtGui.QAction("Autosleep", self))
             self.autoSleepList[boxnumber].setCheckable(True)
             self.autoSleepList[boxnumber].setChecked(True)
 
             # Reorder to change order in menu
-            self.optionMenuList[boxnumber].addMenu(self.solenoidMenuList[boxnumber])
-            self.optionMenuList[boxnumber].addSeparator()
-            self.optionMenuList[boxnumber].addMenu(self.jsonMenuList[boxnumber])
-            self.optionMenuList[boxnumber].addSeparator()
-            self.optionMenuList[boxnumber].addAction(self.openFolderActionList[boxnumber])
-            self.optionMenuList[boxnumber].addAction(self.newBirdActionList[boxnumber])
-            self.optionMenuList[boxnumber].addSeparator()
-            self.optionMenuList[boxnumber].addAction(self.useNRList[boxnumber])
-            self.optionMenuList[boxnumber].addSeparator()
-            self.optionMenuList[boxnumber].addAction(self.autoSleepList[boxnumber])
+            """
+            Current order:
+            Open data folder
+            Open log file
+            Open Settings file 
+            Get raw trial data
+            ---
+            Water Control:
+                Prime
+                Purge
+                Manual
+            ---
+            Options:
+                Autosleep
+                Use NR
+                ---
+                New settings file
+                New bird
+            
+            
+            """
+            self.boxMenuList[boxnumber].addAction(self.openFolderActionList[boxnumber])
+            self.boxMenuList[boxnumber].addAction(self.openSettingsActionList[boxnumber])
+            self.boxMenuList[boxnumber].addAction(self.openBoxLogActionList[boxnumber])
+            self.boxMenuList[boxnumber].addAction(self.rawTrialActionList[boxnumber])
+            self.boxMenuList[boxnumber].addSeparator()
+            self.boxMenuList[boxnumber].addMenu(self.solenoidMenuList[boxnumber])
+            self.boxMenuList[boxnumber].addSeparator()
+            self.boxMenuList[boxnumber].addMenu(self.optionsMenuList[boxnumber])
 
-            # JSON submenu
-            self.jsonMenuList[boxnumber].addAction(self.openSettingsActionList[boxnumber])
-            self.jsonMenuList[boxnumber].addAction(self.createNewJsonList[boxnumber])
+            # option submenu
+
+            self.optionsMenuList[boxnumber].addAction(self.autoSleepList[boxnumber])
+            self.optionsMenuList[boxnumber].addAction(self.useNRList[boxnumber])
+            self.optionsMenuList[boxnumber].addSeparator()
+            self.optionsMenuList[boxnumber].addAction(self.createNewJsonList[boxnumber])
+            self.optionsMenuList[boxnumber].addAction(self.newBirdActionList[boxnumber])
 
             # Solenoid submenu
             self.solenoidMenuList[boxnumber].addAction(self.primeActionList[boxnumber])
@@ -195,7 +249,11 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             self.openFolderActionList[boxnumber].triggered.connect(
                 lambda _, b=boxnumber: self.open_box_folder(boxnumber=b))
             self.openSettingsActionList[boxnumber].triggered.connect(
-                lambda _, b=boxnumber: self.open_json_file(boxnumber=b))
+                lambda _, b=boxnumber: self.open_text_file(boxnumber=b, whichfile='json'))
+            self.openBoxLogActionList[boxnumber].triggered.connect(
+                lambda _, b=boxnumber: self.open_text_file(boxnumber=b, whichfile='boxlog'))
+            self.rawTrialActionList[boxnumber].triggered.connect(
+                lambda _, b=boxnumber: self.get_raw_trial_data(boxnumber=b))
             self.createNewJsonList[boxnumber].triggered.connect(
                 lambda _, b=boxnumber: self.create_json_file(boxnumber=b))
             self.newBirdActionList[boxnumber].triggered.connect(
@@ -206,7 +264,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
                 lambda _, b=boxnumber: self.auto_sleep_set(boxnumber=b))
 
             # Attach menu to physical option button
-            self.optionButtonBoxList[boxnumber].setMenu(self.optionMenuList[boxnumber])
+            self.optionButtonBoxList[boxnumber].setMenu(self.boxMenuList[boxnumber])
         # endregion
 
         self.closeEvent = self.close_application
@@ -283,17 +341,31 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             msg.exec_()
             self.log.error('Warning: Data folder not found: ({})'.format(folderPath[0]))
 
-    def open_json_file(self, boxnumber):
-        jsonPath = str(self.paramFileBoxList[boxnumber].toPlainText())
-        if os.path.exists(jsonPath):
-            subprocess.Popen(["geany", jsonPath])
+    def open_text_file(self, boxnumber, whichfile='json'):
+        filePath = ''  # default
+        if whichfile == 'boxlog':
+            settingsPath = str(self.paramFileBoxList[boxnumber].toPlainText())
+            birdName = str(self.birdEntryBoxList[boxnumber].toPlainText())
+            folderPath = os.path.split(settingsPath)
+            filePath = os.path.join(folderPath[0], birdName + '.log')
+        elif whichfile == 'guierror':
+            filePath = self.error_file
+        elif whichfile == 'guilog':
+            filePath = self.log_file
+        elif whichfile == 'json':
+            filePath = str(self.paramFileBoxList[boxnumber].toPlainText())
+
+        if not len(filePath) > 0:  # value of whichfile doesn't match any of the options
+            pass
+        elif os.path.exists(filePath):
+            subprocess.Popen(["geany", filePath])
         else:
             msg = QtGui.QMessageBox()
             msg.setIcon(2)
             msg.setText('Warning: File not found')
             msg.setStandardButtons(QtGui.QMessageBox.Ok)
             msg.exec_()
-            self.log.error('Warning: Settings file not found: ({})'.format(jsonPath))
+            self.log.error('Warning: Selected file not found: ({})'.format(filePath))
 
     def create_json_file(self, boxnumber, birdname=''):
         currentPath = os.path.dirname('/home/rouse/Desktop/pyoperant/pyoperant/pyoperant/behavior/')
@@ -720,7 +792,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
 
                     self.logRawCounts = QtGui.QStandardItemModel(self)
                     self.logRawCounts.setHorizontalHeaderLabels(["S+", "S-", "Prb+", "Prb-"])
-                    self.logRawCounts.setVerticalHeaderLabels(["RespSw", "TrlSw"])
+                    self.logRawCounts.setVerticalHeaderLabels(["RspSw", "TrlSw"])
 
                     rawCounts = [
                         [
@@ -893,9 +965,9 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
                             level=self.log_level,
                             format='"%(asctime)s","%(levelname)s","%(message)s"')
         self.log = logging.getLogger()
-        errorHandler = logging.FileHandler(self.error_file, mode='w')
+        errorHandler = logging.FileHandler(self.error_file, mode='a')
         errorHandler.setLevel(logging.ERROR)
-        errorHandler.setFormatter(logging.Formatter('"%(asctime)s",\n%(message)s'))
+        errorHandler.setFormatter(logging.Formatter('"%(asctime)s","%(message)s'))
 
         self.log.addHandler(errorHandler)
 
@@ -908,6 +980,13 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         dialog = StatsGui(dataFolder, bird_name)
         dialog.exec_()
 
+    def get_raw_trial_data(self, boxnumber):
+        bird_name = str(self.birdEntryBoxList[boxnumber].toPlainText())
+        dataFolder = os.path.join(self.experimentPath, bird_name)
+        performance = analysis.Performance(dataFolder)
+        output_path = QtGui.QFileDialog.getSaveFileName(self, "Save As...", dataFolder, "CSV Files (*.csv)")
+        if output_path:
+            performance.raw_trial_data.to_csv(str(output_path))
     # endregion
 
     # region GUI application functions
@@ -956,6 +1035,12 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             if not shutdownPrev:
                 if self.args['debug'] is False:
                     self.start_all()
+
+        try:
+            from pyoperant.local import DATAPATH
+        except ImportError:
+            DATAPATH = '/home/rouse/bird/data'
+        self.experimentPath = DATAPATH
 
     def close_application(self, event):
         ## Save settings to file to reload for next time

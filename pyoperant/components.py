@@ -1,7 +1,7 @@
 ## Last Modified: 1/17/18 (AR) Added LED indicator, water reinforcement classes
 
 import datetime
-from pyoperant import hwio, utils, ComponentError, InterfaceError
+from pyoperant import hwio, utils, ComponentError, InterfaceError, ArduinoException
 
 
 class BaseComponent(object):
@@ -233,8 +233,8 @@ class PeckPort(BaseComponent):
         """
         try:
             return self.IR.read()
-        except InterfaceError:
-            raise InterfaceError("Serial connection not responding")
+        except (ArduinoException, InterfaceError) as e:
+            raise InterfaceError(e)
 
     def off(self):
         """ Turns the LED off 
@@ -291,7 +291,10 @@ class PeckPort(BaseComponent):
         datetime
             Timestamp of the IR beam being broken.
         """
-        return self.IR.poll(timeout)
+        try:
+            return self.IR.poll(timeout)
+        except (ArduinoException, InterfaceError) as e:
+            raise InterfaceError(e)
 
 
 ## House Light ##

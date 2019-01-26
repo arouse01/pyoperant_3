@@ -147,18 +147,26 @@ class ArduinoInterface(base_.BaseInterface):
             self.device.flushInput()
         self.device.write(self._make_arg(channel, 0))
         # Also need to make sure self.device.read() returns something that ord can work with. Possibly except TypeError
-        while True:
+        while True:  # is this While loop necessary? can it just call the try statement once?
             try:
-                v = ord(self.device.read())
-                break
-                # serial.SerialException("Testing")
+                t = self.device.read()
+                # logger.debug("Read value of %s from channel %d on %s" % (t, channel, self))
             except serial.SerialException:
                 # This is to make it robust in case it accidentally disconnects or you try to access the arduino in
                 # multiple ways
                 # self.reconnect_panel()
+                logger.info('Serial connection issue - serialException')
                 raise ArduinoException("Serial connection interrupted")
+
+            try:
+                if len(t) == 0:  # t == 0 if channel is false (serialjava.py changes actual value of -1)
+                    v = 0
+                else:
+                    v = ord(t)
+                break
             except TypeError:
-                ArduinoException("Could not read from arduino device")
+                logger.error("Device %s returned unexpected value of %d on reading channel %d" % (self, t, channel))
+                raise ArduinoException("returned unexpected value of %d on reading channel %d" % (t, channel))
                 # raise InterfaceError("Serial connection not responding")
 
         logger.debug("Read value of %d from channel %d on %s" % (v, channel, self))
@@ -190,9 +198,11 @@ class ArduinoInterface(base_.BaseInterface):
         while True:
             try:
                 result = self._read_bool(channel)
-            except InterfaceError:
+            except (InterfaceError, ArduinoException):
                 # self.reconnect_panel()
-                raise ArduinoException('Serial device reconnected')
+                logger.info('InterfaceError during polling')
+                raise ArduinoException('InterfaceError during polling')
+
             if not result:
                 logger.debug("Polling: %s" % False)
                 # Read returned False. If the channel was previously "held" then that flag is removed

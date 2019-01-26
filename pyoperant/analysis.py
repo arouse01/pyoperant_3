@@ -300,6 +300,22 @@ class Performance(object):
                 with open(jsonPath, 'r') as f:
                     jsonData = json.load(f)
                 blockName = jsonData['block_design']['order'][0]
+                # update for old names (before blocks had more descriptive names)
+                if blockName == 'training 1':
+                    blockName = 'training 125'
+                elif blockName == 'training 2':
+                    blockName = 'training 150'
+                elif blockName == 'training 3':
+                    blockName = 'training 125/150'
+                elif blockName == 'training 4':
+                    blockName = 'training 100'
+                elif blockName == 'training 4b':
+                    blockName = 'training 175'
+                elif blockName == 'training 5':
+                    blockName = 'training 100/125/150'
+                elif blockName == 'training 5b':
+                    blockName = 'training 125/150/175'
+
                 for j in range(currentLine - 1):
                     data_dict['Block'].append(blockName)
         # endregion

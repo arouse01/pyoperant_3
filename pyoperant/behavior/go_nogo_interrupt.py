@@ -126,31 +126,35 @@ class GoNoGoInterruptExp(base.BaseExp):
         # If hardware connection is interrupted, like serial communication fails,
         """:return: None
         """
+        # Disconnected devices, at least on Linux, show the
+        # behavior that they are always ready to read immediately
+        # but reading returns nothing.
         device_name = self.panel.interfaces['arduino'].device_name
-        device = self.panel.interfaces['arduino'].device
+        # device = self.panel.interfaces['arduino'].device
         self.log.info('Serial device %s not responding, reconnecting' % device_name)
         self.panel.interfaces['arduino'].device.close()
         try:
             self.panel.interfaces['arduino'].device.open()
         except (InterfaceError, ArduinoException):
+            self.log.info('First attempt failed, retrying')
             try:
                 utils.wait(0.5)
                 self.panel.interfaces['arduino'].device.open()
             except (InterfaceError, ArduinoException):
                 raise InterfaceError('Could not open serial device %s' % device_name)
 
-        self.log.debug("Waiting for device to open")
-        device.readline()
-        device.flushInput()
-        self.log.info("Successfully reopened device %s" % device_name)
+        # self.log.debug("Waiting for device to open")
+        # device.readline()
+        # device.flushInput()
+        # self.log.info("Successfully reopened device %s" % device_name)
 
         # Reinitiate the inputs and outputs
-        for reInput in self.panel.inputs:
-            reInput.config()
-        for reOutput in self.panel.outputs:
-            reOutput.config()
+        # for reInput in self.panel.inputs:
+        #     reInput.config()
+        # for reOutput in self.panel.outputs:
+        #     reOutput.config()
         # Reconnect sound
-        self.reconnect_audio()
+        # self.reconnect_audio()
         # audioDevice = self.panel.speaker.interface
         # audioDevice.close()
         # try:
@@ -167,7 +171,7 @@ class GoNoGoInterruptExp(base.BaseExp):
         try:
             return function(*args, **kwargs)
         except (ArduinoException, InterfaceError):
-            self.log.info('Teensy function failed, trying to reconnect')
+            # self.log.info('Teensy function failed, trying to reconnect')
             self.reconnect_panel()
             return function(*args, **kwargs)
 
@@ -175,14 +179,15 @@ class GoNoGoInterruptExp(base.BaseExp):
         # If hardware connection is interrupted, like serial communication fails,
         """:return: None
         """
+        device_name = self.panel.interfaces['arduino'].device_name
         audioDevice = self.panel.speaker.interface
         audioDevice.close()
         try:
             audioDevice.open()
         except:
-            raise InterfaceError('could not find pyaudio device %s' % self.device_name)
+            raise InterfaceError('could not find pyaudio device %s' % device_name)
 
-        self.log.info("Successfully reconnected sound for device %s" % self.device_name)
+        self.log.info("Successfully reconnected sound for device %s" % device_name)
 
         # self.panel.speaker = hwio.AudioOutput(interface=self.interfaces['pyaudio'])
 
@@ -718,10 +723,6 @@ class GoNoGoInterruptExp(base.BaseExp):
                 raise EndSession
             else:
                 trial_time = self.try_panel_function(self.panel.trialSens.poll, timeout=15.0)
-                # try:
-                #     trial_time = self.panel.trialSens.poll(timeout=15.0)
-                # except (ArduinoException, InterfaceError):
-                #     self.reconnect_panel()
 
         self.this_trial.time = trial_time
 
@@ -777,7 +778,7 @@ class GoNoGoInterruptExp(base.BaseExp):
                 except (ArduinoException, InterfaceError):  # Trial interrupted by Teensy disconnect, discard trial
                     self.reconnect_panel()
                     self.this_trial.rt = (dt.datetime.now() - response_start).total_seconds()
-                    self.panel.speaker.stop()
+                    self.try_panel_function(self.panel.speaker.stop)
                     self.this_trial.response = 'ERR'
 
                     response_event = utils.Event(name=self.parameters['classes'][class_]['component'],
@@ -801,7 +802,7 @@ class GoNoGoInterruptExp(base.BaseExp):
                         self.this_trial.events.append(response_event)
                         self.log.info('response: %s' % self.this_trial.response)
                         return
-            utils.wait(.015)
+            utils.wait(.010)
 
     def response_post(self):
         for class_, port in self.class_assoc.items():
