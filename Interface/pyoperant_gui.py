@@ -1408,6 +1408,29 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
     """
     Code for creating and managing dialog that displays bird's performance stats
     Added 11/30/18 by AR
+    This is probably done all very very wrong:
+        - Pyqt can't easily display a DataFrame with multiple indices per axis, so the whole
+        DataFrame is exported to a csv and that file is then imported directly into the QTableView.
+        - Importing the data from the CSV uses hard-coded column numbers, because dynamically assigning them was
+        drastically slower than hardcoded values (2 seconds vs 15 seconds). God help you if the pyoperant output csv
+        changes column order at any point (although adding new columns at the end shouldn't affect existing column
+        indices)
+        - It was frustratingly hard to get in-place filtering of the csv data (without completely removing or
+        adding new columns), because QTableView uses a model, so all columns have to be referenced by index rather
+        than name. Therefore all filtering, grouping, and column selection is done within pandas in the analysis.py
+        file, and the table is regenerated each time a change is made to the filters/groups/columns.
+        - Filters and grouping variables are also rebuilt each time the table is recalculated rather than maintaining a
+        modifiable list
+        - Filter vars keep all old values since they repopulate based on currently available columns (so if a column
+        was filtered out, it would no longer appear in the filter list, leaving no way to restore it without removing
+        all filters)
+        - The column/field list is static, stored in analysis.py, so adding any additional columns or calculations
+        might require modifying that list
+        - Originally, the beta column was simply the character β, but that's a unicode character and converting back
+        and forth between ascii and utf-8 was a nightmare to keep straight
+        - For the table itself, NR columns have a line break added so the name isn't too long in the table. Therefore,
+        any place that reads directly from the underlying model (like build_filter_value_lists) needs to have
+        the line break removed from all column names so the name can be used properly as a key for various dicts.
     """
     def __init__(self, data_folder, bird_name):
         super(self.__class__, self).__init__()
@@ -1538,7 +1561,7 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
         # Make sure all displayed fields are checked in Select Column pane
         existingHeaders = []  # Get list of headers, since they can't be pulled out of model as list (AFAIK)
         for j in xrange(self.model.columnCount()):  # for all fields available in model
-            columnName = unicode(self.model.headerData(j, QtCore.Qt.Horizontal).toString())
+            columnName = unicode(self.model.headerData(j, QtCore.Qt.Horizontal).toString()).replace('\n(NR)', ' (NR)')
             self.silent_checkbox_change(self.fieldManagement[columnName]['itemWidget'], True)
             existingHeaders.append(columnName)
 
@@ -1617,8 +1640,8 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
                 self.dataGroups.append(checkbox)
 
         # enable/disable raw field checkboxes depending on group state
-        for field in (rawFields for rawFields in self.fieldManagement if self.fieldManagement[rawFields][
-                                                                             'type'] == 'raw'):
+        for field in (rawFields for rawFields in self.fieldManagement
+                      if self.fieldManagement[rawFields]['type'] == 'raw'):
             if len(self.dataGroups) > 0:
                 self.fieldManagement[field]['itemWidget'].setEnabled(False)
             else:
@@ -1739,7 +1762,8 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
         # Get values from model rather than table because table might be filtered and we want to see all available
         # fields
         for column in xrange(self.model.columnCount()):
-            columnName = unicode(self.model.headerData(column, QtCore.Qt.Horizontal).toString())
+            columnName = unicode(self.model.headerData(column, QtCore.Qt.Horizontal).toString()).replace('\n(NR)',
+                                                                                                         ' (NR)')
             if self.fieldManagement[columnName]['filter']['type'] == 'list':
                 valueList = []
                 for row in xrange(self.model.rowCount()):
@@ -1874,7 +1898,7 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
         for x in self.fieldManagement:
             if not self.fieldManagement[x]['itemWidget'].checkState():
                 dropCols.append(x)
-        dropCols = [col.replace(' (NR)', '\n(NR)') for col in dropCols]
+        # dropCols = [col.replace(' (NR)', '\n(NR)') for col in dropCols]
         self.group_by()
         perform = analysis.Performance(self.data_folder)
         perform.filter_data(filters=self.filters)
@@ -1908,6 +1932,8 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
                     for column in range(len(row)):
                         # reencode each item in header list as utf-8 so beta can be displayed properly
                         row[column] = row[column].decode('utf-8')
+                        row[column] = row[column].replace(' (NR)', '\n(NR)')
+
                     self.model.setHorizontalHeaderLabels(row)
 
                 else:  # set items in rows of table

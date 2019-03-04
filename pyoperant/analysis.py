@@ -227,13 +227,13 @@ def field_list():
     fieldList = ['Subject', 'File', 'Session', 'File Count', 'Date', 'Time', 'Block', 'Index', 'Stimulus', 'Class']
     fieldList += ['Response Type', 'Response', 'RT', 'Reward', 'Punish']
 
-    fieldList += ["d'", "d'\n(NR)", u'Beta', u'Beta\n(NR)', 'Trials']
-    fieldList += ['S+', 'S+\n(NR)', 'S-', 'S-\n(NR)', 'Total Corr', 'Total Corr\n(NR)']
-    fieldList += ['Hit', 'Miss', 'Miss\n(NR)', 'FA', 'CR', 'CR\n(NR)']
+    fieldList += ["d'", "d' (NR)", u'Beta', u'Beta (NR)', 'Trials']
+    fieldList += ['S+', 'S+ (NR)', 'S-', 'S- (NR)', 'Total Corr', 'Total Corr (NR)']
+    fieldList += ['Hit', 'Miss', 'Miss (NR)', 'FA', 'CR', 'CR (NR)']
 
-    fieldList += ["Probe d'", "Probe d'\n(NR)", u'Probe Beta', u'Probe Beta\n(NR)', 'Probe Trials']
-    fieldList += ['Probe S+', 'Probe S+\n(NR)', 'Probe S-', 'Probe S-\n(NR)', 'Probe Tot Corr', 'Probe Tot Corr\n(NR)']
-    fieldList += ['Probe Hit', 'Probe Miss', 'Probe Miss\n(NR)', 'Probe FA', 'Probe CR', 'Probe CR\n(NR)']
+    fieldList += ["Probe d'", "Probe d' (NR)", u'Probe Beta', u'Probe Beta (NR)', 'Probe Trials']
+    fieldList += ['Probe S+', 'Probe S+ (NR)', 'Probe S-', 'Probe S- (NR)', 'Probe Tot Corr', 'Probe Tot Corr (NR)']
+    fieldList += ['Probe Hit', 'Probe Miss', 'Probe Miss (NR)', 'Probe FA', 'Probe CR', 'Probe CR (NR)']
     return fieldList
 
 
@@ -554,15 +554,15 @@ class Performance(object):
                 data_dict['FA'] = []
                 data_dict['Miss'] = []
                 data_dict['CR'] = []
-                data_dict['Miss\n(NR)'] = []
-                data_dict['CR\n(NR)'] = []
+                data_dict['Miss (NR)'] = []
+                data_dict['CR (NR)'] = []
                 data_dict['Trials'] = []
                 data_dict['Probe Hit'] = []
                 data_dict['Probe FA'] = []
                 data_dict['Probe Miss'] = []
                 data_dict['Probe CR'] = []
-                data_dict['Probe Miss\n(NR)'] = []
-                data_dict['Probe CR\n(NR)'] = []
+                data_dict['Probe Miss (NR)'] = []
+                data_dict['Probe CR (NR)'] = []
                 data_dict['Probe Trials'] = []
 
                 for curr_csv in csvList:
@@ -629,15 +629,15 @@ class Performance(object):
                                     data_dict['FA'].append(1 if response_type == 'response_FA' else 0)
                                     data_dict['Miss'].append(1 if response_type == 'response_Miss' else 0)
                                     data_dict['CR'].append(1 if response_type == 'response_CR' else 0)
-                                    data_dict['Miss\n(NR)'].append(1 if response_type == 'response_Miss_NR' else 0)
-                                    data_dict['CR\n(NR)'].append(1 if response_type == 'response_CR_NR' else 0)
+                                    data_dict['Miss (NR)'].append(1 if response_type == 'response_Miss_NR' else 0)
+                                    data_dict['CR (NR)'].append(1 if response_type == 'response_CR_NR' else 0)
                                     data_dict['Trials'].append(1 if response_type[0:4] == 'resp' else 0)
                                     data_dict['Probe Hit'].append(1 if response_type == 'probe_hit' else 0)
                                     data_dict['Probe FA'].append(1 if response_type == 'probe_FA' else 0)
                                     data_dict['Probe Miss'].append(1 if response_type == 'probe_Miss' else 0)
                                     data_dict['Probe CR'].append(1 if response_type == 'probe_CR' else 0)
-                                    data_dict['Probe Miss\n(NR)'].append(1 if response_type == 'probe_Miss_NR' else 0)
-                                    data_dict['Probe CR\n(NR)'].append(1 if response_type == 'probe_CR_NR' else 0)
+                                    data_dict['Probe Miss (NR)'].append(1 if response_type == 'probe_Miss_NR' else 0)
+                                    data_dict['Probe CR (NR)'].append(1 if response_type == 'probe_CR_NR' else 0)
                                     data_dict['Probe Trials'].append(1 if response_type[0:4] == 'prob' else 0)
 
                                 currentLine += 1
@@ -730,15 +730,15 @@ class Performance(object):
                 data_dict['FA'] = response_FA
                 data_dict['Miss'] = response_Miss
                 data_dict['CR'] = response_CR
-                data_dict['Miss\n(NR)'] = response_Miss_NR
-                data_dict['CR\n(NR)'] = response_CR_NR
+                data_dict['Miss (NR)'] = response_Miss_NR
+                data_dict['CR (NR)'] = response_CR_NR
                 data_dict['Trial Count'] = response_tot
                 data_dict['Probe Hit'] = probe_hit
                 data_dict['Probe FA'] = probe_FA
                 data_dict['Probe Miss'] = probe_Miss
                 data_dict['Probe CR'] = probe_CR
-                data_dict['Probe Miss\n(NR)'] = probe_Miss_NR
-                data_dict['Probe CR\n(NR)'] = probe_CR_NR
+                data_dict['Probe Miss (NR)'] = probe_Miss_NR
+                data_dict['Probe CR (NR)'] = probe_CR_NR
                 data_dict['Probe Trials'] = probe_tot
             elif a == 2:
                 # Too slow!
@@ -750,9 +750,9 @@ class Performance(object):
                     lambda row: self.classify_trial_binary(row, 'response_Miss'), axis=1)
                 data_dict['CR'] = data_dict.apply(
                     lambda row: self.classify_trial_binary(row, 'response_CR'), axis=1)
-                data_dict['Miss\n(NR)'] = data_dict.apply(
+                data_dict['Miss (NR)'] = data_dict.apply(
                     lambda row: self.classify_trial_binary(row, 'response_Miss_NR'), axis=1)
-                data_dict['CR\n(NR)'] = data_dict.apply(
+                data_dict['CR (NR)'] = data_dict.apply(
                     lambda row: self.classify_trial_binary(row, 'response_CR_NR'), axis=1)
                 data_dict['Trial Count'] = data_dict.apply(
                     lambda row: self.classify_trial_binary(row, 'training'), axis=1)
@@ -764,9 +764,9 @@ class Performance(object):
                     lambda row: self.classify_trial_binary(row, 'probe_Miss'), axis=1)
                 data_dict['Probe CR'] = data_dict.apply(
                     lambda row: self.classify_trial_binary(row, 'probe_CR'), axis=1)
-                data_dict['Probe Miss\n(NR)'] = data_dict.apply(
+                data_dict['Probe Miss (NR)'] = data_dict.apply(
                     lambda row: self.classify_trial_binary(row, 'probe_Miss_NR'), axis=1)
-                data_dict['Probe CR\n(NR)'] = data_dict.apply(
+                data_dict['Probe CR (NR)'] = data_dict.apply(
                     lambda row: self.classify_trial_binary(row, 'probe_CR_NR'), axis=1)
                 data_dict['Probe Trials'] = data_dict.apply(
                     lambda row: self.classify_trial_binary(row, 'probe'), axis=1)
@@ -806,15 +806,15 @@ class Performance(object):
                 data_dict['FA'] = response_FA
                 data_dict['Miss'] = response_Miss
                 data_dict['CR'] = response_CR
-                data_dict['Miss\n(NR)'] = response_Miss_NR
-                data_dict['CR\n(NR)'] = response_CR_NR
+                data_dict['Miss (NR)'] = response_Miss_NR
+                data_dict['CR (NR)'] = response_CR_NR
                 data_dict['Trial Count'] = response_tot
                 data_dict['Probe Hit'] = probe_hit
                 data_dict['Probe FA'] = probe_FA
                 data_dict['Probe Miss'] = probe_Miss
                 data_dict['Probe CR'] = probe_CR
-                data_dict['Probe Miss\n(NR)'] = probe_Miss_NR
-                data_dict['Probe CR\n(NR)'] = probe_CR_NR
+                data_dict['Probe Miss (NR)'] = probe_Miss_NR
+                data_dict['Probe CR (NR)'] = probe_CR_NR
                 data_dict['Probe Trials'] = probe_tot
             elif a == 3:
                 # Too slow!
@@ -826,9 +826,9 @@ class Performance(object):
                     lambda row: self.classify_trial_binary(row, 'response_Miss'), axis=1)
                 data_dict['CR'] = data_dict.apply(
                     lambda row: self.classify_trial_binary(row, 'response_CR'), axis=1)
-                data_dict['Miss\n(NR)'] = data_dict.apply(
+                data_dict['Miss (NR)'] = data_dict.apply(
                     lambda row: self.classify_trial_binary(row, 'response_Miss_NR'), axis=1)
-                data_dict['CR\n(NR)'] = data_dict.apply(
+                data_dict['CR (NR)'] = data_dict.apply(
                     lambda row: self.classify_trial_binary(row, 'response_CR_NR'), axis=1)
                 data_dict['Trial Count'] = data_dict.apply(
                     lambda row: self.classify_trial_binary(row, 'training'), axis=1)
@@ -840,9 +840,9 @@ class Performance(object):
                     lambda row: self.classify_trial_binary(row, 'probe_Miss'), axis=1)
                 data_dict['Probe CR'] = data_dict.apply(
                     lambda row: self.classify_trial_binary(row, 'probe_CR'), axis=1)
-                data_dict['Probe Miss\n(NR)'] = data_dict.apply(
+                data_dict['Probe Miss (NR)'] = data_dict.apply(
                     lambda row: self.classify_trial_binary(row, 'probe_Miss_NR'), axis=1)
-                data_dict['Probe CR\n(NR)'] = data_dict.apply(
+                data_dict['Probe CR (NR)'] = data_dict.apply(
                     lambda row: self.classify_trial_binary(row, 'probe_CR_NR'), axis=1)
                 data_dict['Probe Trials'] = data_dict.apply(
                     lambda row: self.classify_trial_binary(row, 'probe'), axis=1)
@@ -979,17 +979,17 @@ class Performance(object):
             for k in xrange(groupCount):
                 hitCount = float(groupData['Hit'][k])
                 missCount = float(groupData['Miss'][k])
-                missNRCount = float(groupData['Miss\n(NR)'][k])
+                missNRCount = float(groupData['Miss (NR)'][k])
                 FACount = float(groupData['FA'][k])
                 CRCount = float(groupData['CR'][k])
-                CRNRCount = float(groupData['CR\n(NR)'][k])
+                CRNRCount = float(groupData['CR (NR)'][k])
                 totalTrials = float(groupData['Trials'][k])
                 probeHitCount = float(groupData['Probe Hit'][k])
                 probeMissCount = float(groupData['Probe Miss'][k])
-                probeMissNRCount = float(groupData['Probe Miss\n(NR)'][k])
+                probeMissNRCount = float(groupData['Probe Miss (NR)'][k])
                 probeFACount = float(groupData['Probe FA'][k])
                 probeCRCount = float(groupData['Probe CR'][k])
-                probeCRNRCount = float(groupData['Probe CR\n(NR)'][k])
+                probeCRNRCount = float(groupData['Probe CR (NR)'][k])
                 probeTotalTrials = float(groupData['Probe Trials'][k])
 
                 dayDprime = round(Analysis([[hitCount, missCount], [FACount, CRCount]]).dprime(), 3)
@@ -1069,25 +1069,25 @@ class Performance(object):
 
             # region Add calculated stats to summarized dataframe
             groupData["d'"] = dprimes
-            groupData["d'\n(NR)"] = dprimes_NR
+            groupData["d' (NR)"] = dprimes_NR
             groupData['Beta'] = betas
-            groupData['Beta\n(NR)'] = betas_NR
+            groupData['Beta (NR)'] = betas_NR
             groupData['S+'] = sPlus_correct
-            groupData['S+\n(NR)'] = sPlus_NR_correct
+            groupData['S+ (NR)'] = sPlus_NR_correct
             groupData['S-'] = sMinus_correct
-            groupData['S-\n(NR)'] = sMinus_NR_correct
+            groupData['S- (NR)'] = sMinus_NR_correct
             groupData['Total Corr'] = total_correct
-            groupData['Total Corr\n(NR)'] = total_NR_correct
+            groupData['Total Corr (NR)'] = total_NR_correct
             groupData["Probe d'"] = probeDprimes
-            groupData["Probe d'\n(NR)"] = probeDprimes_NR
+            groupData["Probe d' (NR)"] = probeDprimes_NR
             groupData['Probe Beta'] = probeBetas
-            groupData['Probe Beta\n(NR)'] = probeBetas_NR
+            groupData['Probe Beta (NR)'] = probeBetas_NR
             groupData['Probe S+'] = probePlus_correct
-            groupData['Probe S+\n(NR)'] = probePlus_NR_correct
+            groupData['Probe S+ (NR)'] = probePlus_NR_correct
             groupData['Probe S-'] = probeMinus_correct
-            groupData['Probe S-\n(NR)'] = probeMinus_NR_correct
+            groupData['Probe S- (NR)'] = probeMinus_NR_correct
             groupData['Probe Tot Corr'] = total_probe_correct
-            groupData['Probe Tot Corr\n(NR)'] = total_probe_NR_correct
+            groupData['Probe Tot Corr (NR)'] = total_probe_NR_correct
             # endregion
 
         else:  # If no grouping specified, return raw data
@@ -1170,8 +1170,8 @@ class Performance(object):
             if criteria_result[i] is not False:  # skip next check if already failed previous criteria
                 if 'dprime' in criteria:
                     if use_NR:
-                        dprime_actual = row["d'\n(NR)"]
-                        dprime_min = criteria["d'\n(NR)"]
+                        dprime_actual = row["d' (NR)"]
+                        dprime_min = criteria["d' (NR)"]
                     else:
                         dprime_actual = row["d'"]
                         dprime_min = criteria["d'"]
@@ -1189,7 +1189,7 @@ class Performance(object):
                             proportion = row[category['type']]
                             stim_type = category['type']
                         elif use_NR:
-                            proportion = row['Total Corr\n(NR)']
+                            proportion = row['Total Corr (NR)']
                             stim_type = 'Total_NR'
                         else:
                             proportion = row['Total Corr']
