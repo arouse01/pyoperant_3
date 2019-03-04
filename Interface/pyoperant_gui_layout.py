@@ -11,6 +11,7 @@
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtGui import *
 import math
+import collections
 
 try:
     _from_utf8 = QtCore.QString.fromUtf8
@@ -261,7 +262,7 @@ class UiMainWindow(object):
              ┌──────────┬───────────┬───────────────────────┬─────────┐
             0│boxLbl   	│phaseLbl	│phase	          	    │         │
              ├──────────╔═══════════╧═══════════════════════╗─────────┤
-            1│		    ║statusTop	        (statusLayout)  ║         │
+            1│          ║statusTop	        (statusLayout)  ║         │
              ├──────────╢                                   ╟─────────┤
             2│graphic	║          	          	          	║         │
              ├──────────╫───────────────────────────────────╫─────────┤
@@ -359,8 +360,7 @@ class UiMainWindow(object):
             # # Labels
 
             self.labelBoxList[box].setFont(font12Bold)
-            self.labelBoxList[box].setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing |
-                                                QtCore.Qt.AlignVCenter)
+            self.labelBoxList[box].setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
             self.labelBoxList[box].setFrameShape(QFrame.Panel)
             self.labelBoxList[box].setObjectName(_from_utf8("label_Box%d" % box))
 
@@ -369,7 +369,6 @@ class UiMainWindow(object):
 
             self.phaseBoxList[box].setFont(font11Under)
             self.phaseBoxList[box].setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
-            # self.phaseBoxList[box].setFrameShape(QFrame.Panel)
             self.phaseBoxList[box].setObjectName(_from_utf8("phase_Box%d" % box))
 
             self.lastTrialLabelList[box].setFont(font11)
@@ -477,7 +476,7 @@ class UiMainWindow(object):
         for box in range(0, self.numberOfBoxes):
             self.birdEntryLabelBoxList[box].setText(_translate("MainWindow", "Bird", None))
             self.checkActiveLabelBoxList[box].setText(_translate("MainWindow", "Active", None))
-            self.labelBoxList[box].setText(_translate("MainWindow", _from_utf8("Box %s" % str(box + 1)), None))
+            self.labelBoxList[box].setText(_translate("MainWindow", _from_utf8(" Box %s " % str(box + 1)), None))
             self.phaseLabelList[box].setText(_translate("MainWindow", _from_utf8("Phase: "), None))
             self.lastTrialLabelList[box].setText(_translate("MainWindow", _from_utf8("Last Trial: "), None))
             self.paramFileButtonBoxList[box].setText(_translate("MainWindow", "...", None))
@@ -593,16 +592,21 @@ class StatsWindow(object):
         sizePolicy_exp = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
         sizePolicy_exp.setHorizontalStretch(0)
         sizePolicy_exp.setVerticalStretch(0)
+        sizePolicy_minEx = QtGui.QSizePolicy(QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.MinimumExpanding)
+        sizePolicy_minEx.setHorizontalStretch(0)
+        sizePolicy_minEx.setVerticalStretch(0)
+        sizePolicy_min = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Minimum)
+        sizePolicy_min.setHorizontalStretch(0)
+        sizePolicy_min.setVerticalStretch(0)
 
         stats_window.setSizePolicy(sizePolicy_exp)
-        stats_window.setMaximumSize(QtCore.QSize(1600, 900))
         font = QtGui.QFont()
         font.setPointSize(11)
 
         self.gridLayout = QtGui.QGridLayout(stats_window)
         self.gridLayout.setObjectName(_from_utf8("gridLayout"))
 
-        # region borders
+        # region grid lines for debugging
         boxGrid = [4, 3]
         drawBorders = False
         if drawBorders:
@@ -638,31 +642,81 @@ class StatsWindow(object):
         self.performance_Table.setFont(font)
         # self.performance_Table.setAlignment(QtCore.Qt.AlignCenter)
         self.performance_Table.setObjectName(_from_utf8("performance_Table"))
-        self.performance_Table.setSelectionMode(2)
-
-        self.export_Button = QtGui.QPushButton(stats_window)
-        self.export_Button.setSizePolicy(sizePolicy_fixed)
-        self.export_Button.setMinimumSize(QtCore.QSize(0, 27))
-        self.export_Button.setMaximumSize(QtCore.QSize(300, 27))
-        self.export_Button.setObjectName(_from_utf8("export_Button"))
-
-        self.done_Button = QtGui.QPushButton(stats_window)
-        self.done_Button.setSizePolicy(sizePolicy_fixed)
-        self.done_Button.setMaximumSize(QtCore.QSize(300, 27))
-        self.done_Button.setObjectName(_from_utf8("done_Button"))
+        self.performance_Table.setSelectionMode(4)
 
         # Analysis Settings
+        self.optionToolbox = QtGui.QToolBox()
+        self.optionToolbox.setFrameShape(1)
+        self.optionToolbox.setMinimumSize(QtCore.QSize(260, 100))
+        self.optionToolbox.setMaximumSize(QtCore.QSize(800, 1600))
 
-        self.optionGrid = QtGui.QFormLayout()
-        # self.optionGrid.setSizePolicy(sizePolicy_fixed)
-        self.optionGrid.setObjectName(_from_utf8("optionGrid"))
-        self.optionGrid.setLabelAlignment(QtCore.Qt.AlignRight)
-        self.optionGrid.setSizeConstraint(QtGui.QLayout.SetFixedSize)
+        # region Grouping section
+        self.groupGrid = QtGui.QFormLayout()
+        self.groupGrid.setObjectName(_from_utf8("groupGrid"))
+        self.groupGrid.setLabelAlignment(QtCore.Qt.AlignRight)
+        self.groupGrid.setFormAlignment(QtCore.Qt.AlignHCenter)
+        # self.groupGrid.setSizeConstraint(QtGui.QLayout.SetFixedSize)
 
-        self.menuGrid = QtGui.QHBoxLayout()
-        # self.optionGrid.setSizePolicy(sizePolicy_fixed)
-        self.menuGrid.setObjectName(_from_utf8("menuGrid"))
+        # region specific groupbys
+        self.groupByCheckboxes = collections.OrderedDict()  # orderedDict so grouping can be in order
+        self.groupByWidget = QtGui.QWidget()
+        self.groupByWidget.setLayout(self.groupGrid)
+        self.groupByWidget.setSizePolicy(sizePolicy_exp)
+        # endregion
 
+        # region filtering section
+        self.filterGrid = QtGui.QFormLayout()
+        self.filterGrid.setObjectName(_from_utf8("filterGrid"))
+        self.filterGrid.setLabelAlignment(QtCore.Qt.AlignRight)
+        self.filterGrid.setFormAlignment(QtCore.Qt.AlignHCenter)
+        self.filterGrid.setSizeConstraint(QtGui.QLayout.SetFixedSize)
+
+        self.filterByWidget = QtGui.QWidget()
+        self.filterByWidget.setLayout(self.filterGrid)
+        # endregion
+
+        # region Field selection section
+        self.fieldGrid = QtGui.QGridLayout()
+        self.fieldGrid.setObjectName(_from_utf8("fieldGrid"))
+        self.fieldGrid.setAlignment(QtCore.Qt.AlignCenter)
+        # self.fieldGrid.setSizeConstraint(QtGui.QLayout.SetFixedSize)
+
+        self.fieldScroll = QtGui.QScrollArea()
+        self.fieldScroll.setMinimumSize(QtCore.QSize(100, 150))
+        self.fieldScroll.setMaximumSize(QtCore.QSize(300, 500))
+        self.fieldScroll.setWidgetResizable(True)
+
+        self.fieldList = QtGui.QVBoxLayout()
+        self.fieldList.setObjectName(_from_utf8("fieldList"))
+        self.fieldList.setSpacing(0)
+        # self.fieldList.setLayoutSpacing(0)
+        # self.fieldList.setLabelAlignment(QtCore.Qt.AlignRight)
+        self.fieldWidget = QtGui.QWidget()
+        self.fieldWidget.setLayout(self.fieldList)
+        self.fieldScroll.setWidget(self.fieldWidget)
+        # self.fieldList.setSelectionMode(QtGui.QListWidget.MultiSelection)
+
+        self.fieldListSelectAll = QtGui.QPushButton(stats_window)
+        self.fieldListSelectAll.setMinimumSize(QtCore.QSize(50, 27))
+        self.fieldListSelectAll.setMaximumSize(QtCore.QSize(90, 27))
+        self.fieldListSelectAll.setSizePolicy(sizePolicy_min)
+        self.fieldListSelectNone = QtGui.QPushButton(stats_window)
+        self.fieldListSelectNone.setMinimumSize(QtCore.QSize(50, 27))
+        self.fieldListSelectNone.setMaximumSize(QtCore.QSize(90, 27))
+        self.fieldListSelectNone.setSizePolicy(sizePolicy_min)
+
+        self.fieldSelectWidget = QtGui.QWidget()
+        self.fieldSelectWidget.setLayout(self.fieldGrid)
+        # endregion
+
+        # region Preset Options
+        self.presetsGrid = QtGui.QFormLayout()
+        self.presetsGrid.setObjectName(_from_utf8("presetsGrid"))
+        self.presetsGrid.setLabelAlignment(QtCore.Qt.AlignRight)
+        self.presetsGrid.setFormAlignment(QtCore.Qt.AlignHCenter)
+        # self.presetsGrid.setSizeConstraint(QtGui.QLayout.SetFixedSize)
+
+        # region Specific presets
         # Use only trials where subject responded, or include all trials?
         self.noResponse_Checkbox = QtGui.QCheckBox(stats_window)
         self.noResponse_Checkbox.setSizePolicy(sizePolicy_fixed)
@@ -678,20 +732,68 @@ class StatsWindow(object):
 
         # Include raw counts
         self.raw_Checkbox = QtGui.QCheckBox(stats_window)
-        self.probe_Checkbox.setSizePolicy(sizePolicy_fixed)
-        self.probe_Checkbox.setMaximumSize(QtCore.QSize(27, 27))
-        self.probe_Checkbox.setObjectName(_from_utf8("raw_Checkbox"))
+        self.raw_Checkbox.setSizePolicy(sizePolicy_fixed)
+        self.raw_Checkbox.setMaximumSize(QtCore.QSize(27, 27))
+        self.raw_Checkbox.setObjectName(_from_utf8("raw_Checkbox"))
+        # endregion
 
-        self.optionGrid.addRow(QLabel("Include 'No Response' Trials"), self.noResponse_Checkbox)
-        self.optionGrid.addRow(QLabel("Include Probe Trials"), self.probe_Checkbox)
-        self.optionGrid.addRow(QLabel("Include Raw Trial Counts"), self.raw_Checkbox)
+        self.presetsGrid.addRow(QLabel("Include NR Trials"), self.noResponse_Checkbox)
+        self.presetsGrid.addRow(QLabel("Include Probe Trials"), self.probe_Checkbox)
+        self.presetsGrid.addRow(QLabel("Include Raw Trial Counts"), self.raw_Checkbox)
+        self.presetsWidget = QtGui.QWidget()
+        self.presetsWidget.setLayout(self.presetsGrid)
+        # endregion
+
+        # region Menu buttons at bottom
+        self.menuGrid = QtGui.QHBoxLayout()
+        self.menuGrid.setObjectName(_from_utf8("menuGrid"))
+
+        self.export_Button = QtGui.QPushButton(stats_window)
+        self.export_Button.setSizePolicy(sizePolicy_fixed)
+        self.export_Button.setMinimumSize(QtCore.QSize(0, 27))
+        self.export_Button.setMaximumSize(QtCore.QSize(300, 27))
+        self.export_Button.setObjectName(_from_utf8("export_Button"))
+
+        self.done_Button = QtGui.QPushButton(stats_window)
+        self.done_Button.setSizePolicy(sizePolicy_fixed)
+        self.done_Button.setMaximumSize(QtCore.QSize(300, 27))
+        self.done_Button.setObjectName(_from_utf8("done_Button"))
 
         self.menuGrid.addWidget(self.export_Button)
         self.menuGrid.addWidget(self.done_Button)
+        # endregion
+
+        """
+            # Layout schematic
+
+                        0	        	     1	    
+             ┌──────────────────────╔═══════════════════╗
+            0│performance_table    	║groupGrid  	    ║
+             │                      ╟───────────────────╢
+             │                      ║filterBy           ║
+             │                      ╟───────────────────╢
+             │                      ║fieldSelect        ║
+             │                      ╟───────────────────╢
+             │                      ║presetsGrid        ║
+             ├──────────────────────╚═══════════════════╝
+            1│menuGrid                                  │
+             └──────────────────────────────────────────┘
+             ┬┴├┤─│┼┌┐└┘  ╔╗╚╝╟╢╫═║
+        """
+        self.optionToolbox.addItem(self.groupByWidget, 'Group by:')
+        self.optionToolbox.addItem(self.filterByWidget, 'Filter by:')
+        self.optionToolbox.addItem(self.fieldSelectWidget, 'Select columns:')
+        # self.optionToolbox.addItem(self.presetsWidget, 'Preset Views:')
+
+        self.fieldGrid.addWidget(self.fieldScroll, 0, 0, 1, 2)
+        self.fieldGrid.addWidget(self.fieldListSelectAll, 1, 0, 1, 1)
+        self.fieldGrid.addWidget(self.fieldListSelectNone, 1, 1, 1, 1)
+        self.fieldGrid.addWidget(self.presetsWidget, 2, 0, 1, 2)
 
         self.gridLayout.addWidget(self.performance_Table, 0, 0, 1, 1)
-        self.gridLayout.addLayout(self.optionGrid, 0, 1, 1, 1)
-        self.gridLayout.addLayout(self.menuGrid, 2, 0, 1, 1)
+        # self.gridLayout.addWidget(self.optionGridBox, 0, 1, 1, 1)
+        self.gridLayout.addWidget(self.optionToolbox, 0, 1, 1, 1)
+        self.gridLayout.addLayout(self.menuGrid, 1, 0, 1, 2)
 
         self.retranslate_ui(stats_window)
         QtCore.QMetaObject.connectSlotsByName(stats_window)
@@ -703,3 +805,5 @@ class StatsWindow(object):
         self.noResponse_Checkbox.setText(_translate("stats_window", "", None))
         self.probe_Checkbox.setText(_translate("stats_window", "", None))
         self.raw_Checkbox.setText(_translate("stats_window", "", None))
+        self.fieldListSelectAll.setText(_translate("stats_window", "Select All", None))
+        self.fieldListSelectNone.setText(_translate("stats_window", "Select None", None))

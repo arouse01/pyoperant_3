@@ -80,6 +80,8 @@ class GoNoGoInterruptExp(base.BaseExp):
                                'reward',
                                'punish',
                                'time',
+                               'subject',
+                               'block'
                                ]
 
         if 'add_fields_to_save' in self.parameters.keys():
@@ -121,6 +123,14 @@ class GoNoGoInterruptExp(base.BaseExp):
 
         if 'subject_type' not in self.parameters:
             self.parameters['subject_type'] = 'bird'
+
+        # # Get blocks from separate file (for centrally-modifiable block definitions)
+        if 'block_path' in self.parameters['block_design']:
+            block_path = self.parameters['block_design']['block_path']
+            if os.path.isfile(block_path):
+                with open(block_path, 'rb') as block_file:
+                    blocks = json.load(block_file)
+                    self.parameters['block_design']['blocks'] = blocks['blocks']
 
     def reconnect_panel(self):
         # If hardware connection is interrupted, like serial communication fails,
@@ -201,6 +211,14 @@ class GoNoGoInterruptExp(base.BaseExp):
         with open(self.data_csv, 'wb') as data_fh:
             trialWriter = csv.writer(data_fh)
             trialWriter.writerow(self.fields_to_save)
+
+    def save(self):
+        json_path = os.path.join(self.parameters['experiment_path'], 'settings_files')
+        if not os.path.exists(json_path):
+            os.mkdir(json_path)
+        self.snapshot_f = os.path.join(json_path, self.parameters['subject'] + '_settings_' + self.timestamp + '.json')
+        with open(self.snapshot_f, 'wb') as config_snap:
+            json.dump(self.parameters, config_snap, sort_keys=True, indent=4)
 
     def run(self):  # Overwrite base method to include ad lib water when sessions not running
 
@@ -358,15 +376,18 @@ class GoNoGoInterruptExp(base.BaseExp):
             if 'auto_advance' in self.parameters['block_design'] and self.parameters['block_design']['auto_advance']:
                 if len(self.parameters['block_design']['order']) > 1:  # Only check if there's more than one block in
                     # list (so the pyoperant doesn't quit because the last block was removed)
-                    if 'criteria' in self.parameters['block_design']['blocks'][self.condition]:  # Only check
+                    nextBlock = next(iter(self.parameters['block_design']['order']))
+                    if 'criteria' in self.parameters['block_design']['blocks'][nextBlock]:  # Only check
                         # criteria if actually specified
-                        if self.check_performance():
-                            self.parameters['block_design']['order'].pop(0)  # Remove block from order
+                        self.log.debug("Checking performance criteria for {}".format(nextBlock))
+                        if self.check_performance(nextBlock):
+                            self.condition = self.parameters['block_design']['order'].pop(0)  # Remove block from order
                             # with open(self.parameters['config_file'], 'wb') as config_snap:
                             #     json.load(config)
                             with open(self.parameters['config_file'], 'wb') as config_snap:
                                 json.dump(self.parameters, config_snap, sort_keys=True, indent=4)
-                                self.log.info('Stage %s complete!' % self.condition)
+                                self.log.info('Stage {} complete!'.format(self.condition))
+                            self.save()
 
             self.log.info('Next sessions: %s' % self.parameters['block_design']['order'])
             self.session_q = queues.block_queue(self.parameters['block_design']['order'])
@@ -549,6 +570,10 @@ class GoNoGoInterruptExp(base.BaseExp):
         trial.session = self.session_id
         trial.annotate(**conditions)
 
+        trial.subject = self.parameters['subject']
+        trial.block = self.parameters['block_design']['order'][trial.session - 1]
+
+
         self.trials.append(trial)
         self.this_trial = self.trials[-1]
         self.this_trial_index = self.trials.index(self.this_trial)
@@ -685,11 +710,11 @@ class GoNoGoInterruptExp(base.BaseExp):
         if not self.check_session_schedule():
             raise EndSession
 
-    def check_performance(self):
-        criteria = self.parameters['block_design']['blocks'][self.condition]['criteria']
+    def check_performance(self, block_name):
+        criteria = self.parameters['block_design']['blocks'][block_name]['criteria']
         perform = analysis.Performance(self.parameters['experiment_path'])
         five_days_ago = dt.datetime.now() - dt.timedelta(days=5)
-        perform.filter_data(startdate=five_days_ago, block=self.condition)
+        perform.filter_data(startdate=five_days_ago, block=block_name)
         perform.summarize('filtered')
         analyzed_data = perform.analyze(perform.summaryData)
         perform_result = perform.check_criteria(analyzed_data, criteria)
