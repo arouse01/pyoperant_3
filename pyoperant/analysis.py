@@ -242,7 +242,7 @@ class Performance(object):
 
     def __init__(self, experiment_folder):
         # convert experiment_folder to list if single item
-        if type(experiment_folder) is not 'list':
+        if not isinstance(experiment_folder, list):
             experiment_folder = [experiment_folder]
         self.data_dir = []
         self.json_dir = []
@@ -386,6 +386,22 @@ class Performance(object):
 
     def gather_raw_data(self, data_dict):
         # Pull data from across multiple csv files, keeping notation for phase (which comes from the json file)
+
+        # empty vars to start
+        data_dict['Hit'] = []
+        data_dict['FA'] = []
+        data_dict['Miss'] = []
+        data_dict['CR'] = []
+        data_dict['Miss (NR)'] = []
+        data_dict['CR (NR)'] = []
+        data_dict['Trials'] = []
+        data_dict['Probe Hit'] = []
+        data_dict['Probe FA'] = []
+        data_dict['Probe Miss'] = []
+        data_dict['Probe CR'] = []
+        data_dict['Probe Miss (NR)'] = []
+        data_dict['Probe CR (NR)'] = []
+        data_dict['Probe Trials'] = []
 
         # region Read each CSV file
         for dir_index, curr_dir in enumerate(self.data_dir):
@@ -550,20 +566,21 @@ class Performance(object):
                 # a little slower but with flexibility of files with more than one block
 
                 # Add specific response columns to data_dict
-                data_dict['Hit'] = []
-                data_dict['FA'] = []
-                data_dict['Miss'] = []
-                data_dict['CR'] = []
-                data_dict['Miss (NR)'] = []
-                data_dict['CR (NR)'] = []
-                data_dict['Trials'] = []
-                data_dict['Probe Hit'] = []
-                data_dict['Probe FA'] = []
-                data_dict['Probe Miss'] = []
-                data_dict['Probe CR'] = []
-                data_dict['Probe Miss (NR)'] = []
-                data_dict['Probe CR (NR)'] = []
-                data_dict['Probe Trials'] = []
+
+                # data_dict['Hit'] = []
+                # data_dict['FA'] = []
+                # data_dict['Miss'] = []
+                # data_dict['CR'] = []
+                # data_dict['Miss (NR)'] = []
+                # data_dict['CR (NR)'] = []
+                # data_dict['Trials'] = []
+                # data_dict['Probe Hit'] = []
+                # data_dict['Probe FA'] = []
+                # data_dict['Probe Miss'] = []
+                # data_dict['Probe CR'] = []
+                # data_dict['Probe Miss (NR)'] = []
+                # data_dict['Probe CR (NR)'] = []
+                # data_dict['Probe Trials'] = []
 
                 for curr_csv in csvList:
                     csvPath = os.path.join(curr_dir, curr_csv)
@@ -598,6 +615,8 @@ class Performance(object):
                                 blocks[block] = 'training 100/125/150'
                             elif blocks[block] == 'training 5b':
                                 blocks[block] = 'training 125/150/175'
+                            elif blocks[block] == 'shaping phase 0':
+                                blocks[block] = 'shaping 1'
 
                         with open(csvPath, 'rb') as data_file:
                             csv_reader = csv.reader(data_file, delimiter=',')
@@ -642,7 +661,7 @@ class Performance(object):
 
                                 currentLine += 1
 
-                data_dict = pd.DataFrame.from_dict(data_dict)  # Convert to data frame
+        data_dict = pd.DataFrame.from_dict(data_dict)  # Convert to data frame
 
         # endregion
         self.raw_trial_data = data_dict

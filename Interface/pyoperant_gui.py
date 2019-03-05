@@ -93,7 +93,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         fileMenu = mainMenu.addMenu('&File')
 
         analyzeGuiAction = QtGui.QAction("&Analyze", self)
-
+        analyzeGuiAction.triggered.connect(lambda _, b=1: self.analyze_performance(b))
         quitGuiAction = QtGui.QAction("&Quit", self)
         quitGuiAction.triggered.connect(self.close)
         fileMenu.addAction(quitGuiAction)
@@ -192,8 +192,6 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         self.lastTrialList = []
         self.sleepScheduleList = []  # schedule is none if box not active, set when box started
         self.defaultSleepSchedule = [["08:30", "22:30"]]
-
-        # TODO: change defaults for performance window
 
         # region Individual option menu setup
         ## To add an item to the option menu:
@@ -952,8 +950,8 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
                     # self.display_message(boxnumber, logTotalsMessage, target='statusRaw')
 
                     if self.useNRList[boxnumber].isChecked():
-                        logStats = "d' (NR): {dprime_NR:1.2f}      Beta (NR): {bias_NR:1.2f} {bias_description_NR}".format(
-                            **logData)
+                        logStats = "d' (NR): {dprime_NR:1.2f}      " + \
+                                   "Beta (NR): {bias_NR:1.2f} {bias_description_NR}".format(**logData)
                     else:
                         logStats = "d': {dprime:1.2f}      Beta: {bias:1.2f} {bias_description}".format(**logData)
                     logStats.decode('utf8')
@@ -1438,8 +1436,10 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
 
         self.data_folder = data_folder
 
+        self.folder_Button.clicked.connect(self.select_bird)
         self.export_Button.clicked.connect(lambda _, b=self.data_folder: self.export(b))
         self.done_Button.clicked.connect(self.accept)
+
         self.noResponse_Checkbox.stateChanged.connect(lambda _, b='nr': self.field_preset_select(pattern=b))
         self.probe_Checkbox.stateChanged.connect(lambda _, b='probe': self.field_preset_select(pattern=b))
         self.raw_Checkbox.stateChanged.connect(lambda _, b='raw': self.field_preset_select(pattern=b))
@@ -1482,6 +1482,23 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
 
         self.field_preset_select('nr')
         self.recalculate()
+
+    def select_bird(self):
+        # select new data_folder(s)
+
+        dialog = FolderSelect()
+        return_code = dialog.exec_()
+        if return_code:
+            output_path = dialog.checkedPaths
+
+            if output_path:
+                self.data_folder = output_path
+
+                # refresh data
+                self.get_raw_data()
+
+                self.field_preset_select('nr')
+                self.recalculate()
 
     # region Field selection
 
@@ -1907,7 +1924,10 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
                                           sortBy=self.tableSort)
 
         outputFile = 'performanceSummary.csv'
-        output_path = os.path.join(self.data_folder, outputFile)
+        if isinstance(self.data_folder, list):
+            output_path = os.path.join(self.data_folder[0], outputFile)
+        else:
+            output_path = os.path.join(self.data_folder, outputFile)
         self.outputData.to_csv(str(output_path), encoding='utf-8')
         self.refresh_table(output_path)
 
@@ -1955,6 +1975,85 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
         self.refresh_filters()
 
         self.performance_Table.resizeColumnsToContents()
+
+
+class CheckableDirModel(QtGui.QFileSystemModel):
+    def __init__(self, parent=None):
+        QtGui.QFileSystemModel.__init__(self, None)
+        self.checks = {}
+
+    def data(self, index, role=QtCore.Qt.DisplayRole):
+        if role != QtCore.Qt.CheckStateRole:
+            return QtGui.QFileSystemModel.data(self, index, role)
+        else:
+            if index.column() == 0:
+                return self.checkState(index)
+
+    def flags(self, index):
+        return QtGui.QFileSystemModel.flags(self, index) | QtCore.Qt.ItemIsUserCheckable
+
+    def checkState(self, index):
+        if index in self.checks:
+            return self.checks[index]
+        else:
+            return QtCore.Qt.Unchecked
+
+    def setData(self, index, value, role):
+        if role == QtCore.Qt.CheckStateRole and index.column() == 0:
+            self.checks[index] = value
+            self.emit(QtCore.SIGNAL("dataChanged(QModelIndex,QModelIndex)"), index, index)
+            return True
+        return QtGui.QFileSystemModel.setData(self, index, value, role)
+
+    def exportChecked(self):
+        selection = []
+        for c in self.checks.keys():
+            if self.checks[c] == QtCore.Qt.Checked:
+                try:
+
+                    selection.append(str(self.filePath(c).toUtf8()))
+                except:
+                    pass
+        return selection
+
+
+class FolderSelect(QtGui.QDialog, pyoperant_gui_layout.FolderSelectWindow):
+
+    def __init__(self):
+        super(self.__class__, self).__init__()
+        self.setup_ui(self)  # This is defined in pyoperant_gui_layout.py file
+
+        self.data_folder = '/home/rouse/bird/data'
+
+        self.model = CheckableDirModel()
+        self.model.setRootPath(self.data_folder)
+        # folders only
+        self.model.setFilter(QtCore.QDir.Dirs | QtCore.QDir.NoDotAndDotDot)
+
+        self.folder_view.setModel(self.model)
+        self.folder_view.setRootIndex(self.model.index(self.data_folder))
+        self.folder_view.hideColumn(1)
+        self.folder_view.hideColumn(2)
+        self.folder_view.hideColumn(3)
+
+        self.done_button.clicked.connect(self.select)
+        self.cancel_button.clicked.connect(self.cancel)
+        self.change_folder_button.clicked.connect(self.change_folder)
+
+    def cancel(self):
+        self.close()
+
+    def select(self):
+        self.checkedPaths = self.model.exportChecked()
+        self.accept()
+
+    def change_folder(self):
+        newPath = QtGui.QFileDialog.getExistingDirectory(self, "Open Directory", self.data_folder)
+        if newPath:
+            self.data_folder = newPath
+            self.model.setRootPath(self.data_folder)
+            self.folder_view.setModel(self.model)
+            self.folder_view.setRootIndex(self.model.index(self.data_folder))
 
 
 def main():

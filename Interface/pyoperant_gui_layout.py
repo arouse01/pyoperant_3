@@ -748,6 +748,12 @@ class StatsWindow(object):
         self.menuGrid = QtGui.QHBoxLayout()
         self.menuGrid.setObjectName(_from_utf8("menuGrid"))
 
+        self.folder_Button = QtGui.QPushButton(stats_window)
+        self.folder_Button.setSizePolicy(sizePolicy_fixed)
+        self.folder_Button.setMinimumSize(QtCore.QSize(0, 27))
+        self.folder_Button.setMaximumSize(QtCore.QSize(300, 27))
+        self.folder_Button.setObjectName(_from_utf8("folder_Button"))
+        
         self.export_Button = QtGui.QPushButton(stats_window)
         self.export_Button.setSizePolicy(sizePolicy_fixed)
         self.export_Button.setMinimumSize(QtCore.QSize(0, 27))
@@ -759,6 +765,9 @@ class StatsWindow(object):
         self.done_Button.setMaximumSize(QtCore.QSize(300, 27))
         self.done_Button.setObjectName(_from_utf8("done_Button"))
 
+        self.menuGrid.addWidget(self.folder_Button)
+        spacerItem = QtGui.QSpacerItem(200, 20, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Minimum)
+        self.menuGrid.addSpacerItem(spacerItem)
         self.menuGrid.addWidget(self.export_Button)
         self.menuGrid.addWidget(self.done_Button)
         # endregion
@@ -800,6 +809,7 @@ class StatsWindow(object):
 
     def retranslate_ui(self, stats_window):
         stats_window.setWindowTitle(_translate("stats_window", "Performance", None))
+        self.folder_Button.setText(_translate("stats_window", "Select...", None))
         self.export_Button.setText(_translate("stats_window", "Export", None))
         self.done_Button.setText(_translate("stats_window", "Done", None))
         self.noResponse_Checkbox.setText(_translate("stats_window", "", None))
@@ -807,3 +817,88 @@ class StatsWindow(object):
         self.raw_Checkbox.setText(_translate("stats_window", "", None))
         self.fieldListSelectAll.setText(_translate("stats_window", "Select All", None))
         self.fieldListSelectNone.setText(_translate("stats_window", "Select None", None))
+
+
+class FolderSelectWindow(object):
+    def setup_ui(self, folder_window):
+        folder_window.setObjectName(_from_utf8("folder_select_window"))
+        folder_window.resize(500, 400)
+        sizePolicy_fixed = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+        sizePolicy_fixed.setHorizontalStretch(0)
+        sizePolicy_fixed.setVerticalStretch(0)
+        sizePolicy_exp = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        sizePolicy_exp.setHorizontalStretch(0)
+        sizePolicy_exp.setVerticalStretch(0)
+
+        folder_window.setSizePolicy(sizePolicy_exp)
+        font = QtGui.QFont()
+        font.setPointSize(11)
+
+        self.gridLayout = QtGui.QGridLayout(folder_window)
+        self.gridLayout.setObjectName(_from_utf8("gridLayout"))
+
+        self.folder_view = QtGui.QTreeView(folder_window)
+        self.folder_view.setSizePolicy(sizePolicy_exp)
+        self.folder_view.setMinimumSize(QtCore.QSize(500, 300))
+        self.folder_view.setMaximumSize(QtCore.QSize(1600, 1200))
+        self.folder_view.setFont(font)
+        self.folder_view.setAnimated(False)
+        self.folder_view.setObjectName(_from_utf8("folder_view"))
+
+        # self.folder_view.setModel(self.model)
+
+        # region Menu buttons at bottom
+        self.menuBar = QtGui.QHBoxLayout()
+        self.menuBar.setObjectName(_from_utf8("menuBar"))
+
+        self.change_folder_button = QtGui.QPushButton(folder_window)
+        self.change_folder_button.setSizePolicy(sizePolicy_fixed)
+        self.change_folder_button.setMaximumSize(QtCore.QSize(300, 27))
+        self.change_folder_button.setObjectName(_from_utf8("change_folder_button"))
+
+        self.cancel_button = QtGui.QPushButton(folder_window)
+        self.cancel_button.setSizePolicy(sizePolicy_fixed)
+        self.cancel_button.setMaximumSize(QtCore.QSize(300, 27))
+        self.cancel_button.setObjectName(_from_utf8("cancel_button"))
+
+        self.done_button = QtGui.QPushButton(folder_window)
+        self.done_button.setSizePolicy(sizePolicy_fixed)
+        self.done_button.setMaximumSize(QtCore.QSize(300, 27))
+        self.done_button.setObjectName(_from_utf8("done_button"))
+
+        self.menuBar.addWidget(self.change_folder_button)
+        spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Minimum)
+        self.menuBar.addSpacerItem(spacerItem)
+        self.menuBar.addWidget(self.cancel_button)
+        self.menuBar.addWidget(self.done_button)
+        # endregion
+
+        """
+            # Layout schematic
+
+                        0
+             ┌──────────────────────┐
+            0│folder_view          	│
+             │                      │
+             │                      │
+             │                      │
+             │                      │
+             │                      │
+             │                      │
+             ├──────────────────────┤
+            1│menuBar               │
+             └──────────────────────┘
+             ┬┴├┤─│┼┌┐└┘  ╔╗╚╝╟╢╫═║
+        """
+
+        self.gridLayout.addWidget(self.folder_view, 0, 0, 1, 1)
+        self.gridLayout.addLayout(self.menuBar, 1, 0, 1, 0)
+
+        self.retranslate_ui(folder_window)
+        QtCore.QMetaObject.connectSlotsByName(folder_window)
+
+    def retranslate_ui(self, stats_window):
+        stats_window.setWindowTitle(_translate("stats_window", "Select Folder", None))
+        self.done_button.setText(_translate("stats_window", "Done", None))
+        self.cancel_button.setText(_translate("stats_window", "Cancel", None))
+        self.change_folder_button.setText(_translate("stats_window", "Select Base Folder", None))
