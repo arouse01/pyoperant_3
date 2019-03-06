@@ -16,6 +16,7 @@ import logging, traceback
 import datetime as dt  # For auto sleep
 import string  # for modifying strings from the data
 import collections  # allows use of ordered dictionaries
+import io  # for copying cells from analysis table
 
 from pyoperant import analysis  # Analysis creates the data summary tables
 import pandas as pd  # Dataframes for data summary tables
@@ -1304,103 +1305,46 @@ class SolenoidGui(QtGui.QDialog, pyoperant_gui_layout.UiSolenoidControl):
             self.open_Button.setEnabled(True)
 
 
-# class PandasModel(QtCore.QAbstractTableModel):
-#     def __init__(self, data, parent=None):
-#         QtCore.QAbstractTableModel.__init__(self, parent)
-#         self._data = data
-#
-#     def rowCount(self, parent=None):
-#         return len(self._data.values)
-#
-#     def columnCount(self, parent=None):
-#         return self._data.columns.size
-#
-#     def data(self, index, role=QtCore.Qt.DisplayRole):
-#         if index.isValid():
-#             if role == QtCore.Qt.DisplayRole:
-#                 return str(self._data.values[index.row()][index.column()])
-#             return None
-#
-#     def headerData(self, rowcol, orientation, role):
-#         if orientation == QtCore.Qt.Horizontal and role == QtCore.Qt.DisplayRole:
-#             return self._data.columns[rowcol]
-#         if orientation == QtCore.Qt.Vertical and role == QtCore.Qt.DisplayRole:
-#             return self._data.index[rowcol]
-#         return None
+class CopySelectedCellsAction(QtGui.QAction):
+    def __init__(self, table_widget):
+        if not isinstance(table_widget, QtGui.QTableWidget):
+            raise ValueError(str('CopySelectedCellsAction must be initialised with a QTableWidget. A %s was given.' %
+                                 type(table_widget)))
+        super(CopySelectedCellsAction, self).__init__("Copy", table_widget)
+        self.setShortcut('Ctrl+C')
+        self.triggered.connect(self.copy_cells_to_clipboard)
+        self.table_widget = table_widget
 
+    def copy_cells_to_clipboard(self):
+        if len(self.table_widget.selectionModel().selectedIndexes()) > 0:
+            # sort select indexes into rows and columns
+            previous = self.table_widget.selectionModel().selectedIndexes()[0]
+            columns = []
+            rows = []
+            for index in self.table_widget.selectionModel().selectedIndexes():
+                if previous.column() != index.column():
+                    columns.append(rows)
+                    rows = []
+                rows.append(index.data())
+                previous = index
+            columns.append(rows)
+            print columns
 
-# class CustomSortFilterProxyModel(QtGui.QSortFilterProxyModel):
-#     """
-#     Implements a QSortFilterProxyModel that allows for custom
-#     filtering. Add new filter functions using addFilterFunction().
-#     New functions should accept two arguments, the column to be
-#     filtered and the currently set filter string, and should
-#     return True to accept the row, False otherwise.
-#     Filter functions are stored in a dictionary for easy
-#     removal by key. Use the addFilterFunction() and
-#     removeFilterFunction() methods for access.
-#     The filterString is used as the main pattern matching
-#     string for filter functions. This could easily be expanded
-#     to handle regular expressions if needed.
-#
-#     """
-#
-#     def __init__(self, parent=None):
-#         super(CustomSortFilterProxyModel, self).__init__(parent)
-#         self.filterString = ''
-#         self.filterFunctions = {}
-#
-#     def setFilterString(self, text):
-#         """
-#         text : string
-#             The string to be used for pattern matching.
-#         """
-#         self.filterString = text.lower()
-#         self.invalidateFilter()
-#
-#     def addFilterFunction(self, name, new_func):
-#         """
-#         name : hashable object
-#             The object to be used as the key for
-#             this filter function. Use this object
-#             to remove the filter function in the future.
-#             Typically this is a self descriptive string.
-#         new_func : function
-#             A new function which must take two arguments,
-#             the row to be tested and the ProxyModel's current
-#             filterString. The function should return True if
-#             the filter accepts the row, False otherwise.
-#             ex:
-#             model.addFilterFunction(
-#                 'test_columns_1_and_2',
-#                 lambda r,s: (s in r[1] and s in r[2]))
-#         """
-#         self.filterFunctions[name] = new_func
-#         self.invalidateFilter()
-#
-#     def removeFilterFunction(self, name):
-#         """
-#         name : hashable object
-#
-#         Removes the filter function associated with name,
-#         if it exists.
-#         """
-#         if name in self.filterFunctions.keys():
-#             del self.filterFunctions[name]
-#             self.invalidateFilter()
-#
-#     def filterAcceptsRow(self, row_num, parent):
-#         """
-#         Reimplemented from base class to allow the use
-#         of custom filtering.
-#         """
-#         model = self.sourceModel()
-#         # The source model should have a method called row()
-#         # which returns the table row as a python list.
-#         tests = [func(model.row(row_num), self.filterString)
-#                  for func in self.filterFunctions.values()]
-#         return not False in tests
-#
+            # add rows and columns to clipboard
+            clipboard = ""
+            nrows = len(columns[0])
+            ncols = len(columns)
+            for r in xrange(nrows):
+                for c in xrange(ncols):
+                    clipboard += columns[c][r]
+                    if c != (ncols - 1):
+                        clipboard += '\t'
+                clipboard += '\n'
+
+            # copy to the system clipboard
+            sys_clip = QtGui.QApplication.clipboard()
+            sys_clip.setText(clipboard)
+
 
 class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
     """
@@ -1440,12 +1384,13 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
         self.export_Button.clicked.connect(lambda _, b=self.data_folder: self.export(b))
         self.done_Button.clicked.connect(self.accept)
 
+        self.performance_Table.installEventFilter(self)  # to capture keyboard commands so data can be copied directly
+
         self.noResponse_Checkbox.stateChanged.connect(lambda _, b='nr': self.field_preset_select(pattern=b))
         self.probe_Checkbox.stateChanged.connect(lambda _, b='probe': self.field_preset_select(pattern=b))
         self.raw_Checkbox.stateChanged.connect(lambda _, b='raw': self.field_preset_select(pattern=b))
         self.fieldListSelectNone.clicked.connect(lambda _, b='none': self.field_preset_select(pattern=b))
         self.fieldListSelectAll.clicked.connect(lambda _, b='all': self.field_preset_select(pattern=b))
-        # self.performance_Table.horizontalHeader().clicked.connect(self.sort_table)
 
         self.create_grouping_checkbox('Subject')
         self.create_grouping_checkbox('Date')
@@ -1462,11 +1407,6 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
         for checkbox in self.groupByCheckboxes:
             self.groupByCheckboxes[checkbox].stateChanged.connect(self.recalculate)
 
-        # self.groupByDay_Checkbox.stateChanged.connect(self.group_by)
-        # self.groupByBlock_Checkbox.stateChanged.connect(self.group_by)
-        # self.groupByStim_Checkbox.stateChanged.connect(self.group_by)
-        # self.groupBySubject_Checkbox.stateChanged.connect(self.group_by)
-
         self.setWindowTitle(str("Performance for {}".format(bird_name)))
         self.log = logging.getLogger(__name__)
         self.dataGroups = []
@@ -1474,7 +1414,7 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
         self.filters = []
         self.create_field_list()
         self.create_filter_objects()
-        # self.build_filter_value_lists()
+
         self.build_field_checkboxes()
         self.group_by()
 
@@ -1637,6 +1577,7 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
     # endregion
 
     # region Field grouping
+
     def create_grouping_checkbox(self, group_name):
         sizePolicy_fixed = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         sizePolicy_fixed.setHorizontalStretch(0)
@@ -1933,6 +1874,8 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
 
     # endregion
 
+    # region Data manipulation
+
     def export(self, output_folder):
         output_path = QtGui.QFileDialog.getSaveFileName(self, "Save As...", output_folder, "CSV Files (*.csv)")
         if output_path:
@@ -1976,6 +1919,36 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
 
         self.performance_Table.resizeColumnsToContents()
 
+    def eventFilter(self, source, event):
+        # Reimplementation of eventFilter, this one to capture ctrl+C to copy data from table
+        # https://stackoverflow.com/questions/40469607
+
+        if (event.type() == QtCore.QEvent.KeyPress and
+                event.matches(QtGui.QKeySequence.Copy)):
+            self.copy_table_selection()
+            return True
+        return super(self.__class__, self).eventFilter(source, event)
+
+    def copy_table_selection(self):
+        # actual copy method for copying cells from tableview
+
+        selection = self.performance_Table.selectedIndexes()
+        if selection:
+            rows = sorted(index.row() for index in selection)
+            columns = sorted(index.column() for index in selection)
+            rowcount = rows[-1] - rows[0] + 1
+            colcount = columns[-1] - columns[0] + 1
+            table = [[''] * colcount for _ in range(rowcount)]
+            for index in selection:
+                row = index.row() - rows[0]
+                column = index.column() - columns[0]
+                table[row][column] = index.data().toString()
+            stream = io.BytesIO()
+            csv.writer(stream, delimiter='\t').writerows(table)
+            QtGui.qApp.clipboard().setText(stream.getvalue())
+
+    # endregion
+
 
 class CheckableDirModel(QtGui.QFileSystemModel):
     def __init__(self, parent=None):
@@ -1987,12 +1960,12 @@ class CheckableDirModel(QtGui.QFileSystemModel):
             return QtGui.QFileSystemModel.data(self, index, role)
         else:
             if index.column() == 0:
-                return self.checkState(index)
+                return self.checkbox_state(index)
 
     def flags(self, index):
         return QtGui.QFileSystemModel.flags(self, index) | QtCore.Qt.ItemIsUserCheckable
 
-    def checkState(self, index):
+    def checkbox_state(self, index):
         if index in self.checks:
             return self.checks[index]
         else:
