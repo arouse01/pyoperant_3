@@ -510,9 +510,8 @@ class UiMainWindow(object):
 
 class UiSolenoidControl(object):
     def setup_ui(self, solenoid_control):
+
         # region Presets
-        solenoid_control.setObjectName(_from_utf8("solenoid_control"))
-        solenoid_control.resize(300, 185)
         sizePolicy_fixed = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         sizePolicy_fixed.setHorizontalStretch(0)
         sizePolicy_fixed.setVerticalStretch(0)
@@ -527,6 +526,8 @@ class UiSolenoidControl(object):
         font16.setPointSize(16)
         # endregion Presets
 
+        solenoid_control.setObjectName(_from_utf8("solenoid_control"))
+        solenoid_control.resize(300, 185)
         solenoid_control.setSizePolicy(sizePolicy_fixed)
         solenoid_control.setMaximumSize(QtCore.QSize(300, 200))
 
@@ -613,9 +614,7 @@ class UiSolenoidControl(object):
 
     def retranslate_ui(self, solenoid_control):
         solenoid_control.setWindowTitle(_translate("solenoid_control", "Solenoid Control", None))
-        self.box_name.setText(_translate("solenoid_control", "Box ", None))
         self.solenoid_text.setText(_translate("solenoid_control", "Solenoid is ", None))
-        self.solenoid_Status_Text.setText(_translate("solenoid_control", "CLOSED", None))
         self.open_Button.setText(_translate("solenoid_control", "Open Solenoid", None))
         self.close_Button.setText(_translate("solenoid_control", "Close Solenoid", None))
         self.done_Button.setText(_translate("solenoid_control", "Done", None))

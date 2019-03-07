@@ -1250,59 +1250,77 @@ class SolenoidGui(QtGui.QDialog, pyoperant_gui_layout.UiSolenoidControl):
 
     def __init__(self, box_number):
         super(self.__class__, self).__init__()
-        self.setup_ui(self)  # This is defined in design.py file automatically
-        # It sets up layout and widgets that are defined
-        self.open_Button.clicked.connect(lambda _, b=box_number: self.open_solenoid(b))
-        self.close_Button.clicked.connect(lambda _, b=box_number: self.close_solenoid(b))
-        self.done_Button.clicked.connect(self.accept)
+
+        self.setup_ui(self)  # from pyoperant_gui_layout.py
+
+        self.open_Button.clicked.connect(lambda _, b=box_number: self.solenoid_control('open', b))
+        self.close_Button.clicked.connect(lambda _, b=box_number: self.solenoid_control('close', b))
+        self.done_Button.clicked.connect(self.close_window)
         self.log = logging.getLogger(__name__)
         self.box_name.setText(str("Box {:02d}".format(box_number)))
+        self.solenoid_Status_Text.setText(_translate("solenoid_control", "CLOSED", None))
 
-    def open_solenoid(self, boxnumber):
-        self.log.info("Opening water system in box {:d}".format(boxnumber))
-        device_name = '/dev/teensy{:02d}'.format(boxnumber)
-        device = serial.Serial(port=device_name,
-                               baudrate=19200,
-                               timeout=5)
-        if device is None:
-            self.log.error('Could not open serial device {}'.format(device_name))
-            raise 'Could not open serial device {}'.format(device_name)
+        self.solenoidChannel = 16
+
+        self.device = None
+
+    def serial_connect(self, boxnumber):
+        """Connect to solenoid of boxnumber, return error if connection cannot be established"""
+        if self.device is None:
+            self.device_name = '/dev/teensy{:02d}'.format(boxnumber)
+
+            try:
+                self.device = serial.Serial(port=self.device_name,
+                                            baudrate=19200,
+                                            timeout=5)
+            except serial.SerialException:
+                self.log.error('Could not open serial device {}'.format(self.device_name))
+                raise serial.SerialException('Could not open serial device {}'.format(self.device_name))
+            else:
+                self.device.readline()
+                self.device.flushInput()
+                self.log.debug("Successfully opened device {}".format(self.device_name))
+
+                # set labels
+                self.box_name.setText(str("Box {:02d}".format(box_number)))
+
+                # set self.solenoidChannel as output
+                self.device.write("".join([chr(self.solenoidChannel), chr(3)]))
+
+    def solenoid_control(self, action, boxnumber):
+        if action == 'open':
+            self.log.info("Opening water system in box {:d}".format(boxnumber))
+        elif action == 'close':
+            self.log.info("Closing water system in box {:d}".format(boxnumber))
+
+        try:
+            # attempt to connect to Teensy
+            self.serial_connect(boxnumber)
+        except serial.SerialException:
+            # if Teensy connection fails, set status text to indicate error
+            self.solenoid_Status_Text.setText(str("Not Accessible (SerialException)"))
         else:
-            device.readline()
-            device.flushInput()
-            self.log.debug("Successfully opened device {}".format(device_name))
-            # solenoid = channel 16
-            device.write("".join([chr(16), chr(3)]))  # set channel 16 as output
-            # device.write("".join([chr(16), chr(2)]))  # close solenoid, just in case
-            device.write("".join([chr(16), chr(1)]))  # open solenoid
+            # send signals and update layout
+            if action == 'open':
+                self.device.write("".join([chr(self.solenoidChannel), chr(1)]))  # open solenoid
 
-            self.solenoid_Status_Text.setText(str("OPEN"))
-            self.open_Button.setEnabled(False)
-            self.close_Button.setEnabled(True)
+                self.solenoid_Status_Text.setText(str("OPEN"))
+                self.open_Button.setEnabled(False)
+                self.close_Button.setEnabled(True)
+            elif action == 'close':
+                self.device.write("".join([chr(self.solenoidChannel), chr(2)]))  # close solenoid
 
-    def close_solenoid(self, boxnumber):
-        self.log.info("Closing water system in box {:d}".format(boxnumber))
-        device_name = '/dev/teensy{:02d}'.format(boxnumber)
-        device = serial.Serial(port=device_name,
-                               baudrate=19200,
-                               timeout=5)
-        if device is None:
-            self.log.error('Could not open serial device {}'.format(device_name))
-            raise 'Could not open serial device {}'.format(device_name)
-        else:
-            device.readline()
-            device.flushInput()
-            # solenoid = channel 16
-            device.write("".join([chr(16), chr(3)]))  # set channel 16 as output
-            # device.write("".join([chr(16), chr(2)]))  # close solenoid, just in case
+                print "Closed water system in box {0}".format(str(boxnumber))
 
-            device.write("".join([chr(16), chr(2)]))  # close solenoid
-            device.close()  # close connection
-            print "Closed water system in box {0}".format(str(boxnumber))
+                self.solenoid_Status_Text.setText(str("CLOSED"))
+                self.close_Button.setEnabled(False)
+                self.open_Button.setEnabled(True)
 
-            self.solenoid_Status_Text.setText(str("CLOSED"))
-            self.close_Button.setEnabled(False)
-            self.open_Button.setEnabled(True)
+    def close_window(self):
+        """Make sure serial connection is closed before exiting window."""
+        if self.device is not None:
+            self.device.close()  # close connection
+        self.accept()
 
 
 class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
@@ -1337,6 +1355,10 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
         super(self.__class__, self).__init__()
         self.setup_ui(self)  # This is defined in pyoperant_gui_layout.py file
 
+        # Ensure that pyqt can delete objects properly before python garbage collector goes to work
+        # (prevents "QObject::startTimer: QTimer can only be used with threads started with QThread" error)
+        self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+
         self.data_folder = data_folder
 
         self.folder_Button.clicked.connect(self.select_bird)
@@ -1369,7 +1391,6 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
         self.setWindowTitle(str("Performance for {}".format(bird_name)))
         self.log = logging.getLogger(__name__)
         self.dataGroups = []
-        self.tableSort = []
         self.filters = []
         self.create_field_list()
         self.create_filter_objects()
@@ -1440,11 +1461,8 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
                 self.fieldManagement[column]['type'] = 'group'
 
     def build_field_checkboxes(self):
-        # get field names from fieldManangement dict based on visible key
+        # build checkbox items for every field from fieldManangement dict
         for key in self.fieldManagement:
-            # if self.fieldManagement[key]['visible'] is True:
-            #     if self.fieldManagement[key]['type'] is not 'raw':
-            # columnName = unicode(key)
 
             columnName = self.fieldManagement[key]['name']
 
@@ -1453,15 +1471,10 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
             item.setMaximumSize(QtCore.QSize(300, 27))
             item.setText(columnName)
             item.setTristate(False)
-            # item.setFlags(item.flags() | QtCore.Qt.ItemIsUserCheckable)
             item.setCheckState(QtCore.Qt.Unchecked)
             self.fieldManagement[key]['itemWidget'] = item
 
-            # self.fieldList.addRow(QtGui.QLabel(columnName), self.fieldManagement[key]['itemWidget'])
             self.fieldList.addWidget(self.fieldManagement[key]['itemWidget'])
-            # self.fieldList.addItem(self.fieldManagement[key]['itemWidget'])
-            # QtCore.QObject.connect(self.fieldManagement[key]['itemWidget'], QtCore.SIGNAL('stateChanged()'),
-            #                        self.recalculate)
             self.fieldManagement[key]['itemWidget'].stateChanged.connect(self.recalculate)
 
     # region Functions
@@ -1500,7 +1513,8 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
             else:
                 # fieldName = unicode(self.fieldList.item(x).text())
                 columnNameF = self.fieldManagement[columnName]['name']
-                # if pattern == 'nr':
+                if pattern == 'nr':
+                    self.silent_checkbox_change(self.fieldManagement['Trials']['itemWidget'], True)
                 checkstate = self.noResponse_Checkbox.isChecked()
                 if columnNameF in ["d'", 'Beta', 'S+', 'S-', 'Total Corr', "Probe d'", 'Probe Beta', 'Probe S+',
                                    'Probe S-', 'Probe Tot Corr']:
@@ -1579,11 +1593,6 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
 
     def create_filter_objects(self):
         # add field info to filter
-        # test = QtGui.QWidget()
-        # layout = QtGui.QHBoxLayout()
-        # test2 = QtGui.QWidget()
-        # test.setLayout(layout)
-        # test.layout().addWidget(test2)
 
         for columnName in self.fieldManagement:
             if self.fieldManagement[columnName]['filter']['type'] == 'list':
@@ -1798,9 +1807,6 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
         self.filters = filterData
         self.recalculate()
 
-        # self.proxyModel.setFilterRegExp(filterString)
-        # self.proxyModel.setFilterKeyColumn(filterColumn)
-
     # endregion
 
     # region Analysis methods
@@ -1820,8 +1826,7 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
         perform = analysis.Performance(self.data_folder)
         perform.filter_data(filters=self.filters)
         perform.summarize('filt')
-        self.outputData = perform.analyze(perform.summaryData, groupBy=self.dataGroups, dropCols=dropCols,
-                                          sortBy=self.tableSort)
+        self.outputData = perform.analyze(perform.summaryData, groupBy=self.dataGroups, dropCols=dropCols)
 
         outputFile = 'performanceSummary.csv'
         if isinstance(self.data_folder, list):
