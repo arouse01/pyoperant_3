@@ -199,8 +199,6 @@ class GoNoGoInterruptExp(base.BaseExp):
 
         self.log.info("Successfully reconnected sound for device %s" % device_name)
 
-        # self.panel.speaker = hwio.AudioOutput(interface=self.interfaces['pyaudio'])
-
     def make_data_csv(self):
         """ Create the csv file to save trial data
 
@@ -307,26 +305,6 @@ class GoNoGoInterruptExp(base.BaseExp):
         summary_file = os.path.join(self.parameters['experiment_path'], self.parameters['subject'] + '.summaryDAT')
         with open(summary_file, 'w') as f:
             json.dump(self.summary, f, ensure_ascii=False)
-        # with open(summary_file, 'wb') as f:
-        #     f.write("Session: %s\n" % self.summary['phase'])
-        #     f.write("Trials this session: %s   Probe trials: %i\n" % (self.summary['trials'], self.summary[
-        #         'probe_trials']))
-        #     f.write("Rf'd responses: %i\n" % self.summary['feeds'])
-        #     f.write("\n")
-        #     f.write("\tS+\tS-\tPrb+\tPrb-\n")
-        #     f.write("RespSw\t%i\t%i\t%i\t%i\n" % (self.summary['correct_responses'], self.summary[
-        #         'false_alarms'], self.summary['probe_hit'], self.summary['probe_FA']))
-        #
-        #     f.write("TrlSw\t%i(%i)\t%i(%i)\t" % (self.summary['misses'], self.summary[
-        #         'splus_nr'], self.summary['correct_rejections'], self.summary['sminus_nr']))
-        #     f.write("%i(%i)\t%i(%i)\n" % (self.summary['probe_miss'], self.summary[
-        #         'probe_miss_nr'], self.summary['probe_CR'], self.summary['probe_CR_nr']))
-        #
-        #     f.write("d': %1.2f\t" % self.summary['dprime'])
-        #     f.write((u"β: %1.2f %s\n" % (self.summary['bias'], self.summary['bias_description'])).encode('utf8'))
-        #     # f.write("Feeder ops today: %i\n" % self.summary['feeds'])
-        #
-        #     f.write("Last trial: %s" % self.summary['last_trial_time'])
 
     ## session flow
     def session_pre(self):
@@ -600,13 +578,6 @@ class GoNoGoInterruptExp(base.BaseExp):
         return stim, epochs
 
     def analyze_trial(self):
-        # TODO: calculate reaction times
-        # matrix = [[self.summary['correct_responses'], self.summary['misses']], [self.summary['false_alarms'],
-        # self.summary['correct_rejections']]]
-        # conf_matrix = analysis.create_conf_matrix_summary(matrix)
-
-        # self.summary['dprime'] = analysis.dprime(conf_matrix)
-        # self.summary['bias'] = analysis.bias(conf_matrix)
         stats = analysis.Analysis([[self.summary['correct_responses'],
                                     self.summary['misses']],
                                    [self.summary['false_alarms'],

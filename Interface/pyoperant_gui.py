@@ -43,6 +43,17 @@ def _log_except_hook(*exc_info):  # How uncaught errors are handled
 
 
 class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
+    """
+    Main class for running the pyoperant GUI.
+
+    - subprocessBox is a variable that tracks the subprocess ID of a subprocess. In this case specifically,
+    it tracks the pyoperant subprocess. It is set to 0 when the subprocess has been stopped and should not be running
+    (i.e. if user clicked "stop box" or pyoperant crashed, which was caught by the GUI.
+    - Alternatively it gets set to 1 if the box should be set to 'sleep' mode, meaning pyoperant should be stopped
+    temporarily and restarted in the morning. This was added to help combat the intermittent and unexplained instances
+    of Teensys ceasing to respond to computer input
+    """
+
     teensy_emit = QtCore.pyqtSignal(int, str)
 
     class DeviceInfo:
@@ -95,6 +106,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
 
         analyzeGuiAction = QtGui.QAction("&Analyze", self)
         analyzeGuiAction.triggered.connect(lambda _, b=1: self.analyze_performance(b))
+        fileMenu.addAction(analyzeGuiAction)
         quitGuiAction = QtGui.QAction("&Quit", self)
         quitGuiAction.triggered.connect(self.close)
         fileMenu.addAction(quitGuiAction)
@@ -1915,6 +1927,9 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
 
 
 class CheckableDirModel(QtGui.QFileSystemModel):
+    """
+    Custom reimplementation of pyqt4's QFileSystemModel to integrate checkboxes next to each folder/file
+    """
     def __init__(self, parent=None):
         QtGui.QFileSystemModel.__init__(self, None)
         self.checks = {}
@@ -1955,7 +1970,10 @@ class CheckableDirModel(QtGui.QFileSystemModel):
 
 
 class FolderSelect(QtGui.QDialog, pyoperant_gui_layout.FolderSelectWindow):
-
+    """
+    Custom class to create a dialog window that allows selecting multiple folders from different locations.
+    Implements CheckableDirModel class.
+    """
     def __init__(self):
         super(self.__class__, self).__init__()
         self.setup_ui(self)  # This is defined in pyoperant_gui_layout.py file
@@ -2004,9 +2022,3 @@ def main():
 if __name__ == '__main__':  # if we're running file directly and not importing it
     main()  # run the main function
 
-# subprocessBox is a variable that tracks the subprocess ID of a subprocess. In this case specifically, it tracks the
-# pyoperant subprocess. It is set to 0 when the subprocess has been stopped and should not be running (i.e. if user
-# clicked "stop box" or pyoperant crashed, which was caught by the GUI.
-# Alternatively it gets set to 1 if the box should be set to 'sleep' mode, meaning pyoperant should be stopped
-# temporarily and restarted in the morning. This was added to help combat the intermittent and unexplained instances
-# of Teensys ceasing to respond to computer input

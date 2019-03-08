@@ -1,10 +1,5 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'untitled_2.ui'
-#
-# Created by: PyQt4 UI code generator 4.11.4
-
-
 # Much of the core code (of creating each of the sections) could probably made more dynamic to allow the user to
 # specify the desired number of boxes
 

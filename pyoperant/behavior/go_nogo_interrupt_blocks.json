@@ -1985,6 +1985,65 @@
       ],
       "queue": "random"
     },
+    "training 125/180": {
+      "description": "1:1 S+/S- stim, 125 and 150 ms",
+      "reinforcement": {
+        "schedule": "go_interrupt",
+        "prob": 1,
+        "secondary": false,
+        "passive": false,
+        "punish": true
+      },
+      "criteria": {
+        "days": 2,
+        "trialcount": {
+          "mintrials": 100
+        },
+        "propCorrect": [
+          {
+            "type": "S+\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "type": "S-\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "minimum": 0.75
+          }
+        ]
+      },
+      "conditions": [
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1250ir3.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1500ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1250reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1500reg.wav"
+        }
+      ],
+      "weights": [
+        {
+          "class": "sPlus",
+          "weight": 1
+        },
+        {
+          "class": "sMinus",
+          "weight": 1
+        }
+      ],
+      "queue": "random"
+    },
+
     "testing 112.5 (125/150)": {
       "description": "1:1 S+/S- stim, 125/150, 0.8 reinf rate, novel 112 ms",
       "reinforcement": {
