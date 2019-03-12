@@ -3,7 +3,7 @@ import sys
 import struct
 import time
 import subprocess
-import inspect
+# import inspect
 import threading
 import traceback
 import shlex
@@ -16,7 +16,8 @@ import scipy as sp
 import scipy.special
 from contextlib import closing
 from argparse import ArgumentParser
-from pyoperant import Error
+
+# from pyoperant import Error
 
 try:
     import simplejson as json
@@ -109,12 +110,13 @@ def run_state_machine(start_in='pre', error_state=None, error_callback=None, **s
         try:
             state = state_functions[state]()
         except Exception as e:
+
             if error_callback:
                 error_callback(e)
                 raise
             else:
                 raise
-            state = error_state
+            # state = error_state  # 3/12/19 (AR) not sure what the point of this statement is
 
 
 class Trial(Event):
@@ -215,9 +217,9 @@ def check_cmdline_params(parameters, cmd_line):
             parameters['panel_name'].encode('ascii', 'ignore').translate(allchars, nodigs))):
         print("box number doesn't match config and command line")
         return False
-    if not ('subj' not in cmd_line or int(
-            cmd_line['subj'].encode('ascii', 'ignore').translate(allchars, nodigs)) == int(
-        parameters['subject'].encode('ascii', 'ignore').translate(allchars, nodigs))):
+    if not ('subj' not in cmd_line or
+            int(cmd_line['subj'].encode('ascii', 'ignore').translate(allchars, nodigs)) == int(
+                parameters['subject'].encode('ascii', 'ignore').translate(allchars, nodigs))):
         print("subject number doesn't match config and command line")
         return False
     return True
@@ -254,8 +256,9 @@ def is_day(city='Boston', lat='42.41', lon='-71.13'):
         except KeyError:
             raise NoCityMatchError
         except AttributeError:
-            obs = ephem.city(city.get('city').capitalize())
-    elif lat & lon:
+            obs = ephem.city(city.get('city').capitalize())  # 3/12/19 (AR) Does this work? There's no 'get' function
+            # for a str
+    elif lat and lon:
         # print 'coords'
         obs = ephem.Observer()
         obs.lat = str(lat)
@@ -398,6 +401,8 @@ def concat_wav(input_file_list, output_filename='concat.wav'):
                     output.setparams(params)
                     fs = output.getframerate()
                 except:  # TODO: what was I trying to except here? be more specific
+                    params = []
+                    fs = 1
                     pass
 
                 audio_frames = wav_part.readframes(wav_part.getnframes())

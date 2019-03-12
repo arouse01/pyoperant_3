@@ -654,7 +654,7 @@ class StatsWindow(object):
                 line.setMidLineWidth(0)
                 line.setStyleSheet("color: red;")
                 self.gridLayout.addWidget(line, 0, column, 0, boxGrid[1], QtCore.Qt.AlignLeft | QtCore.Qt.AlignLeft)
-            # End grid lines
+            # Grid lines at right and bottom
             line = QtGui.QFrame(stats_window)
             line.setFrameShape(QtGui.QFrame.HLine)
             line.setStyleSheet("color: red;")
@@ -781,23 +781,24 @@ class StatsWindow(object):
 
         self.folder_Button = QtGui.QPushButton(stats_window)
         self.folder_Button.setSizePolicy(sizePolicy_fixed)
-        self.folder_Button.setMinimumSize(QtCore.QSize(0, 27))
+        self.folder_Button.setMinimumSize(QtCore.QSize(150, 27))
         self.folder_Button.setMaximumSize(QtCore.QSize(300, 27))
         self.folder_Button.setObjectName(_from_utf8("folder_Button"))
         
         self.export_Button = QtGui.QPushButton(stats_window)
         self.export_Button.setSizePolicy(sizePolicy_fixed)
-        self.export_Button.setMinimumSize(QtCore.QSize(0, 27))
+        self.export_Button.setMinimumSize(QtCore.QSize(150, 27))
         self.export_Button.setMaximumSize(QtCore.QSize(300, 27))
         self.export_Button.setObjectName(_from_utf8("export_Button"))
 
         self.done_Button = QtGui.QPushButton(stats_window)
         self.done_Button.setSizePolicy(sizePolicy_fixed)
+        self.done_Button.setMinimumSize(QtCore.QSize(150, 27))
         self.done_Button.setMaximumSize(QtCore.QSize(300, 27))
         self.done_Button.setObjectName(_from_utf8("done_Button"))
 
         self.menuGrid.addWidget(self.folder_Button)
-        spacerItem = QtGui.QSpacerItem(200, 20, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Minimum)
+        spacerItem = QtGui.QSpacerItem(200, 20, QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.Minimum)
         self.menuGrid.addSpacerItem(spacerItem)
         self.menuGrid.addWidget(self.export_Button)
         self.menuGrid.addWidget(self.done_Button)

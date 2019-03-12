@@ -551,7 +551,6 @@ class GoNoGoInterruptExp(base.BaseExp):
         trial.subject = self.parameters['subject']
         trial.block = self.parameters['block_design']['order'][trial.session - 1]
 
-
         self.trials.append(trial)
         self.this_trial = self.trials[-1]
         self.this_trial_index = self.trials.index(self.this_trial)

@@ -2,14 +2,15 @@
 # -*- coding: utf-8 -*-
 import os
 import csv
-import copy
-import datetime as dt
+# import copy
+# import datetime as dt
 import numpy as np
 from scipy.stats import norm
 from scipy.stats import beta
 import pandas as pd
 import re
-import string
+# import string
+import collections  # for orderedDict
 
 try:
     import simplejson as json
@@ -223,18 +224,55 @@ class Session(object):
         self.arg = arg
 
 
-def field_list():
-    fieldList = ['Subject', 'File', 'Session', 'File Count', 'Date', 'Time', 'Block', 'Index', 'Stimulus', 'Class']
-    fieldList += ['Response Type', 'Response', 'RT', 'Reward', 'Punish']
+class FieldList:
 
-    fieldList += ["d'", "d' (NR)", u'Beta', u'Beta (NR)', 'Trials']
-    fieldList += ['S+', 'S+ (NR)', 'S-', 'S- (NR)', 'Total Corr', 'Total Corr (NR)']
-    fieldList += ['Hit', 'Miss', 'Miss (NR)', 'FA', 'CR', 'CR (NR)']
+    def __init__(self):
 
-    fieldList += ["Probe d'", "Probe d' (NR)", u'Probe Beta', u'Probe Beta (NR)', 'Probe Trials']
-    fieldList += ['Probe S+', 'Probe S+ (NR)', 'Probe S-', 'Probe S- (NR)', 'Probe Tot Corr', 'Probe Tot Corr (NR)']
-    fieldList += ['Probe Hit', 'Probe Miss', 'Probe Miss (NR)', 'Probe FA', 'Probe CR', 'Probe CR (NR)']
-    return fieldList
+        fieldList = ['Subject', 'File', 'Session', 'File Count', 'Date', 'Time', 'Block', 'Index', 'Stimulus', 'Class']
+        fieldList += ['Response Type', 'Response', 'RT', 'Reward', 'Punish']
+
+        fieldList += ["d'", "d' (NR)", u'Beta', u'Beta (NR)', 'Trials']
+        fieldList += ['S+', 'S+ (NR)', 'S-', 'S- (NR)', 'Total Corr', 'Total Corr (NR)']
+        fieldList += ['Hit', 'Miss', 'Miss (NR)', 'FA', 'CR', 'CR (NR)']
+
+        fieldList += ["Probe d'", "Probe d' (NR)", u'Probe Beta', u'Probe Beta (NR)', 'Probe Trials']
+        fieldList += ['Probe S+', 'Probe S+ (NR)', 'Probe S-', 'Probe S- (NR)', 'Probe Tot Corr', 'Probe Tot Corr (NR)']
+        fieldList += ['Probe Hit', 'Probe Miss', 'Probe Miss (NR)', 'Probe FA', 'Probe CR', 'Probe CR (NR)']
+
+        self.fieldList = fieldList
+
+    def build_dict(self):
+        fieldDict = collections.OrderedDict()
+        for column in self.fieldList:
+            # column = column.decode('utf-8')
+            columnDict = {'visible': True, 'filter': {}, 'name': column.replace('\n(NR)', ' (NR)')}
+
+            if columnDict['name'] in ['Subject', 'Block', 'Response Type', 'Stimulus', 'Class', 'Response']:
+                columnDict['filter']['type'] = 'list'
+            elif columnDict['name'] in ['Date']:
+                columnDict['filter']['type'] = 'range'
+            else:
+                columnDict['filter']['type'] = 'None'
+
+            # give each field a type to indicate what functions can be performed
+            if columnDict['name'] in ['File', 'Session', 'File Count', 'Index', 'Time']:
+                columnDict['type'] = 'raw'
+            elif columnDict['name'] in ['Subject', 'Block', 'Date', 'Response Type', 'Stimulus', 'Class', 'Response']:
+                columnDict['type'] = 'index'  # groupby enabled
+            elif columnDict['name'] == 'RT':
+                columnDict['type'] = 'mean'
+            elif columnDict['name'] in ['Reward', 'Punish', 'Trials', 'Hit', 'FA', 'Miss', 'CR', 'Miss (NR)', 'CR (NR)',
+                                        'Probe Trials', 'Probe Hit', 'Probe FA', 'Probe Miss', 'Probe CR',
+                                        'Probe Miss (NR)', 'Probe CR (NR)', ]:
+                columnDict['type'] = 'sum'
+            elif columnDict['name'] in ["d'", "d' (NR)", 'Beta', 'Beta (NR)', 'S+', 'S+ (NR)',
+                                        'S-', 'S- (NR)', 'Total Corr', 'Total Corr (NR)',
+                                        "Probe d'", "Probe d' (NR)", 'Probe Beta', 'Probe Beta (NR)',
+                                        'Probe S+', 'Probe S+ (NR)', 'Probe S-', 'Probe S- (NR)',
+                                        'Probe Tot Corr', 'Probe Tot Corr (NR)']:
+                columnDict['type'] = 'group'
+            fieldDict[column] = columnDict
+        return fieldDict
 
 
 class Performance(object):
@@ -532,18 +570,25 @@ class Performance(object):
             groupData = input_data.groupby(kwargs['groupBy'], sort=False)
             groupHeaders = groupData.obj.columns
             headerDict = {}
+            fieldDict = FieldList().build_dict()
             # reaction time should be mean, not sum, time should be minimum (so groups with matching dates can still
             # be sorted in chronological order), and string fields shouldn't be aggregated at all.
             for column in groupHeaders:
-                if column == 'RT':
-                    headerDict[column] = 'mean'
-                elif column == 'Time':
+                # if column == 'RT':
+                #     headerDict[column] = 'mean'
+                # elif column == 'Time':
+                #     headerDict[column] = 'min'
+                # elif column == 'Subject' or column == 'Block':
+                #     headerDict[column] = 'sum'
+                # else:
+                #     pass
+                if column == 'Time':
                     headerDict[column] = 'min'
-                elif column == 'Subject' or column == 'Block':
-                    pass
+                elif fieldDict[column]['type'] == 'mean' or fieldDict[column]['type'] == 'sum':
+                    headerDict[column] = fieldDict[column]['type']
                 else:
-                    headerDict[column] = 'sum'
-
+                    pass
+                    
             # applying this .agg() transforms the groupBy object back into a regular dataframe
             groupData = groupData.agg(headerDict)
 
@@ -701,7 +746,7 @@ class Performance(object):
 
         # Set column order
 
-        sortedColumns = field_list()
+        sortedColumns = FieldList().fieldList
 
         # Compare all column names to those in groupData (that were returned after processing) and add all columns
         # not in groupData to dropList to make sure that remainingColumns only contains columns that were present in

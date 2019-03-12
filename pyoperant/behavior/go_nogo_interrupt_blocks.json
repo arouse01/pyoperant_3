@@ -1985,8 +1985,8 @@
       ],
       "queue": "random"
     },
-    "training 125/180": {
-      "description": "1:1 S+/S- stim, 125 and 150 ms",
+    "training 120/180": {
+      "description": "1:1 S+/S- stim, 120 and 180 ms",
       "reinforcement": {
         "schedule": "go_interrupt",
         "prob": 1,
@@ -2016,19 +2016,19 @@
       "conditions": [
         {
           "class": "sMinus",
-          "stim_name": "b2s1_1250ir3.wav"
+          "stim_name": "b2s1_1200ir1.wav"
         },
         {
           "class": "sMinus",
-          "stim_name": "b2s1_1500ir1.wav"
+          "stim_name": "b2s1_1800ir1.wav"
         },
         {
           "class": "sPlus",
-          "stim_name": "b2s1_1250reg.wav"
+          "stim_name": "b2s1_1200reg.wav"
         },
         {
           "class": "sPlus",
-          "stim_name": "b2s1_1500reg.wav"
+          "stim_name": "b2s1_1800reg.wav"
         }
       ],
       "weights": [

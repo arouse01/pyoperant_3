@@ -14,12 +14,12 @@ import argparse  # Parse command line arguments for GUI, primarily to enable deb
 from shutil import copyfile  # For creating new json file by copying another
 import logging, traceback
 import datetime as dt  # For auto sleep
-import string  # for modifying strings from the data
-import collections  # allows use of ordered dictionaries
+# import string  # for modifying strings from the data
+# import collections  # allows use of ordered dictionaries
 import io  # for copying cells from analysis table
+from contextlib import contextmanager  # facilitates simple implementation of 'waiting' mouse cursor when loading
 
-from pyoperant import analysis  # Analysis creates the data summary tables
-import pandas as pd  # Dataframes for data summary tables
+from pyoperant import analysis, utils  # Analysis creates the data summary tables
 import csv  # For exporting data summaries as csv files
 
 try:
@@ -60,6 +60,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         # Extracts device info from pyudev output: box number, device ID, USB device number
         def __init__(self, device):
             deviceString = device.device_links.next()
+            self.log = logging.getLogger(__name__)
             try:
                 # Get box number
                 deviceStringSplit = os.path.split(deviceString)
@@ -71,7 +72,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             except IndexError:
                 self.boxNumber = None
                 self.boxIndex = None
-                self.log.error('Error: board not recognized')
+                self.log.error('Device Error: board not recognized')
 
             if self.boxIndex is not None:
                 # Get device ID (e.g. "tty...")
@@ -94,277 +95,284 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
     def __init__(self):
 
         super(self.__class__, self).__init__()
-        self.setup_ui(self)  # Sets up layout and widgets that are defined
+        with wait_cursor():  # set mouse cursor to 'waiting'
+            self.setup_ui(self)  # Sets up layout and widgets that are defined
 
-        self.debug = False
+            self.debug = False
 
-        # Number of boxes declared in pyoperant_gui_layout.py
+            # Number of boxes declared in pyoperant_gui_layout.py
 
-        # region Menu bar
-        mainMenu = QtGui.QMenuBar()
-        fileMenu = mainMenu.addMenu('&File')
+            # region Menu bar
+            mainMenu = QtGui.QMenuBar()
+            fileMenu = mainMenu.addMenu('&File')
 
-        analyzeGuiAction = QtGui.QAction("&Analyze", self)
-        analyzeGuiAction.triggered.connect(lambda _, b=1: self.analyze_performance(b))
-        fileMenu.addAction(analyzeGuiAction)
-        quitGuiAction = QtGui.QAction("&Quit", self)
-        quitGuiAction.triggered.connect(self.close)
-        fileMenu.addAction(quitGuiAction)
+            analyzeGuiAction = QtGui.QAction("&Analyze", self)
+            analyzeGuiAction.triggered.connect(lambda _, b=1: self.analyze_performance(b))
+            fileMenu.addAction(analyzeGuiAction)
+            quitGuiAction = QtGui.QAction("&Quit", self)
+            quitGuiAction.triggered.connect(self.close)
+            fileMenu.addAction(quitGuiAction)
 
-        globalOptionsMenu = mainMenu.addMenu('Options')
-        autosleepMenu = QtGui.QMenu('Autosleep', self)
-        nrTrialMenu = QtGui.QMenu('NR Trials', self)
+            globalOptionsMenu = mainMenu.addMenu('Options')
+            autosleepMenu = QtGui.QMenu('Autosleep', self)
+            nrTrialMenu = QtGui.QMenu('NR Trials', self)
 
-        # global options for GUI
-        self.ui_options = {}
+            # global options for GUI
+            self.ui_options = {}
 
-        viewGuiLogAction = QtGui.QAction("View GUI Log", self)
-        viewGuiLogAction.triggered.connect(lambda _, b='guilog': self.open_text_file(0, whichfile=b))
-        viewGuiErrorAction = QtGui.QAction("View GUI Error Log", self)
-        viewGuiErrorAction.triggered.connect(lambda _, b='guierror': self.open_text_file(0, whichfile=b))
-        self.ui_options['use_nr_all'] = QtGui.QAction("Include NR trials (all)", self)
-        self.ui_options['use_nr_all'].setCheckable(True)
-        self.ui_options['use_nr_all'].triggered.connect(self.use_nr_trials_all)
-        self.ui_options['autosleep_all'] = QtGui.QAction("Enable autosleep (all)", self)
-        self.ui_options['autosleep_all'].setCheckable(True)
-        self.ui_options['autosleep_all'].setChecked(True)
-        self.ui_options['autosleep_all'].triggered.connect(self.auto_sleep_set_all)
+            viewGuiLogAction = QtGui.QAction("View GUI Log", self)
+            viewGuiLogAction.triggered.connect(lambda _, b='guilog': self.open_text_file(0, whichfile=b))
+            viewGuiErrorAction = QtGui.QAction("View GUI Error Log", self)
+            viewGuiErrorAction.triggered.connect(lambda _, b='guierror': self.open_text_file(0, whichfile=b))
+            self.ui_options['use_nr_all'] = QtGui.QAction("Include NR trials (all)", self)
+            self.ui_options['use_nr_all'].setCheckable(True)
+            self.ui_options['use_nr_all'].triggered.connect(self.use_nr_trials_all)
+            self.ui_options['autosleep_all'] = QtGui.QAction("Enable autosleep (all)", self)
+            self.ui_options['autosleep_all'].setCheckable(True)
+            self.ui_options['autosleep_all'].setChecked(True)
+            self.ui_options['autosleep_all'].triggered.connect(self.auto_sleep_set_all)
 
-        globalOptionsMenu.addAction(viewGuiLogAction)
-        globalOptionsMenu.addAction(viewGuiErrorAction)
+            globalOptionsMenu.addAction(viewGuiLogAction)
+            globalOptionsMenu.addAction(viewGuiErrorAction)
 
-        globalOptionsMenu.addSeparator()
-        globalOptionsMenu.addMenu(autosleepMenu)
-        globalOptionsMenu.addMenu(nrTrialMenu)
-        nrTrialMenu.addAction(self.ui_options['use_nr_all'])
-        nrTrialMenu.addSeparator()
+            globalOptionsMenu.addSeparator()
+            globalOptionsMenu.addMenu(autosleepMenu)
+            globalOptionsMenu.addMenu(nrTrialMenu)
+            nrTrialMenu.addAction(self.ui_options['use_nr_all'])
+            nrTrialMenu.addSeparator()
 
-        autosleepMenu.addAction(self.ui_options['autosleep_all'])
-        autosleepMenu.addSeparator()
+            autosleepMenu.addAction(self.ui_options['autosleep_all'])
+            autosleepMenu.addSeparator()
 
-        self.setMenuBar(mainMenu)
-        # endregion
+            self.setMenuBar(mainMenu)
+            # endregion
 
-        self.timer = QtCore.QTimer()
-        self.timer.timeout.connect(self.refreshall)
-        self.timer.start(5000)
+            self.timer = QtCore.QTimer()
+            self.timer.timeout.connect(self.refreshall)
+            self.timer.start(5000)
 
-        self.idleTime = 1.5  # max idle time before restarting pyoperant process
+            self.idleTime = 1.5  # max idle time before restarting pyoperant process
 
-        self.log_config()
+            self.log_config()
 
-        # region Monitor when USB devices are connected/disconnected
-        context = pyudev.Context()
-        monitor = pyudev.Monitor.from_netlink(context)
-        monitor.filter_by(subsystem='tty')
-        observer = pyudev.MonitorObserver(monitor, self.usb_monitor, name='usb-observer')
-        observer.daemon = True
-        observer.start()
+            # region Monitor when USB devices are connected/disconnected
+            context = pyudev.Context()
+            monitor = pyudev.Monitor.from_netlink(context)
+            monitor.filter_by(subsystem='tty')
+            observer = pyudev.MonitorObserver(monitor, self.usb_monitor, name='usb-observer')
+            observer.daemon = True
+            observer.start()
 
-        self.teensy_emit.connect(
-            (lambda triggered_boxnumber, parameter: self.teensy_control(triggered_boxnumber, parameter)))
-        # endregion
+            self.teensy_emit.connect(
+                (lambda triggered_boxnumber, parameter: self.teensy_control(triggered_boxnumber, parameter)))
+            # endregion
 
-        # arrays for queues and threads
-        self.qList = [0] * self.numberOfBoxes
-        self.tList = [0] * self.numberOfBoxes
-        # self.qReadList = [0] * self.numberOfBoxes  # list of queues for inputs to subprocesses
-        # self.tReadList = [0] * self.numberOfBoxes  # list of queues for inputs to subprocesses
+            # arrays for queues and threads
+            self.qList = [0] * self.numberOfBoxes
+            self.tList = [0] * self.numberOfBoxes
+            # self.qReadList = [0] * self.numberOfBoxes  # list of queues for inputs to subprocesses
+            # self.tReadList = [0] * self.numberOfBoxes  # list of queues for inputs to subprocesses
 
-        # Connect 'global' buttons to functions
-        self.startAllButton.clicked.connect(lambda: self.start_all())
-        self.stopAllButton.clicked.connect(lambda: self.stop_all())
+            # Connect 'global' buttons to functions
+            self.startAllButton.clicked.connect(lambda: self.start_all())
+            self.stopAllButton.clicked.connect(lambda: self.stop_all())
 
-        self.subprocessBox = [0] * self.numberOfBoxes  # stores subprocesses for pyoperant for each box
-        self.logProcessBox = [0] * self.numberOfBoxes  # stores subprocesses for log reading for each box
-        self.logpathList = [0] * self.numberOfBoxes  # stores log file path for each box
+            self.subprocessBox = [0] * self.numberOfBoxes  # stores subprocesses for pyoperant for each box
+            self.logProcessBox = [0] * self.numberOfBoxes  # stores subprocesses for log reading for each box
+            self.logpathList = [0] * self.numberOfBoxes  # stores log file path for each box
 
-        # Variable initiation
-        self.boxList = range(0, self.numberOfBoxes)
-        self.deviceIDList = []
-        self.deviceLocationList = []
-        self.experimentPath = ""
+            # region Variable setup
+            self.boxList = range(0, self.numberOfBoxes)
+            self.deviceIDList = []
+            self.deviceLocationList = []
+            self.experimentPath = ""
 
-        # Option var init
-        self.boxMenuList = []
-        self.solenoidMenuList = []
-        self.primeActionList = []
-        self.purgeActionList = []
-        self.solenoidManualList = []
-        self.optionsMenuList = []
-        self.openFolderActionList = []
-        self.openSettingsActionList = []
-        self.createNewJsonList = []
-        self.newBirdActionList = []
-        self.statsActionList = []
-        self.rawTrialActionList = []
-        self.useNRList = []
-        self.autoSleepList = []
-        self.openBoxLogActionList = []
-        self.lastStartList = []
-        self.lastTrialList = []
-        self.sleepScheduleList = []  # schedule is none if box not active, set when box started
-        self.defaultSleepSchedule = [["08:30", "22:30"]]
+            # Option var init
+            self.boxMenuList = []
+            self.solenoidMenuList = []
+            self.primeActionList = []
+            self.purgeActionList = []
+            self.solenoidManualList = []
+            self.optionsMenuList = []
+            self.openFolderActionList = []
+            self.openSettingsActionList = []
+            self.createNewJsonList = []
+            self.newBirdActionList = []
+            self.statsActionList = []
+            self.rawTrialActionList = []
+            self.useNRList = []
+            self.autoSleepList = []
+            self.openBoxLogActionList = []
+            self.lastStartList = []
+            self.lastTrialList = []
+            self.sleepScheduleList = []  # schedule is none if box not active, set when box started
+            self.defaultSleepSchedule = [["08:30", "22:30"]]
 
-        # region Individual option menu setup
-        ## To add an item to the option menu:
-        # - Add a blank list var to the "option var init" section for the action to be stored for each box
-        # - Figure out whether the new option should be in the main option menu or in a submenu
-        # - in the "Option Menu Setup" section, add two lines:
-        #       self.{list var}.append(QtGui.QAction({action name as str}, self)   # or QtGui.QMenu({menu name as str})
-        #       self.{parent menu}[boxIndex].addAction(self.{list var}[boxIndex])  # or addMenu
-        # - If adding an action, go to the "Connect functions to buttons/objects" section and add a line to connect
-        # the actual QAction object with the function for each box:
-        #       self.{list var}[boxNumber].triggered.connect(lambda _, b=i: self.{function}(boxIndex=b, {other vars}))
+            # endregion Variable setup
 
-        for boxIndex in self.boxList:
-            # Create necessary objects for each box
-            self.statsActionList.append(QtGui.QAction("Performance", self))
+            # region Individual option menu setup
+            ## To add an item to the option menu:
+            # - Add a blank list var to the "option var init" section for the action to be stored for each box
+            # - Figure out whether the new option should be in the main option menu or in a submenu
+            # - in the "Option Menu Setup" section, add two lines:
+            #       self.{list var}.append(QtGui.QAction({action name as str}, self)
+            #           (or QtGui.QMenu({menu name as str}))
+            #       self.{parent menu}[boxIndex].addAction(self.{list var}[boxIndex])
+            #           (or addMenu)
+            # - If adding an action, go to the "Connect functions to buttons/objects" section and add a line to connect
+            # the actual QAction object with the function for each box:
+            #       self.{list var}[boxNumber].triggered.connect(lambda _, b=i: self.{function}(boxIndex=b,
+            #                                                                                   {other vars}))
 
-            # menu-specific
-            self.boxMenuList.append(QtGui.QMenu())
-            self.solenoidMenuList.append(QtGui.QMenu("Water Control"))
-            self.primeActionList.append(QtGui.QAction("Prime (5s)", self))
-            self.purgeActionList.append(QtGui.QAction("Purge (20s)", self))
-            self.solenoidManualList.append(QtGui.QAction("Manual Control", self))
-            self.optionsMenuList.append(QtGui.QMenu("Options"))
-            self.rawTrialActionList.append(QtGui.QAction("Get Raw Trial Data", self))
-            self.openFolderActionList.append(QtGui.QAction("Open &Data folder", self))
-            self.openSettingsActionList.append(QtGui.QAction("Open &Settings file", self))
-            self.openBoxLogActionList.append(QtGui.QAction("Open &Log file", self))
-            self.createNewJsonList.append(QtGui.QAction("New &Settings file", self))
-            self.newBirdActionList.append(QtGui.QAction("New &Bird", self))
-            self.useNRList.append(QtGui.QAction("Use &NR Trials", self))
-            self.autoSleepList.append(QtGui.QAction("&Autosleep", self))
+            for boxIndex in self.boxList:
+                # Create necessary objects for each box
+                self.statsActionList.append(QtGui.QAction("Performance", self))
 
-            self.useNRList[boxIndex].setCheckable(True)
-            self.autoSleepList[boxIndex].setCheckable(True)
-            self.autoSleepList[boxIndex].setChecked(self.ui_options['autosleep_all'].isChecked())
+                # menu-specific
+                self.boxMenuList.append(QtGui.QMenu())
+                self.solenoidMenuList.append(QtGui.QMenu("Water Control"))
+                self.primeActionList.append(QtGui.QAction("Prime (5s)", self))
+                self.purgeActionList.append(QtGui.QAction("Purge (20s)", self))
+                self.solenoidManualList.append(QtGui.QAction("Manual Control", self))
+                self.optionsMenuList.append(QtGui.QMenu("Options"))
+                self.rawTrialActionList.append(QtGui.QAction("Get Raw Trial Data", self))
+                self.openFolderActionList.append(QtGui.QAction("Open &Data folder", self))
+                self.openSettingsActionList.append(QtGui.QAction("Open &Settings file", self))
+                self.openBoxLogActionList.append(QtGui.QAction("Open &Log file", self))
+                self.createNewJsonList.append(QtGui.QAction("New &Settings file", self))
+                self.newBirdActionList.append(QtGui.QAction("New &Bird", self))
+                self.useNRList.append(QtGui.QAction("Use &NR Trials", self))
+                self.autoSleepList.append(QtGui.QAction("&Autosleep", self))
 
-            # Reorder to change order in menu
-            """
-            Current order:
-            Open data folder
-            Open log file
-            Open Settings file 
-            Get raw trial data
-            ---
-            Water Control:
-                Prime
-                Purge
-                Manual
-            ---
-            Options:
-                Autosleep
-                Use NR
+                self.useNRList[boxIndex].setCheckable(True)
+                self.autoSleepList[boxIndex].setCheckable(True)
+                self.autoSleepList[boxIndex].setChecked(self.ui_options['autosleep_all'].isChecked())
+
+                # Reorder to change order in menu
+                """
+                Current order:
+                Open data folder
+                Open Settings file 
+                Open log file
+                Get raw trial data
                 ---
-                New settings file
-                New bird
-            
-            
-            """
-            self.boxMenuList[boxIndex].addAction(self.openFolderActionList[boxIndex])
-            self.boxMenuList[boxIndex].addAction(self.openSettingsActionList[boxIndex])
-            self.boxMenuList[boxIndex].addAction(self.openBoxLogActionList[boxIndex])
-            self.boxMenuList[boxIndex].addAction(self.rawTrialActionList[boxIndex])
-            self.boxMenuList[boxIndex].addSeparator()
-            self.boxMenuList[boxIndex].addMenu(self.solenoidMenuList[boxIndex])
-            self.boxMenuList[boxIndex].addSeparator()
-            self.boxMenuList[boxIndex].addMenu(self.optionsMenuList[boxIndex])
+                Water Control:
+                    Prime
+                    Purge
+                    Manual
+                ---
+                Options:
+                    Autosleep
+                    Use NR
+                    ---
+                    New settings file
+                    New bird
+                
+                
+                """
+                self.boxMenuList[boxIndex].addAction(self.openFolderActionList[boxIndex])
+                self.boxMenuList[boxIndex].addAction(self.openSettingsActionList[boxIndex])
+                self.boxMenuList[boxIndex].addAction(self.openBoxLogActionList[boxIndex])
+                self.boxMenuList[boxIndex].addAction(self.rawTrialActionList[boxIndex])
+                self.boxMenuList[boxIndex].addSeparator()
+                self.boxMenuList[boxIndex].addMenu(self.solenoidMenuList[boxIndex])
+                self.boxMenuList[boxIndex].addSeparator()
+                self.boxMenuList[boxIndex].addMenu(self.optionsMenuList[boxIndex])
 
-            # option submenu
+                # option submenu
 
-            self.optionsMenuList[boxIndex].addAction(self.autoSleepList[boxIndex])
-            self.optionsMenuList[boxIndex].addAction(self.useNRList[boxIndex])
-            self.optionsMenuList[boxIndex].addSeparator()
-            self.optionsMenuList[boxIndex].addAction(self.createNewJsonList[boxIndex])
-            self.optionsMenuList[boxIndex].addAction(self.newBirdActionList[boxIndex])
+                self.optionsMenuList[boxIndex].addAction(self.autoSleepList[boxIndex])
+                self.optionsMenuList[boxIndex].addAction(self.useNRList[boxIndex])
+                self.optionsMenuList[boxIndex].addSeparator()
+                self.optionsMenuList[boxIndex].addAction(self.createNewJsonList[boxIndex])
+                self.optionsMenuList[boxIndex].addAction(self.newBirdActionList[boxIndex])
 
-            # Solenoid submenu
-            self.solenoidMenuList[boxIndex].addAction(self.primeActionList[boxIndex])
-            self.solenoidMenuList[boxIndex].addAction(self.purgeActionList[boxIndex])
-            self.solenoidMenuList[boxIndex].addAction(self.solenoidManualList[boxIndex])
-        # endregion
-            self.autoSleepList[boxIndex].setText('Autosleep (Box {:02d})'.format(boxIndex + 1))
-            autosleepMenu.addAction(self.autoSleepList[boxIndex])
-            self.useNRList[boxIndex].setText('Use NR Trials (Box {:02d})'.format(boxIndex + 1))
-            nrTrialMenu.addAction(self.useNRList[boxIndex])
+                # Solenoid submenu
+                self.solenoidMenuList[boxIndex].addAction(self.primeActionList[boxIndex])
+                self.solenoidMenuList[boxIndex].addAction(self.purgeActionList[boxIndex])
+                self.solenoidMenuList[boxIndex].addAction(self.solenoidManualList[boxIndex])
 
-        # region Other box-specific var setup
-        for boxIndex in self.boxList:
-            # Fill sleep schedule var with None to start, and fill later when box is started
-            self.sleepScheduleList.append(None)
-            self.lastStartList.append(None)
-            self.lastTrialList.append(None)
+                self.autoSleepList[boxIndex].setText('Autosleep (Box {:02d})'.format(boxIndex + 1))
+                autosleepMenu.addAction(self.autoSleepList[boxIndex])
+                self.useNRList[boxIndex].setText('Use NR Trials (Box {:02d})'.format(boxIndex + 1))
+                nrTrialMenu.addAction(self.useNRList[boxIndex])
+            # endregion
 
-            # Queue for running subprocesses and pulling outputs without blocking main script
-            self.qList[boxIndex] = Queue.Queue()
+            # region Other box-specific var setup
+            for boxIndex in self.boxList:
+                # Fill sleep schedule var with None to start, and fill later when box is started
+                self.sleepScheduleList.append(None)
+                self.lastStartList.append(None)
+                self.lastTrialList.append(None)
 
-            # Device-specific vars
-            self.deviceIDList.append(None)
-            self.deviceLocationList.append(None)
+                # Queue for running subprocesses and pulling outputs without blocking main script
+                self.qList[boxIndex] = Queue.Queue()
 
-            ## The following lines are only if we want to implement the ability for a running pyoperant subprocess to
-            #  accept external input from the GUI
+                # Device-specific vars
+                self.deviceIDList.append(None)
+                self.deviceLocationList.append(None)
 
-            # self.qReadList[boxIndex] = Queue.Queue()  # Queue for running log-read subprocesses without blocking
-            # # main script
-            #
-            # self.tReadList[boxIndex] = threading.Thread(target=self.read_output_box,
-            #                                             args=(self.logProcessBox[boxIndex].stdout,
-            #                                                   self.qReadList[boxIndex]))
-            # self.tReadList[boxIndex].daemon = True
-        # endregion
+                ## The following lines are only if we want to implement the ability for a running pyoperant
+                # subprocess to accept external input from the GUI
 
-        # region Connect functions to buttons/objects
-        for boxIndex in self.boxList:
-            self.paramFileButtonBoxList[boxIndex].clicked.connect(
-                lambda _, b=boxIndex: self.param_file_select(boxindex=b))
-            self.performanceBoxList[boxIndex].clicked.connect(
-                lambda _, b=boxIndex: self.analyze_performance(boxnumber=b))
-            self.startBoxList[boxIndex].clicked.connect(lambda _, b=boxIndex: self.start_box(boxnumber=b))
-            self.stopBoxList[boxIndex].clicked.connect(lambda _, b=boxIndex: self.stop_box(boxnumber=b))
+                # self.qReadList[boxIndex] = Queue.Queue()  # Queue for running log-read subprocesses without blocking
+                # # main script
+                #
+                # self.tReadList[boxIndex] = threading.Thread(target=self.read_output_box,
+                #                                             args=(self.logProcessBox[boxIndex].stdout,
+                #                                                   self.qReadList[boxIndex]))
+                # self.tReadList[boxIndex].daemon = True
+            # endregion
 
-            # Option menu
-            self.purgeActionList[boxIndex].triggered.connect(
-                lambda _, b=boxIndex: self.water_control(boxindex=b, parameter='purge', purge_time=20))
-            self.primeActionList[boxIndex].triggered.connect(
-                lambda _, b=boxIndex: self.water_control(boxindex=b, parameter='purge', purge_time=5))
-            self.solenoidManualList[boxIndex].triggered.connect(
-                lambda _, b=boxIndex: self.water_control(boxindex=b, parameter='dialog'))
-            self.openFolderActionList[boxIndex].triggered.connect(
-                lambda _, b=boxIndex: self.open_box_folder(boxnumber=b))
-            self.openSettingsActionList[boxIndex].triggered.connect(
-                lambda _, b=boxIndex: self.open_text_file(boxnumber=b, whichfile='json'))
-            self.openBoxLogActionList[boxIndex].triggered.connect(
-                lambda _, b=boxIndex: self.open_text_file(boxnumber=b, whichfile='boxlog'))
-            self.rawTrialActionList[boxIndex].triggered.connect(
-                lambda _, b=boxIndex: self.get_raw_trial_data(boxnumber=b))
-            self.createNewJsonList[boxIndex].triggered.connect(
-                lambda _, b=boxIndex: self.create_json_file(boxnumber=b))
-            self.newBirdActionList[boxIndex].triggered.connect(
-                lambda _, b=boxIndex: self.create_new_bird(boxnumber=b))
-            self.useNRList[boxIndex].triggered.connect(
-                lambda _, b=boxIndex: self.use_nr_trials(boxnumber=b))
-            self.autoSleepList[boxIndex].triggered.connect(
-                lambda _, b=boxIndex: self.auto_sleep_set(boxnumber=b))
+            # region Connect functions to buttons/objects
+            for boxIndex in self.boxList:
+                self.paramFileButtonBoxList[boxIndex].clicked.connect(
+                    lambda _, b=boxIndex: self.param_file_select(boxindex=b))
+                self.performanceBoxList[boxIndex].clicked.connect(
+                    lambda _, b=boxIndex: self.analyze_performance(boxnumber=b))
+                self.startBoxList[boxIndex].clicked.connect(lambda _, b=boxIndex: self.start_box(boxnumber=b))
+                self.stopBoxList[boxIndex].clicked.connect(lambda _, b=boxIndex: self.stop_box(boxnumber=b))
 
-            # Attach menu to physical option button
-            self.optionButtonBoxList[boxIndex].setMenu(self.boxMenuList[boxIndex])
-        # endregion
+                # Option menu
+                self.purgeActionList[boxIndex].triggered.connect(
+                    lambda _, b=boxIndex: self.water_control(boxindex=b, parameter='purge', purge_time=20))
+                self.primeActionList[boxIndex].triggered.connect(
+                    lambda _, b=boxIndex: self.water_control(boxindex=b, parameter='purge', purge_time=5))
+                self.solenoidManualList[boxIndex].triggered.connect(
+                    lambda _, b=boxIndex: self.water_control(boxindex=b, parameter='dialog'))
+                self.openFolderActionList[boxIndex].triggered.connect(
+                    lambda _, b=boxIndex: self.open_box_folder(boxnumber=b))
+                self.openSettingsActionList[boxIndex].triggered.connect(
+                    lambda _, b=boxIndex: self.open_text_file(boxnumber=b, whichfile='json'))
+                self.openBoxLogActionList[boxIndex].triggered.connect(
+                    lambda _, b=boxIndex: self.open_text_file(boxnumber=b, whichfile='boxlog'))
+                self.rawTrialActionList[boxIndex].triggered.connect(
+                    lambda _, b=boxIndex: self.get_raw_trial_data(boxnumber=b))
+                self.createNewJsonList[boxIndex].triggered.connect(
+                    lambda _, b=boxIndex: self.create_json_file(boxnumber=b))
+                self.newBirdActionList[boxIndex].triggered.connect(
+                    lambda _, b=boxIndex: self.create_new_bird(boxnumber=b))
+                self.useNRList[boxIndex].triggered.connect(
+                    lambda _, b=boxIndex: self.use_nr_trials(boxnumber=b))
+                self.autoSleepList[boxIndex].triggered.connect(
+                    lambda _, b=boxIndex: self.auto_sleep_set(boxnumber=b))
 
-        self.closeEvent = self.close_application
+                # Attach menu to physical option button
+                self.optionButtonBoxList[boxIndex].setMenu(self.boxMenuList[boxIndex])
+            # endregion
 
-        # check if each box is connected
-        # tempContext = pyudev.Context()
-        for device in context.list_devices(subsystem='tty'):
-            try:
-                deviceString = device.device_links.next()
-                self.usb_monitor('add', device)
-            except StopIteration:
-                pass
+            self.closeEvent = self.close_application
 
-        self.open_application()
+            # check if each box is connected
+            # tempContext = pyudev.Context()
+            for device in context.list_devices(subsystem='tty'):
+                try:
+                    device.device_links.next()
+                    self.usb_monitor('add', device)
+                except StopIteration:
+                    pass
+
+            self.open_application()
 
     # region GUI button/object handling
     def param_file_select(self, boxindex):
@@ -693,28 +701,6 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             # deviceString[0:4] == '/dev':  # Only pass if device path is valid
             devInfo = self.DeviceInfo(device)
             boxIndex = devInfo.boxIndex
-            # try:
-            #     # Get box number
-            #     deviceStringSplit = os.path.split(deviceString)
-            #     boxLink = deviceStringSplit[1]
-            #     boxLinkSplit = re.split('Board(\\d*)', boxLink)
-            #     devInfo.boxNumber = int(boxLinkSplit[1])
-            #     boxIndex = devInfo.boxNumber - 1  # Teensy numbers are indexed from 1, but box array indexed from 0
-            #
-            # except IndexError:
-            #     devInfo.boxNumber = None
-            #     boxIndex = None
-            #     self.log.error('Error: board not recognized')
-            #
-            # if boxIndex is not None:
-            #     # Get device ID (e.g. "tty...")
-            #     device_path = os.path.split(device.device_path)
-            #     deviceID = device_path[1]
-            #
-            #     # Get USB port info
-            #     usbPath = device.parent.parent.device_node
-            #     usbSplit = re.split('/', usbPath)
-            #     usbString = 'Bus {:02d}:{:02d}'.format(int(usbSplit[-2]), int(usbSplit[-1]))
 
             # enable or disable
             if action == 'add':
@@ -999,7 +985,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         """
 
         if schedule == 'sun':
-            if is_day(kwargs):
+            if utils.is_day(kwargs):
                 return True
         else:
             for epoch in schedule:
@@ -1270,7 +1256,7 @@ class SolenoidGui(QtGui.QDialog, pyoperant_gui_layout.UiSolenoidControl):
         self.done_Button.clicked.connect(self.close_window)
         self.log = logging.getLogger(__name__)
         self.box_name.setText(str("Box {:02d}".format(box_number)))
-        self.solenoid_Status_Text.setText(_translate("solenoid_control", "CLOSED", None))
+        self.solenoid_Status_Text.setText(str("CLOSED"))
 
         self.solenoidChannel = 16
 
@@ -1294,7 +1280,7 @@ class SolenoidGui(QtGui.QDialog, pyoperant_gui_layout.UiSolenoidControl):
                 self.log.debug("Successfully opened device {}".format(self.device_name))
 
                 # set labels
-                self.box_name.setText(str("Box {:02d}".format(box_number)))
+                self.box_name.setText(str("Box {:02d}".format(boxnumber)))
 
                 # set self.solenoidChannel as output
                 self.device.write("".join([chr(self.solenoidChannel), chr(3)]))
@@ -1335,6 +1321,7 @@ class SolenoidGui(QtGui.QDialog, pyoperant_gui_layout.UiSolenoidControl):
         self.accept()
 
 
+# noinspection PyUnresolvedReferences
 class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
     """
     Code for creating and managing dialog that displays bird's performance stats
@@ -1365,54 +1352,59 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
     """
     def __init__(self, data_folder, bird_name):
         super(self.__class__, self).__init__()
+
         self.setup_ui(self)  # This is defined in pyoperant_gui_layout.py file
 
         # Ensure that pyqt can delete objects properly before python garbage collector goes to work
         # (prevents "QObject::startTimer: QTimer can only be used with threads started with QThread" error)
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
 
-        self.data_folder = data_folder
+        with wait_cursor():  # set mouse cursor to 'waiting'
+            self.data_folder = data_folder
 
-        self.folder_Button.clicked.connect(self.select_bird)
-        self.export_Button.clicked.connect(lambda _, b=self.data_folder: self.export(b))
-        self.done_Button.clicked.connect(self.accept)
+            self.folder_Button.clicked.connect(self.select_bird)
+            self.export_Button.clicked.connect(lambda _, b=self.data_folder: self.export(b))
+            self.done_Button.clicked.connect(self.accept)
 
-        self.performance_Table.installEventFilter(self)  # to capture keyboard commands so data can be copied directly
+            self.performance_Table.installEventFilter(self)  # to capture keyboard commands so data can be copied
+            # directly
 
-        self.noResponse_Checkbox.stateChanged.connect(lambda _, b='nr': self.field_preset_select(pattern=b))
-        self.probe_Checkbox.stateChanged.connect(lambda _, b='probe': self.field_preset_select(pattern=b))
-        self.raw_Checkbox.stateChanged.connect(lambda _, b='raw': self.field_preset_select(pattern=b))
-        self.fieldListSelectNone.clicked.connect(lambda _, b='none': self.field_preset_select(pattern=b))
-        self.fieldListSelectAll.clicked.connect(lambda _, b='all': self.field_preset_select(pattern=b))
+            self.noResponse_Checkbox.stateChanged.connect(lambda _, b='nr': self.field_preset_select(pattern=b))
+            self.probe_Checkbox.stateChanged.connect(lambda _, b='probe': self.field_preset_select(pattern=b))
+            self.raw_Checkbox.stateChanged.connect(lambda _, b='raw': self.field_preset_select(pattern=b))
+            self.fieldListSelectNone.clicked.connect(lambda _, b='none': self.field_preset_select(pattern=b))
+            self.fieldListSelectAll.clicked.connect(lambda _, b='all': self.field_preset_select(pattern=b))
 
-        self.create_grouping_checkbox('Subject')
-        self.create_grouping_checkbox('Date')
-        self.create_grouping_checkbox('Block')
-        self.create_grouping_checkbox('Stimulus')
-        self.create_grouping_checkbox('Class')
-        self.create_grouping_checkbox('Response Type')
-        self.create_grouping_checkbox('Response')
-        self.groupByCheckboxes['Subject'].setChecked(True)
-        self.groupByCheckboxes['Date'].setChecked(True)
-        self.groupByCheckboxes['Block'].setChecked(True)
+            self.create_grouping_checkbox('Subject')
+            self.create_grouping_checkbox('Date')
+            self.create_grouping_checkbox('Block')
+            self.create_grouping_checkbox('Stimulus')
+            self.create_grouping_checkbox('Class')
+            self.create_grouping_checkbox('Response Type')
+            self.create_grouping_checkbox('Response')
+            self.groupByCheckboxes['Subject'].setChecked(True)
+            self.groupByCheckboxes['Date'].setChecked(True)
+            self.groupByCheckboxes['Block'].setChecked(True)
 
-        # Filter creation
-        for checkbox in self.groupByCheckboxes:
-            self.groupByCheckboxes[checkbox].stateChanged.connect(self.recalculate)
+            # Filter creation
+            for checkbox in self.groupByCheckboxes:
+                self.groupByCheckboxes[checkbox].stateChanged.connect(self.recalculate)
 
-        self.setWindowTitle(str("Performance for {}".format(bird_name)))
-        self.log = logging.getLogger(__name__)
-        self.dataGroups = []
-        self.filters = []
-        self.create_field_list()
-        self.create_filter_objects()
+            self.setWindowTitle(str("Performance for {}".format(bird_name)))
+            self.log = logging.getLogger(__name__)
+            self.dataGroups = []
+            self.filters = []
 
-        self.build_field_checkboxes()
-        self.group_by()
+            self.fieldManagement = analysis.FieldList().build_dict()
 
-        self.get_raw_data()
+            self.create_filter_objects()
 
-        self.field_preset_select('nr')
+            self.build_field_checkboxes()
+            self.group_by()
+
+            self.get_raw_data()
+
+            self.field_preset_select('nr')
         self.recalculate()
 
     def select_bird(self):
@@ -1433,44 +1425,6 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
                 self.recalculate()
 
     # region Field selection
-
-    def create_field_list(self):
-        # Create dictionary of fields, then create checkboxes for all fields for the "Select Columns" pane
-
-        self.fieldManagement = collections.OrderedDict()
-        allColumns = analysis.field_list()
-        for column in allColumns:
-            # column = column.decode('utf-8')
-            self.fieldManagement[column] = {}
-            self.fieldManagement[column]['visible'] = True
-            self.fieldManagement[column]['filter'] = {}
-
-            self.fieldManagement[column]['name'] = column.replace('\n(NR)', ' (NR)')
-            columnSafe = self.fieldManagement[column]['name']
-            if columnSafe in ['Subject', 'Block', 'Response Type', 'Stimulus', 'Class', 'Response']:
-                self.fieldManagement[column]['filter']['type'] = 'list'
-            elif columnSafe in ['Date']:
-                self.fieldManagement[column]['filter']['type'] = 'range'
-            else:
-                self.fieldManagement[column]['filter']['type'] = 'None'
-
-            # give each field a type to indicate what functions can be performed
-            if columnSafe in ['File', 'Session', 'File Count', 'Index', 'Time']:
-                self.fieldManagement[column]['type'] = 'raw'
-            elif columnSafe in ['Subject', 'Block', 'Date', 'Response Type', 'Stimulus', 'Class', 'Response']:
-                self.fieldManagement[column]['type'] = 'index'  # groupby enabled
-            elif columnSafe == 'RT':
-                self.fieldManagement[column]['type'] = 'math'
-            elif columnSafe in ['Reward', 'Punish', 'Hit', 'FA', 'Miss', 'CR', 'Miss (NR)', 'CR (NR)',
-                                'Probe Hit', 'Probe FA', 'Probe Miss', 'Probe CR', 'Probe Miss (NR)',
-                                'Probe CR (NR)']:
-                self.fieldManagement[column]['type'] = 'sum'
-            elif columnSafe in ["d'", "d' (NR)", 'Beta', 'Beta (NR)', 'S+', 'S+ (NR)',
-                                'S-', 'S- (NR)', 'Total Corr', 'Total Corr (NR)', 'Trials',
-                                "Probe d'", "Probe d' (NR)", 'Probe Beta', 'Probe Beta (NR)',
-                                'Probe S+', 'Probe S+ (NR)', 'Probe S-', 'Probe S- (NR)',
-                                'Probe Tot Corr', 'Probe Tot Corr (NR)', 'Probe Trials']:
-                self.fieldManagement[column]['type'] = 'group'
 
     def build_field_checkboxes(self):
         # build checkbox items for every field from fieldManangement dict
@@ -1583,21 +1537,17 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
                 self.dataGroups.append(checkbox)
 
         # enable/disable raw field checkboxes depending on group state
-        for field in (rawFields for rawFields in self.fieldManagement
-                      if self.fieldManagement[rawFields]['type'] == 'raw'):
-            if len(self.dataGroups) > 0:
-                self.fieldManagement[field]['itemWidget'].setEnabled(False)
-            else:
-                self.fieldManagement[field]['itemWidget'].setEnabled(True)
-
-        # enable/disable raw field checkboxes depending on group state
-        for field in (rawFields for rawFields in self.fieldManagement if self.fieldManagement[rawFields][
-                                                                             'type'] == 'group'):
-            if len(self.dataGroups) > 0:
-                self.fieldManagement[field]['itemWidget'].setEnabled(True)
-            else:
-                self.fieldManagement[field]['itemWidget'].setEnabled(False)
-        # self.recalculate()
+        for field in self.fieldManagement:
+            if self.fieldManagement[field]['type'] == 'raw':
+                if len(self.dataGroups) > 0:
+                    self.fieldManagement[field]['itemWidget'].setEnabled(False)
+                else:
+                    self.fieldManagement[field]['itemWidget'].setEnabled(True)
+            elif self.fieldManagement[field]['type'] == 'group':
+                if len(self.dataGroups) > 0:
+                    self.fieldManagement[field]['itemWidget'].setEnabled(True)
+                else:
+                    self.fieldManagement[field]['itemWidget'].setEnabled(False)
 
     # endregion
 
@@ -1683,7 +1633,9 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
                 # Add widget for date
                 dateBox = QtGui.QDateEdit()
                 dateBox.setCalendarPopup(True)
-                dateBox.setDate(QtCore.QDate.currentDate())
+                currDate = QtCore.QDate()  # currentDate is called this way to avoid PyCharm claiming parameter
+                # 'self' is unfilled in currentDate()
+                dateBox.setDate(currDate.currentDate())
                 dateBox.setDisplayFormat('yyyy/MM/dd')
                 dateBox.dateChanged.connect(self.apply_filter)
 
@@ -1829,24 +1781,26 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
         return perform
 
     def recalculate(self):
-        dropCols = []
-        for x in self.fieldManagement:
-            if not self.fieldManagement[x]['itemWidget'].checkState():
-                dropCols.append(x)
-        # dropCols = [col.replace(' (NR)', '\n(NR)') for col in dropCols]
-        self.group_by()
-        perform = analysis.Performance(self.data_folder)
-        perform.filter_data(filters=self.filters)
-        perform.summarize('filt')
-        self.outputData = perform.analyze(perform.summaryData, groupBy=self.dataGroups, dropCols=dropCols)
 
-        outputFile = 'performanceSummary.csv'
-        if isinstance(self.data_folder, list):
-            output_path = os.path.join(self.data_folder[0], outputFile)
-        else:
-            output_path = os.path.join(self.data_folder, outputFile)
-        self.outputData.to_csv(str(output_path), encoding='utf-8')
-        self.refresh_table(output_path)
+        with wait_cursor():  # set mouse cursor to 'waiting'
+            dropCols = []
+            for x in self.fieldManagement:
+                if not self.fieldManagement[x]['itemWidget'].checkState():
+                    dropCols.append(x)
+            # dropCols = [col.replace(' (NR)', '\n(NR)') for col in dropCols]
+            self.group_by()
+            perform = analysis.Performance(self.data_folder)
+            perform.filter_data(filters=self.filters)
+            perform.summarize('filt')
+            self.outputData = perform.analyze(perform.summaryData, groupBy=self.dataGroups, dropCols=dropCols)
+
+            outputFile = 'performanceSummary.csv'
+            if isinstance(self.data_folder, list):
+                output_path = os.path.join(self.data_folder[0], outputFile)
+            else:
+                output_path = os.path.join(self.data_folder, outputFile)
+            self.outputData.to_csv(str(output_path), encoding='utf-8')
+            self.refresh_table(output_path)
 
     # endregion
 
@@ -1926,11 +1880,13 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
     # endregion
 
 
+# noinspection PyBroadException
 class CheckableDirModel(QtGui.QFileSystemModel):
     """
     Custom reimplementation of pyqt4's QFileSystemModel to integrate checkboxes next to each folder/file
     """
-    def __init__(self, parent=None):
+
+    def __init__(self):
         QtGui.QFileSystemModel.__init__(self, None)
         self.checks = {}
 
@@ -1950,21 +1906,23 @@ class CheckableDirModel(QtGui.QFileSystemModel):
         else:
             return QtCore.Qt.Unchecked
 
-    def setData(self, index, value, role):
-        if role == QtCore.Qt.CheckStateRole and index.column() == 0:
-            self.checks[index] = value
-            self.emit(QtCore.SIGNAL("dataChanged(QModelIndex,QModelIndex)"), index, index)
+    # noinspection PyPep8Naming
+    def setData(self, QModelIndex, QVariant, int_role=None):
+        if int_role == QtCore.Qt.CheckStateRole and QModelIndex.column() == 0:
+            self.checks[QModelIndex] = QVariant
+            self.emit(QtCore.SIGNAL("dataChanged(QModelIndex,QModelIndex)"), QModelIndex, QModelIndex)
             return True
-        return QtGui.QFileSystemModel.setData(self, index, value, role)
+        return QtGui.QFileSystemModel.setData(self, QModelIndex, QVariant, int_role)
 
     def export_checked(self):
         selection = []
         for c in self.checks.keys():
             if self.checks[c] == QtCore.Qt.Checked:
                 try:
-
                     selection.append(str(self.filePath(c).toUtf8()))
                 except:
+                    # Don't know what exceptions might occur here, so just skipping them all, even though it's bad
+                    # practice
                     pass
         return selection
 
@@ -2011,6 +1969,23 @@ class FolderSelect(QtGui.QDialog, pyoperant_gui_layout.FolderSelectWindow):
             self.folder_view.setRootIndex(self.model.index(self.data_folder))
 
 
+# noinspection PyArgumentList
+@contextmanager
+def wait_cursor():
+    """
+    Implementation of wait cursor while loading things.
+    Proper usage is
+        with wait_cursor():
+            # do stuff while cursor stays 'waiting'
+    and cursor will automatically change back when it exits the 'with' statement
+    """
+    try:
+        QtGui.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+        yield
+    finally:
+        QtGui.QApplication.restoreOverrideCursor()
+
+
 def main():
     app = QtGui.QApplication(sys.argv)  # A new instance of QApplication
 
@@ -2021,4 +1996,3 @@ def main():
 
 if __name__ == '__main__':  # if we're running file directly and not importing it
     main()  # run the main function
-

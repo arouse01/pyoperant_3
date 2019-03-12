@@ -1,0 +1,329 @@
+{
+  "Subject": {
+    "shaping 1": {
+      "description": "full song stimuli, passive water",
+      "reinforcement": {
+        "schedule": "go_interrupt",
+        "prob": 1,
+        "secondary": false,
+        "passive": true,
+        "punish": false
+      },
+      "criteria": {
+        "trialcount": {
+          "mintrials": 10,
+          "type": "Hit"
+        }
+      },
+      "conditions": [
+        {
+          "class": "sPlus",
+          "stim_name": "songPlus"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "songMinus"
+        }
+      ],
+      "weights": [
+        {
+          "class": "sPlus",
+          "weight": 1
+        },
+        {
+          "class": "sMinus",
+          "weight": 1
+        }
+      ],
+      "queue": "random"
+    },
+    "shaping 2": {
+      "description": "full song stimuli, no passive, no lights out",
+      "reinforcement": {
+        "schedule": "go_interrupt",
+        "prob": 1,
+        "secondary": false,
+        "passive": false,
+        "punish": false
+      },
+      "criteria": {
+        "days": 2,
+        "trialcount": {
+          "mintrials": 50,
+          "class": "Hit"
+        }
+      },
+      "conditions": [
+        {
+          "class": "sPlus",
+          "stim_name": "songPlus"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "songMinus"
+        }
+      ],
+      "weights": [
+        {
+          "class": "sPlus",
+          "weight": 1
+        },
+        {
+          "class": "sMinus",
+          "weight": 1
+        }
+      ],
+      "queue": "random"
+    },
+    "shaping 3": {
+      "description": "full song stimuli, lights out punishment",
+      "reinforcement": {
+        "schedule": "go_interrupt",
+        "prob": 1,
+        "secondary": false,
+        "passive": false,
+        "punish": true
+      },
+      "criteria": {
+        "days": 3,
+        "trialcount": {
+          "mintrials": 100
+        },
+        "propCorrect": [
+          {
+            "type": "S+\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "type": "S-\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "minimum": 0.75
+          }
+        ]
+      },
+      "conditions": [
+        {
+          "class": "sPlus",
+          "stim_name": "songPlus"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "songMinus"
+        }
+      ],
+      "weights": [
+        {
+          "class": "sPlus",
+          "weight": 1
+        },
+        {
+          "class": "sMinus",
+          "weight": 1
+        }
+      ],
+      "queue": "random"
+    },
+    "training 125": {
+      "description": "1:1 S+/S- stim, 125 ms",
+      "reinforcement": {
+        "schedule": "go_interrupt",
+        "prob": 1,
+        "secondary": false,
+        "passive": false,
+        "punish": true
+      },
+      "criteria": {
+        "days": 2,
+        "trialcount": {
+          "mintrials": 100
+        },
+        "propCorrect": [
+          {
+            "type": "S+\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "type": "S-\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "minimum": 0.75
+          }
+        ]
+      },
+      "conditions": [
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1250ir3.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1250reg.wav"
+        }
+      ],
+      "weights": [
+        {
+          "class": "sPlus",
+          "weight": 1
+        },
+        {
+          "class": "sMinus",
+          "weight": 1
+        }
+      ],
+      "queue": "random"
+    },
+    "training 150": {
+      "description": "1:1 S+/S- stim, 150 ms",
+      "reinforcement": {
+        "schedule": "go_interrupt",
+        "prob": 1,
+        "secondary": false,
+        "passive": false,
+        "punish": true
+      },
+      "criteria": {
+        "days": 2,
+        "trialcount": {
+          "mintrials": 100
+        },
+        "propCorrect": [
+          {
+            "type": "S+\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "type": "S-\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "minimum": 0.75
+          }
+        ]
+      },
+      "conditions": [
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1500ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1500reg.wav"
+        }
+      ],
+      "weights": [
+        {
+          "class": "sPlus",
+          "weight": 1
+        },
+        {
+          "class": "sMinus",
+          "weight": 1
+        }
+      ],
+      "queue": "random"
+    },
+    "training 100": {
+      "description": "1:1 S+/S- stim, 100 ms",
+      "reinforcement": {
+        "schedule": "go_interrupt",
+        "prob": 1,
+        "secondary": false,
+        "passive": false,
+        "punish": true
+      },
+      "criteria": {
+        "days": 2,
+        "trialcount": {
+          "mintrials": 100
+        },
+        "propCorrect": [
+          {
+            "type": "S+\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "type": "S-\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "minimum": 0.75
+          }
+        ]
+      },
+      "conditions": [
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1000ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1000reg.wav"
+        }
+      ],
+      "weights": [
+        {
+          "class": "sPlus",
+          "weight": 1
+        },
+        {
+          "class": "sMinus",
+          "weight": 1
+        }
+      ],
+      "queue": "random"
+    },
+    "training 175": {
+      "description": "1:1 S+/S- stim, 175 ms",
+      "reinforcement": {
+        "schedule": "go_interrupt",
+        "prob": 1,
+        "secondary": false,
+        "passive": false,
+        "punish": true
+      },
+      "criteria": {
+        "days": 2,
+        "trialcount": {
+          "mintrials": 100
+        },
+        "propCorrect": [
+          {
+            "type": "S+\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "type": "S-\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "minimum": 0.75
+          }
+        ]
+      },
+      "conditions": [
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1750ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1750reg.wav"
+        }
+      ],
+      "weights": [
+        {
+          "class": "sPlus",
+          "weight": 1
+        },
+        {
+          "class": "sMinus",
+          "weight": 1
+        }
+      ],
+      "queue": "random"
+    }
+  }
+}
