@@ -225,7 +225,10 @@ class Session(object):
 
 
 class FieldList:
-
+    '''
+    Creates list of fields related to analysis, and optionally creates dict with field-specific info
+    Could be replaced with an external json file with the same info
+    '''
     def __init__(self):
 
         fieldList = ['Subject', 'File', 'Session', 'File Count', 'Date', 'Time', 'Block', 'Index', 'Stimulus', 'Class']
