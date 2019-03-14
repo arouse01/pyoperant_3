@@ -24,7 +24,7 @@
           <value>
             <SchemaInfo>
               <option name="name" value="pyoperant schema" />
-              <option name="relativePathToSchema" value="pyoperant/behavior/go_nogo_interrupt_config_schema.json" />
+              <option name="relativePathToSchema" value="pyoperant/behavior/old JSON files/go_nogo_interrupt_config_schema.json" />
               <option name="schemaVersion" value="JSON schema version 6" />
               <option name="applicationDefined" value="true" />
               <option name="patterns">

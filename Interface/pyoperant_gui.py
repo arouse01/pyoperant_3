@@ -740,7 +740,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
                 parameter = 'enable'
             else:
                 parameter = 'disable'
-            self.log.info("Teensy {:02d} recognized, status set to {}".format(boxindex, parameter))
+            self.log.info("Teensy {:02d} recognized, status set to {}".format(boxindex + 1, parameter))
             usbToolTip = 'System ID: ' + self.deviceIDList[boxindex] + '\n' + self.deviceLocationList[boxindex]
             self.labelBoxList[boxindex].setToolTip(usbToolTip)
             # self.usbInfoBoxList[boxindex].setText(self.deviceIDList[boxindex])
@@ -1538,12 +1538,16 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
 
         # enable/disable raw field checkboxes depending on group state
         for field in self.fieldManagement:
-            if self.fieldManagement[field]['type'] == 'raw':
+            fieldType = self.fieldManagement[field]['type']
+            if fieldType == 'raw' or fieldType == 'index':
+                # raw and index fields can't be viewed for grouped data other than as a grouping index (most are
+                # text or values that can't return a single value for a group)
                 if len(self.dataGroups) > 0:
                     self.fieldManagement[field]['itemWidget'].setEnabled(False)
                 else:
                     self.fieldManagement[field]['itemWidget'].setEnabled(True)
-            elif self.fieldManagement[field]['type'] == 'group':
+            elif fieldType == 'group':
+                # group fields only apply to grouped data, so if data isn't grouped these fields are useless
                 if len(self.dataGroups) > 0:
                     self.fieldManagement[field]['itemWidget'].setEnabled(True)
                 else:

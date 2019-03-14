@@ -225,18 +225,18 @@ class Session(object):
 
 
 class FieldList:
-    '''
+    """
     Creates list of fields related to analysis, and optionally creates dict with field-specific info
     Could be replaced with an external json file with the same info
-    '''
+    """
     def __init__(self):
-
+        # Item order is resulting sort order
         fieldList = ['Subject', 'File', 'Session', 'File Count', 'Date', 'Time', 'Block', 'Index', 'Stimulus', 'Class']
         fieldList += ['Response Type', 'Response', 'RT', 'Reward', 'Punish']
 
         fieldList += ["d'", "d' (NR)", u'Beta', u'Beta (NR)', 'Trials']
         fieldList += ['S+', 'S+ (NR)', 'S-', 'S- (NR)', 'Total Corr', 'Total Corr (NR)']
-        fieldList += ['Hit', 'Miss', 'Miss (NR)', 'FA', 'CR', 'CR (NR)']
+        fieldList += ['Hit', 'Miss', 'Miss (NR)', 'FA', 'CR', 'CR (NR)', 'Prop CR Resets']
 
         fieldList += ["Probe d'", "Probe d' (NR)", u'Probe Beta', u'Probe Beta (NR)', 'Probe Trials']
         fieldList += ['Probe S+', 'Probe S+ (NR)', 'Probe S-', 'Probe S- (NR)', 'Probe Tot Corr', 'Probe Tot Corr (NR)']
@@ -272,7 +272,7 @@ class FieldList:
                                         'S-', 'S- (NR)', 'Total Corr', 'Total Corr (NR)',
                                         "Probe d'", "Probe d' (NR)", 'Probe Beta', 'Probe Beta (NR)',
                                         'Probe S+', 'Probe S+ (NR)', 'Probe S-', 'Probe S- (NR)',
-                                        'Probe Tot Corr', 'Probe Tot Corr (NR)']:
+                                        'Probe Tot Corr', 'Probe Tot Corr (NR)', 'Prop CR Resets']:
                 columnDict['type'] = 'group'
             fieldDict[column] = columnDict
         return fieldDict
@@ -572,28 +572,28 @@ class Performance(object):
             # input_data.sort_values(by='Time')
             groupData = input_data.groupby(kwargs['groupBy'], sort=False)
             groupHeaders = groupData.obj.columns
-            headerDict = {}
+            groupingDict = {}
             fieldDict = FieldList().build_dict()
             # reaction time should be mean, not sum, time should be minimum (so groups with matching dates can still
             # be sorted in chronological order), and string fields shouldn't be aggregated at all.
             for column in groupHeaders:
                 # if column == 'RT':
-                #     headerDict[column] = 'mean'
+                #     groupingDict[column] = 'mean'
                 # elif column == 'Time':
-                #     headerDict[column] = 'min'
+                #     groupingDict[column] = 'min'
                 # elif column == 'Subject' or column == 'Block':
-                #     headerDict[column] = 'sum'
+                #     groupingDict[column] = 'sum'
                 # else:
                 #     pass
                 if column == 'Time':
-                    headerDict[column] = 'min'
+                    groupingDict[column] = 'min'
                 elif fieldDict[column]['type'] == 'mean' or fieldDict[column]['type'] == 'sum':
-                    headerDict[column] = fieldDict[column]['type']
+                    groupingDict[column] = fieldDict[column]['type']
                 else:
                     pass
                     
             # applying this .agg() transforms the groupBy object back into a regular dataframe
-            groupData = groupData.agg(headerDict)
+            groupData = groupData.agg(groupingDict)
 
             groupData = groupData.sort_values(by='Time')
             groupCount = len(groupData)
@@ -619,6 +619,7 @@ class Performance(object):
             probeMinus_NR_correct = []
             total_probe_correct = []
             total_probe_NR_correct = []
+            resetRatio = []
             # endregion
 
             # region Calculate stats for each summary group
@@ -658,6 +659,9 @@ class Performance(object):
                     dayBeta_NR = round(Analysis([[hitCount, (missCount + missNRCount)],
                                                  [FACount, (CRCount + CRNRCount)]]).bias(), 3)
                 betas_NR.append(dayBeta_NR)
+
+                resetRatio.append(self.divide_by_zero(CRCount, (CRCount + CRNRCount), 5))
+
                 # endregion
 
                 # region Probe trial stats
@@ -734,6 +738,7 @@ class Performance(object):
             groupData['Probe S- (NR)'] = probeMinus_NR_correct
             groupData['Probe Tot Corr'] = total_probe_correct
             groupData['Probe Tot Corr (NR)'] = total_probe_NR_correct
+            groupData['Prop CR Resets'] = resetRatio
             # endregion
 
         else:  # If no grouping specified, return raw data

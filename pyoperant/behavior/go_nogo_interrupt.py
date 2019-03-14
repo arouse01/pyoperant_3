@@ -6,7 +6,7 @@ import copy
 import datetime as dt
 from pyoperant.behavior import base, shape, adlib
 from pyoperant.errors import EndSession, EndBlock, InterfaceError, ArduinoException
-from pyoperant import components, utils, reinf, queues, analysis
+from pyoperant import utils, reinf, queues, analysis
 
 # from collections import OrderedDict  # If we want to export json in some sort of ordered way
 
@@ -577,6 +577,8 @@ class GoNoGoInterruptExp(base.BaseExp):
         return stim, epochs
 
     def analyze_trial(self):
+        # Calculate both including and excluding NR trials
+        # excluding NR trials
         stats = analysis.Analysis([[self.summary['correct_responses'],
                                     self.summary['misses']],
                                    [self.summary['false_alarms'],
