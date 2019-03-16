@@ -9,6 +9,7 @@ from scipy.stats import norm
 from scipy.stats import beta
 import pandas as pd
 import re
+import logging, traceback
 # import string
 import collections  # for orderedDict
 
@@ -282,6 +283,8 @@ class Performance(object):
     # Longer-term performance analysis
 
     def __init__(self, experiment_folder):
+        self.log = logging.getLogger(__name__)
+
         # convert experiment_folder to list if single item
         if not isinstance(experiment_folder, list):
             experiment_folder = [experiment_folder]
@@ -290,21 +293,21 @@ class Performance(object):
         for singleDir in experiment_folder:
             # Validate input folder(s)
             if not os.path.exists(singleDir):
-                print "invalid input folder"
-                return
+                self.log.error("invalid input folder: {}".format(singleDir))
+                continue
 
             singleData = os.path.join(singleDir, 'trialdata')
             if not os.path.exists(singleData):
-                print "data folder (%s) not found" % singleDir
-                return
+                self.log.error("data folder ({}) not found".format(singleData))
+                continue
             else:
-                self.data_dir.append(singleData)
-
+                # make sure both json and trialdata folders are present before appending
                 singleJson = os.path.join(singleDir, 'settings_files')
                 if not os.path.exists(singleJson):
-                    print "json folder (%s) not found" % singleJson
-                    return
+                    self.log.error("json folder ({}) not found".format(singleJson))
+                    continue
                 else:
+                    self.data_dir.append(singleData)
                     self.json_dir.append(os.path.join(singleDir, 'settings_files'))
 
         # Each row in dataDict will be a single
@@ -417,6 +420,9 @@ class Performance(object):
                     # get short dict of block names and update old names to match new naming convention
                     jsonFile = os.path.splitext(curr_csv.replace('trialdata', 'settings'))[0] + '.json'
                     jsonPath = os.path.join(self.json_dir[dir_index], jsonFile)
+                    if not os.path.exists(jsonPath):
+                        self.log.error('json file does not exist: {}'.format(jsonPath))
+                        continue
                     with open(jsonPath, 'r') as f:
                         jsonData = json.load(f)
 
@@ -810,9 +816,12 @@ class Performance(object):
 
                         if ntrials < trialThreshold:
                             criteria_result[i] = False
+
+                            message = 'Record {:d} does not meet trial count criteria ({:d} trials vs {:d} minimum)' \
+                                .format(i, ntrials, trialThreshold)
                             if verbose:
-                                print 'Record %d does not meet trial count criteria (%d trials vs %d minimum)' % \
-                                      (i, ntrials, trialThreshold)
+                                print message
+                            self.log.debug(message)
 
             if criteria_result[i] is not False:  # skip next check if already failed previous criteria
                 if 'dprime' in criteria:
@@ -825,9 +834,12 @@ class Performance(object):
 
                     if dprime_actual < dprime_min:
                         criteria_result[i] = False
+
+                        message = "Record {:d} failed d' criteria ({:d} actual vs {:d} minimum)" \
+                            .format(i, dprime_actual, dprime_min)
                         if verbose:
-                            print "Record %d failed d' criteria (%d actual vs %d minimum)" % \
-                                  (i, dprime_actual, dprime_min)
+                            print message
+                        self.log.debug(message)
 
             if criteria_result[i] is not False:  # skip next check if already failed previous criteria
                 if 'propCorrect' in criteria:
@@ -844,9 +856,12 @@ class Performance(object):
 
                         if proportion < category['minimum']:
                             criteria_result[i] = False
+
+                            message = "Category {} failed proportion correct criteria ({:0.3f} actual vs {:0.3f} " \
+                                      "minimum)".format(stim_type, proportion, category['minimum'])
                             if verbose:
-                                print "Category %s failed proportion correct criteria (%0.3f actual vs %0.3f " \
-                                      "minimum)" % (stim_type, proportion, category['minimum'])
+                                print message
+                            self.log.debug(message)
 
             i += 1
 
@@ -858,13 +873,18 @@ class Performance(object):
             min_days = len(criteria_result)
             # return false
         if num_days < min_days:
+            message = "Not enough days meeting criteria ({:d} days, {:d} min)".format(num_days, min_days)
             if verbose:
-                print "Not enough days meeting criteria (%d days, %d min)" % (num_days, min_days)
+                print message
+            self.log.debug(message)
             return False
 
         # Otherwise, return true
+
+        message = "Meets all criteria!"
         if verbose:
-            print "Meets all criteria!"
+            print message
+        self.log.debug(message)
         return True
 
 # datapath = '/home/rouse/bird/data/y18r8'

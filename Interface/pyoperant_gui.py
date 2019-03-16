@@ -1262,38 +1262,41 @@ class SolenoidGui(QtGui.QDialog, pyoperant_gui_layout.UiSolenoidControl):
 
         self.device = None
 
-    def serial_connect(self, boxnumber):
-        """Connect to solenoid of boxnumber, return error if connection cannot be established"""
+        self.serial_connect(box_number)
+
+    def serial_connect(self, box_number):
+        """Connect to solenoid of box_number, return error if connection cannot be established"""
         if self.device is None:
-            self.device_name = '/dev/teensy{:02d}'.format(boxnumber)
+            with wait_cursor():  # set mouse cursor to 'waiting' while connecting to Teensy
+                self.device_name = '/dev/teensy{:02d}'.format(box_number)
 
-            try:
-                self.device = serial.Serial(port=self.device_name,
-                                            baudrate=19200,
-                                            timeout=5)
-            except serial.SerialException:
-                self.log.error('Could not open serial device {}'.format(self.device_name))
-                raise serial.SerialException('Could not open serial device {}'.format(self.device_name))
-            else:
-                self.device.readline()
-                self.device.flushInput()
-                self.log.debug("Successfully opened device {}".format(self.device_name))
+                try:
+                    self.device = serial.Serial(port=self.device_name,
+                                                baudrate=19200,
+                                                timeout=5)
+                except serial.SerialException:
+                    self.log.error('Could not open serial device {}'.format(self.device_name))
+                    raise serial.SerialException('Could not open serial device {}'.format(self.device_name))
+                else:
+                    self.device.readline()
+                    self.device.flushInput()
+                    self.log.debug("Successfully opened device {}".format(self.device_name))
 
-                # set labels
-                self.box_name.setText(str("Box {:02d}".format(boxnumber)))
+                    # set labels
+                    self.box_name.setText(str("Box {:02d}".format(box_number)))
 
-                # set self.solenoidChannel as output
-                self.device.write("".join([chr(self.solenoidChannel), chr(3)]))
+                    # set self.solenoidChannel as output
+                    self.device.write("".join([chr(self.solenoidChannel), chr(3)]))
 
-    def solenoid_control(self, action, boxnumber):
+    def solenoid_control(self, action, box_number):
         if action == 'open':
-            self.log.info("Opening water system in box {:d}".format(boxnumber))
+            self.log.info("Opening water system in box {:d}".format(box_number))
         elif action == 'close':
-            self.log.info("Closing water system in box {:d}".format(boxnumber))
+            self.log.info("Closing water system in box {:d}".format(box_number))
 
         try:
             # attempt to connect to Teensy
-            self.serial_connect(boxnumber)
+            self.serial_connect(box_number)
         except serial.SerialException:
             # if Teensy connection fails, set status text to indicate error
             self.solenoid_Status_Text.setText(str("Not Accessible (SerialException)"))
@@ -1308,7 +1311,7 @@ class SolenoidGui(QtGui.QDialog, pyoperant_gui_layout.UiSolenoidControl):
             elif action == 'close':
                 self.device.write("".join([chr(self.solenoidChannel), chr(2)]))  # close solenoid
 
-                print "Closed water system in box {0}".format(str(boxnumber))
+                print "Closed water system in box {0}".format(str(box_number))
 
                 self.solenoid_Status_Text.setText(str("CLOSED"))
                 self.close_Button.setEnabled(False)
