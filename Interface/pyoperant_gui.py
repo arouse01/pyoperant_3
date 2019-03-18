@@ -24,7 +24,6 @@ import csv  # For exporting data summaries as csv files
 
 try:
     import simplejson as json
-
 except ImportError:
     import json
 
@@ -1369,8 +1368,8 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
             self.export_Button.clicked.connect(lambda _, b=self.data_folder: self.export(b))
             self.done_Button.clicked.connect(self.accept)
 
-            self.performance_Table.installEventFilter(self)  # to capture keyboard commands so data can be copied
-            # directly
+            # capture keyboard commands so data can be copied with ctrl+c
+            self.performance_Table.installEventFilter(self)
 
             self.noResponse_Checkbox.stateChanged.connect(lambda _, b='nr': self.field_preset_select(pattern=b))
             self.probe_Checkbox.stateChanged.connect(lambda _, b='probe': self.field_preset_select(pattern=b))
@@ -1380,18 +1379,23 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
 
             self.create_grouping_checkbox('Subject')
             self.create_grouping_checkbox('Date')
+            self.create_grouping_checkbox('Hour')
             self.create_grouping_checkbox('Block')
             self.create_grouping_checkbox('Stimulus')
             self.create_grouping_checkbox('Class')
             self.create_grouping_checkbox('Response Type')
             self.create_grouping_checkbox('Response')
-            self.groupByCheckboxes['Subject'].setChecked(True)
-            self.groupByCheckboxes['Date'].setChecked(True)
-            self.groupByCheckboxes['Block'].setChecked(True)
+            self.create_grouping_checkbox('Trials', group_type='range')
+
+            self.groupByFields['Subject']['checkbox'].setChecked(True)
+            self.groupByFields['Date']['checkbox'].setChecked(True)
+            self.groupByFields['Block']['checkbox'].setChecked(True)
 
             # Filter creation
-            for checkbox in self.groupByCheckboxes:
-                self.groupByCheckboxes[checkbox].stateChanged.connect(self.recalculate)
+            for field in self.groupByFields:
+                self.groupByFields[field]['checkbox'].stateChanged.connect(self.recalculate)
+                if 'range' in self.groupByFields[field]:
+                    self.groupByFields[field]['range'].editingFinished.connect(self.recalculate)
 
             self.setWindowTitle(str("Performance for {}".format(bird_name)))
             self.log = logging.getLogger(__name__)
@@ -1459,7 +1463,8 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
         # Make sure all displayed fields are checked in Select Column pane
         existingHeaders = []  # Get list of headers, since they can't be pulled out of model as list (AFAIK)
         for j in xrange(self.model.columnCount()):  # for all fields available in model
-            columnName = unicode(self.model.headerData(j, QtCore.Qt.Horizontal).toString()).replace('\n(NR)', ' (NR)')
+            columnName = unicode(self.model.headerData(j, QtCore.Qt.Horizontal).toString())  # .replace('\n(NR)',
+            # ' (NR)')
             self.silent_checkbox_change(self.fieldManagement[columnName]['itemWidget'], True)
             existingHeaders.append(columnName)
 
@@ -1520,24 +1525,48 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
 
     # region Field grouping
 
-    def create_grouping_checkbox(self, group_name):
-        sizePolicy_fixed = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
-        sizePolicy_fixed.setHorizontalStretch(0)
-        sizePolicy_fixed.setVerticalStretch(0)
-        self.groupByCheckboxes[group_name] = QtGui.QCheckBox(self)
-        self.groupByCheckboxes[group_name].setSizePolicy(sizePolicy_fixed)
-        self.groupByCheckboxes[group_name].setMaximumSize(QtCore.QSize(27, 27))
-        self.groupByCheckboxes[group_name].setObjectName(_from_utf8("groupBy{}_Checkbox".format(group_name)))
-        self.groupGrid.addRow(QtGui.QLabel(group_name), self.groupByCheckboxes[group_name])
+    def create_grouping_checkbox(self, group_name, group_type=None):
+
+        self.groupByFields[group_name] = {}
+
+        groupByCheckbox = QtGui.QCheckBox(self)
+        groupByCheckbox.setSizePolicy(QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed))
+        groupByCheckbox.setFixedHeight(27)
+        groupByCheckbox.setMaximumWidth(300)
+        groupByCheckbox.setObjectName(_from_utf8("groupBy{}_Checkbox".format(group_name)))
+
+        if group_type is None:
+            groupByCheckbox.setText(group_name)
+            self.groupByFields[group_name]['checkbox'] = groupByCheckbox
+            self.groupGrid.addRow(self.groupByFields[group_name]['checkbox'])
+        else:
+            # to dynamically group by a certain number of fields
+            groupByCheckbox.setText("Every")
+            self.groupByFields[group_name]['checkbox'] = groupByCheckbox
+            rangeBox = QtGui.QSpinBox(self)
+            rangeBox.setFixedHeight(27)
+            rangeBox.setMaximumWidth(300)
+            rangeBox.setSuffix(' ' + group_name)
+            rangeBox.setMinimum(1)
+            rangeBox.setMaximum(9999)
+            rangeBox.setSingleStep(5)
+            rangeBox.setValue(50)
+
+            self.groupByFields[group_name]['range'] = rangeBox
+            self.groupGrid.addRow(self.groupByFields[group_name]['checkbox'], self.groupByFields[group_name]['range'])
 
     def group_by(self):
         # construct groupby parameter for pd.groupby - there may be a better way to do this:
         # Currently rebuilds the self.dataGroups var each time a box is checked or unchecked, which requires adding a
         # new checkbox for each column that could be grouped
         self.dataGroups = []
-        for checkbox in self.groupByCheckboxes:
-            if self.groupByCheckboxes[checkbox].isChecked():
-                self.dataGroups.append(checkbox)
+        for field in self.groupByFields:
+            if self.groupByFields[field]['checkbox'].isChecked():
+                if 'range' in self.groupByFields[field]:
+                    fieldRange = int(self.groupByFields[field]['range'].value())
+                    self.dataGroups.append([field, fieldRange])
+                else:
+                    self.dataGroups.append(field)
 
         # enable/disable raw field checkboxes depending on group state
         for field in self.fieldManagement:
@@ -1659,8 +1688,8 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
         # Get values from model rather than table because table might be filtered and we want to see all available
         # fields
         for column in xrange(self.model.columnCount()):
-            columnName = unicode(self.model.headerData(column, QtCore.Qt.Horizontal).toString()).replace('\n(NR)',
-                                                                                                         ' (NR)')
+            columnName = unicode(self.model.headerData(column, QtCore.Qt.Horizontal).toString())  # .replace('\n(NR)',
+            # ' (NR)')
             if self.fieldManagement[columnName]['filter']['type'] == 'list':
                 valueList = []
                 for row in xrange(self.model.rowCount()):
@@ -1832,7 +1861,7 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
                     for column in range(len(row)):
                         # reencode each item in header list as utf-8 so beta can be displayed properly
                         row[column] = row[column].decode('utf-8')
-                        row[column] = row[column].replace(' (NR)', '\n(NR)')
+                        # row[column] = row[column].replace(' (NR)', '\n(NR)')
 
                     self.model.setHorizontalHeaderLabels(row)
 

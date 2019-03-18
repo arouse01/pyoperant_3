@@ -690,7 +690,7 @@ class StatsWindow(object):
         self.groupGrid.setAlignment(QtCore.Qt.AlignCenter)
 
         # region specific groupbys
-        self.groupByCheckboxes = collections.OrderedDict()  # orderedDict so grouping can be in order
+        self.groupByFields = collections.OrderedDict()  # orderedDict so grouping can be in order
         self.groupByWidget = QtGui.QWidget()
         self.groupByWidget.setLayout(self.groupGrid)
         self.groupByWidget.setSizePolicy(sizePolicy_exp)

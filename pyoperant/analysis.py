@@ -232,10 +232,11 @@ class FieldList:
     """
     def __init__(self):
         # Item order is resulting sort order
-        fieldList = ['Subject', 'File', 'Session', 'File Count', 'Date', 'Time', 'Block', 'Index', 'Stimulus', 'Class']
+        fieldList = ['Subject', 'File', 'Session', 'File Count', 'Date', 'Time', 'Hour', 'Block', 'Trials', 'Index',
+                     'Stimulus', 'Class']
         fieldList += ['Response Type', 'Response', 'RT', 'Reward', 'Punish']
 
-        fieldList += ["d'", "d' (NR)", u'Beta', u'Beta (NR)', 'Trials']
+        fieldList += ["d'", "d' (NR)", u'Beta', u'Beta (NR)']
         fieldList += ['S+', 'S+ (NR)', 'S-', 'S- (NR)', 'Total Corr', 'Total Corr (NR)']
         fieldList += ['Hit', 'Miss', 'Miss (NR)', 'FA', 'CR', 'CR (NR)', 'Prop CR Resets']
 
@@ -251,6 +252,7 @@ class FieldList:
             # column = column.decode('utf-8')
             columnDict = {'visible': True, 'filter': {}, 'name': column.replace('\n(NR)', ' (NR)')}
 
+            # Define field filter type
             if columnDict['name'] in ['Subject', 'Block', 'Response Type', 'Stimulus', 'Class', 'Response']:
                 columnDict['filter']['type'] = 'list'
             elif columnDict['name'] in ['Date']:
@@ -258,10 +260,11 @@ class FieldList:
             else:
                 columnDict['filter']['type'] = 'None'
 
-            # give each field a type to indicate what functions can be performed
+            # Define field groupby type - give each field a type to indicate what functions can be performed
             if columnDict['name'] in ['File', 'Session', 'File Count', 'Index', 'Time']:
                 columnDict['type'] = 'raw'
-            elif columnDict['name'] in ['Subject', 'Block', 'Date', 'Response Type', 'Stimulus', 'Class', 'Response']:
+            elif columnDict['name'] in ['Subject', 'Block', 'Date', 'Hour', 'Response Type', 'Stimulus', 'Class',
+                                        'Response']:
                 columnDict['type'] = 'index'  # groupby enabled
             elif columnDict['name'] == 'RT':
                 columnDict['type'] = 'mean'
@@ -494,9 +497,19 @@ class Performance(object):
         data_dict = pd.DataFrame.from_dict(data_dict)  # Convert to data frame
 
         # endregion
+
+        # Turn constructed dict into self var
         self.raw_trial_data = data_dict
+
+        # region Create indexable fields for groupby functions
+
+        # Create actual datetime value from string
         self.raw_trial_data['Time'] = pd.to_datetime(self.raw_trial_data['Time'], format='%Y-%m-%d %H:%M:%S')
+
+        self.raw_trial_data['Hour'] = pd.DatetimeIndex(self.raw_trial_data['Time']).hour
         self.raw_trial_data['Date'] = self.raw_trial_data['Time'].dt.date
+
+        # endregion Create indexable fields for groupby functions
 
         self.raw_trial_data.set_index('Date', inplace=True)  # inplace so change is saved to same variable
         self.raw_trial_data.sort_index(inplace=True)  # inplace so change is saved to same variable
@@ -575,22 +588,34 @@ class Performance(object):
 
         # region Summarize input data based on kwargs, or by default (date and block)
         if 'groupBy' in kwargs and len(kwargs['groupBy']) > 0:
-            # input_data.sort_values(by='Time')
-            groupData = input_data.groupby(kwargs['groupBy'], sort=False)
+
+            groupFieldList = kwargs['groupBy']
+            rangeGroup = []
+            for itemIndex, groupField in enumerate(groupFieldList):
+                if isinstance(groupField, list):
+                    rangeGroup = groupFieldList.pop(itemIndex)
+
+            # Sort and reset index so numeric index of dataframe is trial number
+
+            input_data = input_data.sort_values(by=['Subject', 'Time'] + groupFieldList)  # Add Subject and Time so
+            # values are at least sorted by those first (to avoid incorrect date sorting)
+
+            input_data = input_data.reset_index()
+            if len(rangeGroup) > 0:
+                tempGroupBy = input_data.groupby(groupFieldList, sort=False)  # get groupBy without the row 'collapse'
+                # add to the groupBy term: series that gives each row a 'group number', based on dividing its
+                # cumcount() (cumulative row count within group) by the break number
+                groupFieldList.append(np.floor(tempGroupBy.cumcount() / rangeGroup[1]).astype(int))
+
+            groupData = input_data.groupby(groupFieldList, sort=False)
+
             groupHeaders = groupData.obj.columns
             groupingDict = {}
             fieldDict = FieldList().build_dict()
             # reaction time should be mean, not sum, time should be minimum (so groups with matching dates can still
             # be sorted in chronological order), and string fields shouldn't be aggregated at all.
             for column in groupHeaders:
-                # if column == 'RT':
-                #     groupingDict[column] = 'mean'
-                # elif column == 'Time':
-                #     groupingDict[column] = 'min'
-                # elif column == 'Subject' or column == 'Block':
-                #     groupingDict[column] = 'sum'
-                # else:
-                #     pass
+
                 if column == 'Time':
                     groupingDict[column] = 'min'
                 elif fieldDict[column]['type'] == 'mean' or fieldDict[column]['type'] == 'sum':
@@ -601,7 +626,12 @@ class Performance(object):
             # applying this .agg() transforms the groupBy object back into a regular dataframe
             groupData = groupData.agg(groupingDict)
 
-            groupData = groupData.sort_values(by='Time')
+            if len(rangeGroup) > 0:
+                indexNames = list(groupData.index.names)
+                rangeColumnIndex = len(indexNames) - 1
+                indexNames[rangeColumnIndex] = 'Bin'
+                groupData.index.rename(indexNames, inplace=True)
+            # groupData = groupData.sort_values(by='Time')
             groupCount = len(groupData)
 
             # region Variable init
@@ -745,7 +775,11 @@ class Performance(object):
             groupData['Probe Tot Corr'] = total_probe_correct
             groupData['Probe Tot Corr (NR)'] = total_probe_NR_correct
             groupData['Prop CR Resets'] = resetRatio
+
             # endregion
+
+            # if len(rangeGroup) > 0:
+            #     groupData.index[''].drop()
 
         else:  # If no grouping specified, return raw data
             groupData = input_data

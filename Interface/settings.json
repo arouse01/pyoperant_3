@@ -25,32 +25,7 @@
       true
     ]
   ],
-  "paramFiles": [
-    [
-      0,
-      "/home/rouse/bird/data/k92o92/k92o92_config.json"
-    ],
-    [
-      1,
-      "/home/rouse/bird/data/o35w58/o35w58_config.json"
-    ],
-    [
-      2,
-      "/home/rouse/bird/data/r14w14/r14w14_config.json"
-    ],
-    [
-      3,
-      "/home/rouse/bird/data/o25w25/o25w25_config.json"
-    ],
-    [
-      4,
-      "/home/rouse/bird/data/g60r30/g60r30_config.json"
-    ],
-    [
-      5,
-      "/home/rouse/bird/data/g27r17/g27r17_config.json"
-    ]
-  ],
+  "shutdownProper": true,
   "birds": [
     [
       0,
@@ -77,5 +52,30 @@
       "g27r17"
     ]
   ],
-  "shutdownProper": false
+  "paramFiles": [
+    [
+      0,
+      "/home/rouse/bird/data/k92o92/k92o92_config.json"
+    ],
+    [
+      1,
+      "/home/rouse/bird/data/o35w58/o35w58_config.json"
+    ],
+    [
+      2,
+      "/home/rouse/bird/data/r14w14/r14w14_config.json"
+    ],
+    [
+      3,
+      "/home/rouse/bird/data/o25w25/o25w25_config.json"
+    ],
+    [
+      4,
+      "/home/rouse/bird/data/g60r30/g60r30_config.json"
+    ],
+    [
+      5,
+      "/home/rouse/bird/data/g27r17/g27r17_config.json"
+    ]
+  ]
 }
