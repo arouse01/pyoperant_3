@@ -64,6 +64,7 @@ class UiMainWindow(object):
         self.gridLayoutBoxList = []  # Array for the grid layout for each box
         self.statusLayoutBoxList = []  # Array for the grid layout for each box
         self.optionButtonBoxList = []  # Array for option button
+        self.waterOptionButtonBoxList = []  # Array for option button
         self.performanceBoxList = []  # Array for "Performance" button
         self.startBoxList = []  # Array for "start box" button
         self.stopBoxList = []  # Array for "stop box" button
@@ -79,14 +80,17 @@ class UiMainWindow(object):
         self.sleepIcon = QPixmap("icons/sleep.png")
         # endregion
 
+        # region Button icons
         self.wrenchIcon = QIcon()
         self.wrenchIcon.addPixmap(QtGui.QPixmap(_from_utf8("icons/wrench.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.waterIcon = QIcon()
+        # endregion Button icons
         # endregion
 
         # region Layout vars
         # Object location-specific variables
         self.numberOfBoxes = 6
-
+        layoutSpacing = 4  # padding of objects (for determining proper window size)
         # Calculate box arrangement in window
         # self.rowCount = math.floor(math.sqrt(self.numberOfBoxes))
         rowCount = 3
@@ -135,11 +139,13 @@ class UiMainWindow(object):
         # main_window.setMaximumSize(QtCore.QSize(1200, 1000))
         self.centralwidget = QtGui.QWidget(main_window)
         self.centralwidget.setSizePolicy(sizePolicy_Fixed)
+        # self.centralwidget.setContentsMargins(0, 0, 0, 0)
         # self.centralwidget.setMaximumSize(QtCore.QSize(2000, 2000))
         self.centralwidget.setObjectName(_from_utf8("centralwidget"))
 
         self.gridLayoutWidget = QtGui.QWidget(self.centralwidget)
         self.gridLayoutWidget.setObjectName(_from_utf8("gridLayoutWidget"))
+        # self.gridLayoutWidget.setContentsMargins(0, 0, 0, 0)
         self.mainGrid = QtGui.QGridLayout(self.gridLayoutWidget)
         self.mainGrid.setObjectName(_from_utf8("mainGrid"))
 
@@ -167,8 +173,7 @@ class UiMainWindow(object):
         self.behaviorLabel.setAlignment(QtCore.Qt.AlignCenter)
         self.behaviorLabel.setObjectName(_from_utf8("behaviorLabel"))
         self.menuGrid.addWidget(self.behaviorLabel, 0, 3, 1, 1)
-        self.menuGrid.addItem(QtGui.QSpacerItem(20, 20, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding), 0, 2,
-                              1, 1)
+        self.menuGrid.addItem(horiz_spacer(20, policy='min'), 0, 2, 1, 1)
         self.mainGrid.addLayout(self.menuGrid, 2*rowCount, 0, 1, 2*columnCount-1)
         # endregion
 
@@ -209,6 +214,7 @@ class UiMainWindow(object):
             self.phaseLabelList.append(QtGui.QLabel(self.gridLayoutWidget))
             self.phaseBoxList.append(QtGui.QLabel(self.gridLayoutWidget))
             self.optionButtonBoxList.append(QtGui.QPushButton(self.gridLayoutWidget))
+            self.waterOptionButtonBoxList.append(QtGui.QPushButton(self.gridLayoutWidget))
             self.startBoxList.append(QtGui.QPushButton(self.gridLayoutWidget))
             self.performanceBoxList.append(QtGui.QPushButton(self.gridLayoutWidget))
             self.statusTotalsBoxList.append(QtGui.QTextBrowser(self.gridLayoutWidget))
@@ -258,11 +264,11 @@ class UiMainWindow(object):
             # endregion Debugging gridlines
 
             """
-            # Layout schematic
+            # Per-box layout schematic
              
                  0	        1	        2	        3	        4
              ┌──────────┬───────────┬───────────────────────┬─────────┐
-            0│boxLbl   	│phaseLbl	│phase	          	    │         │
+            0│boxLbl   	│phaseLbl	│phase	          	    │waterOpt │
              ├──────────╔═══════════╧═══════════════════════╗─────────┤
             1│          ║statusTop	        (statusLayout)  ║         │
              ├──────────╢                                   ╟─────────┤
@@ -286,19 +292,28 @@ class UiMainWindow(object):
             self.gridLayoutBoxList[box].addWidget(self.labelBoxList[box], 0, 0, 1, 1)
             self.gridLayoutBoxList[box].addWidget(self.phaseLabelList[box], 0, 1, 1, 1, QtCore.Qt.AlignRight)
             self.gridLayoutBoxList[box].addWidget(self.phaseBoxList[box], 0, 2, 1, 2)
+
+            self.gridLayoutBoxList[box].addWidget(self.waterOptionButtonBoxList[box], 0, 4, 1, 1, QtCore.Qt.AlignCenter)
             self.gridLayoutBoxList[box].addLayout(self.statusLayoutBoxList[box], 1, 1, 5, 3)
+
             self.gridLayoutBoxList[box].addWidget(self.graphicBoxList[box], 2, 0, 1, 1, QtCore.Qt.AlignCenter)
+
             self.gridLayoutBoxList[box].addWidget(self.checkActiveBoxList[box], 4, 0, 1, 1, QtCore.Qt.AlignCenter)
+
             self.gridLayoutBoxList[box].addWidget(self.checkActiveLabelBoxList[box], 5, 0, 1, 1, QtCore.Qt.AlignCenter)
+
             self.gridLayoutBoxList[box].addWidget(self.lastTrialLabelList[box], 6, 1, 1, 3, QtCore.Qt.AlignLeft)
             self.gridLayoutBoxList[box].addWidget(self.lastTrialBoxList[box], 6, 2, 1, 2)
+
             self.gridLayoutBoxList[box].addWidget(self.paramFileBoxList[box], 7, 1, 1, 3)
             self.gridLayoutBoxList[box].addWidget(self.paramFileButtonBoxList[box], 7, 4, 1, 1)
             self.gridLayoutBoxList[box].addWidget(self.paramFileLabelBoxList[box], 7, 0, 1, 1)
+
             self.gridLayoutBoxList[box].addWidget(self.birdEntryBoxList[box], 8, 1, 1, 3)
             self.gridLayoutBoxList[box].addWidget(self.birdEntryLabelBoxList[box], 8, 0, 1, 1)
-            self.gridLayoutBoxList[box].addWidget(self.startBoxList[box], 9, 2, 1, 1, QtCore.Qt.AlignCenter)
+
             self.gridLayoutBoxList[box].addWidget(self.performanceBoxList[box], 9, 0, 1, 2, QtCore.Qt.AlignLeft)
+            self.gridLayoutBoxList[box].addWidget(self.startBoxList[box], 9, 2, 1, 1, QtCore.Qt.AlignCenter)
             self.gridLayoutBoxList[box].addWidget(self.stopBoxList[box], 9, 3, 1, 1, QtCore.Qt.AlignCenter)
             self.gridLayoutBoxList[box].addWidget(self.optionButtonBoxList[box], 9, 4, 1, 1, QtCore.Qt.AlignCenter)
             self.gridLayoutBoxList[box].setObjectName(_from_utf8("gridLayout_Box%d" % box))
@@ -364,7 +379,10 @@ class UiMainWindow(object):
             # region Labels
             self.labelBoxList[box].setFont(font12Bold)
             self.labelBoxList[box].setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
-            self.labelBoxList[box].setFrameShape(QFrame.Panel)
+            self.labelBoxList[box].setLineWidth(2)
+            self.labelBoxList[box].setFrameShape(QFrame.StyledPanel)
+            self.labelBoxList[box].setFrameShadow(QFrame.Raised)
+            self.labelBoxList[box].setStyleSheet("padding: 1px 1px 1px 1px;")
             self.labelBoxList[box].setObjectName(_from_utf8("label_Box%d" % box))
 
             self.phaseLabelList[box].setFont(font10)
@@ -403,6 +421,14 @@ class UiMainWindow(object):
             # endregion Labels
 
             # region Buttons
+            self.waterOptionButtonBoxList[box].setFont(font11)
+            self.waterOptionButtonBoxList[box].setMaximumSize(QtCore.QSize(27, 27))
+            self.waterOptionButtonBoxList[box].setObjectName(_from_utf8("waterOptionButton_Box%d" % box))
+            self.waterOptionButtonBoxList[box].setSizePolicy(sizePolicy_max)
+            self.waterOptionButtonBoxList[box].setIcon(self.waterIcon)
+            self.waterOptionButtonBoxList[box].setMinimumSize(QtCore.QSize(27, 27))
+            self.waterOptionButtonBoxList[box].setText(_from_utf8(""))
+
             self.paramFileButtonBoxList[box].setFont(font11)
             self.paramFileButtonBoxList[box].setMaximumSize(QtCore.QSize(27, 27))
             self.paramFileButtonBoxList[box].setObjectName(_from_utf8("paramFileButton_Box%d" % box))
@@ -430,7 +456,6 @@ class UiMainWindow(object):
             self.optionButtonBoxList[box].setSizePolicy(sizePolicy_max)
             self.optionButtonBoxList[box].setIcon(self.wrenchIcon)
             self.optionButtonBoxList[box].setMinimumSize(QtCore.QSize(27, 27))
-            self.optionButtonBoxList[box].setMaximumSize(QtCore.QSize(27, 27))
             self.optionButtonBoxList[box].setText(_from_utf8(""))
 
             # endregion Buttons
@@ -470,14 +495,16 @@ class UiMainWindow(object):
 
         # region Window sizing
         # Set window and grid size based on content
-        widthRatio = 1.05  # 1.05 seems to be the right propotion to prevent things from being cut off or too much space
+        # extra space due to padding:
+        #   layoutSpacing * (number of columns*2 [left and right spacing] + number of vertical lines *2 [
+        #   left and right spacing] + 1 *2 [left and right of whole layout])
+        boxWidth = self.gridLayoutBoxList[0].sizeHint().width()
+        spacingWidthTotal = 2 * (columnCount + numVerticalLines + 1) * self.mainGrid.getContentsMargins()[0]
+        widthRatio = 1.00  # 1.05 seems to be the right propotion to prevent things from being cut off or too much space
         mainGridWidth = math.ceil(self.gridLayoutWidget.sizeHint().width() * widthRatio)
         mainGridHeight = self.gridLayoutWidget.sizeHint().height()
 
-        # horizWindow = 300 * columnCount
-        # vertWindow = 300 * rowCount + 100
         main_window.setFixedSize(mainGridWidth, mainGridHeight)
-
         # endregion Window sizing
 
         self.retranslate_ui(main_window)
@@ -582,8 +609,6 @@ class UiSolenoidControl(object):
         # endregion Buttons
 
         # region Other objects
-        spacerItem = QtGui.QSpacerItem(20, 10, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
-
         self.line = QtGui.QFrame(solenoid_control)
         self.line.setFrameShape(QtGui.QFrame.HLine)
         self.line.setFrameShadow(QtGui.QFrame.Sunken)
@@ -597,7 +622,7 @@ class UiSolenoidControl(object):
         self.verticalLayout.addWidget(self.box_name)
         self.verticalLayout.addWidget(self.solenoid_text)
         self.verticalLayout.addWidget(self.solenoid_Status_Text)
-        self.verticalLayout.addItem(spacerItem)
+        self.verticalLayout.addItem(horiz_spacer(20, policy='min'))
         self.verticalLayout.addLayout(self.horizontalLayout)
         self.verticalLayout.addWidget(self.line)
         self.verticalLayout.addWidget(self.done_Button)
@@ -679,8 +704,9 @@ class StatsWindow(object):
         # Analysis Settings
         self.optionToolbox = QtGui.QToolBox()
         self.optionToolbox.setFrameShape(1)
-        self.optionToolbox.setMinimumWidth(260)
-        self.optionToolbox.setMaximumWidth(260)
+        self.optionWidth = 290
+        self.optionToolbox.setMinimumWidth(self.optionWidth)
+        self.optionToolbox.setMaximumWidth(self.optionWidth)
 
         # region Grouping section
         self.groupGrid = QtGui.QFormLayout()
@@ -703,10 +729,11 @@ class StatsWindow(object):
         self.filterGrid.setLabelAlignment(QtCore.Qt.AlignRight)
         self.filterGrid.setAlignment(QtCore.Qt.AlignCenter)
         self.filterGrid.setFormAlignment(QtCore.Qt.AlignHCenter)
-        self.filterGrid.setSizeConstraint(QtGui.QLayout.SetFixedSize)
+        # self.filterGrid.setSizeConstraint(QtGui.QLayout.SetFixedSize)
 
         self.filterByWidget = QtGui.QWidget()
         self.filterByWidget.setLayout(self.filterGrid)
+        self.filterByWidget.setSizePolicy(sizePolicy_minEx)
         # endregion filtering section
 
         # region Field selection section
@@ -715,8 +742,9 @@ class StatsWindow(object):
         self.fieldGrid.setAlignment(QtCore.Qt.AlignCenter)
 
         self.fieldScroll = QtGui.QScrollArea()
+        self.fieldScroll.setSizePolicy(sizePolicy_exp)
         self.fieldScroll.setMinimumSize(QtCore.QSize(100, 150))
-        self.fieldScroll.setMaximumSize(QtCore.QSize(300, 500))
+        self.fieldScroll.setMaximumSize(QtCore.QSize(self.optionWidth, 500))
         self.fieldScroll.setWidgetResizable(True)
 
         self.fieldList = QtGui.QVBoxLayout()
@@ -724,18 +752,22 @@ class StatsWindow(object):
         self.fieldList.setSpacing(0)
 
         self.fieldWidget = QtGui.QWidget()
+        self.fieldWidget.setSizePolicy(sizePolicy_exp)
+        self.fieldWidget.setMaximumWidth(self.optionWidth)
 
         self.fieldWidget.setLayout(self.fieldList)
         self.fieldScroll.setWidget(self.fieldWidget)
 
+        # region Select All/None buttons
         self.fieldListSelectAll = QtGui.QPushButton(stats_window)
         self.fieldListSelectAll.setMinimumSize(QtCore.QSize(50, 27))
-        self.fieldListSelectAll.setMaximumSize(QtCore.QSize(90, 27))
-        self.fieldListSelectAll.setSizePolicy(sizePolicy_min)
+        self.fieldListSelectAll.setMaximumSize(QtCore.QSize(self.optionWidth, 27))
+        self.fieldListSelectAll.setSizePolicy(sizePolicy_exp)
         self.fieldListSelectNone = QtGui.QPushButton(stats_window)
         self.fieldListSelectNone.setMinimumSize(QtCore.QSize(50, 27))
-        self.fieldListSelectNone.setMaximumSize(QtCore.QSize(90, 27))
-        self.fieldListSelectNone.setSizePolicy(sizePolicy_min)
+        self.fieldListSelectNone.setMaximumSize(QtCore.QSize(self.optionWidth, 27))
+        self.fieldListSelectNone.setSizePolicy(sizePolicy_exp)
+        # endregion Select All/None buttons
 
         self.fieldSelectWidget = QtGui.QWidget()
         self.fieldSelectWidget.setLayout(self.fieldGrid)
@@ -798,8 +830,8 @@ class StatsWindow(object):
         self.done_Button.setObjectName(_from_utf8("done_Button"))
 
         self.menuGrid.addWidget(self.folder_Button)
-        spacerItem = QtGui.QSpacerItem(200, 20, QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.Minimum)
-        self.menuGrid.addSpacerItem(spacerItem)
+
+        self.menuGrid.addSpacerItem(horiz_spacer(200))
         self.menuGrid.addWidget(self.export_Button)
         self.menuGrid.addWidget(self.done_Button)
         # endregion Menu buttons at bottom
@@ -807,17 +839,17 @@ class StatsWindow(object):
         """
             # Layout schematic
 
-                        0	        	     1	    
-             ┌──────────────────────╔═══════════════════════╗
-            0│performance_table    	║filterBy    (groupGrid)║
-             │                      ╟───────────────────────╢
-             │                      ║fieldSelect            ║
-             │                      ╟───────────────────────╢
-             │                      ║presetsGrid            ║
-             ├──────────────────────╚═══════════════════════╝
-            1│menuGrid                                      │
-             └──────────────────────────────────────────────┘
-             ┬┴├┤─│┼┌┐└┘  ╔╗╚╝╟╢╫═║
+                            0                  	     1	    
+             ┌──────────────────────────╔═══════════════════════════╗
+            0│performance_table    	    ║groupGrid  (optionToolbox) ║
+             │                          ╟───────────────────────────╢
+             │                          ║filterGrid                 ║
+             │                          ╟───────────────────────────╢
+             │                          ║fieldGrid                  ║
+             ├──────────────────────────╚═══════════════════════════╝
+            1│menuGrid                                              │
+             └──────────────────────────────────────────────────────┘
+             ┬┴├┤─│┼┌┐└┘  ╔╗╚╝╟╢╧╤╫╪═║
         """
 
         # region Object placement
@@ -895,8 +927,8 @@ class FolderSelectWindow(object):
         self.done_button.setObjectName(_from_utf8("done_button"))
 
         self.menuBar.addWidget(self.change_folder_button)
-        spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Minimum)
-        self.menuBar.addSpacerItem(spacerItem)
+        # spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Minimum)
+        self.menuBar.addSpacerItem(horiz_spacer(40, policy='min'))
         self.menuBar.addWidget(self.cancel_button)
         self.menuBar.addWidget(self.done_button)
         # endregion
@@ -930,3 +962,21 @@ class FolderSelectWindow(object):
         self.done_button.setText(_translate("stats_window", "Done", None))
         self.cancel_button.setText(_translate("stats_window", "Cancel", None))
         self.change_folder_button.setText(_translate("stats_window", "Select Base Folder", None))
+
+
+def horiz_spacer(pref_width, pref_height=20, policy='exp'):
+    """
+    Simple method for creating a spacer item that doesn't need to be referred to later
+
+    :param pref_width: Preferred width of spacer item
+    :param pref_height: Preferred height of spacer item. Default is 20
+    :param policy: Size policy. 'exp' for MinimumExpanding (default), 'min' for Minimum
+    :return: QSpacerItem
+    """
+    if policy == 'exp':
+        spacer = QtGui.QSpacerItem(pref_width, pref_height,
+                                   QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.Minimum)
+    else:
+        spacer = QtGui.QSpacerItem(pref_width, pref_height,
+                                   QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Minimum)
+    return spacer

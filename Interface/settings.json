@@ -6,7 +6,7 @@
     ],
     [
       1,
-      true
+      false
     ],
     [
       2,
@@ -29,11 +29,11 @@
   "birds": [
     [
       0,
-      "k92o92"
+      "b72g83"
     ],
     [
       1,
-      "o35w58"
+      "b77r77"
     ],
     [
       2,
@@ -49,17 +49,17 @@
     ],
     [
       5,
-      "g27r17"
+      "b79r79"
     ]
   ],
   "paramFiles": [
     [
       0,
-      "/home/rouse/bird/data/k92o92/k92o92_config.json"
+      "/home/rouse/bird/data/b72g83/b72g83_config.json"
     ],
     [
       1,
-      "/home/rouse/bird/data/o35w58/o35w58_config.json"
+      "/home/rouse/bird/data/b77r77/b77r77_config.json"
     ],
     [
       2,
@@ -75,7 +75,7 @@
     ],
     [
       5,
-      "/home/rouse/bird/data/g27r17/g27r17_config.json"
+      "/home/rouse/bird/data/b79r79/b79r79_config.json"
     ]
   ]
 }

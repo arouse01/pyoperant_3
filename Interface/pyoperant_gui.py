@@ -105,9 +105,14 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             mainMenu = QtGui.QMenuBar()
             fileMenu = mainMenu.addMenu('&File')
 
-            analyzeGuiAction = QtGui.QAction("&Analyze", self)
+            analyzeGuiAction = QtGui.QAction("Analy&ze", self)
             analyzeGuiAction.triggered.connect(lambda _, b=1: self.analyze_performance(b))
             fileMenu.addAction(analyzeGuiAction)
+
+            analyzeActiveGuiAction = QtGui.QAction("&Analyze Current", self)
+            analyzeActiveGuiAction.triggered.connect(lambda _, b='all': self.analyze_performance(b))
+            fileMenu.addAction(analyzeActiveGuiAction)
+
             quitGuiAction = QtGui.QAction("&Quit", self)
             quitGuiAction.triggered.connect(self.close)
             fileMenu.addAction(quitGuiAction)
@@ -1108,9 +1113,15 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
 
     # region data analysis
     def analyze_performance(self, boxnumber):
-        dataFolder = os.path.dirname(str(self.paramFileBoxList[boxnumber].toPlainText()))
-        bird_name = self.birdEntryBoxList[boxnumber].toPlainText()
-        dialog = StatsGui(dataFolder, bird_name)
+        if boxnumber == 'all':
+            dataFolder = []
+            for i in self.boxList:
+                currentFolder = os.path.dirname(str(self.paramFileBoxList[i].toPlainText()))
+                dataFolder.append(currentFolder)
+        else:
+            dataFolder = os.path.dirname(str(self.paramFileBoxList[boxnumber].toPlainText()))
+            # bird_name = self.birdEntryBoxList[boxnumber].toPlainText()
+        dialog = StatsGui(dataFolder)
         dialog.exec_()
 
     def get_raw_trial_data(self, boxnumber):
@@ -1352,7 +1363,8 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
         any place that reads directly from the underlying model (like build_filter_value_lists) needs to have
         the line break removed from all column names so the name can be used properly as a key for various dicts.
     """
-    def __init__(self, data_folder, bird_name):
+
+    def __init__(self, data_folder):
         super(self.__class__, self).__init__()
 
         self.setup_ui(self)  # This is defined in pyoperant_gui_layout.py file
@@ -1365,7 +1377,11 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
             self.data_folder = data_folder
 
             self.folder_Button.clicked.connect(self.select_bird)
-            self.export_Button.clicked.connect(lambda _, b=self.data_folder: self.export(b))
+            if isinstance(self.data_folder, list):
+                baseFolder = commonprefix(self.data_folder)  # get common base folder for selected birds
+            else:
+                baseFolder = self.data_folder
+            self.export_Button.clicked.connect(lambda _, b=baseFolder: self.export(b))
             self.done_Button.clicked.connect(self.accept)
 
             # capture keyboard commands so data can be copied with ctrl+c
@@ -1397,7 +1413,7 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
                 if 'range' in self.groupByFields[field]:
                     self.groupByFields[field]['range'].editingFinished.connect(self.recalculate)
 
-            self.setWindowTitle(str("Performance for {}".format(bird_name)))
+            self.setWindowTitle(str("Performance Data"))
             self.log = logging.getLogger(__name__)
             self.dataGroups = []
             self.filters = []
@@ -1413,6 +1429,8 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
 
             self.field_preset_select('nr')
         self.recalculate()
+
+    # region UI methods
 
     def select_bird(self):
         # select new data_folder(s)
@@ -1431,6 +1449,82 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
                 self.field_preset_select('nr')
                 self.recalculate()
 
+    # region Data manipulation
+
+    def export(self, output_folder):
+        output_path = QtGui.QFileDialog.getSaveFileName(self, "Save As...", output_folder, "CSV Files (*.csv)")
+        if output_path:
+            self.outputData.to_csv(str(output_path))
+            print 'saved to {}'.format(output_path)
+
+    def refresh_table(self, output_path):
+        # Refresh the data table with new values
+        # reimport the data from csv because moving directly from dataframe is a pain and doesn't support multiple
+        # headers
+        self.model = QtGui.QStandardItemModel(self)
+
+        with open(output_path, 'rb') as inputFile:
+            i = 1
+            for row in csv.reader(inputFile):
+                if i == 1:  # set headers of table
+                    for column in range(len(row)):
+                        # reencode each item in header list as utf-8 so beta can be displayed properly
+                        row[column] = row[column].decode('utf-8')
+                        # row[column] = row[column].replace(' (NR)', '\n(NR)')
+
+                    self.model.setHorizontalHeaderLabels(row)
+
+                else:  # set items in rows of table
+                    items = [QtGui.QStandardItem(field) for field in row]
+                    self.model.appendRow(items)
+                i += 1
+
+        self.proxyModel = QtGui.QSortFilterProxyModel()
+        self.proxyModel.setSourceModel(self.model)
+        # # get column
+        # self.modelColumns = []
+        # for j in xrange(self.proxyModel.columnCount()):  # for all fields available in model
+        #     self.modelColumns.append(unicode(self.model.headerData(j, QtCore.Qt.Horizontal).toString()))
+        self.performance_Table.setModel(self.proxyModel)  # apply constructed model to tableview object
+        self.performance_Table.setSortingEnabled(True)
+
+        self.recheck_fields()
+        self.build_filter_value_lists()
+        self.refresh_filters()
+
+        self.performance_Table.resizeColumnsToContents()
+
+    def eventFilter(self, source, event):
+        # Reimplementation of eventFilter, this one to capture ctrl+C to copy data from table
+        # https://stackoverflow.com/questions/40469607
+
+        if (event.type() == QtCore.QEvent.KeyPress and
+                event.matches(QtGui.QKeySequence.Copy)):
+            self.copy_table_selection()
+            return True
+        return super(self.__class__, self).eventFilter(source, event)
+
+    def copy_table_selection(self):
+        # actual copy method for copying cells from tableview
+
+        selection = self.performance_Table.selectedIndexes()
+        if selection:
+            rows = sorted(index.row() for index in selection)
+            columns = sorted(index.column() for index in selection)
+            rowcount = rows[-1] - rows[0] + 1
+            colcount = columns[-1] - columns[0] + 1
+            table = [[''] * colcount for _ in range(rowcount)]
+            for index in selection:
+                row = index.row() - rows[0]
+                column = index.column() - columns[0]
+                table[row][column] = index.data().toString()
+            stream = io.BytesIO()
+            csv.writer(stream, delimiter='\t').writerows(table)
+            QtGui.qApp.clipboard().setText(stream.getvalue())
+
+    # endregion
+    # endregion UI methods
+
     # region Field selection
 
     def build_field_checkboxes(self):
@@ -1441,7 +1535,10 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
 
             item = QtGui.QCheckBox()
             item.setMinimumSize(QtCore.QSize(27, 27))
-            item.setMaximumSize(QtCore.QSize(300, 27))
+            item.setMaximumSize(QtCore.QSize(self.optionWidth, 27))
+            item.setSizePolicy(QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred,
+                                                 QtGui.QSizePolicy.MinimumExpanding))
+
             item.setText(columnName)
             item.setTristate(False)
             item.setCheckState(QtCore.Qt.Unchecked)
@@ -1604,6 +1701,7 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
 
                 parentGroupBox.setSizePolicy(QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred,
                                                                QtGui.QSizePolicy.MinimumExpanding))
+                parentGroupBox.setMaximumWidth(self.optionWidth)
                 parentGroupBox.setMaximumHeight(180)
                 parentGroupBox.setContentsMargins(3, 3, 3, 3)
                 # Set title of groupbox
@@ -1615,10 +1713,11 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
                 # Add widget for value list (that gets filled later)
                 scrollArea = QtGui.QScrollArea()
                 scrollArea.setMinimumHeight(40)
+                scrollArea.setMaximumWidth(self.optionWidth)
                 scrollArea.setMaximumHeight(150)
                 # scrollArea.setWidgetResizable(True)
                 scrollArea.setSizePolicy(QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding,
-                                                           QtGui.QSizePolicy.MinimumExpanding))
+                                                           QtGui.QSizePolicy.Expanding))
                 scrollArea.setContentsMargins(0, 0, 0, 0)
                 self.fieldManagement[columnName]['filter']['CheckBoxList'] = scrollArea
                 # Add widget for select all/none
@@ -1640,6 +1739,7 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
                 # self.fieldManagement[columnName]['filter']['CheckBoxList'].addSeparator()
 
                 self.filterGrid.addWidget(self.fieldManagement[columnName]['filter']['widget'])
+
             elif self.fieldManagement[columnName]['filter']['type'] == 'range':
                 # create widget for both select all/none and field list
                 parentGroupBox = QtGui.QGroupBox()
@@ -1649,9 +1749,10 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
                     'QGroupBox {border: 1px solid gray;margin-top: 0.5em} ' +
                     'QGroupBox::title {subcontrol-origin: margin; left: 3px; padding: 0 3px 0 3px;}')
 
-                parentGroupBox.setSizePolicy(QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred,
-                                                               QtGui.QSizePolicy.MinimumExpanding))
+                parentGroupBox.setSizePolicy(QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding,
+                                                               QtGui.QSizePolicy.Expanding))
                 parentGroupBox.setMaximumHeight(180)
+                parentGroupBox.setMaximumWidth(self.optionWidth)
                 parentGroupBox.setContentsMargins(3, 3, 3, 3)
                 # Set title of groupbox
                 parentGroupBox.setTitle(columnName)
@@ -1671,12 +1772,17 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
                 dateBox.setCalendarPopup(True)
                 currDate = QtCore.QDate()  # currentDate is called this way to avoid PyCharm claiming parameter
                 # 'self' is unfilled in currentDate()
+
                 dateBox.setDate(currDate.currentDate())
                 dateBox.setDisplayFormat('yyyy/MM/dd')
+                dateBox.setMinimumWidth(110)
+                dateBox.setMaximumWidth(150)
                 dateBox.dateChanged.connect(self.apply_filter)
 
+                layout.addSpacerItem(pyoperant_gui_layout.horiz_spacer(10))
                 layout.addWidget(compareBox)
                 layout.addWidget(dateBox)
+                layout.addSpacerItem(pyoperant_gui_layout.horiz_spacer(10))
 
                 self.fieldManagement[columnName]['filter']['widget'].setLayout(layout)
                 # self.fieldManagement[columnName]['filter']['CheckBoxList'].addSeparator()
@@ -1708,9 +1814,9 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
                     # self.fieldManagement[columnName]['filter']['signalMapper'] = QtCore.QSignalMapper(self)
 
                     valueWidget = QtGui.QWidget()
-                    valueWidget.setSizePolicy(QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred,
+                    valueWidget.setSizePolicy(QtGui.QSizePolicy(QtGui.QSizePolicy.MinimumExpanding,
                                                                 QtGui.QSizePolicy.MinimumExpanding))
-
+                    valueWidget.setMaximumWidth(self.optionWidth)
                     valueLayout = QtGui.QVBoxLayout()
                     valueLayout.setSpacing(2)
                     valueLayout.setContentsMargins(0, 3, 0, 3)
@@ -1840,82 +1946,8 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
 
     # endregion
 
-    # region Data manipulation
 
-    def export(self, output_folder):
-        output_path = QtGui.QFileDialog.getSaveFileName(self, "Save As...", output_folder, "CSV Files (*.csv)")
-        if output_path:
-            self.outputData.to_csv(str(output_path))
-            print 'saved to {}'.format(output_path)
-
-    def refresh_table(self, output_path):
-        # Refresh the data table with new values
-        # reimport the data from csv because moving directly from dataframe is a pain and doesn't support multiple
-        # headers
-        self.model = QtGui.QStandardItemModel(self)
-
-        with open(output_path, 'rb') as inputFile:
-            i = 1
-            for row in csv.reader(inputFile):
-                if i == 1:  # set headers of table
-                    for column in range(len(row)):
-                        # reencode each item in header list as utf-8 so beta can be displayed properly
-                        row[column] = row[column].decode('utf-8')
-                        # row[column] = row[column].replace(' (NR)', '\n(NR)')
-
-                    self.model.setHorizontalHeaderLabels(row)
-
-                else:  # set items in rows of table
-                    items = [QtGui.QStandardItem(field) for field in row]
-                    self.model.appendRow(items)
-                i += 1
-
-        self.proxyModel = QtGui.QSortFilterProxyModel()
-        self.proxyModel.setSourceModel(self.model)
-        # # get column
-        # self.modelColumns = []
-        # for j in xrange(self.proxyModel.columnCount()):  # for all fields available in model
-        #     self.modelColumns.append(unicode(self.model.headerData(j, QtCore.Qt.Horizontal).toString()))
-        self.performance_Table.setModel(self.proxyModel)  # apply constructed model to tableview object
-        self.performance_Table.setSortingEnabled(True)
-
-        self.recheck_fields()
-        self.build_filter_value_lists()
-        self.refresh_filters()
-
-        self.performance_Table.resizeColumnsToContents()
-
-    def eventFilter(self, source, event):
-        # Reimplementation of eventFilter, this one to capture ctrl+C to copy data from table
-        # https://stackoverflow.com/questions/40469607
-
-        if (event.type() == QtCore.QEvent.KeyPress and
-                event.matches(QtGui.QKeySequence.Copy)):
-            self.copy_table_selection()
-            return True
-        return super(self.__class__, self).eventFilter(source, event)
-
-    def copy_table_selection(self):
-        # actual copy method for copying cells from tableview
-
-        selection = self.performance_Table.selectedIndexes()
-        if selection:
-            rows = sorted(index.row() for index in selection)
-            columns = sorted(index.column() for index in selection)
-            rowcount = rows[-1] - rows[0] + 1
-            colcount = columns[-1] - columns[0] + 1
-            table = [[''] * colcount for _ in range(rowcount)]
-            for index in selection:
-                row = index.row() - rows[0]
-                column = index.column() - columns[0]
-                table[row][column] = index.data().toString()
-            stream = io.BytesIO()
-            csv.writer(stream, delimiter='\t').writerows(table)
-            QtGui.qApp.clipboard().setText(stream.getvalue())
-
-    # endregion
-
-
+# region Reimplemented methods
 # noinspection PyBroadException
 class CheckableDirModel(QtGui.QFileSystemModel):
     """
@@ -2020,6 +2052,20 @@ def wait_cursor():
         yield
     finally:
         QtGui.QApplication.restoreOverrideCursor()
+
+
+def commonprefix(args, sep='/'):
+    """
+    Fix of os.path.commonprefix()
+    Original implementation could return invalid path names:
+    os.path.commonprefix(['/home/Rouse/coverage/test','/home/Rouse/covert/test2','/home/Rouse/coven/test3'] returns
+    '/home/Rouse/cove' which might not be a valid path.
+    This method uses os.path.commonprefix() but then partitions to only return the longest complete folder path
+    """
+    return os.path.commonprefix(args).rpartition(sep)[0]
+
+
+# endregion Reimplemented methods
 
 
 def main():
