@@ -193,6 +193,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
 
             # Option var init
             self.boxMenuList = []
+            self.fileSelectActionList = []
             self.solenoidMenuList = []
             self.primeActionList = []
             self.purgeActionList = []
@@ -234,37 +235,39 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
 
                 # menu-specific
                 self.boxMenuList.append(QtGui.QMenu())
-                self.solenoidMenuList.append(QtGui.QMenu("Water Control"))
-                self.primeActionList.append(QtGui.QAction("Prime (5s)", self))
-                self.purgeActionList.append(QtGui.QAction("Purge (20s)", self))
-                self.solenoidManualList.append(QtGui.QAction("Manual Control", self))
-                self.optionsMenuList.append(QtGui.QMenu("Options"))
-                self.rawTrialActionList.append(QtGui.QAction("Get Raw Trial Data", self))
+
+                self.fileSelectActionList.append(QtGui.QAction("&Select Settings file", self))
+                self.rawTrialActionList.append(QtGui.QAction("Get &Raw Trial Data", self))
                 self.openFolderActionList.append(QtGui.QAction("Open &Data folder", self))
-                self.openSettingsActionList.append(QtGui.QAction("Open &Settings file", self))
+                self.openSettingsActionList.append(QtGui.QAction("&Open Settings file", self))
                 self.openBoxLogActionList.append(QtGui.QAction("Open &Log file", self))
-                self.createNewJsonList.append(QtGui.QAction("New &Settings file", self))
+                self.createNewJsonList.append(QtGui.QAction("&New Settings file", self))
                 self.newBirdActionList.append(QtGui.QAction("New &Bird", self))
                 self.useNRList.append(QtGui.QAction("Use &NR Trials", self))
                 self.autoSleepList.append(QtGui.QAction("&Autosleep", self))
 
-                self.useNRList[boxIndex].setCheckable(True)
-                self.autoSleepList[boxIndex].setCheckable(True)
-                self.autoSleepList[boxIndex].setChecked(self.ui_options['autosleep_all'].isChecked())
+                self.optionsMenuList.append(QtGui.QMenu("Options"))
+
+                self.solenoidMenuList.append(QtGui.QMenu("Water Control"))
+                self.primeActionList.append(QtGui.QAction("Prime (5s)", self))
+                self.purgeActionList.append(QtGui.QAction("Purge (20s)", self))
+                self.solenoidManualList.append(QtGui.QAction("Manual Control", self))
 
                 # Reorder to change order in menu
                 """
-                Current order:
-                Open data folder
-                Open Settings file 
-                Open log file
-                Get raw trial data
-                ---
+                boxMenu:
+                    Select Settings file
+                    ---
+                    Open data folder
+                    Open Settings file 
+                    Open log file
+                    Get raw trial data
+
                 Water Control:
                     Prime
                     Purge
                     Manual
-                ---
+
                 Options:
                     Autosleep
                     Use NR
@@ -275,26 +278,29 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
                 
                 """
                 self.boxMenuList[boxIndex].addAction(self.openFolderActionList[boxIndex])
+                self.boxMenuList[boxIndex].addSeparator()
+                self.boxMenuList[boxIndex].addAction(self.fileSelectActionList[boxIndex])
                 self.boxMenuList[boxIndex].addAction(self.openSettingsActionList[boxIndex])
+                self.boxMenuList[boxIndex].addAction(self.createNewJsonList[boxIndex])
+                self.boxMenuList[boxIndex].addSeparator()
                 self.boxMenuList[boxIndex].addAction(self.openBoxLogActionList[boxIndex])
                 self.boxMenuList[boxIndex].addAction(self.rawTrialActionList[boxIndex])
-                self.boxMenuList[boxIndex].addSeparator()
-                self.boxMenuList[boxIndex].addMenu(self.solenoidMenuList[boxIndex])
-                self.boxMenuList[boxIndex].addSeparator()
-                self.boxMenuList[boxIndex].addMenu(self.optionsMenuList[boxIndex])
 
                 # option submenu
 
                 self.optionsMenuList[boxIndex].addAction(self.autoSleepList[boxIndex])
                 self.optionsMenuList[boxIndex].addAction(self.useNRList[boxIndex])
                 self.optionsMenuList[boxIndex].addSeparator()
-                self.optionsMenuList[boxIndex].addAction(self.createNewJsonList[boxIndex])
                 self.optionsMenuList[boxIndex].addAction(self.newBirdActionList[boxIndex])
 
                 # Solenoid submenu
                 self.solenoidMenuList[boxIndex].addAction(self.primeActionList[boxIndex])
                 self.solenoidMenuList[boxIndex].addAction(self.purgeActionList[boxIndex])
                 self.solenoidMenuList[boxIndex].addAction(self.solenoidManualList[boxIndex])
+
+                self.useNRList[boxIndex].setCheckable(True)
+                self.autoSleepList[boxIndex].setCheckable(True)
+                self.autoSleepList[boxIndex].setChecked(self.ui_options['autosleep_all'].isChecked())
 
                 self.autoSleepList[boxIndex].setText('Autosleep (Box {:02d})'.format(boxIndex + 1))
                 autosleepMenu.addAction(self.autoSleepList[boxIndex])
@@ -330,20 +336,15 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
 
             # region Connect functions to buttons/objects
             for boxIndex in self.boxList:
-                self.paramFileButtonBoxList[boxIndex].clicked.connect(
-                    lambda _, b=boxIndex: self.param_file_select(boxindex=b))
+
                 self.performanceBoxList[boxIndex].clicked.connect(
                     lambda _, b=boxIndex: self.analyze_performance(boxnumber=b))
                 self.startBoxList[boxIndex].clicked.connect(lambda _, b=boxIndex: self.start_box(boxnumber=b))
                 self.stopBoxList[boxIndex].clicked.connect(lambda _, b=boxIndex: self.stop_box(boxnumber=b))
 
-                # Option menu
-                self.purgeActionList[boxIndex].triggered.connect(
-                    lambda _, b=boxIndex: self.water_control(boxindex=b, parameter='purge', purge_time=20))
-                self.primeActionList[boxIndex].triggered.connect(
-                    lambda _, b=boxIndex: self.water_control(boxindex=b, parameter='purge', purge_time=5))
-                self.solenoidManualList[boxIndex].triggered.connect(
-                    lambda _, b=boxIndex: self.water_control(boxindex=b, parameter='dialog'))
+                # File option menu
+                self.fileSelectActionList[boxIndex].triggered.connect(
+                    lambda _, b=boxIndex: self.param_file_select(boxindex=b))
                 self.openFolderActionList[boxIndex].triggered.connect(
                     lambda _, b=boxIndex: self.open_box_folder(boxnumber=b))
                 self.openSettingsActionList[boxIndex].triggered.connect(
@@ -352,6 +353,16 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
                     lambda _, b=boxIndex: self.open_text_file(boxnumber=b, whichfile='boxlog'))
                 self.rawTrialActionList[boxIndex].triggered.connect(
                     lambda _, b=boxIndex: self.get_raw_trial_data(boxnumber=b))
+
+                # Water menu
+                self.purgeActionList[boxIndex].triggered.connect(
+                    lambda _, b=boxIndex: self.water_control(boxindex=b, parameter='purge', purge_time=20))
+                self.primeActionList[boxIndex].triggered.connect(
+                    lambda _, b=boxIndex: self.water_control(boxindex=b, parameter='purge', purge_time=5))
+                self.solenoidManualList[boxIndex].triggered.connect(
+                    lambda _, b=boxIndex: self.water_control(boxindex=b, parameter='dialog'))
+
+                # Settings menu
                 self.createNewJsonList[boxIndex].triggered.connect(
                     lambda _, b=boxIndex: self.create_json_file(boxnumber=b))
                 self.newBirdActionList[boxIndex].triggered.connect(
@@ -362,7 +373,9 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
                     lambda _, b=boxIndex: self.auto_sleep_set(boxnumber=b))
 
                 # Attach menu to physical option button
-                self.optionButtonBoxList[boxIndex].setMenu(self.boxMenuList[boxIndex])
+                self.optionButtonBoxList[boxIndex].setMenu(self.optionsMenuList[boxIndex])
+                self.waterOptionButtonBoxList[boxIndex].setMenu(self.solenoidMenuList[boxIndex])
+                self.paramFileButtonBoxList[boxIndex].setMenu(self.boxMenuList[boxIndex])
             # endregion
 
             self.closeEvent = self.close_application

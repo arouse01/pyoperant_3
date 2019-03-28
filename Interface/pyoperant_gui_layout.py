@@ -64,7 +64,7 @@ class UiMainWindow(object):
         self.gridLayoutBoxList = []  # Array for the grid layout for each box
         self.statusLayoutBoxList = []  # Array for the grid layout for each box
         self.optionButtonBoxList = []  # Array for option button
-        self.waterOptionButtonBoxList = []  # Array for option button
+        self.waterOptionButtonBoxList = []  # Array for water option button
         self.performanceBoxList = []  # Array for "Performance" button
         self.startBoxList = []  # Array for "start box" button
         self.stopBoxList = []  # Array for "stop box" button
@@ -84,6 +84,7 @@ class UiMainWindow(object):
         self.wrenchIcon = QIcon()
         self.wrenchIcon.addPixmap(QtGui.QPixmap(_from_utf8("icons/wrench.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.waterIcon = QIcon()
+        self.waterIcon.addPixmap(QtGui.QPixmap(_from_utf8("icons/water.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         # endregion Button icons
         # endregion
 
@@ -145,9 +146,10 @@ class UiMainWindow(object):
 
         self.gridLayoutWidget = QtGui.QWidget(self.centralwidget)
         self.gridLayoutWidget.setObjectName(_from_utf8("gridLayoutWidget"))
-        # self.gridLayoutWidget.setContentsMargins(0, 0, 0, 0)
+        self.gridLayoutWidget.setSizePolicy(sizePolicy_Fixed)
         self.mainGrid = QtGui.QGridLayout(self.gridLayoutWidget)
         self.mainGrid.setObjectName(_from_utf8("mainGrid"))
+        self.gridLayoutWidget.setLayout(self.mainGrid)
 
         # Menu at bottom of screen
         self.menuGrid = QtGui.QGridLayout()
@@ -422,17 +424,20 @@ class UiMainWindow(object):
 
             # region Buttons
             self.waterOptionButtonBoxList[box].setFont(font11)
+            self.waterOptionButtonBoxList[box].setMinimumSize(QtCore.QSize(27, 27))
             self.waterOptionButtonBoxList[box].setMaximumSize(QtCore.QSize(27, 27))
             self.waterOptionButtonBoxList[box].setObjectName(_from_utf8("waterOptionButton_Box%d" % box))
             self.waterOptionButtonBoxList[box].setSizePolicy(sizePolicy_max)
             self.waterOptionButtonBoxList[box].setIcon(self.waterIcon)
-            self.waterOptionButtonBoxList[box].setMinimumSize(QtCore.QSize(27, 27))
             self.waterOptionButtonBoxList[box].setText(_from_utf8(""))
+            self.waterOptionButtonBoxList[box].setStyleSheet("QPushButton::menu-indicator { image: none; }")
 
             self.paramFileButtonBoxList[box].setFont(font11)
             self.paramFileButtonBoxList[box].setMaximumSize(QtCore.QSize(27, 27))
             self.paramFileButtonBoxList[box].setObjectName(_from_utf8("paramFileButton_Box%d" % box))
             self.paramFileButtonBoxList[box].setSizePolicy(sizePolicy_max)
+            self.paramFileButtonBoxList[box].setText(_from_utf8("..."))
+            self.paramFileButtonBoxList[box].setStyleSheet("QPushButton::menu-indicator { image: none; width: 0px; }")
 
             self.startBoxList[box].setFont(font11)
             self.startBoxList[box].setMaximumSize(QtCore.QSize(100, 27))
@@ -451,12 +456,13 @@ class UiMainWindow(object):
             self.stopBoxList[box].setSizePolicy(sizePolicy_minEx_max)
 
             self.optionButtonBoxList[box].setFont(font11)
+            self.optionButtonBoxList[box].setMinimumSize(QtCore.QSize(27, 27))
             self.optionButtonBoxList[box].setMaximumSize(QtCore.QSize(27, 27))
             self.optionButtonBoxList[box].setObjectName(_from_utf8("optionButton_Box%d" % box))
             self.optionButtonBoxList[box].setSizePolicy(sizePolicy_max)
             self.optionButtonBoxList[box].setIcon(self.wrenchIcon)
-            self.optionButtonBoxList[box].setMinimumSize(QtCore.QSize(27, 27))
             self.optionButtonBoxList[box].setText(_from_utf8(""))
+            self.optionButtonBoxList[box].setStyleSheet("QPushButton::menu-indicator { image: none; }")
 
             # endregion Buttons
 
@@ -496,12 +502,9 @@ class UiMainWindow(object):
         # region Window sizing
         # Set window and grid size based on content
         # extra space due to padding:
-        #   layoutSpacing * (number of columns*2 [left and right spacing] + number of vertical lines *2 [
-        #   left and right spacing] + 1 *2 [left and right of whole layout])
-        boxWidth = self.gridLayoutBoxList[0].sizeHint().width()
-        spacingWidthTotal = 2 * (columnCount + numVerticalLines + 1) * self.mainGrid.getContentsMargins()[0]
-        widthRatio = 1.00  # 1.05 seems to be the right propotion to prevent things from being cut off or too much space
-        mainGridWidth = math.ceil(self.gridLayoutWidget.sizeHint().width() * widthRatio)
+        #   layoutSpacing * (number of columns + number of vertical lines + 1 [for whole layout])
+        spacingWidthTotal = (columnCount + numVerticalLines + 1) * self.mainGrid.getContentsMargins()[0]
+        mainGridWidth = math.ceil(self.gridLayoutWidget.sizeHint().width() + spacingWidthTotal)
         mainGridHeight = self.gridLayoutWidget.sizeHint().height()
 
         main_window.setFixedSize(mainGridWidth, mainGridHeight)
