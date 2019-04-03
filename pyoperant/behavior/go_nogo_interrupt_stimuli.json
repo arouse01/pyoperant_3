@@ -1,89 +1,60 @@
 {
-  "Machine": "Rouse",
-  "name": "ZF Isochrony discrimination",
-  "description": "Discriminate regular from irregular patterns of sound",
-  "comments": "json doesn't support comments",
-  "experiment_path": "/home/rouse/bird",
-  "experimenter": {
-    "email": "andrew.rouse@tufts.edu",
-    "name": "Andrew Rouse"
-  },
-
-  "panel_name": "Rouse1",
-  "subject": "test",
-  "subject_type": "bird",
-
-  "debug": false,
-  "log_handlers": [
-    "text"
-  ],
-  "shape": false,
-  "free_day_off": false,
-
-  "classes": {
-    "sPlus": {
-      "component": "respSens",
-      "punish_value": 0.0,
-      "reward_value": 0.075
-    },
-    "sMinus": {
-      "component": "trialSens",
-      "punish_value": 2.0,
-      "reward_value": 0.0
-    },
-    "probePlus": {
-      "punish_value": 0.0,
-      "reward_value": 0.0
-    },
-    "probeMinus": {
-      "punish_value": 0.0,
-      "reward_value": 0.0
-    }
-  },
-  "block_design": {
-    "block_path": "/home/rouse/Desktop/pyoperant/pyoperant/pyoperant/behavior/go_nogo_interrupt_blocks.json",
-    "order": [
-      "shaping 1",
-      "shaping 2",
-      "shaping 3"
-    ]
-  },
-
-  "correction_trials": false,
-  "intertrial_min": 0.1,
-  "response_delay": 0.5,
-  "response_win": 5,
-
-  "light_schedule": [
-    [
-      "08:30",
-      "20:30"
-    ]
-  ],
-  "session_schedule": [
-    [
-      "08:30",
-      "20:30"
-    ]
-  ],
-  "session_days": [
-    0,
-    1,
-    2,
-    3,
-    4,
-    5,
-    6
-  ],
-
-  "stim_path": "/home/rouse/bird/stim",
-  "stim_list": "/home/rouse/Desktop/pyoperant/pyoperant/pyoperant/behavior/go_nogo_interrupt_stimuli.json",
   "stims": {
+    "b1i1_1140ir1.wav": "b1i1_1140ir1.wav",
+    "b1i1_1140ir2.wav": "b1i1_1140ir2.wav",
+    "b1i1_1140ir3.wav": "b1i1_1140ir3.wav",
+    "b1i1_1140ir4.wav": "b1i1_1140ir4.wav",
+    "b1i1_1140reg.wav": "b1i1_1140reg.wav",
+    "b1i1_1170ir1.wav": "b1i1_1170ir1.wav",
+    "b1i1_1170ir2.wav": "b1i1_1170ir2.wav",
+    "b1i1_1170ir3.wav": "b1i1_1170ir3.wav",
+    "b1i1_1170ir4.wav": "b1i1_1170ir4.wav",
+    "b1i1_1170reg.wav": "b1i1_1170reg.wav",
+    "b1i1_1200ir1.wav": "b1i1_1200ir1.wav",
+    "b1i1_1200ir2.wav": "b1i1_1200ir2.wav",
+    "b1i1_1200ir3.wav": "b1i1_1200ir3.wav",
+    "b1i1_1200ir4.wav": "b1i1_1200ir4.wav",
+    "b1i1_1200reg.wav": "b1i1_1200reg.wav",
+    "b1i1_1230ir1.wav": "b1i1_1230ir1.wav",
+    "b1i1_1230ir2.wav": "b1i1_1230ir2.wav",
+    "b1i1_1230ir3.wav": "b1i1_1230ir3.wav",
+    "b1i1_1230ir4.wav": "b1i1_1230ir4.wav",
+    "b1i1_1230reg.wav": "b1i1_1230reg.wav",
+    "b1i1_1260ir1.wav": "b1i1_1260ir1.wav",
+    "b1i1_1260ir2.wav": "b1i1_1260ir2.wav",
+    "b1i1_1260ir3.wav": "b1i1_1260ir3.wav",
+    "b1i1_1260ir4.wav": "b1i1_1260ir4.wav",
+    "b1i1_1260reg.wav": "b1i1_1260reg.wav",
     "b1i1_1500ir1.wav": "b1i1_1500ir1.wav",
     "b1i1_1500ir2.wav": "b1i1_1500ir2.wav",
     "b1i1_1500ir3.wav": "b1i1_1500ir3.wav",
     "b1i1_1500ir4.wav": "b1i1_1500ir4.wav",
     "b1i1_1500reg.wav": "b1i1_1500reg.wav",
+    "b1i1_1710ir1.wav": "b1i1_1710ir1.wav",
+    "b1i1_1710ir2.wav": "b1i1_1710ir2.wav",
+    "b1i1_1710ir3.wav": "b1i1_1710ir3.wav",
+    "b1i1_1710ir4.wav": "b1i1_1710ir4.wav",
+    "b1i1_1710reg.wav": "b1i1_1710reg.wav",
+    "b1i1_1755ir1.wav": "b1i1_1755ir1.wav",
+    "b1i1_1755ir2.wav": "b1i1_1755ir2.wav",
+    "b1i1_1755ir3.wav": "b1i1_1755ir3.wav",
+    "b1i1_1755ir4.wav": "b1i1_1755ir4.wav",
+    "b1i1_1755reg.wav": "b1i1_1755reg.wav",
+    "b1i1_1800ir1.wav": "b1i1_1800ir1.wav",
+    "b1i1_1800ir2.wav": "b1i1_1800ir2.wav",
+    "b1i1_1800ir3.wav": "b1i1_1800ir3.wav",
+    "b1i1_1800ir4.wav": "b1i1_1800ir4.wav",
+    "b1i1_1800reg.wav": "b1i1_1800reg.wav",
+    "b1i1_1845ir1.wav": "b1i1_1845ir1.wav",
+    "b1i1_1845ir2.wav": "b1i1_1845ir2.wav",
+    "b1i1_1845ir3.wav": "b1i1_1845ir3.wav",
+    "b1i1_1845ir4.wav": "b1i1_1845ir4.wav",
+    "b1i1_1845reg.wav": "b1i1_1845reg.wav",
+    "b1i1_1890ir1.wav": "b1i1_1890ir1.wav",
+    "b1i1_1890ir2.wav": "b1i1_1890ir2.wav",
+    "b1i1_1890ir3.wav": "b1i1_1890ir3.wav",
+    "b1i1_1890ir4.wav": "b1i1_1890ir4.wav",
+    "b1i1_1890reg.wav": "b1i1_1890reg.wav",
     "b2s1_1000ir1.wav": "b2s1_1000ir1.wav",
     "b2s1_1000ir2.wav": "b2s1_1000ir2.wav",
     "b2s1_1000ir3.wav": "b2s1_1000ir3.wav",
@@ -399,6 +370,11 @@
     "b2s1_1570ir3.wav": "b2s1_1570ir3.wav",
     "b2s1_1570ir4.wav": "b2s1_1570ir4.wav",
     "b2s1_1570reg.wav": "b2s1_1570reg.wav",
+    "b2s1_1575ir1.wav": "b2s1_1575ir1.wav",
+    "b2s1_1575ir2.wav": "b2s1_1575ir2.wav",
+    "b2s1_1575ir3.wav": "b2s1_1575ir3.wav",
+    "b2s1_1575ir4.wav": "b2s1_1575ir4.wav",
+    "b2s1_1575reg.wav": "b2s1_1575reg.wav",
     "b2s1_1580ir1.wav": "b2s1_1580ir1.wav",
     "b2s1_1580ir2.wav": "b2s1_1580ir2.wav",
     "b2s1_1580ir3.wav": "b2s1_1580ir3.wav",
@@ -616,8 +592,5 @@
     "b2s1_2000reg.wav": "b2s1_2000reg.wav",
     "songPlus": "blu33ylw24_song.wav",
     "songMinus": "zf12_song.wav"
-  },
-  "sr": 44100
-
+  }
 }
-

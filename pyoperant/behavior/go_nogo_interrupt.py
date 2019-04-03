@@ -56,6 +56,16 @@ class GoNoGoInterruptExp(base.BaseExp):
 
         # self.shaper = shape.ShaperGoNogoInterrupt(self.panel, self.log, self.parameters, self.log_error_callback)
 
+        # # Get stimuli from separate file (for centrally-modifiable stimuli list that only needs to be
+        # updated once, rather than for each subject). If there is no stim_list parameter, then use any stims that
+        # are already defined in the json file
+        if 'stim_list' in self.parameters:
+            stim_file = self.parameters['stim_list']
+            if os.path.isfile(stim_file):
+                with open(stim_file, 'rb') as stim_list:
+                    stimuli = json.load(stim_list)
+                    self.parameters['stims'] = stimuli['stims']
+
         # # assign stim files full names
         for name, filename in self.parameters['stims'].items():
             filename_full = os.path.join(self.parameters['stim_path'], filename)
@@ -128,8 +138,8 @@ class GoNoGoInterruptExp(base.BaseExp):
         if 'block_path' in self.parameters['block_design']:
             block_path = self.parameters['block_design']['block_path']
             if os.path.isfile(block_path):
-                with open(block_path, 'rb') as block_file:
-                    blocks = json.load(block_file)
+                with open(block_path, 'rb') as stim_list:
+                    blocks = json.load(stim_list)
                     self.parameters['block_design']['blocks'] = blocks['blocks']
 
     def reconnect_panel(self):

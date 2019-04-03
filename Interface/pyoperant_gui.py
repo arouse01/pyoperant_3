@@ -411,7 +411,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
     def box_button_control(self, boxnumber, parameter):
         if parameter == 'stop' or parameter == 'enable':
             # Enable objects when box is not running
-            self.paramFileButtonBoxList[boxnumber].setEnabled(True)
+            self.fileSelectActionList[boxnumber].setEnabled(True)
             self.birdEntryBoxList[boxnumber].setReadOnly(False)
             self.startBoxList[boxnumber].setEnabled(True)
             self.stopBoxList[boxnumber].setEnabled(False)
@@ -420,7 +420,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
 
         elif parameter == 'sleep':
             # Enable objects when box is not running
-            self.paramFileButtonBoxList[boxnumber].setEnabled(True)
+            self.fileSelectActionList[boxnumber].setEnabled(True)
             self.birdEntryBoxList[boxnumber].setReadOnly(False)
             self.startBoxList[boxnumber].setEnabled(False)
             self.stopBoxList[boxnumber].setEnabled(True)
@@ -429,7 +429,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
 
         elif parameter == 'start':
             # Hide and/or disable objects while box is running
-            self.paramFileButtonBoxList[boxnumber].setEnabled(False)
+            self.fileSelectActionList[boxnumber].setEnabled(False)
             self.birdEntryBoxList[boxnumber].setReadOnly(True)
             self.startBoxList[boxnumber].setEnabled(False)
             self.stopBoxList[boxnumber].setEnabled(True)
@@ -438,7 +438,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
 
         elif parameter == 'disable':
             # For when Teensy isn't connected
-            self.paramFileButtonBoxList[boxnumber].setEnabled(True)
+            self.fileSelectActionList[boxnumber].setEnabled(True)
             self.birdEntryBoxList[boxnumber].setReadOnly(False)
             self.startBoxList[boxnumber].setEnabled(False)
             self.stopBoxList[boxnumber].setEnabled(False)
@@ -1467,6 +1467,8 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
     def export(self, output_folder):
         output_path = QtGui.QFileDialog.getSaveFileName(self, "Save As...", output_folder, "CSV Files (*.csv)")
         if output_path:
+            if len(os.path.splitext(output_path)[1]) == 0:
+                output_path = output_path + '.csv'
             self.outputData.to_csv(str(output_path))
             print 'saved to {}'.format(output_path)
 
