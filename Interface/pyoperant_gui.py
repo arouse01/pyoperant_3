@@ -1406,15 +1406,15 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
             self.fieldListSelectNone.clicked.connect(lambda _, b='none': self.field_preset_select(pattern=b))
             self.fieldListSelectAll.clicked.connect(lambda _, b='all': self.field_preset_select(pattern=b))
 
-            self.create_grouping_checkbox('Subject')
-            self.create_grouping_checkbox('Date')
-            self.create_grouping_checkbox('Hour')
-            self.create_grouping_checkbox('Block')
-            self.create_grouping_checkbox('Stimulus')
-            self.create_grouping_checkbox('Class')
-            self.create_grouping_checkbox('Response Type')
-            self.create_grouping_checkbox('Response')
-            self.create_grouping_checkbox('Trials', group_type='range')
+            self.create_grouping_checkbox('Subject', row=0)
+            self.create_grouping_checkbox('Date', row=1)
+            self.create_grouping_checkbox('Hour', row=2)
+            self.create_grouping_checkbox('Block', row=3)
+            self.create_grouping_checkbox('Stimulus', row=4)
+            self.create_grouping_checkbox('Class', row=5)
+            self.create_grouping_checkbox('Response Type', row=6)
+            self.create_grouping_checkbox('Response', row=7)
+            self.create_grouping_checkbox('Trials', group_type='range', row=8)
 
             self.groupByFields['Subject']['checkbox'].setChecked(True)
             self.groupByFields['Date']['checkbox'].setChecked(True)
@@ -1425,6 +1425,8 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
                 self.groupByFields[field]['checkbox'].stateChanged.connect(self.recalculate)
                 if 'range' in self.groupByFields[field]:
                     self.groupByFields[field]['range'].editingFinished.connect(self.recalculate)
+
+            self.groupByDisable_Checkbox.stateChanged.connect(lambda _, b='raw': self.group_by(group=b))
 
             self.setWindowTitle(str("Performance Data"))
             self.log = logging.getLogger(__name__)
@@ -1466,8 +1468,9 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
 
     def export(self, output_folder):
         output_path = QtGui.QFileDialog.getSaveFileName(self, "Save As...", output_folder, "CSV Files (*.csv)")
+        output_path = str(output_path)
         if output_path:
-            if len(os.path.splitext(output_path)[1]) == 0:
+            if len(os.path.splitext(str(output_path))[1]) == 0:
                 output_path = output_path + '.csv'
             self.outputData.to_csv(str(output_path))
             print 'saved to {}'.format(output_path)
@@ -1577,8 +1580,11 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
         for j in xrange(self.model.columnCount()):  # for all fields available in model
             columnName = unicode(self.model.headerData(j, QtCore.Qt.Horizontal).toString())  # .replace('\n(NR)',
             # ' (NR)')
-            self.silent_checkbox_change(self.fieldManagement[columnName]['itemWidget'], True)
-            existingHeaders.append(columnName)
+            if columnName == 'Bin':
+                pass  # skip Bin, which is only added by the analysis process if binning
+            else:
+                self.silent_checkbox_change(self.fieldManagement[columnName]['itemWidget'], True)
+                existingHeaders.append(columnName)
 
         # Mark remaining fields as not visible
         # remainingHeaders = list(filter(lambda a: a not in analysis.field_list(), existingHeaders))
@@ -1590,45 +1596,46 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
 
     def field_preset_select(self, pattern=None):
         for columnName in self.fieldManagement:
-            if pattern == 'all':
-                self.silent_checkbox_change(self.fieldManagement[columnName]['itemWidget'], True)
+            if self.fieldManagement[columnName]['itemWidget'].isEnabled():
+                if pattern == 'all':
+                    self.silent_checkbox_change(self.fieldManagement[columnName]['itemWidget'], True)
 
-            elif pattern == 'none':
-                self.silent_checkbox_change(self.fieldManagement[columnName]['itemWidget'], False)
+                elif pattern == 'none':
+                    self.silent_checkbox_change(self.fieldManagement[columnName]['itemWidget'], False)
 
-            else:
-                # fieldName = unicode(self.fieldList.item(x).text())
-                columnNameF = self.fieldManagement[columnName]['name']
-                if pattern == 'nr':
-                    self.silent_checkbox_change(self.fieldManagement['Trials']['itemWidget'], True)
-                checkstate = self.noResponse_Checkbox.isChecked()
-                if columnNameF in ["d'", 'Beta', 'S+', 'S-', 'Total Corr', "Probe d'", 'Probe Beta', 'Probe S+',
-                                   'Probe S-', 'Probe Tot Corr']:
-                    self.silent_checkbox_change(self.fieldManagement[columnName]['itemWidget'], not checkstate)
+                else:
+                    # fieldName = unicode(self.fieldList.item(x).text())
+                    columnNameF = self.fieldManagement[columnName]['name']
+                    if pattern == 'nr':
+                        self.silent_checkbox_change(self.fieldManagement['Trials']['itemWidget'], True)
+                    checkstate = self.noResponse_Checkbox.isChecked()
+                    if columnNameF in ["d'", 'Beta', 'S+', 'S-', 'Total Corr', "Probe d'", 'Probe Beta', 'Probe S+',
+                                       'Probe S-', 'Probe Tot Corr']:
+                        self.silent_checkbox_change(self.fieldManagement[columnName]['itemWidget'], not checkstate)
 
-                    # self.fieldManagement[columnName]['itemWidget'].setCheckState(not checkstate)
-                elif columnNameF in ["d' (NR)", 'Beta (NR)', 'S+ (NR)', 'S- (NR)', 'Total Corr (NR)',
-                                     "Probe d' (NR)", 'Probe Beta (NR)', 'Probe S+ (NR)', 'Probe S- (NR)',
-                                     'Probe Tot Corr (NR)']:
-                    self.silent_checkbox_change(self.fieldManagement[columnName]['itemWidget'], checkstate)
+                        # self.fieldManagement[columnName]['itemWidget'].setCheckState(not checkstate)
+                    elif columnNameF in ["d' (NR)", 'Beta (NR)', 'S+ (NR)', 'S- (NR)', 'Total Corr (NR)',
+                                         "Probe d' (NR)", 'Probe Beta (NR)', 'Probe S+ (NR)', 'Probe S- (NR)',
+                                         'Probe Tot Corr (NR)']:
+                        self.silent_checkbox_change(self.fieldManagement[columnName]['itemWidget'], checkstate)
 
-                    # self.fieldManagement[columnName]['itemWidget'].setCheckState(checkstate)
+                        # self.fieldManagement[columnName]['itemWidget'].setCheckState(checkstate)
 
-                # elif pattern == 'probe':
-                checkstate = self.probe_Checkbox.isChecked()
-                if columnNameF in ["Probe d'", "Probe d' (NR)", 'Probe Beta', 'Probe Beta (NR)', 'Probe Trials',
-                                   'Probe Hit', 'Probe Miss', 'Probe Miss (NR)', 'Probe FA', 'Probe CR',
-                                   'Probe CR (NR)', 'Probe S+', 'Probe S+ (NR)', 'Probe S-', 'Probe S- (NR)',
-                                   'Probe Tot Corr', 'Probe Tot Corr (NR)']:
-                    self.silent_checkbox_change(self.fieldManagement[columnName]['itemWidget'], checkstate)
-                    # self.fieldManagement[columnName]['itemWidget'].setCheckState(checkstate)
+                    # elif pattern == 'probe':
+                    checkstate = self.probe_Checkbox.isChecked()
+                    if columnNameF in ["Probe d'", "Probe d' (NR)", 'Probe Beta', 'Probe Beta (NR)', 'Probe Trials',
+                                       'Probe Hit', 'Probe Miss', 'Probe Miss (NR)', 'Probe FA', 'Probe CR',
+                                       'Probe CR (NR)', 'Probe S+', 'Probe S+ (NR)', 'Probe S-', 'Probe S- (NR)',
+                                       'Probe Tot Corr', 'Probe Tot Corr (NR)']:
+                        self.silent_checkbox_change(self.fieldManagement[columnName]['itemWidget'], checkstate)
+                        # self.fieldManagement[columnName]['itemWidget'].setCheckState(checkstate)
 
-                # elif pattern == 'raw':
-                checkstate = self.raw_Checkbox.isChecked()
-                if columnNameF in ['Hit', 'Miss', 'Miss (NR)', 'FA', 'CR', 'CR (NR)', 'Probe Hit', 'Probe Miss',
-                                   'Probe Miss (NR)', 'Probe FA', 'Probe CR', 'Probe CR (NR)']:
-                    self.silent_checkbox_change(self.fieldManagement[columnName]['itemWidget'], checkstate)
-                    # self.fieldManagement[columnName]['itemWidget'].setCheckState(checkstate)
+                    # elif pattern == 'raw':
+                    checkstate = self.raw_Checkbox.isChecked()
+                    if columnNameF in ['Hit', 'Miss', 'Miss (NR)', 'FA', 'CR', 'CR (NR)', 'Probe Hit', 'Probe Miss',
+                                       'Probe Miss (NR)', 'Probe FA', 'Probe CR', 'Probe CR (NR)']:
+                        self.silent_checkbox_change(self.fieldManagement[columnName]['itemWidget'], checkstate)
+                        # self.fieldManagement[columnName]['itemWidget'].setCheckState(checkstate)
 
         self.recalculate()
 
@@ -1637,7 +1644,7 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
 
     # region Field grouping
 
-    def create_grouping_checkbox(self, group_name, group_type=None):
+    def create_grouping_checkbox(self, group_name, group_type=None, row=99999):
 
         self.groupByFields[group_name] = {}
 
@@ -1650,7 +1657,7 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
         if group_type is None:
             groupByCheckbox.setText(group_name)
             self.groupByFields[group_name]['checkbox'] = groupByCheckbox
-            self.groupGrid.addRow(self.groupByFields[group_name]['checkbox'])
+            self.groupGrid.insertRow(row, self.groupByFields[group_name]['checkbox'])
         else:
             # to dynamically group by a certain number of fields
             groupByCheckbox.setText("Every")
@@ -1665,37 +1672,61 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
             rangeBox.setValue(50)
 
             self.groupByFields[group_name]['range'] = rangeBox
-            self.groupGrid.addRow(self.groupByFields[group_name]['checkbox'], self.groupByFields[group_name]['range'])
+            self.groupGrid.insertRow(row, self.groupByFields[group_name]['checkbox'], self.groupByFields[group_name][
+                'range'])
 
-    def group_by(self):
+    def group_by(self, group='group'):
         # construct groupby parameter for pd.groupby - there may be a better way to do this:
         # Currently rebuilds the self.dataGroups var each time a box is checked or unchecked, which requires adding a
         # new checkbox for each column that could be grouped
+        # Called as part of recalculate method rather than forcing a recalculation on its own
         self.dataGroups = []
-        for field in self.groupByFields:
-            if self.groupByFields[field]['checkbox'].isChecked():
-                if 'range' in self.groupByFields[field]:
-                    fieldRange = int(self.groupByFields[field]['range'].value())
-                    self.dataGroups.append([field, fieldRange])
-                else:
-                    self.dataGroups.append(field)
 
-        # enable/disable raw field checkboxes depending on group state
-        for field in self.fieldManagement:
-            fieldType = self.fieldManagement[field]['type']
-            if fieldType == 'raw' or fieldType == 'index':
-                # raw and index fields can't be viewed for grouped data other than as a grouping index (most are
-                # text or values that can't return a single value for a group)
-                if len(self.dataGroups) > 0:
-                    self.fieldManagement[field]['itemWidget'].setEnabled(False)
-                else:
-                    self.fieldManagement[field]['itemWidget'].setEnabled(True)
-            elif fieldType == 'group':
-                # group fields only apply to grouped data, so if data isn't grouped these fields are useless
-                if len(self.dataGroups) > 0:
-                    self.fieldManagement[field]['itemWidget'].setEnabled(True)
-                else:
-                    self.fieldManagement[field]['itemWidget'].setEnabled(False)
+        if group == 'raw':
+            # if "show raw trial data" is checked/unchecked by user - code should only get to this section if user
+            # clicks checkbox
+            if self.groupByDisable_Checkbox.isChecked():
+                for field in self.groupByFields:
+                    self.silent_checkbox_change(self.groupByFields[field]['checkbox'], newstate=False)
+                self.field_preset_select('all')
+            else:
+                # if user unchecks, check at least the first box so grouping is started
+                self.silent_checkbox_change(self.groupByFields['Subject']['checkbox'], newstate=True)
+                self.silent_checkbox_change(self.groupByFields['Date']['checkbox'], newstate=True)
+                self.silent_checkbox_change(self.groupByFields['Block']['checkbox'], newstate=True)
+                self.recalculate()
+        else:
+            atLeastOneCheck = False  # tracking if at least one grouping box is checked
+
+            for field in self.groupByFields:
+                if self.groupByFields[field]['checkbox'].isChecked():
+                    if 'range' in self.groupByFields[field]:
+                        fieldRange = int(self.groupByFields[field]['range'].value())
+                        self.dataGroups.append([field, fieldRange])
+                    else:
+                        self.dataGroups.append(field)
+                    atLeastOneCheck = True
+
+            if atLeastOneCheck is True and self.groupByDisable_Checkbox.isChecked():
+                # uncheck the 'show raw data' checkbox if any of the groupby checkboxes are checked
+                self.silent_checkbox_change(self.groupByDisable_Checkbox, newstate=False)
+
+            # enable/disable raw field checkboxes depending on group state
+            for field in self.fieldManagement:
+                fieldType = self.fieldManagement[field]['type']
+                if fieldType == 'raw' or fieldType == 'index':
+                    # raw and index fields can't be viewed for grouped data other than as a grouping index (most are
+                    # text or values that can't return a single value for a group)
+                    if len(self.dataGroups) > 0:
+                        self.fieldManagement[field]['itemWidget'].setEnabled(False)
+                    else:
+                        self.fieldManagement[field]['itemWidget'].setEnabled(True)
+                elif fieldType == 'group':
+                    # group fields only apply to grouped data, so if data isn't grouped these fields are useless
+                    if len(self.dataGroups) > 0:
+                        self.fieldManagement[field]['itemWidget'].setEnabled(True)
+                    else:
+                        self.fieldManagement[field]['itemWidget'].setEnabled(False)
 
     # endregion
 
@@ -1809,17 +1840,21 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
         # Get values from model rather than table because table might be filtered and we want to see all available
         # fields
         for column in xrange(self.model.columnCount()):
-            columnName = unicode(self.model.headerData(column, QtCore.Qt.Horizontal).toString())  # .replace('\n(NR)',
-            # ' (NR)')
-            if self.fieldManagement[columnName]['filter']['type'] == 'list':
-                valueList = []
-                for row in xrange(self.model.rowCount()):
-                    valueIndex = self.model.index(row, column)
-                    valueList.append(str(self.model.data(valueIndex).toString()))
-                valueList = list(set(valueList))
-                if 'valueList' in self.fieldManagement[columnName]:
-                    valueList = valueList + self.fieldManagement[columnName]['valueList']
-                self.fieldManagement[columnName]['valueList'] = list(set(valueList))
+            if column == 'Bin':
+                pass  # skip Bin, which is only added by the analysis process if binning
+            else:
+                columnName = unicode(
+                    self.model.headerData(column, QtCore.Qt.Horizontal).toString())  # .replace('\n(NR)',
+                # ' (NR)')
+                if self.fieldManagement[columnName]['filter']['type'] == 'list':
+                    valueList = []
+                    for row in xrange(self.model.rowCount()):
+                        valueIndex = self.model.index(row, column)
+                        valueList.append(str(self.model.data(valueIndex).toString()))
+                    valueList = list(set(valueList))
+                    if 'valueList' in self.fieldManagement[columnName]:
+                        valueList = valueList + self.fieldManagement[columnName]['valueList']
+                    self.fieldManagement[columnName]['valueList'] = list(set(valueList))
 
     def refresh_filters(self):
         for columnName in self.fieldManagement:
@@ -1902,14 +1937,18 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
                     for child in valueWidget:
                         if type(child).__name__ == 'QCheckBox':
                             if filter_value == 'all' and column_name == columnName:
-                                child.blockSignals(True)
-                                child.setCheckState(QtCore.Qt.Checked)
-                                child.blockSignals(False)
+                                self.silent_checkbox_change(child, newstate=True)
+                                # child.blockSignals(True)  # Block signals for bulk checking/unchecking so each
+                                # # iteration of loop doesn't refire the calculation
+                                # child.setCheckState(QtCore.Qt.Checked)
+                                # child.blockSignals(False)
 
                             elif filter_value == 'none' and column_name == columnName:
-                                child.blockSignals(True)
-                                child.setCheckState(QtCore.Qt.Unchecked)
-                                child.blockSignals(False)
+                                self.silent_checkbox_change(child, newstate=False)
+                                # child.blockSignals(True)  # Block signals for bulk checking/unchecking so each
+                                # # iteration of loop doesn't refire the calculation
+                                # child.setCheckState(QtCore.Qt.Unchecked)
+                                # child.blockSignals(False)
 
                             if child.isChecked():
                                 filterData[columnName].append(str(child.text()))

@@ -91,7 +91,6 @@ class UiMainWindow(object):
         # region Layout vars
         # Object location-specific variables
         self.numberOfBoxes = 6
-        layoutSpacing = 4  # padding of objects (for determining proper window size)
         # Calculate box arrangement in window
         # self.rowCount = math.floor(math.sqrt(self.numberOfBoxes))
         rowCount = 3
@@ -712,17 +711,33 @@ class StatsWindow(object):
         self.optionToolbox.setMaximumWidth(self.optionWidth)
 
         # region Grouping section
-        self.groupGrid = QtGui.QFormLayout()
+        self.groupByWidget = QtGui.QWidget()
+        self.groupByWidget.setSizePolicy(sizePolicy_exp)
+        self.groupGrid = QtGui.QFormLayout(self.groupByWidget)
         self.groupGrid.setObjectName(_from_utf8("groupGrid"))
         self.groupGrid.setLabelAlignment(QtCore.Qt.AlignRight)
         self.groupGrid.setFormAlignment(QtCore.Qt.AlignHCenter)
         self.groupGrid.setAlignment(QtCore.Qt.AlignCenter)
+        # add spacer before raw trial checkbox
+        self.groupGrid.addRow(QLabel(' '))
+        self.groupGrid.addRow(QLabel(' '))
+        # add raw trial checkbox that will disable all grouping checkboxes
+        self.groupByDisable_Checkbox = QtGui.QCheckBox(stats_window)
+        self.groupByDisable_Checkbox.setSizePolicy(sizePolicy_fixed)
+        self.groupByDisable_Checkbox.setFixedHeight(27)
+        self.groupByDisable_Checkbox.setMaximumWidth(300)
+        self.groupByDisable_Checkbox.setObjectName(_from_utf8("groupByDisable_Checkbox"))
+        self.groupByDisable_Checkbox.setText('Show raw trial data')
+        self.groupGrid.addRow(self.groupByDisable_Checkbox)
 
         # region specific groupbys
-        self.groupByFields = collections.OrderedDict()  # orderedDict so grouping can be in order
-        self.groupByWidget = QtGui.QWidget()
-        self.groupByWidget.setLayout(self.groupGrid)
-        self.groupByWidget.setSizePolicy(sizePolicy_exp)
+        self.groupByFields = collections.OrderedDict()  # variable to store actual checkbox objects for the groupby.  
+        # orderedDict so grouping can be in order
+
+        # self.groupByWidget.setLayout(self.groupGrid)
+
+        
+
         # endregion
         # endregion Grouping section
 
