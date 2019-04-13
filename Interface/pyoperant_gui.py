@@ -1405,20 +1405,25 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
             self.raw_Checkbox.stateChanged.connect(lambda _, b='raw': self.field_preset_select(pattern=b))
             self.fieldListSelectNone.clicked.connect(lambda _, b='none': self.field_preset_select(pattern=b))
             self.fieldListSelectAll.clicked.connect(lambda _, b='all': self.field_preset_select(pattern=b))
+            self.recalculate_Button.clicked.connect(lambda _, b=True: self.recalculate(override=b))
 
             self.create_grouping_checkbox('Subject', row=0)
             self.create_grouping_checkbox('Date', row=1)
             self.create_grouping_checkbox('Hour', row=2)
             self.create_grouping_checkbox('Block', row=3)
-            self.create_grouping_checkbox('Stimulus', row=4)
-            self.create_grouping_checkbox('Class', row=5)
-            self.create_grouping_checkbox('Response Type', row=6)
-            self.create_grouping_checkbox('Response', row=7)
-            self.create_grouping_checkbox('Trials', group_type='range', row=8)
+            self.create_grouping_checkbox('Block Number', row=4)
+            self.create_grouping_checkbox('Trial Type', row=5)
+            self.create_grouping_checkbox('Stimulus', row=6)
+            self.create_grouping_checkbox('Class', row=7)
+            self.create_grouping_checkbox('Response Type', row=8)
+            self.create_grouping_checkbox('Response', row=9)
+            self.create_grouping_checkbox('Trials', group_type='range', row=10)
 
             self.groupByFields['Subject']['checkbox'].setChecked(True)
             self.groupByFields['Date']['checkbox'].setChecked(True)
             self.groupByFields['Block']['checkbox'].setChecked(True)
+
+            self.hold_Checkbox.setChecked(True)
 
             # Filter creation
             for field in self.groupByFields:
@@ -1825,10 +1830,10 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
                 dateBox.setMaximumWidth(150)
                 dateBox.dateChanged.connect(self.apply_filter)
 
-                layout.addSpacerItem(pyoperant_gui_layout.horiz_spacer(10))
+                layout.addSpacerItem(pyoperant_gui_layout.add_spacer(10))
                 layout.addWidget(compareBox)
                 layout.addWidget(dateBox)
-                layout.addSpacerItem(pyoperant_gui_layout.horiz_spacer(10))
+                layout.addSpacerItem(pyoperant_gui_layout.add_spacer(10))
 
                 self.fieldManagement[columnName]['filter']['widget'].setLayout(layout)
                 # self.fieldManagement[columnName]['filter']['CheckBoxList'].addSeparator()
@@ -1976,27 +1981,27 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
         self.rawTrialData = perform.raw_trial_data
         return perform
 
-    def recalculate(self):
+    def recalculate(self, override=False):
+        if override is True or self.hold_Checkbox.isChecked() is True:
+            with wait_cursor():  # set mouse cursor to 'waiting'
+                dropCols = []
+                for x in self.fieldManagement:
+                    if not self.fieldManagement[x]['itemWidget'].checkState():
+                        dropCols.append(x)
+                # dropCols = [col.replace(' (NR)', '\n(NR)') for col in dropCols]
+                self.group_by()
+                perform = analysis.Performance(self.data_folder)
+                perform.filter_data(filters=self.filters)
+                perform.summarize('filt')
+                self.outputData = perform.analyze(perform.summaryData, groupBy=self.dataGroups, dropCols=dropCols)
 
-        with wait_cursor():  # set mouse cursor to 'waiting'
-            dropCols = []
-            for x in self.fieldManagement:
-                if not self.fieldManagement[x]['itemWidget'].checkState():
-                    dropCols.append(x)
-            # dropCols = [col.replace(' (NR)', '\n(NR)') for col in dropCols]
-            self.group_by()
-            perform = analysis.Performance(self.data_folder)
-            perform.filter_data(filters=self.filters)
-            perform.summarize('filt')
-            self.outputData = perform.analyze(perform.summaryData, groupBy=self.dataGroups, dropCols=dropCols)
-
-            outputFile = 'performanceSummary.csv'
-            if isinstance(self.data_folder, list):
-                output_path = os.path.join(self.data_folder[0], outputFile)
-            else:
-                output_path = os.path.join(self.data_folder, outputFile)
-            self.outputData.to_csv(str(output_path), encoding='utf-8')
-            self.refresh_table(output_path)
+                outputFile = 'performanceSummary.csv'
+                if isinstance(self.data_folder, list):
+                    output_path = os.path.join(self.data_folder[0], outputFile)
+                else:
+                    output_path = os.path.join(self.data_folder, outputFile)
+                self.outputData.to_csv(str(output_path), encoding='utf-8')
+                self.refresh_table(output_path)
 
     # endregion
 

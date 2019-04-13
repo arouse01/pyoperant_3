@@ -174,7 +174,7 @@ class UiMainWindow(object):
         self.behaviorLabel.setAlignment(QtCore.Qt.AlignCenter)
         self.behaviorLabel.setObjectName(_from_utf8("behaviorLabel"))
         self.menuGrid.addWidget(self.behaviorLabel, 0, 3, 1, 1)
-        self.menuGrid.addItem(horiz_spacer(20, policy='min'), 0, 2, 1, 1)
+        self.menuGrid.addItem(add_spacer(20, policy='min'), 0, 2, 1, 1)
         self.mainGrid.addLayout(self.menuGrid, 2*rowCount, 0, 1, 2*columnCount-1)
         # endregion
 
@@ -624,7 +624,7 @@ class UiSolenoidControl(object):
         self.verticalLayout.addWidget(self.box_name)
         self.verticalLayout.addWidget(self.solenoid_text)
         self.verticalLayout.addWidget(self.solenoid_Status_Text)
-        self.verticalLayout.addItem(horiz_spacer(20, policy='min'))
+        self.verticalLayout.addItem(add_spacer(20, policy='min'))
         self.verticalLayout.addLayout(self.horizontalLayout)
         self.verticalLayout.addWidget(self.line)
         self.verticalLayout.addWidget(self.done_Button)
@@ -711,34 +711,44 @@ class StatsWindow(object):
         self.optionToolbox.setMaximumWidth(self.optionWidth)
 
         # region Grouping section
+        # Two widgets, one (top) for all of the regular grouping checkboxes, and one (bottom) for the 'show raw 
+        # trials' checkbox
         self.groupByWidget = QtGui.QWidget()
         self.groupByWidget.setSizePolicy(sizePolicy_exp)
-        self.groupGrid = QtGui.QFormLayout(self.groupByWidget)
+        groupByWidgetLayout = QtGui.QVBoxLayout(self.groupByWidget)
+        groupByWidgetLayout.setMargin(0)
+
+        # top widget that holds all regular grouping checkboxes
+        self.groupGridWidget = QtGui.QWidget()
+        self.groupGrid = QtGui.QFormLayout(self.groupGridWidget)
         self.groupGrid.setObjectName(_from_utf8("groupGrid"))
         self.groupGrid.setLabelAlignment(QtCore.Qt.AlignRight)
         self.groupGrid.setFormAlignment(QtCore.Qt.AlignHCenter)
         self.groupGrid.setAlignment(QtCore.Qt.AlignCenter)
-        # add spacer before raw trial checkbox
-        self.groupGrid.addRow(QLabel(' '))
-        self.groupGrid.addRow(QLabel(' '))
-        # add raw trial checkbox that will disable all grouping checkboxes
+
+        # raw trial checkbox that will disable all grouping checkboxes
+        self.groupDisableWidget = QtGui.QWidget()
+        self.groupByDisable = QtGui.QFormLayout(self.groupDisableWidget)
+        self.groupByDisable.setObjectName(_from_utf8("groupByDisable"))
+        self.groupByDisable.setLabelAlignment(QtCore.Qt.AlignRight)
+        self.groupByDisable.setFormAlignment(QtCore.Qt.AlignHCenter)
+        self.groupByDisable.setAlignment(QtCore.Qt.AlignCenter)
+        # actual checkbox
         self.groupByDisable_Checkbox = QtGui.QCheckBox(stats_window)
         self.groupByDisable_Checkbox.setSizePolicy(sizePolicy_fixed)
         self.groupByDisable_Checkbox.setFixedHeight(27)
         self.groupByDisable_Checkbox.setMaximumWidth(300)
         self.groupByDisable_Checkbox.setObjectName(_from_utf8("groupByDisable_Checkbox"))
         self.groupByDisable_Checkbox.setText('Show raw trial data')
-        self.groupGrid.addRow(self.groupByDisable_Checkbox)
+        self.groupByDisable.addRow(self.groupByDisable_Checkbox)
 
-        # region specific groupbys
-        self.groupByFields = collections.OrderedDict()  # variable to store actual checkbox objects for the groupby.  
-        # orderedDict so grouping can be in order
+        groupByWidgetLayout.addWidget(self.groupGridWidget)
+        groupByWidgetLayout.addSpacerItem(add_spacer(20, direction='vert'))
+        groupByWidgetLayout.addWidget(self.groupDisableWidget)
 
-        # self.groupByWidget.setLayout(self.groupGrid)
+        # variable to store actual checkbox objects for the groupby. orderedDict so grouping can be in order
+        self.groupByFields = collections.OrderedDict()
 
-        
-
-        # endregion
         # endregion Grouping section
 
         # region filtering section
@@ -834,7 +844,23 @@ class StatsWindow(object):
         self.folder_Button.setMinimumSize(QtCore.QSize(150, 27))
         self.folder_Button.setMaximumSize(QtCore.QSize(300, 27))
         self.folder_Button.setObjectName(_from_utf8("folder_Button"))
-        
+
+        # button to force a recalculation
+        self.recalculate_Button = QtGui.QPushButton(stats_window)
+        self.recalculate_Button.setSizePolicy(sizePolicy_fixed)
+        self.recalculate_Button.setMinimumSize(QtCore.QSize(150, 27))
+        self.recalculate_Button.setMaximumSize(QtCore.QSize(300, 27))
+        self.recalculate_Button.setObjectName(_from_utf8("recalculate_Button"))
+
+        # if hold checkbox is on, changing field/grouping/filters won't force a recalculate, so multiple things can
+        # be changed without needing to wait after each click
+        self.hold_Checkbox = QtGui.QCheckBox(stats_window)
+        self.hold_Checkbox.setSizePolicy(sizePolicy_fixed)
+        self.hold_Checkbox.setText('Automatically recalculate')
+        self.hold_Checkbox.setFixedHeight(27)
+        self.hold_Checkbox.setMaximumWidth(300)
+        self.hold_Checkbox.setObjectName(_from_utf8("hold_Checkbox"))
+
         self.export_Button = QtGui.QPushButton(stats_window)
         self.export_Button.setSizePolicy(sizePolicy_fixed)
         self.export_Button.setMinimumSize(QtCore.QSize(150, 27))
@@ -849,7 +875,13 @@ class StatsWindow(object):
 
         self.menuGrid.addWidget(self.folder_Button)
 
-        self.menuGrid.addSpacerItem(horiz_spacer(200))
+        self.menuGrid.addSpacerItem(add_spacer(100))
+
+        self.menuGrid.addWidget(self.recalculate_Button)
+        self.menuGrid.addWidget(self.hold_Checkbox)
+
+        self.menuGrid.addSpacerItem(add_spacer(100))
+
         self.menuGrid.addWidget(self.export_Button)
         self.menuGrid.addWidget(self.done_Button)
         # endregion Menu buttons at bottom
@@ -891,6 +923,7 @@ class StatsWindow(object):
     def retranslate_ui(self, stats_window):
         stats_window.setWindowTitle(_translate("stats_window", "Performance", None))
         self.folder_Button.setText(_translate("stats_window", "Select...", None))
+        self.recalculate_Button.setText(_translate("stats_window", "Recalculate", None))
         self.export_Button.setText(_translate("stats_window", "Export", None))
         self.done_Button.setText(_translate("stats_window", "Done", None))
         self.noResponse_Checkbox.setText(_translate("stats_window", "", None))
@@ -945,8 +978,7 @@ class FolderSelectWindow(object):
         self.done_button.setObjectName(_from_utf8("done_button"))
 
         self.menuBar.addWidget(self.change_folder_button)
-        # spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Minimum)
-        self.menuBar.addSpacerItem(horiz_spacer(40, policy='min'))
+        self.menuBar.addSpacerItem(add_spacer(40, policy='min'))
         self.menuBar.addWidget(self.cancel_button)
         self.menuBar.addWidget(self.done_button)
         # endregion
@@ -982,19 +1014,25 @@ class FolderSelectWindow(object):
         self.change_folder_button.setText(_translate("stats_window", "Select Base Folder", None))
 
 
-def horiz_spacer(pref_width, pref_height=20, policy='exp'):
+def add_spacer(pref_width, pref_height=20, direction='horiz', policy='exp'):
     """
     Simple method for creating a spacer item that doesn't need to be referred to later
 
+    :param direction: horiz or vert
     :param pref_width: Preferred width of spacer item
     :param pref_height: Preferred height of spacer item. Default is 20
     :param policy: Size policy. 'exp' for MinimumExpanding (default), 'min' for Minimum
     :return: QSpacerItem
     """
+    size_minExp = QtGui.QSizePolicy.MinimumExpanding
+    size_min = QtGui.QSizePolicy.Minimum
+
     if policy == 'exp':
-        spacer = QtGui.QSpacerItem(pref_width, pref_height,
-                                   QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.Minimum)
+        if direction == 'vert':
+            spacer = QtGui.QSpacerItem(pref_width, pref_height, size_min, size_minExp)
+        else:
+            spacer = QtGui.QSpacerItem(pref_width, pref_height, size_minExp, size_min)
     else:
-        spacer = QtGui.QSpacerItem(pref_width, pref_height,
-                                   QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Minimum)
+        # minimum, direction only specified in given dimensions
+        spacer = QtGui.QSpacerItem(pref_width, pref_height, size_min, size_min)
     return spacer

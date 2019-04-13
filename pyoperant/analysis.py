@@ -232,8 +232,8 @@ class FieldList:
     """
     def __init__(self):
         # Item order is resulting sort order
-        fieldList = ['Subject', 'File', 'Session', 'File Count', 'Date', 'Time', 'Hour', 'Block', 'Trials', 'Index',
-                     'Stimulus', 'Class']
+        fieldList = ['Subject', 'File', 'Session', 'File Count', 'Date', 'Time', 'Hour', 'Block', 'Block Number',
+                     'Trials', 'Index', 'Stimulus', 'Trial Type', 'Class']
         fieldList += ['Response Type', 'Response', 'RT', 'Reward', 'Punish']
 
         fieldList += ["d'", "d' (NR)", u'Beta', u'Beta (NR)']
@@ -253,7 +253,8 @@ class FieldList:
             columnDict = {'visible': True, 'filter': {}, 'name': column.replace('\n(NR)', ' (NR)')}
 
             # Define field filter type
-            if columnDict['name'] in ['Subject', 'Block', 'Response Type', 'Stimulus', 'Class', 'Response']:
+            if columnDict['name'] in ['Subject', 'Block', 'Block Number', 'Response Type', 'Stimulus', 'Trial Type',
+                                      'Class', 'Response']:
                 columnDict['filter']['type'] = 'list'
             elif columnDict['name'] in ['Date']:
                 columnDict['filter']['type'] = 'range'
@@ -263,8 +264,8 @@ class FieldList:
             # Define field groupby type - give each field a type to indicate what functions can be performed
             if columnDict['name'] in ['File', 'Session', 'File Count', 'Index', 'Time']:
                 columnDict['type'] = 'raw'
-            elif columnDict['name'] in ['Subject', 'Block', 'Date', 'Hour', 'Response Type', 'Stimulus', 'Class',
-                                        'Response']:
+            elif columnDict['name'] in ['Subject', 'Block', 'Block Number', 'Date', 'Hour', 'Response Type', 'Stimulus',
+                                        'Trial Type', 'Class', 'Response']:
                 columnDict['type'] = 'index'  # groupby enabled
             elif columnDict['name'] == 'RT':
                 columnDict['type'] = 'mean'
@@ -318,8 +319,9 @@ class Performance(object):
                     'Subject': [],
                     'Session': [],
                     'File Count': [],
-                    # 'Type': [],
+                    'Trial Type': [],
                     'Block': [],
+                    # 'Block Number': [],
                     'Index': [],
                     'Time': [],
                     'Response Type': [],
@@ -460,6 +462,11 @@ class Performance(object):
                                 data_dict['Index'].append(int(row[1]))
                                 data_dict['Class'].append(row[4])
                                 data_dict['Response'].append(row[5])
+                                if row[5] == 'probePlus' or row[5] == 'probeMinus':
+                                    data_dict['Trial Type'].append('Probe')
+                                else:
+                                    data_dict['Trial Type'].append('Training')
+
                                 data_dict['RT'].append(float(row[7]) if len(row[7]) > 0 else float('nan'))
                                 data_dict['Reward'].append(1 if row[8] == 'True' else 0)
                                 data_dict['Punish'].append(1 if row[9] == 'True' else 0)
@@ -511,7 +518,22 @@ class Performance(object):
 
         # endregion Create indexable fields for groupby functions
 
-        self.raw_trial_data.set_index('Date', inplace=True)  # inplace so change is saved to same variable
+        # region Block numbers
+        # sort first
+        self.raw_trial_data.sort_values(by=['Subject', 'Time'], inplace=True)
+
+        # Using temporary field, indicate (as bool) rows where block changes from previous to current (Returns series)
+        self.raw_trial_data['tempGroup'] = self.raw_trial_data['Block'] != self.raw_trial_data['Block'].shift()
+
+        # group by subject, then get cumsum of True values (i.e. how many times block changed so far)
+        tempGroupBy = self.raw_trial_data.groupby(self.raw_trial_data.Subject, sort=False)
+        self.raw_trial_data['Block Number'] = tempGroupBy.tempGroup.apply(lambda x: x.cumsum())
+
+        # remove temporary field
+        self.raw_trial_data.drop('tempGroup', axis=1, inplace=True)
+        # endregion
+
+        self.raw_trial_data.set_index(['Subject', 'Date'], inplace=True)  # inplace so change is saved to same variable
         self.raw_trial_data.sort_index(inplace=True)  # inplace so change is saved to same variable
 
     def divide_by_zero(self, numerator, denominator, roundto=3):
@@ -593,6 +615,8 @@ class Performance(object):
             rangeGroup = []
             for itemIndex, groupField in enumerate(groupFieldList):
                 if isinstance(groupField, list):
+                    # remove any lists in kwargs, because those are only used for range grouping (rather than a dict
+                    # of included values)
                     rangeGroup = groupFieldList.pop(itemIndex)
 
             # Sort and reset index so numeric index of dataframe is trial number
@@ -607,6 +631,7 @@ class Performance(object):
                 # cumcount() (cumulative row count within group) by the break number
                 groupFieldList.append(np.floor(tempGroupBy.cumcount() / rangeGroup[1]).astype(int))
 
+            # create groupby object, then specify desired calculations for each column
             groupData = input_data.groupby(groupFieldList, sort=False)
 
             groupHeaders = groupData.obj.columns
@@ -626,6 +651,7 @@ class Performance(object):
             # applying this .agg() transforms the groupBy object back into a regular dataframe
             groupData = groupData.agg(groupingDict)
 
+            # Give actual name to Bin column since it was created within analysis.py and is initially nameless
             if len(rangeGroup) > 0:
                 indexNames = list(groupData.index.names)
                 rangeColumnIndex = len(indexNames) - 1
