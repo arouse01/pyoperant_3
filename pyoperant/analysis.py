@@ -233,7 +233,7 @@ class FieldList:
     def __init__(self):
         # Item order is resulting sort order
         fieldList = ['Subject', 'File', 'Session', 'File Count', 'Date', 'Time', 'Hour', 'Block', 'Block Number',
-                     'Trials', 'Index', 'Stimulus', 'Trial Type', 'Class']
+                     'Trials', 'Index', 'Stimulus', 'Tempo', 'Trial Type', 'Class']
         fieldList += ['Response Type', 'Response', 'RT', 'Reward', 'Punish']
 
         fieldList += ["d'", "d' (NR)", u'Beta', u'Beta (NR)']
@@ -253,8 +253,8 @@ class FieldList:
             columnDict = {'visible': True, 'filter': {}, 'name': column.replace('\n(NR)', ' (NR)')}
 
             # Define field filter type
-            if columnDict['name'] in ['Subject', 'Block', 'Block Number', 'Response Type', 'Stimulus', 'Trial Type',
-                                      'Class', 'Response']:
+            if columnDict['name'] in ['Subject', 'Block', 'Block Number', 'Response Type', 'Tempo', 'Stimulus',
+                                      'Trial Type', 'Class', 'Response']:
                 columnDict['filter']['type'] = 'list'
             elif columnDict['name'] in ['Date']:
                 columnDict['filter']['type'] = 'range'
@@ -265,7 +265,7 @@ class FieldList:
             if columnDict['name'] in ['File', 'Session', 'File Count', 'Index', 'Time']:
                 columnDict['type'] = 'raw'
             elif columnDict['name'] in ['Subject', 'Block', 'Block Number', 'Date', 'Hour', 'Response Type', 'Stimulus',
-                                        'Trial Type', 'Class', 'Response']:
+                                        'Tempo', 'Trial Type', 'Class', 'Response']:
                 columnDict['type'] = 'index'  # groupby enabled
             elif columnDict['name'] == 'RT':
                 columnDict['type'] = 'mean'
@@ -397,6 +397,7 @@ class Performance(object):
         data_dict['Probe Miss (NR)'] = []
         data_dict['Probe CR (NR)'] = []
         data_dict['Probe Trials'] = []
+        data_dict['Tempo'] = []
 
         # region Read each CSV file
         for dir_index, curr_dir in enumerate(self.data_dir):
@@ -462,10 +463,6 @@ class Performance(object):
                                 data_dict['Index'].append(int(row[1]))
                                 data_dict['Class'].append(row[4])
                                 data_dict['Response'].append(row[5])
-                                if row[5] == 'probePlus' or row[5] == 'probeMinus':
-                                    data_dict['Trial Type'].append('Probe')
-                                else:
-                                    data_dict['Trial Type'].append('Training')
 
                                 data_dict['RT'].append(float(row[7]) if len(row[7]) > 0 else float('nan'))
                                 data_dict['Reward'].append(1 if row[8] == 'True' else 0)
@@ -473,10 +470,28 @@ class Performance(object):
                                 data_dict['Time'].append(row[10])
                                 data_dict['Session'].append(row[0])
                                 data_dict['File'].append(curr_csv)
+
                                 stim_name = re.split('/', row[3])
-                                data_dict['Stimulus'].append(stim_name[-1])
+                                stim_name = stim_name[-1]
+
+                                data_dict['Stimulus'].append(stim_name)
                                 data_dict['Subject'].append(curr_csv.partition('_')[0])
                                 data_dict['File Count'].append(1)
+
+                                # categorize shaping stimuli (which contain 'song' in the name)separately (they don't
+                                # have a tempo)
+                                if stim_name[-8:] == 'song.wav':
+                                    stim_tempo = 'Shaping'
+                                    trialType = 'Shaping'
+                                else:
+                                    stim_tempo = float(stim_name[5:9]) / 10
+                                    if row[5] == 'probePlus' or row[5] == 'probeMinus':
+                                        trialType = 'Probe'
+                                    else:
+                                        trialType = 'Training'
+
+                                data_dict['Trial Type'].append(trialType)
+                                data_dict['Tempo'].append(stim_tempo)
 
                                 # block number in data file is indexed from 1
                                 data_dict['Block'].append(blocks[int(row[0]) - 1])
@@ -533,6 +548,9 @@ class Performance(object):
         self.raw_trial_data.drop('tempGroup', axis=1, inplace=True)
         # endregion
 
+        # Later code depends on the output of this function being indexed (otherwise it returns 'index' as the name
+        # of the index. Other parts of the code read all of the column and index names, and there's no field called
+        # 'index' which confuses the code)
         self.raw_trial_data.set_index(['Subject', 'Date'], inplace=True)  # inplace so change is saved to same variable
         self.raw_trial_data.sort_index(inplace=True)  # inplace so change is saved to same variable
 
@@ -553,7 +571,9 @@ class Performance(object):
         # will be omitted from output
 
         parameters = kwargs
-        filtered_data = self.raw_trial_data
+        filtered_data = self.raw_trial_data.reset_index()  # need to reset index because otherwise the filter won't
+        # recognize the field 'Subject' (since it's an index, as passed from gather_raw_data())
+
         # startdate filter
         if 'startdate' in parameters:
             # Filter sessions prior to start date
@@ -577,7 +597,7 @@ class Performance(object):
             filterString = ' & '.join(filterList)
             filtered_data = filtered_data[eval(filterString)]
 
-        self.filtered_data = filtered_data
+        self.filtered_data = filtered_data.set_index(['Subject', 'Date'])  # restore index that was set by
 
     def summarize(self, inputdata='raw'):
         # produces summary dataframe that just contains relevant data

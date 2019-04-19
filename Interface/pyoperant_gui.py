@@ -1407,17 +1407,18 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
             self.fieldListSelectAll.clicked.connect(lambda _, b='all': self.field_preset_select(pattern=b))
             self.recalculate_Button.clicked.connect(lambda _, b=True: self.recalculate(override=b))
 
-            self.create_grouping_checkbox('Subject', row=0)
-            self.create_grouping_checkbox('Date', row=1)
-            self.create_grouping_checkbox('Hour', row=2)
-            self.create_grouping_checkbox('Block', row=3)
-            self.create_grouping_checkbox('Block Number', row=4)
-            self.create_grouping_checkbox('Trial Type', row=5)
-            self.create_grouping_checkbox('Stimulus', row=6)
-            self.create_grouping_checkbox('Class', row=7)
-            self.create_grouping_checkbox('Response Type', row=8)
-            self.create_grouping_checkbox('Response', row=9)
-            self.create_grouping_checkbox('Trials', group_type='range', row=10)
+            self.create_grouping_checkbox('Subject')
+            self.create_grouping_checkbox('Date')
+            self.create_grouping_checkbox('Hour')
+            self.create_grouping_checkbox('Block')
+            self.create_grouping_checkbox('Block Number')
+            self.create_grouping_checkbox('Tempo')
+            self.create_grouping_checkbox('Trial Type')
+            self.create_grouping_checkbox('Stimulus')
+            self.create_grouping_checkbox('Class')
+            self.create_grouping_checkbox('Response Type')
+            self.create_grouping_checkbox('Response')
+            self.create_grouping_checkbox('Trials', group_type='range')
 
             self.groupByFields['Subject']['checkbox'].setChecked(True)
             self.groupByFields['Date']['checkbox'].setChecked(True)
@@ -1649,7 +1650,7 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
 
     # region Field grouping
 
-    def create_grouping_checkbox(self, group_name, group_type=None, row=99999):
+    def create_grouping_checkbox(self, group_name, group_type=None):
 
         self.groupByFields[group_name] = {}
 
@@ -1662,7 +1663,7 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
         if group_type is None:
             groupByCheckbox.setText(group_name)
             self.groupByFields[group_name]['checkbox'] = groupByCheckbox
-            self.groupGrid.insertRow(row, self.groupByFields[group_name]['checkbox'])
+            self.groupGrid.addRow(self.groupByFields[group_name]['checkbox'])
         else:
             # to dynamically group by a certain number of fields
             groupByCheckbox.setText("Every")
@@ -1677,7 +1678,7 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
             rangeBox.setValue(50)
 
             self.groupByFields[group_name]['range'] = rangeBox
-            self.groupGrid.insertRow(row, self.groupByFields[group_name]['checkbox'], self.groupByFields[group_name][
+            self.groupGrid.addRow(self.groupByFields[group_name]['checkbox'], self.groupByFields[group_name][
                 'range'])
 
     def group_by(self, group='group'):
