@@ -484,7 +484,12 @@ class Performance(object):
                                     stim_tempo = 'Shaping'
                                     trialType = 'Shaping'
                                 else:
-                                    stim_tempo = float(stim_name[5:9]) / 10
+                                    try:
+                                        stim_tempo = float(stim_name[5:9]) / 10
+                                    except ValueError:
+                                        # Old stim name format only had tempo as three-digit number, which is caught
+                                        # by ValueError (since ###_ can't be converted to float)
+                                        stim_tempo = float(stim_name[5:8])
                                     if row[5] == 'probePlus' or row[5] == 'probeMinus':
                                         trialType = 'Probe'
                                     else:
@@ -593,7 +598,7 @@ class Performance(object):
                     # filterList.append('(input_data.Time.dt.date {} {})'.format(
                     #     parameters['filters'][column][0], parameters['filters'][column][1]))
                 elif parameters['filters'][column]:
-                    filterList.append('filtered_data.{}.isin({})'.format(column, (kwargs['filters'][column])))
+                    filterList.append('filtered_data[\'{}\'].isin({})'.format(column, (kwargs['filters'][column])))
             filterString = ' & '.join(filterList)
             filtered_data = filtered_data[eval(filterString)]
 

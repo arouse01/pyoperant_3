@@ -158,8 +158,7 @@ PANELS = {"1": Rouse1,
           "6": Rouse6,
           }
 
-BEHAVIORS = ['pyoperant.behavior'
-             ]
+BEHAVIORS = ['pyoperant.behavior']
 
 DATA_PATH = '/home/rouse/bird/data/'
 
@@ -167,9 +166,9 @@ DATA_PATH = '/home/rouse/bird/data/'
 
 DEFAULT_EMAIL = 'andrew.rouse@tufts.edu'
 
-SMTP_CONFIG = {'mailhost': 'localhost',
+SMTP_CONFIG = {'mailhost': ['localhost', 25],
                'toaddrs': [DEFAULT_EMAIL],
-               'fromaddr': 'Aperture <andrew.rouse@tufts.edu>',
+               'fromaddr': 'Aperture <aperturefinch@gmail.com>',
                'subject': '[pyoperant notice] on rouse',
                'credentials': None,
                'secure': None,
