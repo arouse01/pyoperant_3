@@ -1,10 +1,11 @@
 Parameter definitions for pyoperant's json file
+Updated 23 Apr 2019 by Andrew Rouse
 
 __Logging variables (variables that appear in the log file but do not affect code)__
     Machine: [str] user-defined machine name
     name: [str] experiment name
     description: [str] brief description of experiment
-    comments: "json doesn't support comments"
+    comments: "json doesn't support comments" (not a necessary parameter, just a reminder to user)
 
 
 __Paths__
@@ -13,20 +14,21 @@ __Paths__
 
 
 __Regular variables__
-    panel_name: [str] which panel to use (as defined in local file) - usually overwritten by behave script command line
-                      parameter
+    panel_name: [str] (opt) which panel to use (as defined in local file). Usually overwritten by behave.py script
+    command line parameter
     experimenter: [obj] experimenter details, only relevant if emailing results
-        email: [str] experimenter's email address. Used if log_handlers is set to email
+        email: [str] experimenter's email address. Used if log_handlers includes email
         name: [str] experimenter name
-    subject: [str] subject ID or name - usually overwritten by behave script command line parameter
-    subject_type: [str] "bird" or "human" - human has a few small changes to process (e.g. light blinks when block is
-                        completed)
+    subject: [str] (opt) subject ID or name - usually overwritten by behave script command line parameter
+    subject_type: [str] (opt) "bird" or "human" - human has a few small changes to process (e.g. light blinks when block
+     is completed). (Defaults to "bird")
 
-    log_handlers*: [obj] SMTP config details if log files will be emailed to experimenter (?)
+    log_handlers: [obj] (opt) How errors should be logged; include "email" if errors should be emailed to address 
+    defined in "experimenter" parameter
 
     debug: [bool] enable/disable debug logging
 
-    shape: [bool] (opt) enable/disable shaping process (default is false)
+    shape: [bool] (opt) enable/disable shaping process (default is False)
     free_day_off: [bool] (opt) whether ad lib water should be given outside of scheduled sessions (e.g. on off days)
                                (default is False)
 
@@ -57,7 +59,7 @@ __Regular variables__
                     punish (opt): [bool] enable/disable punishment for incorrect responses (default is true, e.g.
                                          punishment enabled)
                     passive (opt): [bool] enable/disable automatic reward delivery at end of S+ trials if no choice was
-                                          made (default is false)
+                                          made (default is False)
                     prob (opt): [num] value between 0 and 1 that defines the percent of time that a correect trial is
                                       rewarded (Used with PercentReinforcement)
                     ratio (opt): [num] value that defines reinforcement ratio (1=every trial, 2=every 2nd trial)
@@ -94,9 +96,6 @@ __Regular variables__
     stims: [obj] members are pairs of values and stimulus file names (e.g., "1": "test1i_long.wav"), should list every
                  stimulus in folder (even if not actually used) because interface file works much simpler that way
     sr: [num] sample rate of playback in Hz
-
-
-*Unsure, logic handled in base.py
 
 
 __Removed__ (These were in the original json file that came with pyoperant but are irrelevant for my experiment)

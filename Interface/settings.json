@@ -25,7 +25,7 @@
       true
     ]
   ],
-  "shutdownProper": false,
+  "shutdownProper": true,
   "birds": [
     [
       0,

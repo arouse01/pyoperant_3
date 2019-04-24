@@ -3,6 +3,8 @@
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/Interface/JSON Editor" />
+      <excludeFolder url="file://$MODULE_DIR$/Interface/icons/Original Files" />
+      <excludeFolder url="file://$MODULE_DIR$/pyoperant/behavior/old JSON files" />
       <excludeFolder url="file://$MODULE_DIR$/venv" />
     </content>
     <orderEntry type="jdk" jdkName="Python 2.7 (pyoperant)" jdkType="Python SDK" />

@@ -15,7 +15,8 @@
 
   "debug": false,
   "log_handlers": [
-    "text"
+    "text",
+    "email"
   ],
   "shape": false,
   "free_day_off": false,

@@ -233,15 +233,17 @@ class FieldList:
     def __init__(self):
         # Item order is resulting sort order
         fieldList = ['Subject', 'File', 'Session', 'File Count', 'Date', 'Time', 'Hour', 'Block', 'Block Number',
-                     'Trials', 'Index', 'Stimulus', 'Tempo', 'Trial Type', 'Class']
-        fieldList += ['Response Type', 'Response', 'RT', 'Reward', 'Punish']
+                     'Trials', 'S+ Trials', 'S- Trials', 'S+ (NR) Trials', 'S- (NR) Trials', 'Index', 'Stimulus',
+                     'Tempo', 'Trial Type', 'Class', 'Response Type', 'Response', 'RT', 'Reward', 'Punish']
 
-        fieldList += ["d'", "d' (NR)", u'Beta', u'Beta (NR)']
-        fieldList += ['S+', 'S+ (NR)', 'S-', 'S- (NR)', 'Total Corr', 'Total Corr (NR)']
+        fieldList += ["d'", "d' (NR)", u'Beta', u'Beta (NR)', 'S+ Rate', 'S+ (NR) Rate', 'S- Rate', 'S- (NR) Rate',
+                      'Total Corr', 'Total Corr (NR)']
         fieldList += ['Hit', 'Miss', 'Miss (NR)', 'FA', 'CR', 'CR (NR)', 'Prop CR Resets']
 
-        fieldList += ["Probe d'", "Probe d' (NR)", u'Probe Beta', u'Probe Beta (NR)', 'Probe Trials']
-        fieldList += ['Probe S+', 'Probe S+ (NR)', 'Probe S-', 'Probe S- (NR)', 'Probe Tot Corr', 'Probe Tot Corr (NR)']
+        fieldList += ["Probe d'", "Probe d' (NR)", u'Probe Beta', u'Probe Beta (NR)', 'Probe Trials', 'Probe S+ Trials',
+                      'Probe S+ (NR) Trials', 'Probe S- Trials', 'Probe S- (NR) Trials']
+        fieldList += ['Probe S+ Rate', 'Probe S+ (NR) Rate', 'Probe S- Rate', 'Probe S- (NR) Rate', 'Probe Tot Corr',
+                      'Probe Tot Corr (NR)']
         fieldList += ['Probe Hit', 'Probe Miss', 'Probe Miss (NR)', 'Probe FA', 'Probe CR', 'Probe CR (NR)']
 
         self.fieldList = fieldList
@@ -269,16 +271,21 @@ class FieldList:
                 columnDict['type'] = 'index'  # groupby enabled
             elif columnDict['name'] == 'RT':
                 columnDict['type'] = 'mean'
-            elif columnDict['name'] in ['Reward', 'Punish', 'Trials', 'Hit', 'FA', 'Miss', 'CR', 'Miss (NR)', 'CR (NR)',
-                                        'Probe Trials', 'Probe Hit', 'Probe FA', 'Probe Miss', 'Probe CR',
-                                        'Probe Miss (NR)', 'Probe CR (NR)', ]:
+            elif columnDict['name'] in ['Reward', 'Punish', 'S+ Trials', 'S+ (NR) Trials', 'S- Trials',
+                                        'S- (NR) Trials', 'Trials',
+                                        'Hit', 'FA', 'Miss', 'CR', 'Miss (NR)', 'CR (NR)',
+                                        'Probe S+ Trials', 'Probe S+ (NR) Trials', 'Probe S- Trials',
+                                        'Probe S- (NR) Trials',
+                                        'Probe Trials', 'Probe Hit', 'Probe FA', 'Probe Miss',
+                                        'Probe CR', 'Probe Miss (NR)', 'Probe CR (NR)', ]:
                 columnDict['type'] = 'sum'
-            elif columnDict['name'] in ["d'", "d' (NR)", 'Beta', 'Beta (NR)', 'S+', 'S+ (NR)',
-                                        'S-', 'S- (NR)', 'Total Corr', 'Total Corr (NR)',
+            elif columnDict['name'] in ["d'", "d' (NR)", 'Beta', 'Beta (NR)', 'S+ Rate', 'S+ (NR) Rate',
+                                        'S- Rate', 'S- (NR) Rate', 'Total Corr', 'Total Corr (NR)',
                                         "Probe d'", "Probe d' (NR)", 'Probe Beta', 'Probe Beta (NR)',
-                                        'Probe S+', 'Probe S+ (NR)', 'Probe S-', 'Probe S- (NR)',
+                                        'Probe S+ Rate', 'Probe S+ (NR) Rate', 'Probe S- Rate', 'Probe S- (NR) Rate',
                                         'Probe Tot Corr', 'Probe Tot Corr (NR)', 'Prop CR Resets']:
                 columnDict['type'] = 'group'
+
             fieldDict[column] = columnDict
         return fieldDict
 
@@ -390,6 +397,10 @@ class Performance(object):
         data_dict['Miss (NR)'] = []
         data_dict['CR (NR)'] = []
         data_dict['Trials'] = []
+        data_dict['S+ Trials'] = []
+        data_dict['S- Trials'] = []
+        data_dict['S+ (NR) Trials'] = []
+        data_dict['S- (NR) Trials'] = []
         data_dict['Probe Hit'] = []
         data_dict['Probe FA'] = []
         data_dict['Probe Miss'] = []
@@ -397,6 +408,10 @@ class Performance(object):
         data_dict['Probe Miss (NR)'] = []
         data_dict['Probe CR (NR)'] = []
         data_dict['Probe Trials'] = []
+        data_dict['Probe S+ Trials'] = []
+        data_dict['Probe S- Trials'] = []
+        data_dict['Probe S+ (NR) Trials'] = []
+        data_dict['Probe S- (NR) Trials'] = []
         data_dict['Tempo'] = []
 
         # region Read each CSV file
@@ -518,6 +533,23 @@ class Performance(object):
                                 data_dict['Probe Miss (NR)'].append(1 if response_type == 'probe_Miss_NR' else 0)
                                 data_dict['Probe CR (NR)'].append(1 if response_type == 'probe_CR_NR' else 0)
                                 data_dict['Probe Trials'].append(1 if response_type[0:4] == 'prob' else 0)
+
+                                data_dict['S+ Trials'].append(
+                                    1 if response_type in ['response_hit', 'response_Miss'] else 0)
+                                data_dict['S+ (NR) Trials'].append(
+                                    1 if response_type in ['response_hit', 'response_Miss', 'response_Miss_NR'] else 0)
+                                data_dict['S- Trials'].append(
+                                    1 if response_type in ['response_FA', 'response_CR'] else 0)
+                                data_dict['S- (NR) Trials'].append(
+                                    1 if response_type in ['response_FA', 'response_CR', 'response_CR_NR'] else 0)
+                                data_dict['Probe S+ Trials'].append(
+                                    1 if response_type in ['probe_hit', 'probe_Miss'] else 0)
+                                data_dict['Probe S+ (NR) Trials'].append(
+                                    1 if response_type in ['probe_hit', 'probe_Miss', 'probe_Miss_NR'] else 0)
+                                data_dict['Probe S- Trials'].append(
+                                    1 if response_type in ['probe_FA', 'probe_CR'] else 0)
+                                data_dict['Probe S- (NR) Trials'].append(
+                                    1 if response_type in ['probe_FA', 'probe_CR', 'probe_CR_NR'] else 0)
 
                             currentLine += 1
 
@@ -809,20 +841,20 @@ class Performance(object):
             groupData["d' (NR)"] = dprimes_NR
             groupData['Beta'] = betas
             groupData['Beta (NR)'] = betas_NR
-            groupData['S+'] = sPlus_correct
-            groupData['S+ (NR)'] = sPlus_NR_correct
-            groupData['S-'] = sMinus_correct
-            groupData['S- (NR)'] = sMinus_NR_correct
+            groupData['S+ Rate'] = sPlus_correct
+            groupData['S+ (NR) Rate'] = sPlus_NR_correct
+            groupData['S- Rate'] = sMinus_correct
+            groupData['S- (NR) Rate'] = sMinus_NR_correct
             groupData['Total Corr'] = total_correct
             groupData['Total Corr (NR)'] = total_NR_correct
             groupData["Probe d'"] = probeDprimes
             groupData["Probe d' (NR)"] = probeDprimes_NR
             groupData['Probe Beta'] = probeBetas
             groupData['Probe Beta (NR)'] = probeBetas_NR
-            groupData['Probe S+'] = probePlus_correct
-            groupData['Probe S+ (NR)'] = probePlus_NR_correct
-            groupData['Probe S-'] = probeMinus_correct
-            groupData['Probe S- (NR)'] = probeMinus_NR_correct
+            groupData['Probe S+ Rate'] = probePlus_correct
+            groupData['Probe S+ (NR) Rate'] = probePlus_NR_correct
+            groupData['Probe S- Rate'] = probeMinus_correct
+            groupData['Probe S- (NR) Rate'] = probeMinus_NR_correct
             groupData['Probe Tot Corr'] = total_probe_correct
             groupData['Probe Tot Corr (NR)'] = total_probe_NR_correct
             groupData['Prop CR Resets'] = resetRatio

@@ -1610,38 +1610,64 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
                     self.silent_checkbox_change(self.fieldManagement[columnName]['itemWidget'], False)
 
                 else:
+                    # check the current column against all preset checkboxes, and if any are false, don't include it
+
                     # fieldName = unicode(self.fieldList.item(x).text())
                     columnNameF = self.fieldManagement[columnName]['name']
                     if pattern == 'nr':
+                        # parameter specifically for setting the nr preset checkbox when new bird(s) is/are selected
                         self.silent_checkbox_change(self.fieldManagement['Trials']['itemWidget'], True)
-                    checkstate = self.noResponse_Checkbox.isChecked()
-                    if columnNameF in ["d'", 'Beta', 'S+', 'S-', 'Total Corr', "Probe d'", 'Probe Beta', 'Probe S+',
-                                       'Probe S-', 'Probe Tot Corr']:
-                        self.silent_checkbox_change(self.fieldManagement[columnName]['itemWidget'], not checkstate)
+                    nrCheck = self.noResponse_Checkbox.isChecked()
+                    probeCheck = self.probe_Checkbox.isChecked()
+                    rawCheck = self.raw_Checkbox.isChecked()
 
-                        # self.fieldManagement[columnName]['itemWidget'].setCheckState(not checkstate)
+                    columnChecks = []
+
+                    # No Response checkbox
+                    if columnNameF in ["d'", 'Beta', 'S+', 'S-', 'Total Corr',
+                                       "Probe d'", 'Probe Beta', 'Probe S+', 'Probe S-', 'Probe Tot Corr']:
+                        if nrCheck is True:
+                            columnChecks.append(False)
+                        else:
+                            columnChecks.append(True)
+
                     elif columnNameF in ["d' (NR)", 'Beta (NR)', 'S+ (NR)', 'S- (NR)', 'Total Corr (NR)',
                                          "Probe d' (NR)", 'Probe Beta (NR)', 'Probe S+ (NR)', 'Probe S- (NR)',
                                          'Probe Tot Corr (NR)']:
-                        self.silent_checkbox_change(self.fieldManagement[columnName]['itemWidget'], checkstate)
-
-                        # self.fieldManagement[columnName]['itemWidget'].setCheckState(checkstate)
+                        if nrCheck is True:
+                            columnChecks.append(True)
+                        else:
+                            columnChecks.append(False)
 
                     # elif pattern == 'probe':
-                    checkstate = self.probe_Checkbox.isChecked()
-                    if columnNameF in ["Probe d'", "Probe d' (NR)", 'Probe Beta', 'Probe Beta (NR)', 'Probe Trials',
+                    if columnNameF in ["Probe d'", 'Probe Beta', 'Probe Trials',
                                        'Probe Hit', 'Probe Miss', 'Probe Miss (NR)', 'Probe FA', 'Probe CR',
-                                       'Probe CR (NR)', 'Probe S+', 'Probe S+ (NR)', 'Probe S-', 'Probe S- (NR)',
-                                       'Probe Tot Corr', 'Probe Tot Corr (NR)']:
-                        self.silent_checkbox_change(self.fieldManagement[columnName]['itemWidget'], checkstate)
-                        # self.fieldManagement[columnName]['itemWidget'].setCheckState(checkstate)
+                                       'Probe CR (NR)',
+                                       'Probe S+', 'Probe S-', 'Probe Tot Corr',
+                                       "Probe d' (NR)", 'Probe Beta (NR)',
+                                       'Probe S+ (NR)', 'Probe S- (NR)', 'Probe Tot Corr (NR)']:
+                        if probeCheck is True:
+                            columnChecks.append(True)
+                        else:
+                            columnChecks.append(False)
 
                     # elif pattern == 'raw':
-                    checkstate = self.raw_Checkbox.isChecked()
                     if columnNameF in ['Hit', 'Miss', 'Miss (NR)', 'FA', 'CR', 'CR (NR)', 'Probe Hit', 'Probe Miss',
                                        'Probe Miss (NR)', 'Probe FA', 'Probe CR', 'Probe CR (NR)']:
-                        self.silent_checkbox_change(self.fieldManagement[columnName]['itemWidget'], checkstate)
-                        # self.fieldManagement[columnName]['itemWidget'].setCheckState(checkstate)
+                        if rawCheck is True:
+                            columnChecks.append(True)
+                        else:
+                            columnChecks.append(False)
+
+                    if len(columnChecks) == 0:
+                        # skip any columns that weren't affected by preset checkboxes
+                        pass
+                    elif all(columnChecks):
+                        self.silent_checkbox_change(self.fieldManagement[columnName]['itemWidget'], True)
+                    elif not all(columnChecks):
+                        self.silent_checkbox_change(self.fieldManagement[columnName]['itemWidget'], False)
+                    else:
+                        pass
 
         self.recalculate()
 

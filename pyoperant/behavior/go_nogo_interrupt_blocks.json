@@ -3172,6 +3172,65 @@
       ],
       "queue": "random"
     },
+    "training 120/180b2": {
+      "description": "1:1 S+/S- stim, 120 and 180 ms, b1i1, using different irregular stimuli",
+      "reinforcement": {
+        "schedule": "go_interrupt",
+        "prob": 1,
+        "secondary": false,
+        "passive": false,
+        "punish": true
+      },
+      "criteria": {
+        "days": 2,
+        "trialcount": {
+          "mintrials": 100
+        },
+        "propCorrect": [
+          {
+            "type": "S+\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "type": "S-\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "minimum": 0.75
+          }
+        ]
+      },
+      "conditions": [
+        {
+          "class": "sMinus",
+          "stim_name": "b1i1_1200ir2.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b1i1_1800ir2.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b1i1_1200reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b1i1_1800reg.wav"
+        }
+      ],
+      "weights": [
+        {
+          "class": "sPlus",
+          "weight": 1
+        },
+        {
+          "class": "sMinus",
+          "weight": 1
+        }
+      ],
+      "queue": "random"
+    },
+
     "training 120/180 x2.5": {
       "description": "1:1 S+/S- stim, 120 and 180 ms, +-2.5%",
       "reinforcement": {
