@@ -1624,14 +1624,14 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
                     columnChecks = []
 
                     # No Response checkbox
-                    if columnNameF in ["d'", 'Beta', 'S+', 'S-', 'Total Corr',
+                    if columnNameF in ["d'", 'Beta', 'S+ Rate', 'S- Rate', 'Total Corr',
                                        "Probe d'", 'Probe Beta', 'Probe S+', 'Probe S-', 'Probe Tot Corr']:
                         if nrCheck is True:
                             columnChecks.append(False)
                         else:
                             columnChecks.append(True)
 
-                    elif columnNameF in ["d' (NR)", 'Beta (NR)', 'S+ (NR)', 'S- (NR)', 'Total Corr (NR)',
+                    elif columnNameF in ["d' (NR)", 'Beta (NR)', 'S+ (NR) Rate', 'S- (NR) Rate', 'Total Corr (NR)',
                                          "Probe d' (NR)", 'Probe Beta (NR)', 'Probe S+ (NR)', 'Probe S- (NR)',
                                          'Probe Tot Corr (NR)']:
                         if nrCheck is True:
@@ -1643,9 +1643,9 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
                     if columnNameF in ["Probe d'", 'Probe Beta', 'Probe Trials',
                                        'Probe Hit', 'Probe Miss', 'Probe Miss (NR)', 'Probe FA', 'Probe CR',
                                        'Probe CR (NR)',
-                                       'Probe S+', 'Probe S-', 'Probe Tot Corr',
+                                       'Probe S+ Rate', 'Probe S- Rate', 'Probe Tot Corr',
                                        "Probe d' (NR)", 'Probe Beta (NR)',
-                                       'Probe S+ (NR)', 'Probe S- (NR)', 'Probe Tot Corr (NR)']:
+                                       'Probe S+ (NR) Rate', 'Probe S- (NR) Rate', 'Probe Tot Corr (NR)']:
                         if probeCheck is True:
                             columnChecks.append(True)
                         else:
