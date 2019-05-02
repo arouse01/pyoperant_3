@@ -216,19 +216,20 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             # endregion Variable setup
 
             # region Individual option menu setup
-            ## To add an item to the option menu:
-            # - Add a blank list var to the "option var init" section for the action to be stored for each box
-            # - Figure out whether the new option should be in the main option menu or in a submenu
-            # - in the "Option Menu Setup" section, add two lines:
-            #       self.{list var}.append(QtGui.QAction({action name as str}, self)
-            #           (or QtGui.QMenu({menu name as str}))
-            #       self.{parent menu}[boxIndex].addAction(self.{list var}[boxIndex])
-            #           (or addMenu)
-            # - If adding an action, go to the "Connect functions to buttons/objects" section and add a line to connect
-            # the actual QAction object with the function for each box:
-            #       self.{list var}[boxNumber].triggered.connect(lambda _, b=i: self.{function}(boxIndex=b,
-            #                                                                                   {other vars}))
-
+            """
+            To add an item to the option menu:
+            - Add a blank list var to the "option var init" section for the action to be stored for each box
+            - Figure out whether the new option should be in the main option menu or in a submenu
+            - in the "Option Menu Setup" section, add two lines:
+                  self.{list var}.append(QtGui.QAction({action name as str}, self)
+                      (or QtGui.QMenu({menu name as str}))
+                  self.{parent menu}[boxIndex].addAction(self.{list var}[boxIndex])
+                      (or addMenu)
+            - If adding an action, go to the "Connect functions to buttons/objects" section and add a line to connect
+            the actual QAction object with the function for each box:
+                  self.{list var}[boxNumber].triggered.connect(lambda _, b=i: self.{function}(boxIndex=b,
+                                                                                              {other vars}))
+            """
             for boxIndex in self.boxList:
                 # Create necessary objects for each box
                 self.statsActionList.append(QtGui.QAction("Performance", self))
@@ -530,7 +531,6 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         if not self.subprocessBox[boxnumber] == 0:  # Only operate if box is running
             while True:  # Empty queue so process can end gracefully
                 try:
-                    # error = '{0}\n{1}'.format(error, self.qList[boxnumber].get(False))
                     self.qList[boxnumber].get(False)
                 except Queue.Empty:
                     break
@@ -586,57 +586,54 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             error = "Error: Teensy {:02d} not detected.".format(actualboxnumber)
             self.display_message(boxnumber, error, target='status')
         else:
-            try:
-                from pyoperant.local import DATAPATH
-            except ImportError:
-                DATAPATH = '/home/rouse/bird/data'
-            self.experimentPath = DATAPATH
+            with wait_cursor():  # set mouse cursor to 'waiting' while connecting to Teensy
+                try:
+                    from pyoperant.local import DATAPATH
+                except ImportError:
+                    DATAPATH = '/home/rouse/bird/data'
+                self.experimentPath = DATAPATH
 
-            if self.subprocessBox[boxnumber] == 0 or self.subprocessBox[boxnumber] == 1:  # Make sure box isn't already
-                # running or sleeping
-                self.subprocessBox[boxnumber] = subprocess.Popen(
-                    ['python', '/home/rouse/Desktop/pyoperant/pyoperant/scripts/behave', '-P',
-                     str(boxnumber + 1), '-S', '{0}'.format(birdName), '{0}'.format(self.behaviorField.currentText()),
-                     '-c', '{0}'.format(jsonPath)], stdin=open(os.devnull), stderr=subprocess.PIPE,
-                    stdout=open(os.devnull))
+                if self.subprocessBox[boxnumber] == 0 or self.subprocessBox[boxnumber] == 1:  # Make sure box isn't
+                    # already running or sleeping
+                    self.subprocessBox[boxnumber] = subprocess.Popen(
+                        ['python',
+                         '/home/rouse/Desktop/pyoperant/pyoperant/scripts/behave',
+                         '-P', str(boxnumber + 1),
+                         '-S', '{0}'.format(birdName),
+                         '{0}'.format(self.behaviorField.currentText()),
+                         '-c', '{0}'.format(jsonPath)],
+                        stdin=open(os.devnull), stderr=subprocess.PIPE, stdout=open(os.devnull)
+                    )
 
-                # Thread for reading error messages
-                self.tList[boxnumber] = threading.Thread(target=self.read_output_box,
-                                                         args=(boxnumber, self.subprocessBox[boxnumber].stderr,
-                                                               self.qList[boxnumber]))
-                self.tList[boxnumber].daemon = True
+                    # Thread for reading error messages
+                    self.tList[boxnumber] = threading.Thread(target=self.read_output_box,
+                                                             args=(boxnumber, self.subprocessBox[boxnumber].stderr,
+                                                                   self.qList[boxnumber]))
+                    self.tList[boxnumber].daemon = True
 
-                self.tList[boxnumber].start()
+                    self.tList[boxnumber].start()
 
-                error = self.get_error(boxnumber)
+                    error = self.get_error(boxnumber)
 
-                if error and not error[0:4] == "ALSA" and not error[0:5] == 'pydev' and not error[0:5] == 'debug':
-                    print error
-                    self.log.info(error)
-                    self.display_message(boxnumber, error, target='status')
-                    self.stop_box(boxnumber, error_mode=True)
-                    # self.subprocessBox[boxnumber].terminate
-                    # self.subprocessBox[boxnumber].wait
-                    # self.subprocessBox[boxnumber] = 0
-                    # self.graphicBoxList[boxnumber].setPixmap(self.redIcon)
-                else:  # Successfully started
-                    self.box_button_control(boxnumber, "start")  # UI modifications while box is running
-                    # self.graphicBoxList[boxnumber].setPixmap(self.greenIcon)
-                    self.log.debug("Setting status icon to 'start'")
-                    self.status_icon(boxnumber, 'start')
-                    self.lastStartList[boxnumber] = dt.datetime.now()
-                    self.sleepScheduleList[boxnumber] = self.defaultSleepSchedule
-                    # with open(jsonPath, 'r') as f:
-                    #     jsonLoaded = json.load(f)
-                    #     self.sleepScheduleList[boxnumber] = {jsonLoaded["session_schedule"],
-                    #                                          jsonLoaded["light_schedule"]}
+                    if error and not error[0:4] == "ALSA" and not error[0:5] == 'pydev' and not error[0:5] == 'debug':
+                        print error
+                        self.log.info(error)
+                        self.display_message(boxnumber, error, target='status')
+                        self.stop_box(boxnumber, error_mode=True)
+
+                    else:  # Successfully started
+                        self.box_button_control(boxnumber, "start")  # UI modifications while box is running
+                        self.log.debug("Setting status icon to 'start'")
+                        self.status_icon(boxnumber, 'start')
+                        self.lastStartList[boxnumber] = dt.datetime.now()
+                        self.sleepScheduleList[boxnumber] = self.defaultSleepSchedule
 
     def start_all(self):
         # start all checked boxes
         for boxnumber in self.boxList:
             if self.subprocessBox[boxnumber] == 0 and self.checkActiveBoxList[boxnumber].checkState():
                 self.start_box(boxnumber)
-                time.sleep(1)
+                time.sleep(3)
 
     def stop_all(self):
         # stop all running boxes
@@ -736,21 +733,6 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
     def check_teensy(self, boxindex=None, connect=False):
         # device_path is result from device_paths of device that was connected/disconnected
         # It needs to be parsed to get the actual box number
-        # if device_path[0:4] == '/dev':  # Only pass if device path is valid
-        #     devicePathSplit = os.path.split(device_path)
-        #     try:
-        #         boxLink = devicePathSplit[1]
-        #         # print boxLink
-        #         # self.log.info(boxLink)
-        #         match = re.split('Board(\\d*)', boxLink)
-        #         boxnumber = int(
-        #             match[1]) - 1  # Box number as index is indexed from 0, but Teensy numbers are indexed from 1
-        #         # print boxnumber
-        #         # self.log.info(boxnumber)
-        #     except IndexError:
-        #         boxnumber = None
-        #         print 'Error: board not recognized'
-        #         self.log.error('Error: board not recognized')
 
         if boxindex is not None:
             if connect:
@@ -958,13 +940,6 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
                     self.statusTableBoxList[boxnumber].verticalHeader().setResizeMode(
                         QtGui.QHeaderView.Stretch)
 
-                    # logRawCounts = "\tS+\tS-\tPrb+\tPrb-\n" \
-                    #                "RespSw\t{correct_responses}\t{false_alarms}\t{probe_hit}\t{probe_FA}\n" \
-                    #                "TrlSw\t{misses}({splus_nr})\t{correct_rejections}({sminus_nr})\t" \
-                    #                "{probe_miss}({probe_miss_nr})\t{probe_CR}({probe_CR_nr})".format(**logData)
-                    # logTotalsMessage.encode('utf8')
-                    # self.display_message(boxnumber, logTotalsMessage, target='statusRaw')
-
                     if self.useNRList[boxnumber].isChecked():
                         logStats = "d' (NR): {dprime_NR:1.2f}      " + \
                                    "Beta (NR): {bias_NR:1.2f} {bias_description_NR}".format(**logData)
@@ -978,11 +953,6 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         else:
             print "{0}{1}".format("Unable to open file for ", birdName)
             self.log.info("{0}{1}".format("Unable to open file for ", birdName))
-
-        # with open(summary_file, 'r') as f:
-        # logData = f.readlines()
-        # self.statusTotalsBoxList[boxnumber].setPlainText('\n'.join(logData[-10:]))
-        # f.close()
 
     # endregion
 
@@ -1178,10 +1148,12 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
                 if 'shutdownProper' in dictLoaded:
                     shutdownPrev = dictLoaded['shutdownProper']
 
-            ## Power outage handling ##
-            # Set shutdownProper to False when GUI is opened, set it to true when it's properly closed.
-            # That way if it doesn't get closed properly, shutdownProper still reads False and the GUI will
-            # automatically start all checked boxes on startup (in case of power outage)
+            """
+            # Power outage handling #
+            Set shutdownProper to False when GUI is opened, set it to true when it's properly closed.
+            That way if it doesn't get closed properly, shutdownProper still reads False and the GUI will
+            automatically start all checked boxes on startup (in case of power outage)
+            """
 
             # Write False to shutdownProper in the settings file
             dictLoaded['shutdownProper'] = False
@@ -1218,10 +1190,6 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         shutdownProper = True
 
         d = {'paramFiles': paramFiles, 'birds': birds, 'active': active, 'shutdownProper': shutdownProper}
-        # d = {}
-        # d['paramFiles'] = paramFiles
-        # d['birds'] = birds
-        # d['active'] = active
 
         with open('settings.json', 'w') as outfile:
             json.dump(d, outfile, ensure_ascii=False, indent=4, separators=(',', ': '))
@@ -1482,9 +1450,14 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
             print 'saved to {}'.format(output_path)
 
     def refresh_table(self, output_path):
-        # Refresh the data table with new values
-        # reimport the data from csv because moving directly from dataframe is a pain and doesn't support multiple
-        # headers
+        """
+        Refresh the data table with new values produced by the recalculate() method
+        Called as part of recalculate()
+        This process reimports the data from a csv because moving directly from dataframe is a pain and doesn't support
+        multiple headers, e.g. if the data is grouped by more than one field (which the data usually is)
+        """
+
+        # Pull csv data into model, then put model into table - apparently proper way of doing it in Pyqt
         self.model = QtGui.QStandardItemModel(self)
 
         with open(output_path, 'rb') as inputFile:
@@ -1503,12 +1476,10 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
                     self.model.appendRow(items)
                 i += 1
 
+        # ProxyModel allows sorting
         self.proxyModel = QtGui.QSortFilterProxyModel()
         self.proxyModel.setSourceModel(self.model)
-        # # get column
-        # self.modelColumns = []
-        # for j in xrange(self.proxyModel.columnCount()):  # for all fields available in model
-        #     self.modelColumns.append(unicode(self.model.headerData(j, QtCore.Qt.Horizontal).toString()))
+
         self.performance_Table.setModel(self.proxyModel)  # apply constructed model to tableview object
         self.performance_Table.setSortingEnabled(True)
 
@@ -1519,7 +1490,10 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
         self.performance_Table.resizeColumnsToContents()
 
     def eventFilter(self, source, event):
-        # Reimplementation of eventFilter, this one to capture ctrl+C to copy data from table
+        """
+        Captures keyboard input to support Ctrl+C for copying data from table
+        """
+        # Reimplementation of eventFilter specifically to support ctrl+C
         # https://stackoverflow.com/questions/40469607
 
         if (event.type() == QtCore.QEvent.KeyPress and
@@ -1529,7 +1503,9 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
         return super(self.__class__, self).eventFilter(source, event)
 
     def copy_table_selection(self):
-        # actual copy method for copying cells from tableview
+        """
+        Copies selected cells from table
+        """
 
         selection = self.performance_Table.selectedIndexes()
         if selection:
@@ -1573,6 +1549,12 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
 
     # region Functions
     def silent_checkbox_change(self, checkbox, newstate=False):
+        """
+        Changes value of checkbox without triggering any attached functions
+        :param checkbox: QCheckbox object
+        :param newstate: Desired state (True/False)
+        :return:
+        """
         checkbox.blockSignals(True)
         if newstate:
             checkbox.setCheckState(QtCore.Qt.Checked)
@@ -1581,7 +1563,9 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
         checkbox.blockSignals(False)
 
     def recheck_fields(self):
-        # Make sure all displayed fields are checked in Select Column pane
+        """
+        Makes sure all fields shown in the actual data table are checked in Select Column pane
+        """
         existingHeaders = []  # Get list of headers, since they can't be pulled out of model as list (AFAIK)
         for j in xrange(self.model.columnCount()):  # for all fields available in model
             columnName = unicode(self.model.headerData(j, QtCore.Qt.Horizontal).toString())  # .replace('\n(NR)',
@@ -1625,14 +1609,14 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
 
                     # No Response checkbox
                     if columnNameF in ["d'", 'Beta', 'S+ Rate', 'S- Rate', 'Total Corr',
-                                       "Probe d'", 'Probe Beta', 'Probe S+', 'Probe S-', 'Probe Tot Corr']:
+                                       "Probe d'", 'Probe Beta', 'Probe S+ Rate', 'Probe S- Rate', 'Probe Tot Corr']:
                         if nrCheck is True:
                             columnChecks.append(False)
                         else:
                             columnChecks.append(True)
 
                     elif columnNameF in ["d' (NR)", 'Beta (NR)', 'S+ (NR) Rate', 'S- (NR) Rate', 'Total Corr (NR)',
-                                         "Probe d' (NR)", 'Probe Beta (NR)', 'Probe S+ (NR)', 'Probe S- (NR)',
+                                         "Probe d' (NR)", 'Probe Beta (NR)', 'Probe S+ (NR) Rate', 'Probe S- (NR) Rate',
                                          'Probe Tot Corr (NR)']:
                         if nrCheck is True:
                             columnChecks.append(True)
@@ -1671,8 +1655,8 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
 
         self.recalculate()
 
-    # endregion
-    # endregion
+    # endregion Functions
+    # endregion Field Selection
 
     # region Field grouping
 
@@ -1708,10 +1692,13 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
                 'range'])
 
     def group_by(self, group='group'):
-        # construct groupby parameter for pd.groupby - there may be a better way to do this:
-        # Currently rebuilds the self.dataGroups var each time a box is checked or unchecked, which requires adding a
-        # new checkbox for each column that could be grouped
-        # Called as part of recalculate method rather than forcing a recalculation on its own
+        """
+        Constructs groupby parameter that pandas uses in analysis.py to group the data - there may be a better way
+        to do this:
+        Currently rebuilds the self.dataGroups var each time a box is checked or unchecked, which requires adding a
+        new checkbox for each column that could be grouped
+        Called as part of recalculate method rather than forcing a recalculation on its own
+        """
         self.dataGroups = []
 
         if group == 'raw':
@@ -1765,7 +1752,12 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
     # region Filters
 
     def create_filter_objects(self):
-        # add field info to filter
+        """
+        Method to create the pyqt layout objects for filtering. Creates a layout for each extant field and fills it
+        with checkboxes for each item in that field. Or, for fields that accept a value range, creates a
+        user-enterable field and an equality field (e.g. for date)
+        :return:
+        """
 
         for columnName in self.fieldManagement:
             if self.fieldManagement[columnName]['filter']['type'] == 'list':
@@ -1793,7 +1785,6 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
                 scrollArea.setMinimumHeight(40)
                 scrollArea.setMaximumWidth(self.optionWidth)
                 scrollArea.setMaximumHeight(150)
-                # scrollArea.setWidgetResizable(True)
                 scrollArea.setSizePolicy(QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding,
                                                            QtGui.QSizePolicy.Expanding))
                 scrollArea.setContentsMargins(0, 0, 0, 0)
@@ -1868,9 +1859,11 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
                 self.filterGrid.addWidget(self.fieldManagement[columnName]['filter']['widget'])
 
     def build_filter_value_lists(self):
-        # For each displayed field, create a value list of unique values from the extant data
-        # Get values from model rather than table because table might be filtered and we want to see all available
-        # fields
+        """
+        For each displayed field, create a value list of unique values from the extant data
+        Get values from model rather than table because table might be filtered and we want to see all available
+        fields
+        """
         for column in xrange(self.model.columnCount()):
             if column == 'Bin':
                 pass  # skip Bin, which is only added by the analysis process if binning
@@ -2030,7 +2023,7 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
                 self.outputData.to_csv(str(output_path), encoding='utf-8')
                 self.refresh_table(output_path)
 
-    # endregion
+    # endregion Analysis methods
 
 
 # region Reimplemented methods
