@@ -1,4 +1,4 @@
-NOTICE!! This package has been renamed to "opyrant" and development has moved to https://github.com/opyrant/opyrant
+NOTICE!! This is a modified version of pyoperant for use with a particular experiment.
 
 pyoperant
 =========
