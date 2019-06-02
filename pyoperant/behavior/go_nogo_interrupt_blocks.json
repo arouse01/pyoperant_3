@@ -3172,8 +3172,8 @@
       ],
       "queue": "random"
     },
-    "training 120/180b2": {
-      "description": "1:1 S+/S- stim, 120 and 180 ms, b1i1, using different irregular stimuli",
+    "training 120/180c": {
+      "description": "1:1 S+/S- stim, 120 and 180 ms, b3s1",
       "reinforcement": {
         "schedule": "go_interrupt",
         "prob": 1,
@@ -3203,624 +3203,19 @@
       "conditions": [
         {
           "class": "sMinus",
-          "stim_name": "b1i1_1200ir2.wav"
+          "stim_name": "b3s1_1200ir2.wav"
         },
         {
           "class": "sMinus",
-          "stim_name": "b1i1_1800ir2.wav"
+          "stim_name": "b3s1_1800ir2.wav"
         },
         {
           "class": "sPlus",
-          "stim_name": "b1i1_1200reg.wav"
+          "stim_name": "b3s1_1200reg.wav"
         },
         {
           "class": "sPlus",
-          "stim_name": "b1i1_1800reg.wav"
-        }
-      ],
-      "weights": [
-        {
-          "class": "sPlus",
-          "weight": 1
-        },
-        {
-          "class": "sMinus",
-          "weight": 1
-        }
-      ],
-      "queue": "random"
-    },
-
-    "training 120/180 x2.5": {
-      "description": "1:1 S+/S- stim, 120 and 180 ms, +-2.5%",
-      "reinforcement": {
-        "schedule": "go_interrupt",
-        "prob": 1,
-        "secondary": false,
-        "passive": false,
-        "punish": true
-      },
-      "criteria": {
-        "days": 2,
-        "trialcount": {
-          "mintrials": 100
-        },
-        "propCorrect": [
-          {
-            "type": "S+\n(NR)",
-            "minimum": 0.60
-          },
-          {
-            "type": "S-\n(NR)",
-            "minimum": 0.60
-          },
-          {
-            "minimum": 0.75
-          }
-        ]
-      },
-      "conditions": [
-        {
-          "class": "sMinus",
-          "stim_name": "b2s1_1170ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b2s1_1200ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b2s1_1230ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b2s1_1755ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b2s1_1800ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b2s1_1845ir1.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b2s1_1170reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b2s1_1200reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b2s1_1230reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b2s1_1755reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b2s1_1800reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b2s1_1845reg.wav"
-        }
-      ],
-      "weights": [
-        {
-          "class": "sPlus",
-          "weight": 1
-        },
-        {
-          "class": "sMinus",
-          "weight": 1
-        }
-      ],
-      "queue": "random"
-    },
-    "training 120/180 x2.5 x5": {
-      "description": "1:1 S+/S- stim, 120 and 180 ms +-2.5 and 5%",
-      "reinforcement": {
-        "schedule": "go_interrupt",
-        "prob": 1,
-        "secondary": false,
-        "passive": false,
-        "punish": true
-      },
-      "criteria": {
-        "days": 2,
-        "trialcount": {
-          "mintrials": 100
-        },
-        "propCorrect": [
-          {
-            "type": "S+\n(NR)",
-            "minimum": 0.60
-          },
-          {
-            "type": "S-\n(NR)",
-            "minimum": 0.60
-          },
-          {
-            "minimum": 0.75
-          }
-        ]
-      },
-      "conditions": [
-        {
-          "class": "sMinus",
-          "stim_name": "b2s1_1140ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b2s1_1170ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b2s1_1200ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b2s1_1230ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b2s1_1260ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b2s1_1710ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b2s1_1755ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b2s1_1800ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b2s1_1845ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b2s1_1890ir1.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b2s1_1140reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b2s1_1170reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b2s1_1200reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b2s1_1230reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b2s1_1260reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b2s1_1710reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b2s1_1755reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b2s1_1800reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b2s1_1845reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b2s1_1890reg.wav"
-        }
-      ],
-      "weights": [
-        {
-          "class": "sPlus",
-          "weight": 1
-        },
-        {
-          "class": "sMinus",
-          "weight": 1
-        }
-      ],
-      "queue": "random"
-    },
-    "training 120/180 x5": {
-      "description": "1:1 S+/S- stim, 120 and 180 ms +-5%",
-      "reinforcement": {
-        "schedule": "go_interrupt",
-        "prob": 1,
-        "secondary": false,
-        "passive": false,
-        "punish": true
-      },
-      "criteria": {
-        "days": 2,
-        "trialcount": {
-          "mintrials": 100
-        },
-        "propCorrect": [
-          {
-            "type": "S+\n(NR)",
-            "minimum": 0.60
-          },
-          {
-            "type": "S-\n(NR)",
-            "minimum": 0.60
-          },
-          {
-            "minimum": 0.75
-          }
-        ]
-      },
-      "conditions": [
-        {
-          "class": "sMinus",
-          "stim_name": "b2s1_1140ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b2s1_1200ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b2s1_1260ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b2s1_1710ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b2s1_1800ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b2s1_1890ir1.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b2s1_1140reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b2s1_1200reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b2s1_1260reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b2s1_1710reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b2s1_1800reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b2s1_1890reg.wav"
-        }
-      ],
-      "weights": [
-        {
-          "class": "sPlus",
-          "weight": 1
-        },
-        {
-          "class": "sMinus",
-          "weight": 1
-        }
-      ],
-      "queue": "random"
-    },
-    "training 120/180b x2.5": {
-      "description": "1:1 S+/S- stim, 120 and 180 ms +-2.5%, b1i1",
-      "reinforcement": {
-        "schedule": "go_interrupt",
-        "prob": 1,
-        "secondary": false,
-        "passive": false,
-        "punish": true
-      },
-      "criteria": {
-        "days": 2,
-        "trialcount": {
-          "mintrials": 100
-        },
-        "propCorrect": [
-          {
-            "type": "S+\n(NR)",
-            "minimum": 0.60
-          },
-          {
-            "type": "S-\n(NR)",
-            "minimum": 0.60
-          },
-          {
-            "minimum": 0.75
-          }
-        ]
-      },
-      "conditions": [
-        {
-          "class": "sMinus",
-          "stim_name": "b1i1_1170ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b1i1_1200ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b1i1_1230ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b1i1_1755ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b1i1_1800ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b1i1_1845ir1.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b1i1_1170reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b1i1_1200reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b1i1_1230reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b1i1_1755reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b1i1_1800reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b1i1_1845reg.wav"
-        }
-      ],
-      "weights": [
-        {
-          "class": "sPlus",
-          "weight": 1
-        },
-        {
-          "class": "sMinus",
-          "weight": 1
-        }
-      ],
-      "queue": "random"
-    },
-    "training 120/180b x2.5 x5": {
-      "description": "1:1 S+/S- stim, 120 and 180 ms +-2.5 and 5%, b1i1",
-      "reinforcement": {
-        "schedule": "go_interrupt",
-        "prob": 1,
-        "secondary": false,
-        "passive": false,
-        "punish": true
-      },
-      "criteria": {
-        "days": 2,
-        "trialcount": {
-          "mintrials": 100
-        },
-        "propCorrect": [
-          {
-            "type": "S+\n(NR)",
-            "minimum": 0.60
-          },
-          {
-            "type": "S-\n(NR)",
-            "minimum": 0.60
-          },
-          {
-            "minimum": 0.75
-          }
-        ]
-      },
-      "conditions": [
-        {
-          "class": "sMinus",
-          "stim_name": "b1i1_1140ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b1i1_1170ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b1i1_1200ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b1i1_1230ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b1i1_1260ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b1i1_1710ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b1i1_1755ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b1i1_1800ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b1i1_1845ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b1i1_1890ir1.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b1i1_1140reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b1i1_1170reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b1i1_1200reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b1i1_1230reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b1i1_1260reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b1i1_1710reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b1i1_1755reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b1i1_1800reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b1i1_1845reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b1i1_1890reg.wav"
-        }
-      ],
-      "weights": [
-        {
-          "class": "sPlus",
-          "weight": 1
-        },
-        {
-          "class": "sMinus",
-          "weight": 1
-        }
-      ],
-      "queue": "random"
-    },
-    "training 120/180b x5": {
-      "description": "1:1 S+/S- stim, 120 and 180 ms +-5%, b1i1",
-      "reinforcement": {
-        "schedule": "go_interrupt",
-        "prob": 1,
-        "secondary": false,
-        "passive": false,
-        "punish": true
-      },
-      "criteria": {
-        "days": 2,
-        "trialcount": {
-          "mintrials": 100
-        },
-        "propCorrect": [
-          {
-            "type": "S+\n(NR)",
-            "minimum": 0.60
-          },
-          {
-            "type": "S-\n(NR)",
-            "minimum": 0.60
-          },
-          {
-            "minimum": 0.75
-          }
-        ]
-      },
-      "conditions": [
-        {
-          "class": "sMinus",
-          "stim_name": "b1i1_1140ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b1i1_1200ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b1i1_1260ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b1i1_1710ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b1i1_1800ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b1i1_1890ir1.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b1i1_1140reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b1i1_1200reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b1i1_1260reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b1i1_1710reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b1i1_1800reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b1i1_1890reg.wav"
+          "stim_name": "b3s1_1800reg.wav"
         }
       ],
       "weights": [
@@ -3951,8 +3346,8 @@
       ],
       "queue": "random"
     },
-    "training 120/180 x2.5 x5 0.8": {
-      "description": "1:1 S+/S- stim, 120 and 180 ms +-2.5 and 5%, 0.8 reinf rate",
+    "training 120/180c 0.8": {
+      "description": "1:1 S+/S- stim, 120 and 180 ms, b3s1, 0.8 reinf rate",
       "reinforcement": {
         "schedule": "go_interrupt",
         "prob": 0.8,
@@ -3982,385 +3377,19 @@
       "conditions": [
         {
           "class": "sMinus",
-          "stim_name": "b2s1_1140ir1.wav"
+          "stim_name": "b3s1_1200ir1.wav"
         },
         {
           "class": "sMinus",
-          "stim_name": "b2s1_1170ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b2s1_1200ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b2s1_1230ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b2s1_1260ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b2s1_1710ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b2s1_1755ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b2s1_1800ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b2s1_1845ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b2s1_1890ir1.wav"
+          "stim_name": "b3s1_1800ir1.wav"
         },
         {
           "class": "sPlus",
-          "stim_name": "b2s1_1140reg.wav"
+          "stim_name": "b3s1_1200reg.wav"
         },
         {
           "class": "sPlus",
-          "stim_name": "b2s1_1170reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b2s1_1200reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b2s1_1230reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b2s1_1260reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b2s1_1710reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b2s1_1755reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b2s1_1800reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b2s1_1845reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b2s1_1890reg.wav"
-        }
-      ],
-      "weights": [
-        {
-          "class": "sPlus",
-          "weight": 1
-        },
-        {
-          "class": "sMinus",
-          "weight": 1
-        }
-      ],
-      "queue": "random"
-    },
-    "training 120/180 x5 0.8": {
-      "description": "1:1 S+/S- stim, 120 and 180 ms +-5%, 0.8 reinf rate",
-      "reinforcement": {
-        "schedule": "go_interrupt",
-        "prob": 0.8,
-        "secondary": false,
-        "passive": false,
-        "punish": true
-      },
-      "criteria": {
-        "days": 2,
-        "trialcount": {
-          "mintrials": 100
-        },
-        "propCorrect": [
-          {
-            "type": "S+\n(NR)",
-            "minimum": 0.60
-          },
-          {
-            "type": "S-\n(NR)",
-            "minimum": 0.60
-          },
-          {
-            "minimum": 0.75
-          }
-        ]
-      },
-      "conditions": [
-        {
-          "class": "sMinus",
-          "stim_name": "b2s1_1140ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b2s1_1200ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b2s1_1260ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b2s1_1710ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b2s1_1800ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b2s1_1890ir1.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b2s1_1140reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b2s1_1200reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b2s1_1260reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b2s1_1710reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b2s1_1800reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b2s1_1890reg.wav"
-        }
-      ],
-      "weights": [
-        {
-          "class": "sPlus",
-          "weight": 1
-        },
-        {
-          "class": "sMinus",
-          "weight": 1
-        }
-      ],
-      "queue": "random"
-    },
-    "training 120/180b x2.5 x5 0.8": {
-      "description": "1:1 S+/S- stim, 120 and 180 ms +-2.5 and 5%, b1i1, 0.8 reinf rate",
-      "reinforcement": {
-        "schedule": "go_interrupt",
-        "prob": 0.8,
-        "secondary": false,
-        "passive": false,
-        "punish": true
-      },
-      "criteria": {
-        "days": 2,
-        "trialcount": {
-          "mintrials": 100
-        },
-        "propCorrect": [
-          {
-            "type": "S+\n(NR)",
-            "minimum": 0.60
-          },
-          {
-            "type": "S-\n(NR)",
-            "minimum": 0.60
-          },
-          {
-            "minimum": 0.75
-          }
-        ]
-      },
-      "conditions": [
-        {
-          "class": "sMinus",
-          "stim_name": "b1i1_1140ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b1i1_1170ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b1i1_1200ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b1i1_1230ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b1i1_1260ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b1i1_1710ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b1i1_1755ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b1i1_1800ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b1i1_1845ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b1i1_1890ir1.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b1i1_1140reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b1i1_1170reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b1i1_1200reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b1i1_1230reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b1i1_1260reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b1i1_1710reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b1i1_1755reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b1i1_1800reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b1i1_1845reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b1i1_1890reg.wav"
-        }
-      ],
-      "weights": [
-        {
-          "class": "sPlus",
-          "weight": 1
-        },
-        {
-          "class": "sMinus",
-          "weight": 1
-        }
-      ],
-      "queue": "random"
-    },
-    "training 120/180b x5 0.8": {
-      "description": "1:1 S+/S- stim, 120 and 180 ms +-5%, b1i1, 0.8 reinf rate",
-      "reinforcement": {
-        "schedule": "go_interrupt",
-        "prob": 0.8,
-        "secondary": false,
-        "passive": false,
-        "punish": true
-      },
-      "criteria": {
-        "days": 2,
-        "trialcount": {
-          "mintrials": 100
-        },
-        "propCorrect": [
-          {
-            "type": "S+\n(NR)",
-            "minimum": 0.60
-          },
-          {
-            "type": "S-\n(NR)",
-            "minimum": 0.60
-          },
-          {
-            "minimum": 0.75
-          }
-        ]
-      },
-      "conditions": [
-        {
-          "class": "sMinus",
-          "stim_name": "b1i1_1140ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b1i1_1200ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b1i1_1260ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b1i1_1710ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b1i1_1800ir1.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "b1i1_1890ir1.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b1i1_1140reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b1i1_1200reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b1i1_1260reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b1i1_1710reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b1i1_1800reg.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "b1i1_1890reg.wav"
+          "stim_name": "b3s1_1800reg.wav"
         }
       ],
       "weights": [
@@ -4967,6 +3996,2334 @@
       ],
       "queue": "random"
     },
+    "testing 144c (120/180)": {
+      "description": "1:1 S+/S- stim, 120/180, 0.8 reinf rate, b3s1, novel 144 ms",
+      "reinforcement": {
+        "schedule": "go_interrupt",
+        "prob": 0.889,
+        "secondary": false,
+        "passive": false,
+        "punish": true
+      },
+      "criteria": {
+        "days": 2,
+        "trialcount": {
+          "mintrials": 100
+        },
+        "propCorrect": [
+          {
+            "type": "S+\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "type": "S-\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "minimum": 0.75
+          }
+        ]
+      },
+      "conditions": [
+        {
+          "class": "sMinus",
+          "stim_name": "b3s1_1200ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b3s1_1800ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b3s1_1200reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b3s1_1800reg.wav"
+        },
+        {
+          "class": "probeMinus",
+          "stim_name": "b3s1_1440ir1.wav"
+        },
+        {
+          "class": "probePlus",
+          "stim_name": "b3s1_1440reg.wav"
+        }
+      ],
+      "weights": [
+        {
+          "class": "sPlus",
+          "weight": 9
+        },
+        {
+          "class": "sMinus",
+          "weight": 9
+        },
+        {
+          "class": "probePlus",
+          "weight": 1
+        },
+        {
+          "class": "probeMinus",
+          "weight": 1
+        }
+      ],
+      "queue": "random"
+    },
+    "testing 216c (120/180)": {
+      "description": "1:1 S+/S- stim, 120/180, 0.8 reinf rate, b3s1, novel 144 ms",
+      "reinforcement": {
+        "schedule": "go_interrupt",
+        "prob": 0.889,
+        "secondary": false,
+        "passive": false,
+        "punish": true
+      },
+      "criteria": {
+        "days": 2,
+        "trialcount": {
+          "mintrials": 100
+        },
+        "propCorrect": [
+          {
+            "type": "S+\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "type": "S-\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "minimum": 0.75
+          }
+        ]
+      },
+      "conditions": [
+        {
+          "class": "sMinus",
+          "stim_name": "b3s1_1200ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b3s1_1800ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b3s1_1200reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b3s1_1800reg.wav"
+        },
+        {
+          "class": "probeMinus",
+          "stim_name": "b3s1_2160ir1.wav"
+        },
+        {
+          "class": "probePlus",
+          "stim_name": "b3s1_2160reg.wav"
+        }
+      ],
+      "weights": [
+        {
+          "class": "sPlus",
+          "weight": 9
+        },
+        {
+          "class": "sMinus",
+          "weight": 9
+        },
+        {
+          "class": "probePlus",
+          "weight": 1
+        },
+        {
+          "class": "probeMinus",
+          "weight": 1
+        }
+      ],
+      "queue": "random"
+    },
+    "testing range 120-180": {
+      "description": "1:1 S+/S- stim, all integers between 120 and 180, b2s1, all reinforced",
+      "reinforcement": {
+        "schedule": "go_interrupt",
+        "prob": 1,
+        "secondary": false,
+        "passive": false,
+        "punish": true
+      },
+      "criteria": {
+        "days": 2,
+        "trialcount": {
+          "mintrials": 100
+        },
+        "propCorrect": [
+          {
+            "type": "S+\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "type": "S-\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "minimum": 0.75
+          }
+        ]
+      },
+      "conditions": [
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1200ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1200reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1210ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1210reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1220ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1220reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1230ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1230reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1240ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1240reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1250ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1250reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1260ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1260reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1270ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1270reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1280ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1280reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1290ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1290reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1300ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1300reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1310ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1310reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1320ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1320reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1330ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1330reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1340ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1340reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1350ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1350reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1360ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1360reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1370ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1370reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1380ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1380reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1390ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1390reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1400ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1400reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1410ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1410reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1420ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1420reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1430ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1430reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1440ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1440reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1450ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1450reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1460ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1460reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1470ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1470reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1480ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1480reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1490ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1490reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1500ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1500reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1510ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1510reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1520ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1520reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1530ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1530reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1540ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1540reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1550ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1550reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1560ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1560reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1570ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1570reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1580ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1580reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1590ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1590reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1600ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1600reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1610ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1610reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1620ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1620reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1630ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1630reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1640ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1640reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1650ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1650reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1660ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1660reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1670ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1670reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1680ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1680reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1690ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1690reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1700ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1700reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1710ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1710reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1720ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1720reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1730ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1730reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1740ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1740reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1750ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1750reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1760ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1760reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1770ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1770reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1780ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1780reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1790ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1790reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1800ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1800reg.wav"
+        }
+      ],
+      "weights": [
+        {
+          "class": "sPlus",
+          "weight": 1
+        },
+        {
+          "class": "sMinus",
+          "weight": 1
+        }
+      ],
+      "queue": "random"
+    },
+    "testing range 75-275d": {
+      "description": "1:1 S+/S- stim, all integers between 75 and 275, b4s1, all reinforced",
+      "reinforcement": {
+        "schedule": "go_interrupt",
+        "prob": 1,
+        "secondary": false,
+        "passive": false,
+        "punish": true
+      },
+      "criteria": {
+        "days": 2,
+        "trialcount": {
+          "mintrials": 100
+        },
+        "propCorrect": [
+          {
+            "type": "S+\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "type": "S-\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "minimum": 0.75
+          }
+        ]
+      },
+      "conditions": [
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_0750ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_0750reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_0760ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_0760reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_0770ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_0770reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_0780ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_0780reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_0790ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_0790reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_0800ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_0800reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_0810ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_0810reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_0820ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_0820reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_0830ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_0830reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_0840ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_0840reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_0850ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_0850reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_0860ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_0860reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_0870ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_0870reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_0880ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_0880reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_0890ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_0890reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_0900ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_0900reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_0910ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_0910reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_0920ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_0920reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_0930ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_0930reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_0940ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_0940reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_0950ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_0950reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_0960ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_0960reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_0970ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_0970reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_0980ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_0980reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_0990ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_0990reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1000ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1000reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1010ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1010reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1020ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1020reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1030ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1030reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1040ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1040reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1050ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1050reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1060ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1060reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1070ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1070reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1080ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1080reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1090ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1090reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1100ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1100reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1110ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1110reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1120ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1120reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1130ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1130reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1140ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1140reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1150ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1150reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1160ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1160reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1170ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1170reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1180ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1180reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1190ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1190reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1200ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1200reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1210ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1210reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1220ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1220reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1230ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1230reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1240ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1240reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1250ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1250reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1260ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1260reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1270ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1270reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1280ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1280reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1290ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1290reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1300ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1300reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1310ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1310reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1320ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1320reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1330ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1330reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1340ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1340reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1350ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1350reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1360ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1360reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1370ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1370reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1380ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1380reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1390ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1390reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1400ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1400reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1410ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1410reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1420ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1420reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1430ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1430reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1440ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1440reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1450ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1450reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1460ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1460reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1470ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1470reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1480ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1480reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1490ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1490reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1500ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1500reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1510ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1510reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1520ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1520reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1530ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1530reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1540ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1540reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1550ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1550reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1560ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1560reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1570ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1570reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1580ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1580reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1590ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1590reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1600ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1600reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1610ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1610reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1620ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1620reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1630ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1630reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1640ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1640reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1650ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1650reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1660ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1660reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1670ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1670reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1680ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1680reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1690ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1690reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1700ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1700reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1710ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1710reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1720ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1720reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1730ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1730reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1740ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1740reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1750ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1750reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1760ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1760reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1770ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1770reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1780ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1780reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1790ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1790reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1800ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1800reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1810ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1810reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1820ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1820reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1830ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1830reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1840ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1840reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1850ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1850reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1860ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1860reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1870ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1870reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1880ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1880reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1890ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1890reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1900ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1900reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1910ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1910reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1920ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1920reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1930ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1930reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1940ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1940reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1950ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1950reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1960ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1960reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1970ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1970reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1980ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1980reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_1990ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_1990reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2000ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2000reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2010ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2010reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2020ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2020reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2030ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2030reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2040ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2040reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2050ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2050reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2060ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2060reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2070ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2070reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2080ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2080reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2090ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2090reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2100ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2100reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2110ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2110reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2120ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2120reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2130ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2130reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2140ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2140reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2150ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2150reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2160ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2160reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2170ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2170reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2180ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2180reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2190ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2190reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2200ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2200reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2210ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2210reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2220ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2220reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2230ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2230reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2240ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2240reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2250ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2250reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2260ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2260reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2270ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2270reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2280ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2280reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2290ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2290reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2300ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2300reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2310ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2310reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2320ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2320reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2330ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2330reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2340ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2340reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2350ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2350reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2360ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2360reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2370ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2370reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2380ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2380reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2390ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2390reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2400ir1.wav"
+        },
+          {
+            "class": "sPlus",
+            "stim_name": "b4s1_2400reg.wav"
+          },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2410ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2410reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2420ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2420reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2430ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2430reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2440ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2440reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2450ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2450reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2460ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2460reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2470ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2470reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2480ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2480reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2490ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2490reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2500ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2500reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2510ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2510reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2520ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2520reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2530ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2530reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2540ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2540reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2550ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2550reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2560ir1.wav"
+          },
+          {
+            "class": "sPlus",
+            "stim_name": "b4s1_2560reg.wav"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "b4s1_2570ir1.wav"
+          },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2570reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2580ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2580reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2590ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2590reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2600ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2600reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2610ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2610reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2620ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2620reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2630ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2630reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2640ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2640reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2650ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2650reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2660ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2660reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2670ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2670reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2680ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2680reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2690ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2690reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2700ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2700reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2710ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2710reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2720ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2720reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2730ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2730reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2740ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2740reg.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b4s1_2750ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b4s1_2750reg.wav"
+        }
+      ],
+      "weights": [
+        {
+          "class": "sPlus",
+          "weight": 1
+        },
+        {
+          "class": "sMinus",
+          "weight": 1
+        }
+      ],
+      "queue": "random"
+    },
     "discrim 125:137.5 S+/S-": {
       "description": "1:1 S+/S- stim, 125/150, 0.8 reinf rate, novel 112 ms",
       "reinforcement": {
@@ -5063,6 +6420,1034 @@
         {
           "class": "sMinus",
           "weight": 9
+        }
+      ],
+      "queue": "random"
+    },
+    "training 120/180 x2.5": {
+      "description": "1:1 S+/S- stim, 120 and 180 ms, +-2.5%",
+      "reinforcement": {
+        "schedule": "go_interrupt",
+        "prob": 1,
+        "secondary": false,
+        "passive": false,
+        "punish": true
+      },
+      "criteria": {
+        "days": 2,
+        "trialcount": {
+          "mintrials": 100
+        },
+        "propCorrect": [
+          {
+            "type": "S+\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "type": "S-\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "minimum": 0.75
+          }
+        ]
+      },
+      "conditions": [
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1170ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1200ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1230ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1755ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1800ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1845ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1170reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1200reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1230reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1755reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1800reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1845reg.wav"
+        }
+      ],
+      "weights": [
+        {
+          "class": "sPlus",
+          "weight": 1
+        },
+        {
+          "class": "sMinus",
+          "weight": 1
+        }
+      ],
+      "queue": "random"
+    },
+    "training 120/180 x2.5 x5": {
+      "description": "1:1 S+/S- stim, 120 and 180 ms +-2.5 and 5%",
+      "reinforcement": {
+        "schedule": "go_interrupt",
+        "prob": 1,
+        "secondary": false,
+        "passive": false,
+        "punish": true
+      },
+      "criteria": {
+        "days": 2,
+        "trialcount": {
+          "mintrials": 100
+        },
+        "propCorrect": [
+          {
+            "type": "S+\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "type": "S-\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "minimum": 0.75
+          }
+        ]
+      },
+      "conditions": [
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1140ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1170ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1200ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1230ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1260ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1710ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1755ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1800ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1845ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1890ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1140reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1170reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1200reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1230reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1260reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1710reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1755reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1800reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1845reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1890reg.wav"
+        }
+      ],
+      "weights": [
+        {
+          "class": "sPlus",
+          "weight": 1
+        },
+        {
+          "class": "sMinus",
+          "weight": 1
+        }
+      ],
+      "queue": "random"
+    },
+    "training 120/180 x5": {
+      "description": "1:1 S+/S- stim, 120 and 180 ms +-5%",
+      "reinforcement": {
+        "schedule": "go_interrupt",
+        "prob": 1,
+        "secondary": false,
+        "passive": false,
+        "punish": true
+      },
+      "criteria": {
+        "days": 2,
+        "trialcount": {
+          "mintrials": 100
+        },
+        "propCorrect": [
+          {
+            "type": "S+\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "type": "S-\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "minimum": 0.75
+          }
+        ]
+      },
+      "conditions": [
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1140ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1200ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1260ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1710ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1800ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1890ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1140reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1200reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1260reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1710reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1800reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1890reg.wav"
+        }
+      ],
+      "weights": [
+        {
+          "class": "sPlus",
+          "weight": 1
+        },
+        {
+          "class": "sMinus",
+          "weight": 1
+        }
+      ],
+      "queue": "random"
+    },
+    "training 120/180b x2.5": {
+      "description": "1:1 S+/S- stim, 120 and 180 ms +-2.5%, b1i1",
+      "reinforcement": {
+        "schedule": "go_interrupt",
+        "prob": 1,
+        "secondary": false,
+        "passive": false,
+        "punish": true
+      },
+      "criteria": {
+        "days": 2,
+        "trialcount": {
+          "mintrials": 100
+        },
+        "propCorrect": [
+          {
+            "type": "S+\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "type": "S-\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "minimum": 0.75
+          }
+        ]
+      },
+      "conditions": [
+        {
+          "class": "sMinus",
+          "stim_name": "b1i1_1170ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b1i1_1200ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b1i1_1230ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b1i1_1755ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b1i1_1800ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b1i1_1845ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b1i1_1170reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b1i1_1200reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b1i1_1230reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b1i1_1755reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b1i1_1800reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b1i1_1845reg.wav"
+        }
+      ],
+      "weights": [
+        {
+          "class": "sPlus",
+          "weight": 1
+        },
+        {
+          "class": "sMinus",
+          "weight": 1
+        }
+      ],
+      "queue": "random"
+    },
+    "training 120/180b x2.5 x5": {
+      "description": "1:1 S+/S- stim, 120 and 180 ms +-2.5 and 5%, b1i1",
+      "reinforcement": {
+        "schedule": "go_interrupt",
+        "prob": 1,
+        "secondary": false,
+        "passive": false,
+        "punish": true
+      },
+      "criteria": {
+        "days": 2,
+        "trialcount": {
+          "mintrials": 100
+        },
+        "propCorrect": [
+          {
+            "type": "S+\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "type": "S-\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "minimum": 0.75
+          }
+        ]
+      },
+      "conditions": [
+        {
+          "class": "sMinus",
+          "stim_name": "b1i1_1140ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b1i1_1170ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b1i1_1200ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b1i1_1230ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b1i1_1260ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b1i1_1710ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b1i1_1755ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b1i1_1800ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b1i1_1845ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b1i1_1890ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b1i1_1140reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b1i1_1170reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b1i1_1200reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b1i1_1230reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b1i1_1260reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b1i1_1710reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b1i1_1755reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b1i1_1800reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b1i1_1845reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b1i1_1890reg.wav"
+        }
+      ],
+      "weights": [
+        {
+          "class": "sPlus",
+          "weight": 1
+        },
+        {
+          "class": "sMinus",
+          "weight": 1
+        }
+      ],
+      "queue": "random"
+    },
+    "training 120/180b x5": {
+      "description": "1:1 S+/S- stim, 120 and 180 ms +-5%, b1i1",
+      "reinforcement": {
+        "schedule": "go_interrupt",
+        "prob": 1,
+        "secondary": false,
+        "passive": false,
+        "punish": true
+      },
+      "criteria": {
+        "days": 2,
+        "trialcount": {
+          "mintrials": 100
+        },
+        "propCorrect": [
+          {
+            "type": "S+\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "type": "S-\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "minimum": 0.75
+          }
+        ]
+      },
+      "conditions": [
+        {
+          "class": "sMinus",
+          "stim_name": "b1i1_1140ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b1i1_1200ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b1i1_1260ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b1i1_1710ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b1i1_1800ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b1i1_1890ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b1i1_1140reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b1i1_1200reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b1i1_1260reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b1i1_1710reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b1i1_1800reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b1i1_1890reg.wav"
+        }
+      ],
+      "weights": [
+        {
+          "class": "sPlus",
+          "weight": 1
+        },
+        {
+          "class": "sMinus",
+          "weight": 1
+        }
+      ],
+      "queue": "random"
+    },
+    "training 120/180 x2.5 x5 0.8": {
+      "description": "1:1 S+/S- stim, 120 and 180 ms +-2.5 and 5%, 0.8 reinf rate",
+      "reinforcement": {
+        "schedule": "go_interrupt",
+        "prob": 0.8,
+        "secondary": false,
+        "passive": false,
+        "punish": true
+      },
+      "criteria": {
+        "days": 2,
+        "trialcount": {
+          "mintrials": 100
+        },
+        "propCorrect": [
+          {
+            "type": "S+\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "type": "S-\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "minimum": 0.75
+          }
+        ]
+      },
+      "conditions": [
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1140ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1170ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1200ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1230ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1260ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1710ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1755ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1800ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1845ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1890ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1140reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1170reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1200reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1230reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1260reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1710reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1755reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1800reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1845reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1890reg.wav"
+        }
+      ],
+      "weights": [
+        {
+          "class": "sPlus",
+          "weight": 1
+        },
+        {
+          "class": "sMinus",
+          "weight": 1
+        }
+      ],
+      "queue": "random"
+    },
+    "training 120/180 x5 0.8": {
+      "description": "1:1 S+/S- stim, 120 and 180 ms +-5%, 0.8 reinf rate",
+      "reinforcement": {
+        "schedule": "go_interrupt",
+        "prob": 0.8,
+        "secondary": false,
+        "passive": false,
+        "punish": true
+      },
+      "criteria": {
+        "days": 2,
+        "trialcount": {
+          "mintrials": 100
+        },
+        "propCorrect": [
+          {
+            "type": "S+\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "type": "S-\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "minimum": 0.75
+          }
+        ]
+      },
+      "conditions": [
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1140ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1200ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1260ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1710ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1800ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b2s1_1890ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1140reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1200reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1260reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1710reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1800reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b2s1_1890reg.wav"
+        }
+      ],
+      "weights": [
+        {
+          "class": "sPlus",
+          "weight": 1
+        },
+        {
+          "class": "sMinus",
+          "weight": 1
+        }
+      ],
+      "queue": "random"
+    },
+    "training 120/180b x2.5 x5 0.8": {
+      "description": "1:1 S+/S- stim, 120 and 180 ms +-2.5 and 5%, b1i1, 0.8 reinf rate",
+      "reinforcement": {
+        "schedule": "go_interrupt",
+        "prob": 0.8,
+        "secondary": false,
+        "passive": false,
+        "punish": true
+      },
+      "criteria": {
+        "days": 2,
+        "trialcount": {
+          "mintrials": 100
+        },
+        "propCorrect": [
+          {
+            "type": "S+\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "type": "S-\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "minimum": 0.75
+          }
+        ]
+      },
+      "conditions": [
+        {
+          "class": "sMinus",
+          "stim_name": "b1i1_1140ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b1i1_1170ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b1i1_1200ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b1i1_1230ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b1i1_1260ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b1i1_1710ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b1i1_1755ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b1i1_1800ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b1i1_1845ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b1i1_1890ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b1i1_1140reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b1i1_1170reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b1i1_1200reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b1i1_1230reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b1i1_1260reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b1i1_1710reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b1i1_1755reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b1i1_1800reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b1i1_1845reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b1i1_1890reg.wav"
+        }
+      ],
+      "weights": [
+        {
+          "class": "sPlus",
+          "weight": 1
+        },
+        {
+          "class": "sMinus",
+          "weight": 1
+        }
+      ],
+      "queue": "random"
+    },
+    "training 120/180b x5 0.8": {
+      "description": "1:1 S+/S- stim, 120 and 180 ms +-5%, b1i1, 0.8 reinf rate",
+      "reinforcement": {
+        "schedule": "go_interrupt",
+        "prob": 0.8,
+        "secondary": false,
+        "passive": false,
+        "punish": true
+      },
+      "criteria": {
+        "days": 2,
+        "trialcount": {
+          "mintrials": 100
+        },
+        "propCorrect": [
+          {
+            "type": "S+\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "type": "S-\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "minimum": 0.75
+          }
+        ]
+      },
+      "conditions": [
+        {
+          "class": "sMinus",
+          "stim_name": "b1i1_1140ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b1i1_1200ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b1i1_1260ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b1i1_1710ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b1i1_1800ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "b1i1_1890ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b1i1_1140reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b1i1_1200reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b1i1_1260reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b1i1_1710reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b1i1_1800reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "b1i1_1890reg.wav"
+        }
+      ],
+      "weights": [
+        {
+          "class": "sPlus",
+          "weight": 1
+        },
+        {
+          "class": "sMinus",
+          "weight": 1
         }
       ],
       "queue": "random"

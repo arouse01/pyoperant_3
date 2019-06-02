@@ -1359,10 +1359,10 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
 
             self.folder_Button.clicked.connect(self.select_bird)
             if isinstance(self.data_folder, list):
-                baseFolder = commonprefix(self.data_folder)  # get common base folder for selected birds
+                self.outputFolder = commonprefix(self.data_folder)  # get common base folder for selected birds
             else:
-                baseFolder = self.data_folder
-            self.export_Button.clicked.connect(lambda _, b=baseFolder: self.export(b))
+                self.outputFolder = self.data_folder
+            self.export_Button.clicked.connect(self.export)
             self.done_Button.clicked.connect(self.accept)
 
             # capture keyboard commands so data can be copied with ctrl+c
@@ -1424,7 +1424,7 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
     def select_bird(self):
         # select new data_folder(s)
 
-        dialog = FolderSelect()
+        dialog = FolderSelect(self.fieldManagement['Subject']['valueList'])
         return_code = dialog.exec_()
         if return_code:
             output_path = dialog.checkedPaths
@@ -1440,14 +1440,16 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
 
     # region Data manipulation
 
-    def export(self, output_folder):
-        output_path = QtGui.QFileDialog.getSaveFileName(self, "Save As...", output_folder, "CSV Files (*.csv)")
+    def export(self):
+
+        output_path = QtGui.QFileDialog.getSaveFileName(self, "Save As...", self.outputFolder, "CSV Files (*.csv)")
         output_path = str(output_path)
         if output_path:
             if len(os.path.splitext(str(output_path))[1]) == 0:
                 output_path = output_path + '.csv'
             self.outputData.to_csv(str(output_path))
             print 'saved to {}'.format(output_path)
+            self.outputFolder = os.path.split(output_path)
 
     def refresh_table(self, output_path):
         """
@@ -1522,7 +1524,7 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
             csv.writer(stream, delimiter='\t').writerows(table)
             QtGui.qApp.clipboard().setText(stream.getvalue())
 
-    # endregion
+    # endregion Data manipulation
     # endregion UI methods
 
     # region Field selection
@@ -1885,9 +1887,7 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
         for columnName in self.fieldManagement:
             if self.fieldManagement[columnName]['visible']:  # only if column is actually present
                 if self.fieldManagement[columnName]['filter']['type'] == 'list':
-                    # Signal mapper for all of the values, so each one
-                    # self.fieldManagement[columnName]['filter']['signalMapper'] = QtCore.QSignalMapper(self)
-
+                    # Create new widget for checkboxes
                     valueWidget = QtGui.QWidget()
                     valueWidget.setSizePolicy(QtGui.QSizePolicy(QtGui.QSizePolicy.MinimumExpanding,
                                                                 QtGui.QSizePolicy.MinimumExpanding))
@@ -1909,9 +1909,6 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
                         # self.fieldManagement[columnName]['filter']['signalMapper'].setMapping(action, valueName)
                         # action.stateChanged.connect(self.fieldManagement[columnName]['filter']['signalMapper'].map)
                         valueLayout.addWidget(action)
-
-                    # self.fieldManagement[columnName]['filter']['signalMapper'].mapped.connect(self.apply_filter)
-                    # self.fieldManagement[columnName]['filter']['widget'] = QtGui.QWidget()
 
                     valueWidget.setLayout(valueLayout)
                     # Delete existing layout in CheckBoxList
@@ -2079,16 +2076,20 @@ class FolderSelect(QtGui.QDialog, pyoperant_gui_layout.FolderSelectWindow):
     Custom class to create a dialog window that allows selecting multiple folders from different locations.
     Implements CheckableDirModel class.
     """
-    def __init__(self):
+
+    def __init__(self, preselected=None):
         super(self.__class__, self).__init__()
         self.setup_ui(self)  # This is defined in pyoperant_gui_layout.py file
 
         self.data_folder = '/home/rouse/bird/data'
 
         self.model = CheckableDirModel()
-        self.model.setRootPath(self.data_folder)
+        self.parentIndex = self.model.setRootPath(self.data_folder)
+
         # folders only
         self.model.setFilter(QtCore.QDir.Dirs | QtCore.QDir.NoDotAndDotDot)
+
+        self.preselected = preselected
 
         self.folder_view.setModel(self.model)
         self.folder_view.setRootIndex(self.model.index(self.data_folder))
@@ -2099,6 +2100,8 @@ class FolderSelect(QtGui.QDialog, pyoperant_gui_layout.FolderSelectWindow):
         self.done_button.clicked.connect(self.select)
         self.cancel_button.clicked.connect(self.cancel)
         self.change_folder_button.clicked.connect(self.change_folder)
+
+        self.model.directoryLoaded.connect(self.recheck_previous)
 
     def cancel(self):
         self.close()
@@ -2115,6 +2118,41 @@ class FolderSelect(QtGui.QDialog, pyoperant_gui_layout.FolderSelectWindow):
             self.folder_view.setModel(self.model)
             self.folder_view.setRootIndex(self.model.index(self.data_folder))
 
+    def recheck_previous(self):
+        # recheck items that were present in the dataset already - basically, check all birds whose data you were
+        # looking at
+        if self.preselected is not None:
+            # Has to reference the self.parentIndex to get the proper entries and rows
+            # https://stackoverflow.com/questions/43816264/pyqt-qfilesystemmodel-rowcount
+
+            # folderSelectionWidget = self.folder_view.children()[0]
+
+            # Need to find the actual index of the checkbox itself!
+
+            folderCount = self.model.rowCount(self.parentIndex)
+            for i in range(folderCount):
+                currIndex = self.model.index(i, 0, self.parentIndex)
+
+                currBirdName = str(self.model.data(currIndex).toString())
+                # modelIndex = self.
+                if currBirdName in self.preselected:
+                    # this properly checks the birds in the list, but doesn't actually mark the box as checked
+                    # currIndex is not the same as the index of the actual checkbox within the layout
+                    self.model.setData(currIndex, QtCore.Qt.Checked, QtCore.Qt.CheckStateRole)
+                    # self.model.checks[currIndex] = QtCore.Qt.Checked
+
+            # childIterator = QtCore.QDirIterator(self.data_folder, QtCore.QDir.Dirs | QtCore.QDir.NoDotAndDotDot)
+            # while childIterator.hasNext():
+            #     currFolder = childIterator.next()
+            #     currBirdName = os.path.split(str(currFolder))[1]
+            #     if currBirdName in self.preselected:
+            #         currIndex = self.model.data(self.model.index(4, 0, self.parentIndex)).toString()
+            #         self.currIndex = currIndex
+            #         self.model.setData(currIndex, 2, int_role=10)
+            self.folder_view.setModel(self.model)
+            self.folder_view.setRootIndex(self.model.index(self.data_folder))
+
+            self.model.directoryLoaded.disconnect(self.recheck_previous)
 
 # noinspection PyArgumentList
 @contextmanager

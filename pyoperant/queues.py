@@ -12,18 +12,24 @@ else:
 def random_queue(conditions, tr_max=5000, weights=None, **kwargs):
     """ generator which randomly samples conditions
 
+    If weights are provided, builds two variables:
+        - list of classes, where a class can appear multiple times in the list so that the overall proportion of
+        entries for a class within the list is equal to the probability for that class - it's a weird way of doing
+        weighted class selection since Python 2.7 doesn't have a built-in function for weighted random selection
+        - dict where each class is a single key, and the values for each key are the stimuli that are in that class
+    If weights not provided, just samples randomly from conditions
+
     Args:
 
        :param conditions: (list)  The conditions to sample from.
-       :param weights: (list of ints) Weights of each condition
 
     Kwargs:
 
-       :param tr_max: (int) Maximum number of trial conditions to generate. (default: 100)
+       :param weights: (dict) All classes and their weights
+       :param tr_max: (int) Maximum number of trial conditions to generate. (default: 5000)
 
     Returns:
         whatever the elements of 'conditions' are
-
 
     """
     random.seed()
@@ -92,8 +98,8 @@ def block_queue(conditions, reps=1, shuffle=False):
         :param reps:
         :param shuffle:
     Kwargs:
-        reps (int): number of times each item in conditions will be presented (default: 1)
-        shuffle (bool): Shuffles the queue (default: False)
+        :param reps: (int) number of times each item in conditions will be presented (default: 1)
+        :param shuffle: (bool) Shuffles the queue (default: False)
 
     Returns:
         whatever the elements of 'conditions' are
@@ -110,6 +116,11 @@ def block_queue(conditions, reps=1, shuffle=False):
 
     for cond in conditions:
         yield cond
+
+
+def random_queue_no_replacement(conditions, tr_max=5000, weights=None, **kwargs):
+    # TODO: This section
+    pass
 
 
 class AdaptiveBase(object):
