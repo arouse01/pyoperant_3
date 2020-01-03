@@ -118,3 +118,37 @@ class AudioOutput(BaseIO):
 
     def stop(self):
         return self.interface._stop_wav()
+
+
+class AudioInput(BaseIO):
+    """Class which holds information about audio inputs and abstracts the
+    methods of writing to them
+
+    Keyword arguments:
+    interface -- Interface() instance. Must have the methods '_queue_wav',
+        '_play_wav', '_stop_wav'
+    params -- dictionary of keyword:value pairs needed by the interface
+
+    Methods:
+    queue(wav_filename) -- queues
+    read() -- if the interface supports '_read_bool' for this output, returns
+        the current value of the output from the interface. Otherwise this
+        returns the last passed by write(value)
+    toggle() -- flips the value from the current value
+    """
+
+    def __init__(self, interface=None, params={}, *args, **kwargs):
+        super(AudioInput, self).__init__(interface=interface, params=params, *args, **kwargs)
+
+        assert hasattr(self.interface, '_queue_wav')
+        assert hasattr(self.interface, '_play_wav')
+        assert hasattr(self.interface, '_stop_wav')
+
+    def queue(self, wav_filename):
+        return self.interface._queue_wav(wav_filename)
+
+    def record(self):
+        return self.interface._play_wav()
+
+    def stop(self):
+        return self.interface._stop_wav()

@@ -14,6 +14,7 @@ except ImportError:
 
 def _log_except_hook(*exc_info):  # How uncaught errors are handled
     text = "".join(traceback.format_exception(*exc_info))
+    # print(text)  # print out in case email log isn't working
     logging.error("Unhandled exception: %s", text)
 
 
@@ -128,7 +129,7 @@ class BaseExp(object):
             email_handler = handlers.SMTPHandler(**SMTP_CONFIG)
             email_handler.setLevel(logging.WARNING)
 
-            heading = '%s\n' % (self.parameters['subject'])
+            heading = '%s/Box %s\n' % (self.parameters['subject'], self.parameters['panel_name'])
             formatter = logging.Formatter(heading + '%(levelname)s at %(asctime)s:\n%(message)s')
             email_handler.setFormatter(formatter)
 

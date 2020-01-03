@@ -42,7 +42,7 @@ class UiMainWindow(object):
         else:
             pass
 
-    def setup_ui(self, main_window):
+    def setup_ui(self, main_window, window_dim=[], box_count=6, box_coords=[]):
 
         # region Variable init
         self.labelBoxList = []  # Array for the box name label
@@ -55,7 +55,6 @@ class UiMainWindow(object):
         self.statusTableBoxList = []  # Array for status text box
         self.statusStatsBoxList = []  # Array for status text box
         self.lastTrialLabelList = []  # Array for last trial text box
-        self.lastTrialBoxList = []  # Array for last trial text box
         self.paramFileLabelBoxList = []  # Array for label for parameter file
         self.paramFileBoxList = []  # Array for parameter file text box
         self.paramFileButtonBoxList = []  # Array for parameter file selection button
@@ -86,21 +85,61 @@ class UiMainWindow(object):
         self.waterIcon = QIcon()
         self.waterIcon.addPixmap(QtGui.QPixmap(_from_utf8("icons/water.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         # endregion Button icons
+
+        # region Other vars
+
+        # endregion Other vars
         # endregion
 
         # region Layout vars
+        # TODO: Dynamic layout settings - allow user to specify box/window arrangement
         # Object location-specific variables
-        self.numberOfBoxes = 6
+        self.numberOfBoxes = int(box_count)
+        if self.numberOfBoxes > 30:
+            raise ValueError('Too many boxes indicated, probably a typo: %i' % self.numberOfBoxes)
+        elif self.numberOfBoxes < 1:
+            raise ValueError('Too few boxes indicated, probably a typo: %i' % self.numberOfBoxes)
+
         # Calculate box arrangement in window
-        # self.rowCount = math.floor(math.sqrt(self.numberOfBoxes))
-        rowCount = 3
-        columnCount = self.numberOfBoxes / rowCount
+
+        if len(window_dim) == 2 and all(isinstance(x, int) for x in window_dim):
+            # if window grid dimensions specified (as row, column) and values are integers (as they should be)
+            rowCount = window_dim[0]
+            columnCount = window_dim[1]
+        else:
+            rowCount = 3
+            columnCount = math.ceil(float(self.numberOfBoxes) / rowCount)
 
         numHorizontalLines = self.numberOfBoxes
         numVerticalLines = columnCount - 1
 
         lineHeightBuffer = 10  # Padding around text to ensure it will fit in a text box (so text box size will be
         # buffer + (textLnHgt * lineCount)
+        # Validate custom location selections
+        coordsValid = False
+        if box_coords and len(box_coords) == self.numberOfBoxes:  # make sure all coordinates are specified
+            # for each coord tuple
+            for i in range(len(box_coords)):
+                if 2 != len(box_coords[i]):
+                    # ensure tuple is two values
+                    coordsValid = False
+                    break
+                elif not all(isinstance(x, int) for x in box_coords[i]):
+                    # check that both values are int
+                    coordsValid = False
+                    break
+                elif box_coords[i][0] >= rowCount and box_coords[i][1] >= columnCount:
+                    # make sure coords actually exist within grid dimensions
+                    coordsValid = False
+                    break
+                else:
+                    coordsValid = True
+
+        if not coordsValid:
+            # default box coordinates
+            for i in range(self.numberOfBoxes):
+                box_coords.append((i % rowCount, math.floor(i / rowCount)))
+
         # endregion
 
         # region Formatting templates
@@ -131,7 +170,7 @@ class UiMainWindow(object):
         sizePolicy_max = QtGui.QSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Maximum)
         sizePolicy_max.setHorizontalStretch(0)
         sizePolicy_max.setVerticalStretch(0)
-        # endregion
+        # endregion Formatting templates
 
         # region Main window setup
         main_window.setObjectName(_from_utf8("main_window"))
@@ -175,7 +214,7 @@ class UiMainWindow(object):
         self.behaviorLabel.setObjectName(_from_utf8("behaviorLabel"))
         self.menuGrid.addWidget(self.behaviorLabel, 0, 3, 1, 1)
         self.menuGrid.addItem(add_spacer(20, policy='min'), 0, 2, 1, 1)
-        self.mainGrid.addLayout(self.menuGrid, 2*rowCount, 0, 1, 2*columnCount-1)
+        self.mainGrid.addLayout(self.menuGrid, 2 * rowCount, 0, 1, 2 * columnCount - 1)
         # endregion
 
         # region Layout dividing lines
@@ -223,18 +262,20 @@ class UiMainWindow(object):
             self.statusStatsBoxList.append(QtGui.QLabel(self.gridLayoutWidget))
             self.stopBoxList.append(QtGui.QPushButton(self.gridLayoutWidget))
             self.lastTrialLabelList.append(QtGui.QLabel(self.gridLayoutWidget))
-            self.lastTrialBoxList.append(QtGui.QLabel(self.gridLayoutWidget))
 
-            self.mainGrid.addLayout(self.gridLayoutBoxList[box], 2 * (box % rowCount), 2 * math.floor(box / rowCount),
-                                    1, 1)
+            # TODO: dynamic box placement within self.mainGrid
+            boxRow = 2 * box_coords[box][0]
+            boxCol = 2 * box_coords[box][1]
+            self.mainGrid.addLayout(self.gridLayoutBoxList[box], boxRow, boxCol, 1, 1)
             # endregion
 
             # region Object placement
-            boxGrid = [10, 5]
 
             # region Debugging gridlines
+
             drawBorders = False
             if drawBorders:
+                boxGrid = [10, 5]
                 for row in range(boxGrid[0]):
                     line = QtGui.QFrame(self.gridLayoutWidget)
                     line.setFrameShape(QtGui.QFrame.HLine)
@@ -269,19 +310,19 @@ class UiMainWindow(object):
              
                  0	        1	        2	        3	        4
              ┌──────────┬───────────┬───────────────────────┬─────────┐
-            0│boxLbl   	│phaseLbl	│phase	          	    │waterOpt │
+            0│boxLbl   	│phaseLbl	│phase	          	    │phaseChk │
              ├──────────╔═══════════╧═══════════════════════╗─────────┤
             1│          ║statusTop	        (statusLayout)  ║         │
              ├──────────╢                                   ╟─────────┤
             2│graphic	║          	          	          	║         │
              ├──────────╫───────────────────────────────────╫─────────┤
-            3│		    ║statusMain                         ║         │
+            3│		    ║statusMain                         ║waterOpt │
              ├──────────╢                                   ╟─────────┤
             4│chkAct	║          	         	          	║         │
              ├──────────╫───────────────────────────────────╫─────────┤
             5│chkLbl	║statusStats                        ║         │
              ├──────────╚═══════════╤═══════════════════════╝─────────┤
-            6│		    │lastTrlLbl	│lastTrial	        	│         │
+            6│		    │lastTrial	                     	│         │
              ├──────────┼───────────┴───────────────────────┼─────────┤
             7│parmLbl	│parmEntry	                        │parmBtn  │
              ├──────────┼───────────────────────────────────┼─────────┤
@@ -304,7 +345,7 @@ class UiMainWindow(object):
             self.gridLayoutBoxList[box].addWidget(self.checkActiveLabelBoxList[box], 5, 0, 1, 1, QtCore.Qt.AlignCenter)
 
             self.gridLayoutBoxList[box].addWidget(self.lastTrialLabelList[box], 6, 1, 1, 3, QtCore.Qt.AlignLeft)
-            self.gridLayoutBoxList[box].addWidget(self.lastTrialBoxList[box], 6, 2, 1, 2)
+            # self.gridLayoutBoxList[box].addWidget(self.lastTrialBoxList[box], 6, 2, 1, 2)
 
             self.gridLayoutBoxList[box].addWidget(self.paramFileBoxList[box], 7, 1, 1, 3)
             self.gridLayoutBoxList[box].addWidget(self.paramFileButtonBoxList[box], 7, 4, 1, 1)
@@ -397,8 +438,8 @@ class UiMainWindow(object):
             self.lastTrialLabelList[box].setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
             self.lastTrialLabelList[box].setObjectName(_from_utf8("lastTrialLabel_Box%d" % box))
 
-            self.lastTrialBoxList[box].setFont(font11Under)
-            self.lastTrialBoxList[box].setObjectName(_from_utf8("lastTrial_Box%d" % box))
+            # self.lastTrialBoxList[box].setFont(font11Under)
+            # self.lastTrialBoxList[box].setObjectName(_from_utf8("lastTrial_Box%d" % box))
 
             self.checkActiveLabelBoxList[box].setFont(font11)
             self.checkActiveLabelBoxList[box].setAlignment(QtCore.Qt.AlignCenter)
@@ -534,7 +575,6 @@ class UiMainWindow(object):
 
 class UiSolenoidControl(object):
     def setup_ui(self, solenoid_control):
-
         # region Presets
         sizePolicy_fixed = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         sizePolicy_fixed.setHorizontalStretch(0)
@@ -565,6 +605,9 @@ class UiSolenoidControl(object):
 
         self.horizontalLayout = QtGui.QHBoxLayout()
         self.horizontalLayout.setObjectName(_from_utf8("horizontalLayout"))
+
+        self.testLayout = QtGui.QGridLayout()
+        self.testLayout.setObjectName(_from_utf8("testLayout"))
         # endregion Layouts
 
         # region Labels and text
@@ -590,6 +633,42 @@ class UiSolenoidControl(object):
         self.solenoid_Status_Text.setFont(font16)
         self.solenoid_Status_Text.setAlignment(QtCore.Qt.AlignCenter)
         self.solenoid_Status_Text.setObjectName(_from_utf8("solenoid_Status_Text"))
+
+        self.test_Label = QtGui.QLabel(solenoid_control)
+        self.test_Label.setSizePolicy(sizePolicy_fixed)
+        self.test_Label.setMaximumSize(QtCore.QSize(280, 24))
+        self.test_Label.setAlignment(QtCore.Qt.AlignCenter)
+        self.test_Label.setObjectName(_from_utf8("test_Label"))
+
+        self.amount_Label = QtGui.QLabel(solenoid_control)
+        self.amount_Label.setSizePolicy(sizePolicy_fixed)
+        self.amount_Label.setMaximumSize(QtCore.QSize(280, 24))
+        self.amount_Label.setAlignment(QtCore.Qt.AlignCenter)
+        self.amount_Label.setObjectName(_from_utf8("amount_Label"))
+
+        self.test_Amount = QtGui.QSpinBox(solenoid_control)
+        self.test_Amount.setFixedHeight(27)
+        self.test_Amount.setMaximumWidth(300)
+        self.test_Amount.setSuffix(' ms')
+        self.test_Amount.setMinimum(0)
+        self.test_Amount.setMaximum(1000)
+        self.test_Amount.setSingleStep(5)
+        self.test_Amount.setValue(75)
+
+        self.times_Label = QtGui.QLabel(solenoid_control)
+        self.times_Label.setSizePolicy(sizePolicy_fixed)
+        self.times_Label.setMaximumSize(QtCore.QSize(280, 24))
+        self.times_Label.setAlignment(QtCore.Qt.AlignCenter)
+        self.times_Label.setObjectName(_from_utf8("times_Label"))
+
+        self.test_Times = QtGui.QSpinBox(solenoid_control)
+        self.test_Times.setFixedHeight(27)
+        self.test_Times.setMaximumWidth(300)
+        self.test_Times.setMinimum(0)
+        self.test_Times.setMaximum(1000)
+        self.test_Times.setSingleStep(1)
+        self.test_Times.setValue(1)
+
         # endregion Labels and text
 
         # region Buttons
@@ -603,6 +682,11 @@ class UiSolenoidControl(object):
         self.close_Button.setMinimumSize(QtCore.QSize(0, 27))
         self.close_Button.setMaximumSize(QtCore.QSize(136, 27))
         self.close_Button.setObjectName(_from_utf8("close_Button"))
+
+        self.test_Button = QtGui.QPushButton(solenoid_control)
+        self.test_Button.setMinimumSize(QtCore.QSize(0, 27))
+        self.test_Button.setMaximumSize(QtCore.QSize(136, 27))
+        self.test_Button.setObjectName(_from_utf8("test_Button"))
 
         self.done_Button = QtGui.QPushButton(solenoid_control)
         self.done_Button.setSizePolicy(sizePolicy_fixed)
@@ -618,6 +702,12 @@ class UiSolenoidControl(object):
 
         self.horizontalLayout.addWidget(self.open_Button)
         self.horizontalLayout.addWidget(self.close_Button)
+
+        self.testLayout.addWidget(self.amount_Label, 0, 0, 1, 1)
+        self.testLayout.addWidget(self.times_Label, 0, 1, 1, 1)
+        self.testLayout.addWidget(self.test_Amount, 1, 0, 1, 1)
+        self.testLayout.addWidget(self.test_Times, 1, 1, 1, 1)
+        self.testLayout.addWidget(self.test_Button, 1, 2, 1, 1)
         # endregion Other objects
 
         # region Object placement
@@ -626,6 +716,9 @@ class UiSolenoidControl(object):
         self.verticalLayout.addWidget(self.solenoid_Status_Text)
         self.verticalLayout.addItem(add_spacer(20, policy='min'))
         self.verticalLayout.addLayout(self.horizontalLayout)
+        self.verticalLayout.addWidget(self.line)
+        self.verticalLayout.addWidget(self.test_Label)
+        self.verticalLayout.addLayout(self.testLayout)
         self.verticalLayout.addWidget(self.line)
         self.verticalLayout.addWidget(self.done_Button)
         self.gridLayout.addLayout(self.verticalLayout, 0, 0, 2, 2)
@@ -639,6 +732,10 @@ class UiSolenoidControl(object):
         self.solenoid_text.setText(_translate("solenoid_control", "Solenoid is ", None))
         self.open_Button.setText(_translate("solenoid_control", "Open Solenoid", None))
         self.close_Button.setText(_translate("solenoid_control", "Close Solenoid", None))
+        self.test_Label.setText(_translate("solenoid_control", "Solenoid Testing", None))
+        self.amount_Label.setText(_translate("solenoid_control", "Amount", None))
+        self.times_Label.setText(_translate("solenoid_control", "Times", None))
+        self.test_Button.setText(_translate("solenoid_control", "Test Solenoid", None))
         self.done_Button.setText(_translate("solenoid_control", "Done", None))
 
 
@@ -667,9 +764,9 @@ class StatsWindow(object):
         self.gridLayout.setObjectName(_from_utf8("gridLayout"))
 
         # region grid lines for debugging
-        boxGrid = [4, 3]
         drawBorders = False
         if drawBorders:
+            boxGrid = [4, 3]
             for row in range(boxGrid[0]):  # Horizontal lines
                 line = QtGui.QFrame(stats_window)
                 line.setFrameShape(QtGui.QFrame.HLine)

@@ -229,12 +229,31 @@ class FieldList:
     """
     Creates list of fields related to analysis, and optionally creates dict with field-specific info
     Could be replaced with an external json file with the same info
+
+    To add an analysis field:
+        Define the field
+        -Add field name to the list in FieldList.__init__
+        -If field will be filterable, add the name to the appropriate list in the filter section in FieldList.build_dict
+        -Add the field name to the appropriate groupby list in the groupby section in FieldList.build_dict (types are
+        explained within the function)
+
+        Define field's value
+        -If the field is something pulled directly from the trial data (not 'group' columns which have to be
+        calculated later), add a blank list to dataDict in either Performance.__init__ or Performance.gather_raw_data
+            -Add the correct line so the field gets properly defined for each trial in the 'Actually read csv and pull
+            data' region
+                -If pulling from json file, the value(s) can be defined in the 'Get data from json settings file' region
+        -Otherwise, if field is a 'group' column, it gets calculated in Performance.analyze
+        and added to the summary dataframe in the 'Add calculated stats to summarized dataframe' region
+
+        Don't forget to test that it all works properly!
+
     """
     def __init__(self):
         # Item order is resulting sort order
         fieldList = ['Subject', 'File', 'Session', 'File Count', 'Date', 'Time', 'Hour', 'Block', 'Block Number',
                      'Trials', 'S+ Trials', 'S- Trials', 'S+ (NR) Trials', 'S- (NR) Trials', 'Index', 'Stimulus',
-                     'Tempo', 'Trial Type', 'Class', 'Response Type', 'Response', 'RT', 'Reward', 'Punish']
+                     'Tempo', 'Trial Type', 'Class', 'Response Type', 'Response', 'RT', 'Reward', 'Punish', 'Timeout']
 
         fieldList += ["d'", "d' (NR)", u'Beta', u'Beta (NR)', 'S+ Rate', 'S+ (NR) Rate', 'S- Rate', 'S- (NR) Rate',
                       'Total Corr', 'Total Corr (NR)']
@@ -265,11 +284,15 @@ class FieldList:
 
             # Define field groupby type - give each field a type to indicate what functions can be performed
             if columnDict['name'] in ['File', 'Session', 'File Count', 'Index', 'Time']:
+                # 'raw' columns can't be grouped easily because values are often unique per trial, or it doesn't make
+                # sense to group by those fields (e.g., grouping by 'File' for continuous-running birds)
                 columnDict['type'] = 'raw'
             elif columnDict['name'] in ['Subject', 'Block', 'Block Number', 'Date', 'Hour', 'Response Type', 'Stimulus',
                                         'Tempo', 'Trial Type', 'Class', 'Response']:
+                # 'index' columns are those that could be used as an index for grouping
                 columnDict['type'] = 'index'  # groupby enabled
-            elif columnDict['name'] == 'RT':
+            elif columnDict['name'] in ['RT', 'Timeout']:
+                # 'mean' columns are those that should/can be averaged when trials are grouped
                 columnDict['type'] = 'mean'
             elif columnDict['name'] in ['Reward', 'Punish', 'S+ Trials', 'S+ (NR) Trials', 'S- Trials',
                                         'S- (NR) Trials', 'Trials',
@@ -278,12 +301,16 @@ class FieldList:
                                         'Probe S- (NR) Trials',
                                         'Probe Trials', 'Probe Hit', 'Probe FA', 'Probe Miss',
                                         'Probe CR', 'Probe Miss (NR)', 'Probe CR (NR)', ]:
+                # 'sum' columns are those that should simply be summed when trials are grouped (most columns are
+                # indicators of trial/response type, in effect acting as a 'count' column')
                 columnDict['type'] = 'sum'
             elif columnDict['name'] in ["d'", "d' (NR)", 'Beta', 'Beta (NR)', 'S+ Rate', 'S+ (NR) Rate',
                                         'S- Rate', 'S- (NR) Rate', 'Total Corr', 'Total Corr (NR)',
                                         "Probe d'", "Probe d' (NR)", 'Probe Beta', 'Probe Beta (NR)',
                                         'Probe S+ Rate', 'Probe S+ (NR) Rate', 'Probe S- Rate', 'Probe S- (NR) Rate',
                                         'Probe Tot Corr', 'Probe Tot Corr (NR)', 'Prop CR Resets']:
+                # 'group' columns are those that are calculated based strictly on grouped data - calculations that
+                # can't be performed on a single trial (e.g. proportion correct)
                 columnDict['type'] = 'group'
 
             fieldDict[column] = columnDict
@@ -337,7 +364,8 @@ class Performance(object):
                     'Response': [],
                     'RT': [],
                     'Reward': [],
-                    'Punish': []
+                    'Punish': [],
+                    'Timeout': []
                     }
         self.gather_raw_data(dataDict)
 
@@ -438,6 +466,7 @@ class Performance(object):
                 if fileEmpty is False:
                     # Separated from above to allow data_file to close and be reopened for actual scanning
 
+                    # region Get data from json settings file
                     # get short dict of block names and update old names to match new naming convention
                     jsonFile = os.path.splitext(curr_csv.replace('trialdata', 'settings'))[0] + '.json'
                     jsonPath = os.path.join(self.json_dir[dir_index], jsonFile)
@@ -466,7 +495,11 @@ class Performance(object):
                         elif blocks[block] == 'shaping phase 0':
                             blocks[block] = 'shaping 1'
 
-                    # actually read csv and pull data
+                    # Get timeout setting (stored in json file)
+                    timeout = jsonData['classes']['sMinus']['punish_value']
+                    # endregion
+
+                    # region Actually read csv and pull data
                     with open(csvPath, 'rb') as data_file:
                         csv_reader = csv.reader(data_file, delimiter=',')
                         currentLine = 0  # resets each time so later we can tell how many lines were imported
@@ -482,6 +515,7 @@ class Performance(object):
                                 data_dict['RT'].append(float(row[7]) if len(row[7]) > 0 else float('nan'))
                                 data_dict['Reward'].append(1 if row[8] == 'True' else 0)
                                 data_dict['Punish'].append(1 if row[9] == 'True' else 0)
+                                data_dict['Timeout'].append(timeout)
                                 data_dict['Time'].append(row[10])
                                 data_dict['Session'].append(row[0])
                                 data_dict['File'].append(curr_csv)
@@ -552,7 +586,7 @@ class Performance(object):
                                     1 if response_type in ['probe_FA', 'probe_CR', 'probe_CR_NR'] else 0)
 
                             currentLine += 1
-
+                    # endregion
         data_dict = pd.DataFrame.from_dict(data_dict)  # Convert to data frame
 
         # endregion

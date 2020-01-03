@@ -18,6 +18,13 @@ import datetime as dt  # For auto sleep
 # import collections  # allows use of ordered dictionaries
 import io  # for copying cells from analysis table
 from contextlib import contextmanager  # facilitates simple implementation of 'waiting' mouse cursor when loading
+import gc  # garbage collection, to help prevent memory leak
+
+import pyaudio  # soundcheck functionality
+import wave  # soundcheck functionality
+import numpy  # calculating rms
+import scipy  # calculating specific frequencies
+from scipy.io import wavfile
 
 from pyoperant import analysis, utils  # Analysis creates the data summary tables
 import csv  # For exporting data summaries as csv files
@@ -38,6 +45,7 @@ import pyoperant_gui_layout
 
 def _log_except_hook(*exc_info):  # How uncaught errors are handled
     text = "".join(traceback.format_exception(*exc_info))
+    print(text)  # print out in case email log isn't working
     logging.error("Unhandled exception: {}".format(text))
 
 
@@ -95,11 +103,21 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
 
         super(self.__class__, self).__init__()
         with wait_cursor():  # set mouse cursor to 'waiting'
-            self.setup_ui(self)  # Sets up layout and widgets that are defined
+            # Set up layout and widgets
+            testing = False
+            # Number of boxes declared in pyoperant_gui_layout.py
+            if testing:
+                boxCount = 7
+                boxCoords = [(1, 0), (2, 0), (3, 0), (1, 1), (2, 1), (3, 1), (0, 1)]
+                gridSize = (4, 2)
+                # ANY VARS THAT AFFECT LAYOUT SETUP NEED TO BE DEFINED BEFORE HERE
+                self.setup_ui(self, box_count=boxCount, window_dim=gridSize, box_coords=boxCoords)
+            else:
+                boxCount = 6
+                # ANY VARS THAT AFFECT LAYOUT SETUP NEED TO BE DEFINED BEFORE HERE
+                self.setup_ui(self, box_count=boxCount)
 
             self.debug = False
-
-            # Number of boxes declared in pyoperant_gui_layout.py
 
             # region Menu bar
             mainMenu = QtGui.QMenuBar()
@@ -155,7 +173,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             self.timer.timeout.connect(self.refreshall)
             self.timer.start(5000)
 
-            self.idleTime = 1.5  # max idle time before restarting pyoperant process
+            self.idleTime = 1.5  # max idle time in hours before restarting pyoperant process
 
             self.log_config()
 
@@ -198,6 +216,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             self.primeActionList = []
             self.purgeActionList = []
             self.solenoidManualList = []
+            self.soundCheckActionList = []
             self.optionsMenuList = []
             self.openFolderActionList = []
             self.openSettingsActionList = []
@@ -254,6 +273,8 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
                 self.purgeActionList.append(QtGui.QAction("Purge (20s)", self))
                 self.solenoidManualList.append(QtGui.QAction("Manual Control", self))
 
+                self.soundCheckActionList.append(QtGui.QAction("Sound Check", self))
+
                 # Reorder to change order in menu
                 """
                 boxMenu:
@@ -261,9 +282,8 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
                     ---
                     Open data folder
                     Open Settings file 
-                    Open log file
-                    Get raw trial data
-
+                    New settings file
+                    
                 Water Control:
                     Prime
                     Purge
@@ -273,8 +293,12 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
                     Autosleep
                     Use NR
                     ---
-                    New settings file
+                    Sound Check
+                    ---
                     New bird
+                    ---
+                    Open log file
+                    Get raw trial data
                 
                 
                 """
@@ -284,15 +308,18 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
                 self.boxMenuList[boxIndex].addAction(self.openSettingsActionList[boxIndex])
                 self.boxMenuList[boxIndex].addAction(self.createNewJsonList[boxIndex])
                 self.boxMenuList[boxIndex].addSeparator()
-                self.boxMenuList[boxIndex].addAction(self.openBoxLogActionList[boxIndex])
-                self.boxMenuList[boxIndex].addAction(self.rawTrialActionList[boxIndex])
 
                 # option submenu
 
                 self.optionsMenuList[boxIndex].addAction(self.autoSleepList[boxIndex])
                 self.optionsMenuList[boxIndex].addAction(self.useNRList[boxIndex])
                 self.optionsMenuList[boxIndex].addSeparator()
+                self.optionsMenuList[boxIndex].addAction(self.soundCheckActionList[boxIndex])
+                self.optionsMenuList[boxIndex].addSeparator()
                 self.optionsMenuList[boxIndex].addAction(self.newBirdActionList[boxIndex])
+                self.optionsMenuList[boxIndex].addSeparator()
+                self.optionsMenuList[boxIndex].addAction(self.openBoxLogActionList[boxIndex])
+                self.optionsMenuList[boxIndex].addAction(self.rawTrialActionList[boxIndex])
 
                 # Solenoid submenu
                 self.solenoidMenuList[boxIndex].addAction(self.primeActionList[boxIndex])
@@ -337,7 +364,6 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
 
             # region Connect functions to buttons/objects
             for boxIndex in self.boxList:
-
                 self.performanceBoxList[boxIndex].clicked.connect(
                     lambda _, b=boxIndex: self.analyze_performance(boxnumber=b))
                 self.startBoxList[boxIndex].clicked.connect(lambda _, b=boxIndex: self.start_box(boxnumber=b))
@@ -362,6 +388,10 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
                     lambda _, b=boxIndex: self.water_control(boxindex=b, parameter='purge', purge_time=5))
                 self.solenoidManualList[boxIndex].triggered.connect(
                     lambda _, b=boxIndex: self.water_control(boxindex=b, parameter='dialog'))
+
+                # Sound Check
+                self.soundCheckActionList[boxIndex].triggered.connect(
+                    lambda _, b=boxIndex: self.sound_check(boxindex=b))
 
                 # Settings menu
                 self.createNewJsonList[boxIndex].triggered.connect(
@@ -595,14 +625,15 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
 
                 if self.subprocessBox[boxnumber] == 0 or self.subprocessBox[boxnumber] == 1:  # Make sure box isn't
                     # already running or sleeping
+                    commandString = ['python',
+                                     '/home/rouse/Desktop/pyoperant/pyoperant/scripts/behave',
+                                     '-P', str(boxnumber + 1),
+                                     '-S', '{0}'.format(birdName),
+                                     '{0}'.format(self.behaviorField.currentText()),
+                                     '-c', '{0}'.format(jsonPath)]
                     self.subprocessBox[boxnumber] = subprocess.Popen(
-                        ['python',
-                         '/home/rouse/Desktop/pyoperant/pyoperant/scripts/behave',
-                         '-P', str(boxnumber + 1),
-                         '-S', '{0}'.format(birdName),
-                         '{0}'.format(self.behaviorField.currentText()),
-                         '-c', '{0}'.format(jsonPath)],
-                        stdin=open(os.devnull), stderr=subprocess.PIPE, stdout=open(os.devnull)
+                        commandString, stdin=open(os.devnull), stderr=subprocess.PIPE, stdout=open(os.devnull),
+                        shell=self.args['debug']
                     )
 
                     # Thread for reading error messages
@@ -614,6 +645,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
                     self.tList[boxnumber].start()
 
                     error = self.get_error(boxnumber)
+                    # error = ''
 
                     if error and not error[0:4] == "ALSA" and not error[0:5] == 'pydev' and not error[0:5] == 'debug':
                         print error
@@ -715,20 +747,20 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             # deviceString[0:4] == '/dev':  # Only pass if device path is valid
             devInfo = self.DeviceInfo(device)
             boxIndex = devInfo.boxIndex
-
-            # enable or disable
-            if action == 'add':
-                self.log.debug('USB device connected: Teensy {:02d}, device {:s}, USB: {:s}'.format(
-                    devInfo.boxNumber, devInfo.deviceID, devInfo.usbString))
-                self.deviceIDList[boxIndex] = devInfo.deviceID
-                self.deviceLocationList[boxIndex] = devInfo.usbString
-                self.check_teensy(boxIndex, True)
-            elif action == 'remove':
-                self.log.debug('USB device disconnected: Teensy {:02d}, device {:s}, USB: {:s}'.format(
-                    devInfo.boxNumber, devInfo.deviceID, devInfo.usbString))
-                self.deviceLocationList[boxIndex] = None
-                self.deviceIDList[boxIndex] = None
-                self.check_teensy(boxIndex, False)
+            if boxIndex < self.numberOfBoxes:  # ignore boxes outside of set number
+                # enable or disable
+                if action == 'add':
+                    self.log.debug('USB device connected: Teensy {:02d}, device {:s}, USB: {:s}'.format(
+                        devInfo.boxNumber, devInfo.deviceID, devInfo.usbString))
+                    self.deviceIDList[boxIndex] = devInfo.deviceID
+                    self.deviceLocationList[boxIndex] = devInfo.usbString
+                    self.check_teensy(boxIndex, True)
+                elif action == 'remove':
+                    self.log.debug('USB device disconnected: Teensy {:02d}, device {:s}, USB: {:s}'.format(
+                        devInfo.boxNumber, devInfo.deviceID, devInfo.usbString))
+                    self.deviceLocationList[boxIndex] = None
+                    self.deviceIDList[boxIndex] = None
+                    self.check_teensy(boxIndex, False)
 
     def check_teensy(self, boxindex=None, connect=False):
         # device_path is result from device_paths of device that was connected/disconnected
@@ -737,10 +769,12 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         if boxindex is not None:
             if connect:
                 parameter = 'enable'
+                usbToolTip = 'System ID: ' + self.deviceIDList[boxindex] + '\n' + self.deviceLocationList[boxindex]
             else:
                 parameter = 'disable'
+                usbToolTip = 'System ID: None\nNone'
             self.log.info("Teensy {:02d} recognized, status set to {}".format(boxindex + 1, parameter))
-            usbToolTip = 'System ID: ' + self.deviceIDList[boxindex] + '\n' + self.deviceLocationList[boxindex]
+            # usbToolTip = 'System ID: ' + self.deviceIDList[boxindex] + '\n' + self.deviceLocationList[boxindex]
             self.labelBoxList[boxindex].setToolTip(usbToolTip)
             # self.usbInfoBoxList[boxindex].setText(self.deviceIDList[boxindex])
             self.box_button_control(boxindex, parameter)
@@ -762,6 +796,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             if parameter == 'dialog':
                 dialog = SolenoidGui(boxnumber)
                 dialog.exec_()
+                gc.collect()
             elif parameter == 'purge':
                 self.log.info("Purging water system in box {:d} for {:d} s".format(boxnumber, purge_time))
                 device_name = '/dev/teensy{:02d}'.format(boxnumber)
@@ -793,7 +828,182 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
 
     # endregion
 
+    # region Sound check
+    def sound_check(self, boxindex):
+
+        def callback(in_data, frame_count, time_info, status):
+            # necessary for pyaudio to play in non-blocking mode
+            data = self.wf.readframes(frame_count)
+            return data, pyaudio.paContinue
+
+        def rms_calc(block):
+            # rms is sqrt((mean level)^2)
+            blockValues = numpy.fromstring(block, dtype=numpy.int16)
+            blockMS = numpy.mean(blockValues ** 2)
+            # print(blockMS)
+            blockRMS = numpy.sqrt(blockMS)
+            return blockRMS
+
+        playSound = True
+        recordSound = True
+
+        boxNumber = boxindex + 1
+        testFile = '/home/rouse/bird/stim/440 test tone.wav'
+        soundOut = pyaudio.PyAudio()
+        soundIn = pyaudio.PyAudio()
+        tempRecording = 'Box {:02d} cal.wav'.format(boxNumber)
+
+        # Get actual device indices
+        deviceNameOut = 'Board{:02d}: USB Audio'.format(boxNumber)
+        deviceIndexOut = None
+        for index in range(soundOut.get_device_count()):
+            truncName = soundOut.get_device_info_by_index(index)['name']
+            if deviceNameOut[:18] == truncName[:18]:  # only check the first 7 characters
+                deviceIndexOut = index
+                break
+            else:
+                deviceIndexOut = None
+        if deviceIndexOut is None:
+            raise NameError('could not find pyaudio device %s' % deviceNameOut)
+
+        # get input device index
+        # Complicated because ALSA number doesn't necessarily correspond with pyaudio's device index,
+        # and there doesn't seem to be a good way of simply renaming the devices in a way that pyaudio can read.
+        # Therefore the process is:
+        #   1. Name the ALSA card (with udev rules) by USB port (since the devices are all identical and don't have a
+        #   unique serial number)
+        #   2. Find the card number of a particular named card
+        #   3. Pyaudio can read card numbers, so get the pyaudio device with the matching card number
+        deviceNameIn = 'sound%02i' % boxNumber
+        deviceIndexIn = None
+
+        # First get list of cards on computer
+        cardFile = '/proc/asound/cards'  # cards file contains list of all cards
+        f = open(cardFile, 'r')
+        fl = f.readlines()
+        f.close()
+        # cards file is formatted "number [deviceName     ] so pull values before the matching name to get card number
+        matchString = '^(.+?)\s\[' + deviceNameIn
+        deviceCardIn = []
+        for x in fl:
+            m = re.search(matchString, x)
+            if m is not None:
+                deviceCardIn = int(m.groups()[0])
+                # print("ALSA Card number: %d" % deviceCardIn)
+                break
+        if not deviceCardIn:
+            raise NameError('could not find input device %s' % deviceNameIn)
+
+        # now use ALSA card number to find pyaudio device index
+
+        for index in range(soundIn.get_device_count()):
+            pyaudioInputIndex = []
+            try:
+                pyaudioInputIndex = re.split('hw:', soundIn.get_device_info_by_index(index)['name'])[1]
+            except IndexError:
+                pass
+            if pyaudioInputIndex:
+                # if hw number returned, compare with ALSA card
+                pyaudioInputIndex = int(re.split(',', pyaudioInputIndex)[0])
+
+                if pyaudioInputIndex == deviceCardIn:
+                    deviceIndexIn = int(index)
+                    break
+
+        if deviceIndexIn is None:
+            raise NameError('could not find pyaudio device %s' % self.device_name)
+
+        # open wav file
+        self.wf = wave.open(testFile)
+
+        # create stream object for output
+        streamOut = soundOut.open(format=soundOut.get_format_from_width(self.wf.getsampwidth()),
+                                  channels=1,  # fixed to 1 for single-channel (mono) stimuli
+                                  rate=self.wf.getframerate(),
+                                  output=True,
+                                  output_device_index=deviceIndexOut,
+                                  start=False,
+                                  stream_callback=callback)
+
+        # create stream object for input
+        CHUNK = 4096  # recording chunk size
+        RATE = 44100  # recording sampling rate
+        SECONDS = 2  # how long to record
+        FORMAT = soundIn.get_format_from_width(self.wf.getsampwidth())
+
+        streamIn = soundIn.open(format=FORMAT,
+                                channels=1,
+                                rate=RATE,
+                                input=True,
+                                input_device_index=deviceIndexIn,
+                                frames_per_buffer=CHUNK
+                                )
+
+        recordingFrames = []  # Initialize it first just in case the record function fails
+
+        def record():
+            streamIn.start_stream()
+            nFrames = 10  # 1.5 seconds
+            # recording for SECONDS seconds
+            frames = []
+            # print("starting recording")
+            maxrms = 0
+            for i in range(0, int(RATE / CHUNK * SECONDS)):
+                data = streamIn.read(CHUNK)
+                # Check rms for each chunk
+                newrms = rms_calc(data)
+                if newrms > maxrms:
+                    maxrms = newrms
+                frames.append(data)
+            # frames = streamIn.read(CHUNK*nFrames)
+            # # create temporary wav file
+            #
+            # # print("recording finished")
+            # TODO: check if wave library does autoscaling and find way to disable if present
+            wavFile = wave.open(tempRecording, 'wb')
+            wavFile.setnchannels(1)
+            wavFile.setsampwidth(soundIn.get_sample_size(FORMAT))
+            wavFile.setframerate(RATE)
+            wavFile.writeframes(b''.join(frames))
+            wavFile.close()
+
+            # # print("file closed")
+            return frames
+
+        # play sound, then start recording
+        if playSound:
+            streamOut.start_stream()
+        if recordSound:
+            recordingFrames = record()
+
+        # stop recording
+        try:
+            streamIn.close()
+        except AttributeError:
+            streamIn = None
+        try:
+            streamOut.close()
+        except AttributeError:
+            streamOut = None
+
+        # get dB value from recording
+        # wavFs, readWav = wavfile.read(tempRecording, 'rb')
+        #
+        # wavRms = numpy.sqrt(numpy.mean(readWav ** 2))
+        recording = numpy.fromstring(b''.join(recordingFrames), dtype=numpy.int16)
+        recordingRMS = numpy.sqrt(numpy.mean(recording) ** 2)
+        recordingdB = 20 * numpy.log10(recordingRMS)
+
+        # report peak level
+        messageOut = "Box %s level: %f rms (raw) \ndBFS: %f" % (boxNumber, recordingRMS, recordingdB)
+        self.display_message(boxindex, messageOut)
+        soundOut.terminate()
+        soundIn.terminate()
+
+    # endregion
+
     # region Box updating functions
+
     def refreshall(self):
         # refresh each box, checking for run status, checking if box should sleep
 
@@ -818,7 +1028,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
                 # Check if subprocess is still running, not sleeping
                 if self.subprocessBox[boxnumber] != 1:  # subprocessBox set to 1 when sleeping, so don't check that
                     # Box should be active, not sleeping
-                    poll = self.subprocessBox[boxnumber].poll()  # poll() == 0 means the subprocess is still running
+                    poll = self.subprocessBox[boxnumber].poll()  # poll() == None means the subprocess is still running
                     if poll is None:  # or self.args['debug'] is not False:
                         self.refreshfile(boxnumber)
 
@@ -841,6 +1051,17 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
                             self.start_box(boxnumber)  # restart box
                     else:
                         self.stop_box(boxnumber, error_mode=True)
+                        # Box stopped on error, if soon after box wakeup time, try restarting
+                        # This should only fire once after a failed startup, since the code can only get to this else
+                        # statement if the box is supposed to be running and isn't
+                        # added because box 04 fails to wake up properly, but is not giving any errors, and starts
+                        # fine if the button is clicked manually
+                        # Seems the thread crashes, but pyoperant doesn't log anything unusual
+                        waketimeStr = self.sleepScheduleList[boxnumber][0][0]
+                        waketime = dt.datetime.strptime(waketimeStr, "%H:%M")
+                        if dt.datetime.now().hour == waketime.hour:
+                            time.sleep(10)
+                            self.start_box(boxnumber)  # try again
 
     def refreshfile(self, boxnumber):
 
@@ -868,12 +1089,18 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             if isinstance(logData, list):
                 messageFormatted = ''.join(logData)
                 messageFormatted = _from_utf8(messageFormatted)
-                if len(logData[0]) > 50:
-                    logData = json.loads(str(messageFormatted))
-                    logFull = True  # full summary loaded, not just single message
-                else:
+                try:  # catch IndexError if log file is empty (I think)
+                    tempData = logData[0]
+                except IndexError:
                     logData = messageFormatted
                     logFull = False
+                else:
+                    if len(tempData) > 50:
+                        logData = json.loads(str(messageFormatted))
+                        logFull = True  # full summary loaded, not just single message
+                    else:
+                        logData = messageFormatted
+                        logFull = False
             else:
                 logData = _from_utf8(logData)
                 logFull = False
@@ -1009,6 +1236,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         self.ui_options['autosleep_all'].setChecked(self.ui_options['autosleep_all'].isChecked())
         for boxnumber in self.boxList:
             self.autoSleepList[boxnumber].setChecked(self.ui_options['autosleep_all'].isChecked())
+
     # endregion
 
     # region Error handling
@@ -1022,31 +1250,31 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
                 break
         return error
 
-    def error_handler(self, boxnumber):
-        # Take any errors and stop box, if necessary
-        error = self.get_error(boxnumber)
-        if error:
-            if error[0:4] == "ALSA":
-                # Ignore ALSA errors; they've always occurred and don't interfere (have to do with the sound chip not
-                # liking some channels as written)
-                self.display_message(boxnumber, error, target='status')
-                print error
-                self.log.error(error)
-            elif error[0:5] == 'pydev':
-                # Ignore pydev errors - thrown automatically during PyCharm debugging
-                pass
-            elif error[0:5] == 'debug':  #
-                pass
-            # elif error[0:5] == 'pydev':  # Add additional exceptions here
-            #     pass
-            else:
-                self.display_message(boxnumber, error, target='status')
-                print error
-                self.log.error(error)
-                self.stop_box(boxnumber, error_mode=True)
-                return True
-        else:
-            return False
+    # def error_handler(self, boxnumber):
+    #     # Take any errors and stop box, if necessary
+    #     error = self.get_error(boxnumber)
+    #     if error:
+    #         if error[0:4] == "ALSA":
+    #             # Ignore ALSA errors; they've always occurred and don't interfere (have to do with the sound chip not
+    #             # liking some channels as written)
+    #             self.display_message(boxnumber, error, target='status')
+    #             print error
+    #             self.log.error(error)
+    #         elif error[0:5] == 'pydev':
+    #             # Ignore pydev errors - thrown automatically during PyCharm debugging
+    #             pass
+    #         elif error[0:5] == 'debug':  #
+    #             pass
+    #         # elif error[0:5] == 'pydev':  # Add additional exceptions here
+    #         #     pass
+    #         else:
+    #             self.display_message(boxnumber, error, target='status')
+    #             print error
+    #             self.log.error(error)
+    #             self.stop_box(boxnumber, error_mode=True)
+    #             return True
+    #     else:
+    #         return False
 
     def display_message(self, boxnumber, message, target='status'):  # quick method for redirecting messages to status
         # box
@@ -1114,6 +1342,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         output_path = QtGui.QFileDialog.getSaveFileName(self, "Save As...", dataFolder, "CSV Files (*.csv)")
         if output_path:
             performance.raw_trial_data.to_csv(str(output_path))
+
     # endregion
 
     # region GUI application functions
@@ -1132,17 +1361,17 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
                 dictLoaded = json.load(f)
                 if 'birds' in dictLoaded:
                     for i, birdName in dictLoaded['birds']:
-                        if birdName:
+                        if birdName and i < self.numberOfBoxes:
                             self.birdEntryBoxList[i].setPlainText(birdName)
 
                 if 'paramFiles' in dictLoaded:
                     for i, paramFile in dictLoaded['paramFiles']:
-                        if paramFile:
+                        if paramFile and i < self.numberOfBoxes:
                             self.paramFileBoxList[i].setPlainText(paramFile)
 
                 if 'active' in dictLoaded:
                     for i, check in dictLoaded['active']:
-                        if check:
+                        if check and i < self.numberOfBoxes:
                             self.checkActiveBoxList[i].setChecked(True)
                 # Whether last shutdown was done properly
                 if 'shutdownProper' in dictLoaded:
@@ -1244,6 +1473,7 @@ class SolenoidGui(QtGui.QDialog, pyoperant_gui_layout.UiSolenoidControl):
 
         self.open_Button.clicked.connect(lambda _, b=box_number: self.solenoid_control('open', b))
         self.close_Button.clicked.connect(lambda _, b=box_number: self.solenoid_control('close', b))
+        self.test_Button.clicked.connect(lambda _, b=box_number: self.test_solenoid(b))
         self.done_Button.clicked.connect(self.close_window)
         self.log = logging.getLogger(__name__)
         self.box_name.setText(str("Box {:02d}".format(box_number)))
@@ -1307,6 +1537,17 @@ class SolenoidGui(QtGui.QDialog, pyoperant_gui_layout.UiSolenoidControl):
                 self.solenoid_Status_Text.setText(str("CLOSED"))
                 self.close_Button.setEnabled(False)
                 self.open_Button.setEnabled(True)
+
+    def test_solenoid(self, box_number):
+        length = float(self.test_Amount.value()) / 1000  # amount defined in ms, but need s
+        self.serial_connect(box_number)
+        times = int(self.test_Times.value())
+        for i in range(times):
+            self.device.write("".join([chr(self.solenoidChannel), chr(1)]))  # open solenoid
+            utils.wait(length)
+            self.device.write("".join([chr(self.solenoidChannel), chr(2)]))  # close solenoid
+            if times > 1:
+                utils.wait(0.5)
 
     def close_window(self):
         """Make sure serial connection is closed before exiting window."""
@@ -1449,7 +1690,7 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
                 output_path = output_path + '.csv'
             self.outputData.to_csv(str(output_path))
             print 'saved to {}'.format(output_path)
-            self.outputFolder = os.path.split(output_path)
+            self.outputFolder = os.path.split(output_path)[0]
 
     def refresh_table(self, output_path):
         """
@@ -1532,7 +1773,6 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
     def build_field_checkboxes(self):
         # build checkbox items for every field from fieldManangement dict
         for key in self.fieldManagement:
-
             columnName = self.fieldManagement[key]['name']
 
             item = QtGui.QCheckBox()
@@ -2101,7 +2341,7 @@ class FolderSelect(QtGui.QDialog, pyoperant_gui_layout.FolderSelectWindow):
         self.cancel_button.clicked.connect(self.cancel)
         self.change_folder_button.clicked.connect(self.change_folder)
 
-        self.model.directoryLoaded.connect(self.recheck_previous)
+        # self.model.directoryLoaded.connect(self.recheck_previous)
 
     def cancel(self):
         self.close()
@@ -2152,7 +2392,8 @@ class FolderSelect(QtGui.QDialog, pyoperant_gui_layout.FolderSelectWindow):
             self.folder_view.setModel(self.model)
             self.folder_view.setRootIndex(self.model.index(self.data_folder))
 
-            self.model.directoryLoaded.disconnect(self.recheck_previous)
+            # self.model.directoryLoaded.disconnect(self.recheck_previous)
+
 
 # noinspection PyArgumentList
 @contextmanager

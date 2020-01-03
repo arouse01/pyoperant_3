@@ -25,57 +25,57 @@
       true
     ]
   ],
-  "shutdownProper": false,
+  "shutdownProper": true,
   "birds": [
     [
       0,
-      "b95k95"
+      "y32r96"
     ],
     [
       1,
-      "y52r52"
+      "k99o94"
     ],
     [
       2,
-      "b89g89"
+      "b71k61"
     ],
     [
       3,
-      "o25w25"
+      "b87g69"
     ],
     [
       4,
-      "g60r30"
+      "r50w70"
     ],
     [
       5,
-      "r34w94"
+      "o78w78"
     ]
   ],
   "paramFiles": [
     [
       0,
-      "/home/rouse/bird/data/b95k95/b95k95_config.json"
+      "/home/rouse/bird/data/y32r96/y32r96_config.json"
     ],
     [
       1,
-      "/home/rouse/bird/data/y52r52/y52r52_config.json"
+      "/home/rouse/bird/data/k99o94/k99o94_config.json"
     ],
     [
       2,
-      "/home/rouse/bird/data/b89g89/b89g89_config.json"
+      "/home/rouse/bird/data/b71k61/b71k61_config.json"
     ],
     [
       3,
-      "/home/rouse/bird/data/o25w25/o25w25_config.json"
+      "/home/rouse/bird/data/b87g69/b87g69_config.json"
     ],
     [
       4,
-      "/home/rouse/bird/data/g60r30/g60r30_config.json"
+      "/home/rouse/bird/data/r50w70/r50w70_config.json"
     ],
     [
       5,
-      "/home/rouse/bird/data/r34w94/r34w94_config.json"
+      "/home/rouse/bird/data/o78w78/o78w78_config.json"
     ]
   ]
 }

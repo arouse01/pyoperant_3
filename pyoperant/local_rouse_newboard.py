@@ -25,7 +25,7 @@ class RousePanel(panels.BasePanel):
         self.interfaces['arduino'] = arduino_.ArduinoInterface(device_name='/dev/teensy%02i' % self.id)
 
         # define inputs
-        if boardtype == 'v2':
+        if boardtype == 'v1.4':
             INPUTS = [38,  # Trial IR
                       37,  # Response IR
                       ]
@@ -34,6 +34,18 @@ class RousePanel(panels.BasePanel):
                        35,  # Response LED
                        20,  # House lights
                        22,  # Reinforcement solenoid
+                       ]
+        elif boardtype == 'v2.0':
+            # Has two solenoids
+            INPUTS = [38,  # Trial IR
+                      37,  # Response IR
+                      ]
+
+            OUTPUTS = [36,  # Trial LED
+                       35,  # Response LED
+                       20,  # House lights
+                       22,  # Reinforcement solenoid 1
+                       21,  # Reinforcement solenoid 2
                        ]
         else:
             INPUTS = [37,  # Trial IR
@@ -60,12 +72,16 @@ class RousePanel(panels.BasePanel):
                                 )
 
         self.speaker = hwio.AudioOutput(interface=self.interfaces['pyaudio'])
-
+        # self.microphone = hwio.AudioOutput(interface=self.interfaces['pyaudio'])
         # assemble inputs into components
         self.trialSens = components.PeckPort(ir=self.inputs[0], led=self.outputs[0])  #
         self.respSens = components.PeckPort(ir=self.inputs[1], led=self.outputs[1])
         self.house_light = components.HouseLight(light=self.outputs[2], inverted=True)
+
         self.water = components.WaterValve(solenoid=self.outputs[3])
+        if len(self.outputs) > 4:
+            self.water2 = components.WaterValve(solenoid=self.outputs[4])
+            self.reward2 = self.water2.reward
 
         # define reward & punishment methods
         self.reward = self.water.reward
@@ -137,6 +153,12 @@ class Rouse6(RousePanel):
                                      **kwargs)  # Not sure if this is the working setup, or if boardtype=boardtype is
 
 
+class Rouse7(RousePanel):
+    """Rouse6 panel"""
+
+    def __init__(self, **kwargs):
+        super(Rouse7, self).__init__(panel_id=7,
+                                     **kwargs)  # Not sure if this is the working setup, or if boardtype=boardtype is
 # class Rouse7(RousePanel):
 #     """Rouse7 panel"""
 #     def __init__(self, boardtype='v1'):
@@ -156,6 +178,7 @@ PANELS = {"1": Rouse1,
           "4": Rouse4,
           "5": Rouse5,
           "6": Rouse6,
+          "7": Rouse7
           }
 
 BEHAVIORS = ['pyoperant.behavior']
@@ -166,7 +189,7 @@ DATA_PATH = '/home/rouse/bird/data/'
 
 DEFAULT_EMAIL = 'andrew.rouse@tufts.edu'
 
-SMTP_CONFIG = {'mailhost': ['localhost', 25],
+SMTP_CONFIG = {'mailhost': 'localhost',
                'toaddrs': [DEFAULT_EMAIL],
                'fromaddr': 'Aperture <aperturefinch@gmail.com>',
                'subject': '[pyoperant notice] on rouse',
