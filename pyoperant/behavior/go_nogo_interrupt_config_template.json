@@ -8,11 +8,10 @@
     "email": "andrew.rouse@tufts.edu",
     "name": "Andrew Rouse"
   },
-
   "panel_name": "Rouse1",
+  "board_version": "v1.4",
   "subject": "test",
   "subject_type": "bird",
-
   "debug": false,
   "log_handlers": [
     "text",

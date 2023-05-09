@@ -80,7 +80,8 @@ Hardware interfaces are wrappers around hardware drivers and APIs that allow har
 
 Developers
 ----------
+Andrew Rouse
 
-Justin Kiggins & Marvin Thielk
+Pyoperant framework: Justin Kiggins & Marvin Thielk
 
 Gentner Lab - http://gentnerlab.ucsd.edu

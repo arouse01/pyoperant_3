@@ -92,7 +92,6 @@ class UiMainWindow(object):
         # endregion
 
         # region Layout vars
-        # TODO: Dynamic layout settings - allow user to specify box/window arrangement
         # Object location-specific variables
         self.numberOfBoxes = int(box_count)
         if self.numberOfBoxes > 30:
@@ -763,6 +762,10 @@ class StatsWindow(object):
         self.gridLayout = QtGui.QGridLayout(stats_window)
         self.gridLayout.setObjectName(_from_utf8("gridLayout"))
 
+        self.tableStatsBar = QtGui.QLabel()
+        self.tableStatsBar.setStyleSheet("QLabel {border-bottom: 1px solid #CCCCCC; border-top: 0px solid #CCCCCC; "
+                                         "qproperty-alignment: AlignRight; padding: 0px 2px 2px 2px; font: 10pt; }")
+
         # region grid lines for debugging
         drawBorders = False
         if drawBorders:
@@ -917,6 +920,7 @@ class StatsWindow(object):
         self.probe_Checkbox.setSizePolicy(sizePolicy_fixed)
         self.probe_Checkbox.setMaximumSize(QtCore.QSize(27, 27))
         self.probe_Checkbox.setObjectName(_from_utf8("probe_Checkbox"))
+        self.probe_Checkbox.setCheckState(2)  # default to on
 
         # Include raw counts
         self.raw_Checkbox = QtGui.QCheckBox(stats_window)
@@ -991,12 +995,14 @@ class StatsWindow(object):
             0│performance_table    	    ║groupGrid  (optionToolbox) ║
              │                          ╟───────────────────────────╢
              │                          ║filterGrid                 ║
-             │                          ╟───────────────────────────╢
-             │                          ║fieldGrid                  ║
+             │──────────────────────────╟───────────────────────────╢
+            1│tableStatsBar                 ║fieldGrid                  ║
              ├──────────────────────────╚═══════════════════════════╝
-            1│menuGrid                                              │
+            2│menuGrid                                              │
              └──────────────────────────────────────────────────────┘
+             
              ┬┴├┤─│┼┌┐└┘  ╔╗╚╝╟╢╧╤╫╪═║
+             row, column
         """
 
         # region Object placement
@@ -1010,8 +1016,10 @@ class StatsWindow(object):
         self.fieldGrid.addWidget(self.presetsWidget, 2, 0, 1, 2)
 
         self.gridLayout.addWidget(self.performance_Table, 0, 0, 1, 1)
-        self.gridLayout.addWidget(self.optionToolbox, 0, 1, 1, 1)
-        self.gridLayout.addLayout(self.menuGrid, 1, 0, 1, 2)
+        self.gridLayout.addWidget(self.optionToolbox, 0, 1, 2, 1)
+        self.gridLayout.addLayout(self.menuGrid, 2, 0, 1, 2)
+
+        self.gridLayout.addWidget(self.tableStatsBar, 1, 0, 1, 1)
         # endregion Object placement
 
         self.retranslate_ui(stats_window)

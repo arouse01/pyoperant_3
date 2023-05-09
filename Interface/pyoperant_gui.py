@@ -104,12 +104,12 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         super(self.__class__, self).__init__()
         with wait_cursor():  # set mouse cursor to 'waiting'
             # Set up layout and widgets
-            testing = False
+            testing = True
             # Number of boxes declared in pyoperant_gui_layout.py
             if testing:
-                boxCount = 7
-                boxCoords = [(1, 0), (2, 0), (3, 0), (1, 1), (2, 1), (3, 1), (0, 1)]
-                gridSize = (4, 2)
+                boxCount = 9
+                boxCoords = [(0, 0), (1, 0), (2, 0), (0, 1), (1, 1), (2, 1), (0, 2), (1, 2), (2, 2)]
+                gridSize = (3, 3)
                 # ANY VARS THAT AFFECT LAYOUT SETUP NEED TO BE DEFINED BEFORE HERE
                 self.setup_ui(self, box_count=boxCount, window_dim=gridSize, box_coords=boxCoords)
             else:
@@ -561,7 +561,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         if not self.subprocessBox[boxnumber] == 0:  # Only operate if box is running
             while True:  # Empty queue so process can end gracefully
                 try:
-                    self.qList[boxnumber].get(False)
+                    blank = self.qList[boxnumber].get(False)
                 except Queue.Empty:
                     break
         # self.tList[boxnumber].terminate()
@@ -648,7 +648,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
                     # error = ''
 
                     if error and not error[0:4] == "ALSA" and not error[0:5] == 'pydev' and not error[0:5] == 'debug':
-                        print error
+                        print(error)
                         self.log.info(error)
                         self.display_message(boxnumber, error, target='status')
                         self.stop_box(boxnumber, error_mode=True)
@@ -699,7 +699,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         device_name = '/dev/teensy{:02d}'.format(boxnumber)
         device = serial.Serial(port=device_name, baudrate=19200, timeout=5)
         if device is None:
-            print 'Could not open serial device {}'.format(device_name)
+            print('Could not open serial device {}'.format(device_name))
             self.log.info('Could not open serial device {}'.format(device_name))
             raise 'Could not open serial device {}'.format(device_name)
         else:
@@ -796,7 +796,6 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             if parameter == 'dialog':
                 dialog = SolenoidGui(boxnumber)
                 dialog.exec_()
-                gc.collect()
             elif parameter == 'purge':
                 self.log.info("Purging water system in box {:d} for {:d} s".format(boxnumber, purge_time))
                 device_name = '/dev/teensy{:02d}'.format(boxnumber)
@@ -820,12 +819,14 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
 
                 device.write("".join([chr(16), chr(2)]))  # close solenoid
                 device.close()  # close connection
-                print "Purged box {:02d}".format(boxnumber)
+                print("Purged box {:02d}".format(boxnumber))
                 self.log.info("Purged box {:02d}".format(boxnumber))
         else:
-            print "Cannot open solenoid: Box {0} is currently running".format(str(boxnumber))
+            print("Cannot open solenoid: Box {0} is currently running".format(str(boxnumber)))
             self.log.error("Water error: Cannot open solenoid: Box {0} is currently running".format(str(boxnumber)))
 
+        with wait_cursor():  # set mouse cursor to 'waiting' while garbage collecting
+            gc.collect()  # just in case the solenoid GUI doesn't clear vars properly
     # endregion
 
     # region Sound check
@@ -1000,6 +1001,8 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         soundOut.terminate()
         soundIn.terminate()
 
+        with wait_cursor():  # set mouse cursor to 'waiting' while garbage collecting
+            gc.collect()  # just in case sound recording doesn't clear vars properly
     # endregion
 
     # region Box updating functions
@@ -1057,7 +1060,11 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
                         # added because box 04 fails to wake up properly, but is not giving any errors, and starts
                         # fine if the button is clicked manually
                         # Seems the thread crashes, but pyoperant doesn't log anything unusual
-                        waketimeStr = self.sleepScheduleList[boxnumber][0][0]
+                        try:
+                            waketimeStr = self.sleepScheduleList[boxnumber][0][0]
+                        except TypeError:
+                            waketimeStr = self.defaultSleepSchedule[0][0]  # schedule has already been cleared,
+                            # so try using the default
                         waketime = dt.datetime.strptime(waketimeStr, "%H:%M")
                         if dt.datetime.now().hour == waketime.hour:
                             time.sleep(10)
@@ -1178,7 +1185,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
                 else:
                     self.display_message(boxnumber, logData, target='status')
         else:
-            print "{0}{1}".format("Unable to open file for ", birdName)
+            print("{0}{1}".format("Unable to open file for ", birdName))
             self.log.info("{0}{1}".format("Unable to open file for ", birdName))
 
     # endregion
@@ -1232,7 +1239,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             self.useNRList[boxnumber].setChecked(self.ui_options['use_nr_all'].isChecked())
 
     def auto_sleep_set_all(self):
-        print 'autosleep'
+        print('autosleep')
         self.ui_options['autosleep_all'].setChecked(self.ui_options['autosleep_all'].isChecked())
         for boxnumber in self.boxList:
             self.autoSleepList[boxnumber].setChecked(self.ui_options['autosleep_all'].isChecked())
@@ -1335,13 +1342,18 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         dialog = StatsGui(dataFolder)
         dialog.exec_()
 
+        with wait_cursor():  # set mouse cursor to 'waiting' while garbage collecting
+            gc.collect()  # manual garbage collection because the analysis subroutine can be pretty heavy
+
     def get_raw_trial_data(self, boxnumber):
         bird_name = str(self.birdEntryBoxList[boxnumber].toPlainText())
         dataFolder = os.path.join(self.experimentPath, bird_name)
         performance = analysis.Performance(dataFolder)
         output_path = QtGui.QFileDialog.getSaveFileName(self, "Save As...", dataFolder, "CSV Files (*.csv)")
         if output_path:
-            performance.raw_trial_data.to_csv(str(output_path))
+            with wait_cursor():  # set mouse cursor to 'waiting'
+                performance.raw_trial_data.to_csv(str(output_path))
+                gc.collect()  # gc to make sure analysis vars aren't saved after exporting
 
     # endregion
 
@@ -1380,8 +1392,8 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             """
             # Power outage handling #
             Set shutdownProper to False when GUI is opened, set it to true when it's properly closed.
-            That way if it doesn't get closed properly, shutdownProper still reads False and the GUI will
-            automatically start all checked boxes on startup (in case of power outage)
+            That way if it doesn't get closed properly (e.g. in case of power outage), shutdownProper still reads 
+            False and the GUI will automatically start all checked boxes on startup 
             """
 
             # Write False to shutdownProper in the settings file
@@ -1532,7 +1544,7 @@ class SolenoidGui(QtGui.QDialog, pyoperant_gui_layout.UiSolenoidControl):
             elif action == 'close':
                 self.device.write("".join([chr(self.solenoidChannel), chr(2)]))  # close solenoid
 
-                print "Closed water system in box {0}".format(str(box_number))
+                print("Closed water system in box {0}".format(str(box_number)))
 
                 self.solenoid_Status_Text.setText(str("CLOSED"))
                 self.close_Button.setEnabled(False)
@@ -1574,16 +1586,17 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
         file, and the table is regenerated each time a change is made to the filters/groups/columns.
         - Filters and grouping variables are also rebuilt each time the table is recalculated rather than maintaining a
         modifiable list
-        - Filter vars keep all old values since they repopulate based on currently available columns (so if a column
-        was filtered out, it would no longer appear in the filter list, leaving no way to restore it without removing
-        all filters)
+        - Filter vars keep all old values since they repopulate based on currently available columns (otherwise if a
+        column was filtered out, it would no longer appear in the filter list, leaving no way to restore it without
+        removing all filters)
         - The column/field list is static, stored in analysis.py, so adding any additional columns or calculations
-        might require modifying that list
+        require modifying that list
         - Originally, the beta column was simply the character β, but that's a unicode character and converting back
         and forth between ascii and utf-8 was a nightmare to keep straight
-        - For the table itself, NR columns have a line break added so the name isn't too long in the table. Therefore,
-        any place that reads directly from the underlying model (like build_filter_value_lists) needs to have
-        the line break removed from all column names so the name can be used properly as a key for various dicts.
+        - (No longer true) For the table itself, NR columns have a line break added so the name isn't too long in the
+        table. Therefore, any place that reads directly from the underlying model (like build_filter_value_lists)
+        needs to have the line break removed from all column names so the name can be used properly as a key for
+        various dicts.
     """
 
     def __init__(self, data_folder):
@@ -1658,6 +1671,7 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
             self.get_raw_data()
 
             self.field_preset_select('nr')
+
         self.recalculate()
 
     # region UI methods
@@ -1689,7 +1703,7 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
             if len(os.path.splitext(str(output_path))[1]) == 0:
                 output_path = output_path + '.csv'
             self.outputData.to_csv(str(output_path))
-            print 'saved to {}'.format(output_path)
+            print('saved to {}'.format(output_path))
             self.outputFolder = os.path.split(output_path)[0]
 
     def refresh_table(self, output_path):
@@ -1725,6 +1739,10 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
 
         self.performance_Table.setModel(self.proxyModel)  # apply constructed model to tableview object
         self.performance_Table.setSortingEnabled(True)
+
+        # selection to allow row count updating in tableStatsBar
+        selectionModel = self.performance_Table.selectionModel()
+        selectionModel.selectionChanged.connect(self.select_row_count)
 
         self.recheck_fields()
         self.build_filter_value_lists()
@@ -1764,6 +1782,18 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
             stream = io.BytesIO()
             csv.writer(stream, delimiter='\t').writerows(table)
             QtGui.qApp.clipboard().setText(stream.getvalue())
+
+    def select_row_count(self):
+        """
+        Gets selected number of rows and sets the status bar
+        """
+        selection = self.performance_Table.selectedIndexes()
+        if selection:
+            rows = sorted(index.row() for index in selection)
+            rowcount = rows[-1] - rows[0] + 1
+            self.tableStatsBar.setText('%i rows selected' % rowcount)
+        else:
+            self.tableStatsBar.setText('')
 
     # endregion Data manipulation
     # endregion UI methods

@@ -59,7 +59,7 @@ for i in os.listdir(dataDir):
     # check that current folder is actually a data folder
     currFolderDataPath = os.path.join(currFolder, 'trialdata')
     if os.path.exists(currFolderDataPath):
-        if i == 'test':  # skip test folder
+        if i in ['test', '_Prev_Birds', 'Tempo_Discrim', 'Human', '_test_data']:  # skip test folder
             pass
         elif days_prior < 0:  # if days_prior is -1, ignore modification dates and just export all
             folderList.append(i)

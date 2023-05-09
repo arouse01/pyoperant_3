@@ -718,6 +718,7 @@ class Performance(object):
             input_data = input_data.reset_index()
             if len(rangeGroup) > 0:
                 tempGroupBy = input_data.groupby(groupFieldList, sort=False)  # get groupBy without the row 'collapse'
+
                 # add to the groupBy term: series that gives each row a 'group number', based on dividing its
                 # cumcount() (cumulative row count within group) by the break number
                 groupFieldList.append(np.floor(tempGroupBy.cumcount() / rangeGroup[1]).astype(int))

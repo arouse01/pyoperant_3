@@ -44,7 +44,18 @@
       "shaping 1",
       "shaping 2",
       "shaping 3",
-      "discrim 144:120 S+/S-"
+      "discrim 144:120 S+/S-",
+      "discrim pitch b hi/lo S+/S-",
+      "discrim 144:120 S+/S-",
+      "discrim pitch b hi/lo S+/S-",
+      "training 120/180c",
+      "training 120/180b",
+      "training 120/180b 0.8",
+      "testing 144b (120/180)",
+      "training 120/180c 0.8",
+      "testing 144c (120/180)",
+      "testing range 75-275d",
+      "discrim amp d lo/hi S+/S-"
     ]
   },
   "correction_trials": false,

@@ -10,6 +10,7 @@ _ROUSE_MAP = {
     6: ('/dev/teensy06', 2, 52, 2, 64),
     7: ('/dev/teensy07', 2, 72, 2, 80),
     8: ('/dev/teensy08', 2, 76, 2, 88),
+    9: ('/dev/teensy09', 2, 96, 2, 96)
     }
 
 
@@ -148,6 +149,7 @@ class Rouse5(RousePanel):
 
 class Rouse6(RousePanel):
     """Rouse6 panel"""
+
     def __init__(self, **kwargs):
         super(Rouse6, self).__init__(panel_id=6,
                                      **kwargs)  # Not sure if this is the working setup, or if boardtype=boardtype is
@@ -156,9 +158,27 @@ class Rouse6(RousePanel):
 class Rouse7(RousePanel):
     """Rouse6 panel"""
 
-    def __init__(self, **kwargs):
-        super(Rouse7, self).__init__(panel_id=7,
-                                     **kwargs)  # Not sure if this is the working setup, or if boardtype=boardtype is
+    def __init__(self, boardtype='v1.4'):
+        super(Rouse7, self).__init__(panel_id=7, boardtype=boardtype)
+        # Not sure if this is the working setup, or if boardtype=boardtype is
+
+
+class Rouse8(RousePanel):
+    """Rouse6 panel"""
+
+    def __init__(self, boardtype='v1.4'):
+        super(Rouse8, self).__init__(panel_id=8, boardtype=boardtype)
+        # Not sure if this is the working setup, or if boardtype=boardtype is
+
+
+class Rouse9(RousePanel):
+    """Rouse6 panel"""
+
+    def __init__(self, boardtype='v1.4'):
+        super(Rouse9, self).__init__(panel_id=9, boardtype=boardtype)
+        # Not sure if this is the working setup, or if boardtype=boardtype is
+
+
 # class Rouse7(RousePanel):
 #     """Rouse7 panel"""
 #     def __init__(self, boardtype='v1'):
@@ -178,7 +198,9 @@ PANELS = {"1": Rouse1,
           "4": Rouse4,
           "5": Rouse5,
           "6": Rouse6,
-          "7": Rouse7
+          "7": Rouse7,
+          "8": Rouse8,
+          "9": Rouse9
           }
 
 BEHAVIORS = ['pyoperant.behavior']
