@@ -1,0 +1,68 @@
+		'File': [],				
+i0		'Subject': [],			value list
+		'Session': [],			
+		'File Count': [],		
+i2		'Block': [],			value list
+		'Index': [],			
+i1		'Day'					range
+		'Time': [],				range
+i5		'Response Type': [],	value list
+i3		'Stimulus': [],			value list
+i4		'Class': [],			value list
+i6		'Response': [],			value list
+	x	'RT': [],
+	m	'Reward': [],
+	m	'Punish': [],
+	m	'Hit'
+	m	'FA'
+	m	'Miss'
+	m	'CR'
+	m	'Miss\n(NR)'
+	m	'CR\n(NR)'
+	m	'Trial Count'
+	m	'Probe Hit'
+	m	'Probe FA'
+	m	'Probe Miss'
+	m	'Probe CR'
+	m	'Probe Miss\n(NR)'
+	m	'Probe CR\n(NR)'
+	m	'Probe Trials'
+	g	'dprimes'
+	g	'dprimes_NR'
+	g	'betas'
+	g	'betas_NR'
+	g	'sPlus_correct'
+	g	'sPlus_NR_correct'
+	g	'sMinus_correct'
+	g	'sMinus_NR_correct'
+	g	'total_correct'
+	g	'total_NR_correct'
+	g	'probeDprimes'
+	g	'probeDprimes_NR'
+	g	'probeBetas'
+	g	'probeBetas_NR'
+	g	'probePlus_correct'
+	g	'probePlus_NR_correct'
+	g	'probeMinus_correct'
+	g	'probeMinus_NR_correct'
+	g	'total_probe_correct'
+	g	'total_probe_NR_correct'
+	
+i = filterable/groupable (number indicates order)
+m = summary count
+g = only on groups of data
+x = could get other math, like max, min, avg, stdev,
+
+
+'File', 'Subject', 'Session', 'File Count', 'Block', 'Index', 'Day', 'Time', 'Response Type', 'Stimulus', 'Class', 'Response', 'RT', 'Reward', 'Punish', 'Hit', 'FA', 'Miss', 'CR', 'Miss\n(NR)', 'CR\n(NR)', 'Trial Count', 'Probe Hit', 'Probe FA', 'Probe Miss', 'Probe CR', 'Probe Miss\n(NR)', 'Probe CR\n(NR)', 'Probe Trials'
+
+fieldList = ['Subject', 'File', 'Session', 'File Count', 'Date', 'Time', 'Block', 'Index', 'Stimulus', 'Class']
+    fieldList += ['Response Type', 'Response', 'RT', 'Reward', 'Punish']
+
+    fieldList += ["d'", "d'\n(NR)", 'β', 'β\n(NR)', 'Trials']
+    fieldList += ['S+', 'S+\n(NR)', 'S-', 'S-\n(NR)', 'Total Corr', 'Total Corr\n(NR)']
+    fieldList += ['Hit', 'Miss', 'Miss\n(NR)', 'FA', 'CR', 'CR\n(NR)']
+
+    fieldList += ["Probe d'", "Probe d'\n(NR)", 'Probe β', 'Probe β\n(NR)', 'Probe Trials']
+    fieldList += ['Probe S+', 'Probe S+\n(NR)', 'Probe S-', 'Probe S-\n(NR)', 'Probe Tot Corr', 'Probe Tot Corr\n(NR)']
+    fieldList += ['Probe Hit', 'Probe Miss', 'Probe Miss\n(NR)', 'Probe FA', 'Probe CR', 'Probe CR\n(NR)']

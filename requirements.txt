@@ -1,0 +1,7 @@
+pyudev
+pandas
+pyserial
+pyaudio
+numpy
+scipy
+ephem

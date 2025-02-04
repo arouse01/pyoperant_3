@@ -1,0 +1,177 @@
+#!/usr/bin/env python
+
+import argparse
+import importlib
+import os
+import signal
+import sys
+import collections
+
+# append this folder to working directory
+sys.path.append('/home/rouse/Desktop/pyoperant/pyoperant/pyoperant')
+
+try:
+    import simplejson as json
+
+except ImportError:
+    import json
+
+try:
+    from pyoperant.local import BEHAVIORS
+except ImportError:
+    BEHAVIORS = ['pyoperant.behavior']
+
+try:
+    from pyoperant.local import DATAPATH
+except ImportError:
+    DATAPATH = '/home/rouse/bird/data'
+
+
+def parse_commandline(arg_str=sys.argv[1:]):
+    """ parse command line arguments
+
+    """
+    parser = argparse.ArgumentParser(
+        description='Run Pyoperant scripts from the command line',
+        epilog='The following protocols are installed and registered: ' +
+               ', '.join(list_protocols())
+    )
+    parser.add_argument('protocol',
+                        action='store',
+                        type=str,
+                        help='(str) experiment protocol'
+                        )
+    parser.add_argument('-P', '--panel',
+                        action='store',
+                        type=str,
+                        dest='panel',
+                        required=True,
+                        help='(str) panel identifier'
+                        )
+    parser.add_argument('-S', '--subject',
+                        action='store',
+                        type=str,
+                        dest='subject',
+                        required=True,
+                        help='(str) subject identifier'
+                        )
+    # parser.add_argument('-c', '--config',
+    #                     action='store',
+    #                     type=str,
+    #                     dest='config_file',
+    #                     default='config.json',
+    #                     required=False,
+    #                     help='configuration file [default: %(default)s]'
+    #                     )
+    # parser.add_argument('-c', '--config',
+    #                     action='store',
+    #                     type=str,
+    #                     dest='config_file',
+    #                     default='config.json',
+    #                     required=False,
+    #                     help='configuration file [default: %(default)s]'
+    #                     )
+    # parser.add_argument('-c', '--config',
+    #                     action='store',
+    #                     type=str,
+    #                     dest='config_file',
+    #                     default='config.json',
+    #                     required=False,
+    #                     help='configuration file [default: %(default)s]'
+    #                     )
+    parser.add_argument('-c', '--config',
+                        action='store',
+                        type=str,
+                        dest='config_file',
+                        default='config.json',
+                        required=False,
+                        help='configuration file [default: %(default)s]'
+                        )
+    args = parser.parse_args(arg_str)
+
+    return vars(args)
+
+
+def list_protocols():
+    from pyoperant.behavior.base import BaseExp
+    protocol_list = []
+    behav_modules = [importlib.import_module(pstr) for pstr in BEHAVIORS]
+    for mod in behav_modules:
+        for name, obj in mod.__dict__.iteritems():  # Python 3 renamed dict.iteritems > dict.items
+            try:
+                if issubclass(obj, BaseExp):
+                    protocol_list.append(name)
+
+            except TypeError:
+                pass
+    return protocol_list
+
+
+def find_protocol(protocol):
+    packages = []
+    for pstr in BEHAVIORS:
+        p = importlib.import_module(pstr)
+
+        try:
+            Protocol = getattr(p, protocol)
+            return Protocol
+        except AttributeError:
+            continue
+    raise ImportError('%s not found' % protocol)
+
+
+def clean(*args):
+    sys.exit(0)
+
+
+def main():
+    for sig in (signal.SIGINT, signal.SIGTERM,):
+        signal.signal(sig, clean)
+
+    cmd_line = parse_commandline()
+
+    from pyoperant.local import PANELS
+
+    experiment_path = os.path.join(DATAPATH, cmd_line['subject'])
+    config_file = os.path.join(experiment_path, cmd_line['config_file'])
+    stimuli_path = os.path.join(experiment_path, 'Stimuli')
+    # print(experiment_path)
+    try:
+        with open(config_file, 'rb') as config:
+            parameters = json.load(config, object_pairs_hook=collections.OrderedDict)  # object_pairs_hook is to
+            # preserve field order, creates an orderedDict instead of a regular one
+    except IOError:
+        parameters = {}
+
+    BehaviorProtocol = find_protocol(cmd_line['protocol'])
+
+    # if ('debug' in parameters) and parameters['debug']:
+    # print("debug message: %s" % parameters)
+    # print("debug message: %s" % PANELS)
+
+    for k in ['subject', 'panel_name', 'experiment_path']:
+        parameters.pop(k) if k in parameters.keys() else None
+
+    parameters['config_file'] = config_file
+
+    stimuli_path = parameters.pop('stim_path') if 'stim_path' in parameters else stimuli_path
+
+    if 'board_version' not in parameters:
+        boardtype = None
+    else:
+        boardtype = parameters['board_version']
+
+    behavior = BehaviorProtocol(
+        panel=PANELS[cmd_line['panel']](boardtype=boardtype),
+        subject=cmd_line['subject'],
+        panel_name=cmd_line['panel'],
+        experiment_path=experiment_path,
+        stim_path=stimuli_path,
+        **parameters
+    )
+
+    behavior.run()
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,22 @@
+Index: pyoperant/components.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- pyoperant/components.py	(date 1543437326000)
++++ pyoperant/components.py	(date 1543437326000)
+@@ -231,10 +231,10 @@
+         bool
+             True if beam is broken
+         """
+-        try:
+-            return self.IR.read()
+-        except InterfaceError:
+-            raise InterfaceError("Serial connection not responding")
++        #try:
++        return self.IR.read()
++        #except InterfaceError:
++            #raise InterfaceError("Serial connection not responding")
+ 
+     def off(self):
+         """ Turns the LED off 

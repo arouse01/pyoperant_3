@@ -1,0 +1,99 @@
+Index: pyoperant/behavior/go_nogo_interrupt.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- pyoperant/behavior/go_nogo_interrupt.py	(date 1543436764000)
++++ pyoperant/behavior/go_nogo_interrupt.py	(date 1543436764000)
+@@ -595,18 +595,35 @@
+                 self.log.info('no response')
+                 return
+             for class_, port in self.class_assoc.items():
+-                if port.status():
++                try:  # Check that Teensy is still connected, and reconnect if necessary
++                    trial_response = port.status()
++                except InterfaceError:
++                    self.reconnect_panel()
++                    # Trial interrupted by Teensy disconnect, discard trial
+                     self.this_trial.rt = (dt.datetime.now() - response_start).total_seconds()
+                     self.panel.speaker.stop()
+-                    self.this_trial.response = class_
+-                    self.summary['responses'] += 1
+-                    response_event = utils.Event(name=self.parameters['classes'][class_]['component'],
+-                                                 label='peck',
+-                                                 time=elapsed_time,
+-                                                 )
+-                    self.this_trial.events.append(response_event)
+-                    self.log.info('response: %s' % self.this_trial.response)
+-                    return
++                    self.this_trial.response = 'ERR'
++
++                    response_event = utils.Event(name=self.parameters['classes'][class_]['component'],
++                                                 label='error',
++                                                 time=elapsed_time,
++                                                 )
++                    self.this_trial.events.append(response_event)
++                    self.log.info('response: %s' % self.this_trial.response)
++                    return
++                else:
++                    if trial_response:
++                        self.this_trial.rt = (dt.datetime.now() - response_start).total_seconds()
++                        self.panel.speaker.stop()
++                        self.this_trial.response = class_
++                        self.summary['responses'] += 1
++                        response_event = utils.Event(name=self.parameters['classes'][class_]['component'],
++                                                     label='peck',
++                                                     time=elapsed_time,
++                                                     )
++                        self.this_trial.events.append(response_event)
++                        self.log.info('response: %s' % self.this_trial.response)
++                        return
+             utils.wait(.015)
+ 
+     def response_post(self):
+@@ -616,7 +633,9 @@
+     ## consequence flow
+     def consequence_pre(self):
+         # Calculate response type, add to total of response types
+-        if self.this_trial.class_ == "probePlus" or self.this_trial.class_ == "sPlus":
++        if self.this_trial.response == "ERR":
++            pass
++        elif self.this_trial.class_ == "probePlus" or self.this_trial.class_ == "sPlus":
+             self.summary['splus_trials'] += 1
+             if self.this_trial.response == "sPlus":
+                 self.this_trial.correct = True  # Mark correct response to probe as correct
+@@ -648,6 +667,8 @@
+                 self.this_trial.responseType = "correct_reject"
+ 
+     def consequence_main(self):
++        if self.this_trial.response == "ERR":
++            pass  # if trial is error, skip consequating and move onto next trial
+         # treat probe trials regardless of response
+         if self.this_trial.class_[0:5] == "probe":
+             # self.reward_pre()
+@@ -710,7 +731,11 @@
+         self.summary['feeds'] += 1
+         try:
+             value = self.parameters['classes'][self.this_trial.class_]['reward_value']
+-            reward_event = self.panel.reward(value=value)
++            try:  # Check that Teensy is still connected, and reconnect if necessary
++                reward_event = self.panel.reward(value=value)
++            except InterfaceError:
++                self.reconnect_panel()
++                reward_event = self.panel.reward(value=value)
+             self.this_trial.reward = True
+ 
+         # but catch the reward errors
+@@ -760,7 +785,11 @@
+     def punish_main(self):
+         value = self.parameters['classes'][self.this_trial.class_]['punish_value']
+         if self.punish_bool:
+-            punish_event = self.panel.punish(value=value)
++            try:    # Check that Teensy is still connected, and reconnect if necessary
++                punish_event = self.panel.punish(value=value)
++            except InterfaceError:
++                self.reconnect_panel()
++                punish_event = self.panel.punish(value=value)
+         self.this_trial.punish = True
+ 
+     def punish_post(self):

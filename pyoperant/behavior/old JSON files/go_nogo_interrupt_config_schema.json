@@ -1,0 +1,234 @@
+{
+  "type": "object",
+  "title": "Go NoGo Interrupt Schema",
+  "properties": {
+    "Machine": {
+      "type": "string",
+      "required": true,
+      "title": "Computer name"
+    },
+    "experiment_name": {
+      "type": "string",
+      "required": true,
+      "title": "Experiment Name",
+      "description": "Experiment title"
+    },
+    "description": {
+      "required": true,
+      "type": "string",
+      "title": "Experiment description"
+    },
+    "comments": {
+      "type": "string",
+      "title": "Comments",
+      "description": "Experiment comments"
+    },
+    "experiment_path": {
+      "type": "string",
+      "required": true,
+      "title": "Experiment File Path",
+      "description": "Path to experiment-related files (.e.g. stimuli, output files)"
+    },
+    "experimenter": {
+      "type": "object",
+      "title": "Experimenter Info",
+      "required": true,
+      "properties": {
+        "email": {
+          "type": "string",
+          "description": "Experimenter info"
+        },
+        "name": {
+          "type": "string",
+          "required": true,
+          "title": "Experimenter Name"
+        }
+      }
+    },
+    "panel_name": {
+      "type": "string",
+      "title": "Panel Identifier"
+    },
+    "subject": {
+      "type": "string",
+      "title": "Subject Identifier"
+    },
+    "subject_type": {
+      "type": "string",
+      "title": "Subject Type"
+    },
+    "debug": {
+      "type": "boolean",
+      "title": "Debugging flag"
+    },
+    "log_handlers": {
+      "type": "array",
+      "title": "Log Handler"
+    },
+    "shape": {
+      "type": "boolean",
+      "title": "Shaping Flag"
+    },
+    "free_day_off": {
+      "type": "boolean",
+      "title": "Ad lib water on off days"
+    },
+    "classes": {
+      "type": "object",
+      "title": "Classes",
+      "required": true,
+      "patternProperties": {
+        "^.*$": {
+          "type": "array",
+          "items": {
+            "component": {
+              "type": "string",
+              "title": "Component Name",
+              "required": false
+            },
+            "punish_value": {
+              "type": "number",
+              "title": "Punish Value (s)",
+              "required": true
+            },
+            "reward_value": {
+              "type": "number",
+              "title": "Reward Value (s)",
+              "required": true
+            }
+          }
+        }
+      }
+    },
+    "block_design": {
+      "type": "object",
+      "title": "Block Design",
+      "properties": {
+        "blocks": {
+          "type": "array",
+          "patternProperties": {
+            "^.*$": {
+              "default": {
+                "type": "object",
+                "properties": {
+                  "description": {
+                    "type": "string",
+                    "title": "The Description Schema"
+                  },
+                  "conditions": {
+                    "type": "array",
+                    "title": "The Conditions Schema",
+                    "properties": {
+                      "class": {
+                        "type": "string"
+                      },
+                      "stim_name": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "weights": {
+                    "type": "array",
+                    "title": "The Weights Schema",
+                    "properties": {
+                      "class": {
+                        "type": "string"
+                      },
+                      "weight": {
+                        "type": "integer"
+                      }
+                    }
+                  },
+                  "queue": {
+                    "type": "string",
+                    "title": "Trial Queue Type",
+                    "default": "random"
+                  },
+                  "reinforcement": {
+                    "type": "object",
+                    "title": "Reinforcement Schema",
+                    "properties": {
+                      "schedule": {
+                        "type": "string",
+                        "title": "Reinforcement Schedule"
+                      },
+                      "prob": {
+                        "type": "number",
+                        "title": "Reinforcement Probability"
+                      },
+                      "secondary": {
+                        "type": "boolean",
+                        "title": "Secondary Reinforcement Flag"
+                  }
+                }
+              }
+                }
+              }
+            }
+          }
+        },
+        "order": {
+          "type": "array",
+          "title": "Block Order"
+        }
+      }
+    },
+    "correction_trials": {
+      "type": "boolean",
+      "title": "Correction Trial Flag"
+    },
+    "intertrial_min": {
+      "type": "number",
+      "title": "Minimum Intertrial Interval"
+    },
+    "response_delay": {
+      "type": "number",
+      "title": "Forced Response Delay"
+    },
+    "response_win": {
+      "type": "number",
+      "title": "Response Window"
+    },
+    "light_schedule": {
+      "type": "array",
+      "title": "Light Schedule"
+    },
+    "session_schedule": {
+      "type": "array",
+      "title": "Session Hours",
+      "items": {
+        "type": "number"
+      }
+    },
+    "session_days": {
+      "type": "array",
+      "title": "Days to run sessions",
+      "items": {
+        "type": "number"
+      }
+    },
+    "stim_path": {
+      "type": "string",
+      "title": "Stimuli folder path"
+    },
+    "stims": {
+      "type": "array",
+      "title": "Stimuli",
+      "items": {
+        "patternProperties": {
+          "^.*$": {
+            "path": {
+              "type": "string"
+            }
+          }
+        }
+      }
+
+
+    },
+    "sr": {
+      "type": "number",
+      "title": "Stimuli Sampling Rate"
+    }
+  }
+}
