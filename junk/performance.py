@@ -18,16 +18,16 @@ class Performance(object):
 
     def __init__(self, experiment_folder):
         if not os.path.exists(experiment_folder):
-            print "invalid input folder"
+            print("invalid input folder")
             return
         self.data_dir = os.path.join(experiment_folder, 'trialdata')
         self.json_dir = os.path.join(experiment_folder, 'settings_files')
         # error check
         if not os.path.exists(self.data_dir):
-            print "data folder (%s) not found" % self.data_dir
+            print("data folder (%s) not found" % self.data_dir)
             return
         elif not os.path.exists(self.json_dir):
-            print "json folder (%s) not found" % self.json_dir
+            print("json folder (%s) not found" % self.json_dir)
             return
 
         self.startDate = '01/01/2018'
@@ -103,7 +103,7 @@ class Performance(object):
             raise Exception('Columns are not equal length')
 
         if trialCount < 1:
-            print 'No trials found'
+            print('No trials found')
         else:
             self.response_hit = [0] * trialCount
             self.response_FA = [0] * trialCount

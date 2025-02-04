@@ -1,4 +1,4 @@
-from PyQt4 import QtCore, QtGui  # Import the PyQt4 module we'll need
+from PyQt5 import QtCore, QtGui  # Import the PyQt4 module we'll need
 import sys  # We need sys so that we can pass argv to QApplication
 import os
 import subprocess
@@ -195,8 +195,8 @@ class jsonGui(QtGui.QMainWindow, json_layout.Ui_jsonStim):
                 self.columnOrder[i] = 3
             elif headerName == 'Sound Type':
                 self.soundTypeColumn = i
-                print 'soundType'
-                print self.soundTypeColumn
+                print('soundType')
+                print(self.soundTypeColumn)
                 self.columnOrder[i] = 4
             elif headerName == 'Bird':
                 self.birdColumn = i

@@ -23,9 +23,9 @@ class ThreeACMatchingExp(two_alt_choice.TwoAltChoiceExp):
 
         """
         if not self.parameters['reduced_stims']:
-            mids = random.sample(xrange(self.num_stims), 3)
+            mids = random.sample(range(self.num_stims), 3)
         else:
-            mids = random.sample(xrange(2), 2) + random.sample(xrange(3), 1)
+            mids = random.sample(range(2), 2) + random.sample(range(3), 1)
 
         if trial_class == "L":
             mids[2] = mids[0]

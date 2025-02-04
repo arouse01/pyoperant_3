@@ -3,8 +3,13 @@
 # Much of the core code (of creating each of the sections) could probably made more dynamic to allow the user to
 # specify the desired number of boxes
 
-from PyQt4 import QtCore, QtGui
-from PyQt4.QtGui import *
+from PyQt5 import QtCore, QtGui
+from PyQt5.QtWidgets import (QApplication, QWidget, QGridLayout, QPushButton, QSizePolicy, QLabel, QComboBox, QFrame, 
+                             QVBoxLayout, QPlainTextEdit, QCheckBox, QTextEdit, QTextBrowser, QTableView,
+                             QAbstractItemView, QLayout, QHBoxLayout, QSpinBox, QToolBox, QFormLayout, QScrollArea,
+                             QTreeView, QSpacerItem)
+from PyQt5.QtGui import QPixmap, QIcon
+# from PyQt5.QtGui import *
 import math
 import collections
 
@@ -15,17 +20,59 @@ except AttributeError:
         return s
 
 try:
-    _encoding = QtGui.QApplication.UnicodeUTF8
+    _encoding = QApplication.UnicodeUTF8
 
 
     def _translate(context, text, disambig):
-        return QtGui.QApplication.translate(context, text, disambig, _encoding)
+        return QApplication.translate(context, text, disambig, _encoding)
 except AttributeError:
     def _translate(context, text, disambig):
-        return QtGui.QApplication.translate(context, text, disambig)
+        return QApplication.translate(context, text, disambig)
 
 
 class UiMainWindow(object):
+
+    def __init__(self):
+        self.behaviorLabel = None
+        self.behaviorField = None
+        self.startAllButton = None
+        self.stopAllButton = None
+        self.menuGrid = None
+        self.mainGrid = None
+        self.gridLayoutWidget = None
+        self.centralwidget = None
+        self.numberOfBoxes = None
+        self.waterIcon = None
+        self.wrenchIcon = None
+        self.sleepIcon = None
+        self.emptyIcon = None
+        self.errorIcon = None
+        self.redIcon = None
+        self.greenIcon = None
+        self.lineList = []  # Array for window dividng lines
+        self.stopBoxList = []  # Array for "stop box" button
+        self.startBoxList = []  # Array for "start box" button
+        self.performanceBoxList = []  # Array for "Performance" button
+        self.waterOptionButtonBoxList = []  # Array for water option button
+        self.optionButtonBoxList = []  # Array for option button
+        self.statusLayoutBoxList = []  # Array for the grid layout for each box
+        self.gridLayoutBoxList = []  # Array for the grid layout for each box
+        self.birdEntryBoxList = []  # Array for bird name text box
+        self.birdEntryLabelBoxList = []  # Array for label for parameter file
+        self.paramFileButtonBoxList = []  # Array for parameter file selection button
+        self.paramFileBoxList = []  # Array for parameter file text box
+        self.paramFileLabelBoxList = []  # Array for label for parameter file
+        self.lastTrialLabelList = []  # Array for last trial text box
+        self.statusStatsBoxList = []  # Array for status text box
+        self.statusTableBoxList = []  # Array for status text box
+        self.statusTotalsBoxList = []  # Array for status text box
+        self.boardVerBoxList = []  # Array for board version dropdown
+        self.checkActiveBoxList = []  # Array for "active" checkbox
+        self.checkActiveLabelBoxList = []  # Array for label for Active checkbox
+        self.graphicBoxList = []  # Array for status graphic box
+        self.phaseBoxList = []  # Array for the current phase
+        self.phaseLabelList = []  # Array for the current phase label
+        self.labelBoxList = []  # Array for the box name label
 
     def status_icon(self, boxnumber, icon):
         # Function for changing status icon to keep image changes within the layout file
@@ -45,30 +92,6 @@ class UiMainWindow(object):
     def setup_ui(self, main_window, window_dim=[], box_count=6, box_coords=[]):
 
         # region Variable init
-        self.labelBoxList = []  # Array for the box name label
-        self.phaseLabelList = []  # Array for the current phase label
-        self.phaseBoxList = []  # Array for the current phase
-        self.graphicBoxList = []  # Array for status graphic box
-        self.checkActiveLabelBoxList = []  # Array for label for Active checkbox
-        self.checkActiveBoxList = []  # Array for "active" checkbox
-        self.boardVerBoxList = []  # Array for board version dropdown
-        self.statusTotalsBoxList = []  # Array for status text box
-        self.statusTableBoxList = []  # Array for status text box
-        self.statusStatsBoxList = []  # Array for status text box
-        self.lastTrialLabelList = []  # Array for last trial text box
-        self.paramFileLabelBoxList = []  # Array for label for parameter file
-        self.paramFileBoxList = []  # Array for parameter file text box
-        self.paramFileButtonBoxList = []  # Array for parameter file selection button
-        self.birdEntryLabelBoxList = []  # Array for label for parameter file
-        self.birdEntryBoxList = []  # Array for bird name text box
-        self.gridLayoutBoxList = []  # Array for the grid layout for each box
-        self.statusLayoutBoxList = []  # Array for the grid layout for each box
-        self.optionButtonBoxList = []  # Array for option button
-        self.waterOptionButtonBoxList = []  # Array for water option button
-        self.performanceBoxList = []  # Array for "Performance" button
-        self.startBoxList = []  # Array for "start box" button
-        self.stopBoxList = []  # Array for "stop box" button
-        self.lineList = []  # Array for window dividng lines
         # endregion
 
         # region Icons
@@ -82,9 +105,9 @@ class UiMainWindow(object):
 
         # region Button icons
         self.wrenchIcon = QIcon()
-        self.wrenchIcon.addPixmap(QtGui.QPixmap(_from_utf8("icons/wrench.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.wrenchIcon.addPixmap(QtGui.QPixmap(_from_utf8("icons/wrench.svg")), QIcon.Normal, QIcon.Off)
         self.waterIcon = QIcon()
-        self.waterIcon.addPixmap(QtGui.QPixmap(_from_utf8("icons/water.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.waterIcon.addPixmap(QtGui.QPixmap(_from_utf8("icons/water.png")), QIcon.Normal, QIcon.Off)
         # endregion Button icons
 
         # region Other vars
@@ -159,15 +182,15 @@ class UiMainWindow(object):
         font11Under.setUnderline(True)
 
         # Size policies
-        sizePolicy_Fixed = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+        sizePolicy_Fixed = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         sizePolicy_Fixed.setHorizontalStretch(0)
         sizePolicy_Fixed.setVerticalStretch(0)
 
-        sizePolicy_minEx_max = QtGui.QSizePolicy(QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.Maximum)
+        sizePolicy_minEx_max = QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Maximum)
         sizePolicy_minEx_max.setHorizontalStretch(0)
         sizePolicy_minEx_max.setVerticalStretch(0)
 
-        sizePolicy_max = QtGui.QSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Maximum)
+        sizePolicy_max = QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
         sizePolicy_max.setHorizontalStretch(0)
         sizePolicy_max.setVerticalStretch(0)
         # endregion Formatting templates
@@ -176,41 +199,41 @@ class UiMainWindow(object):
         main_window.setObjectName(_from_utf8("main_window"))
         main_window.setSizePolicy(sizePolicy_Fixed)
         # main_window.setMaximumSize(QtCore.QSize(1200, 1000))
-        self.centralwidget = QtGui.QWidget(main_window)
+        self.centralwidget = QWidget(main_window)
         self.centralwidget.setSizePolicy(sizePolicy_Fixed)
         # self.centralwidget.setContentsMargins(0, 0, 0, 0)
         # self.centralwidget.setMaximumSize(QtCore.QSize(2000, 2000))
         self.centralwidget.setObjectName(_from_utf8("centralwidget"))
 
-        self.gridLayoutWidget = QtGui.QWidget(self.centralwidget)
+        self.gridLayoutWidget = QWidget(self.centralwidget)
         self.gridLayoutWidget.setObjectName(_from_utf8("gridLayoutWidget"))
         self.gridLayoutWidget.setSizePolicy(sizePolicy_Fixed)
-        self.mainGrid = QtGui.QGridLayout(self.gridLayoutWidget)
+        self.mainGrid = QGridLayout(self.gridLayoutWidget)
         self.mainGrid.setObjectName(_from_utf8("mainGrid"))
         self.gridLayoutWidget.setLayout(self.mainGrid)
 
         # Menu at bottom of screen
-        self.menuGrid = QtGui.QGridLayout()
+        self.menuGrid = QGridLayout()
         self.menuGrid.setObjectName(_from_utf8("menuGrid"))
-        self.stopAllButton = QtGui.QPushButton(self.gridLayoutWidget)
+        self.stopAllButton = QPushButton(self.gridLayoutWidget)
         self.stopAllButton.setObjectName(_from_utf8("stopAllButton"))
         self.stopAllButton.setSizePolicy(sizePolicy_minEx_max)
-        self.startAllButton = QtGui.QPushButton(self.gridLayoutWidget)
+        self.startAllButton = QPushButton(self.gridLayoutWidget)
         self.startAllButton.setObjectName(_from_utf8("startAllButton"))
         self.startAllButton.setSizePolicy(sizePolicy_minEx_max)
         self.menuGrid.addWidget(self.stopAllButton, 0, 0, 1, 1)
         self.menuGrid.addWidget(self.startAllButton, 0, 1, 1, 1)
-        self.behaviorField = QtGui.QComboBox(self.gridLayoutWidget)
+        self.behaviorField = QComboBox(self.gridLayoutWidget)
         self.behaviorField.setMinimumSize(QtCore.QSize(200, 0))
         self.behaviorField.setMaximumSize(QtCore.QSize(300, 30))
         self.behaviorField.setObjectName(_from_utf8("behaviorField"))
         self.behaviorField.addItem(_from_utf8(""))
         self.menuGrid.addWidget(self.behaviorField, 0, 4, 1, 1)
-        self.behaviorLabel = QtGui.QLabel(self.gridLayoutWidget)
+        self.behaviorLabel = QLabel(self.gridLayoutWidget)
         self.behaviorLabel.setMinimumSize(QtCore.QSize(70, 0))
         self.behaviorLabel.setMaximumSize(QtCore.QSize(80, 30))
-        # self.behaviorLabel.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
-        self.behaviorLabel.setAlignment(QtCore.Qt.AlignCenter)
+        # self.behaviorLabel.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignTrailing | QtCore.Qt.AlignmentFlag.AlignVCenter)
+        self.behaviorLabel.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.behaviorLabel.setObjectName(_from_utf8("behaviorLabel"))
         self.menuGrid.addWidget(self.behaviorLabel, 0, 3, 1, 1)
         self.menuGrid.addItem(add_spacer(20, policy='min'), 0, 2, 1, 1)
@@ -219,19 +242,19 @@ class UiMainWindow(object):
 
         # region Layout dividing lines
         for i in range(0, numHorizontalLines):  # Horizontal lines
-            self.lineList.append(QtGui.QFrame(self.gridLayoutWidget))
-            self.lineList[i].setFrameShape(QtGui.QFrame.HLine)
-            self.lineList[i].setFrameShadow(QtGui.QFrame.Sunken)
+            self.lineList.append(QFrame(self.gridLayoutWidget))
+            self.lineList[i].setFrameShape(QFrame.HLine)
+            self.lineList[i].setFrameShadow(QFrame.Sunken)
             self.lineList[i].setObjectName(_from_utf8("hline_%d" % i))
             self.mainGrid.addWidget(self.lineList[i], 2 * math.floor(i / columnCount) + 1, 2 * (i % columnCount), 1,
                                     1)
 
         for i in range(numHorizontalLines, self.numberOfBoxes + int(numVerticalLines)):  # Vertical lines
-            self.lineList.append(QtGui.QFrame(self.gridLayoutWidget))
-            self.lineList[i].setFrameShadow(QtGui.QFrame.Plain)
+            self.lineList.append(QFrame(self.gridLayoutWidget))
+            self.lineList[i].setFrameShadow(QFrame.Plain)
             self.lineList[i].setLineWidth(2)
             self.lineList[i].setMidLineWidth(0)
-            self.lineList[i].setFrameShape(QtGui.QFrame.VLine)
+            self.lineList[i].setFrameShape(QFrame.VLine)
             self.lineList[i].setObjectName(_from_utf8("vline_%d" % i))
             self.mainGrid.addWidget(self.lineList[i], 0, (i - numHorizontalLines) * 2 + 1, 2 * rowCount, 1)
 
@@ -240,29 +263,29 @@ class UiMainWindow(object):
         # region Individual section elements
         for box in range(0, self.numberOfBoxes):
             # region Object creation
-            self.gridLayoutBoxList.append(QtGui.QGridLayout())
-            self.statusLayoutBoxList.append(QtGui.QVBoxLayout())
-            self.birdEntryLabelBoxList.append(QtGui.QLabel(self.gridLayoutWidget))
-            self.birdEntryBoxList.append(QtGui.QPlainTextEdit(self.gridLayoutWidget))
-            self.checkActiveBoxList.append(QtGui.QCheckBox(self.gridLayoutWidget))
-            self.checkActiveLabelBoxList.append(QtGui.QLabel(self.gridLayoutWidget))
-            self.boardVerBoxList.append(QtGui.QComboBox(self.gridLayoutWidget))
-            self.graphicBoxList.append(QtGui.QLabel(self.gridLayoutWidget))
-            self.labelBoxList.append(QtGui.QLabel(self.gridLayoutWidget))
-            self.paramFileLabelBoxList.append(QtGui.QLabel(self.gridLayoutWidget))
-            self.paramFileButtonBoxList.append(QtGui.QPushButton(self.gridLayoutWidget))
-            self.paramFileBoxList.append(QtGui.QTextEdit(self.gridLayoutWidget))
-            self.phaseLabelList.append(QtGui.QLabel(self.gridLayoutWidget))
-            self.phaseBoxList.append(QtGui.QLabel(self.gridLayoutWidget))
-            self.optionButtonBoxList.append(QtGui.QPushButton(self.gridLayoutWidget))
-            self.waterOptionButtonBoxList.append(QtGui.QPushButton(self.gridLayoutWidget))
-            self.startBoxList.append(QtGui.QPushButton(self.gridLayoutWidget))
-            self.performanceBoxList.append(QtGui.QPushButton(self.gridLayoutWidget))
-            self.statusTotalsBoxList.append(QtGui.QTextBrowser(self.gridLayoutWidget))
-            self.statusTableBoxList.append(QtGui.QTableView(self.gridLayoutWidget))
-            self.statusStatsBoxList.append(QtGui.QLabel(self.gridLayoutWidget))
-            self.stopBoxList.append(QtGui.QPushButton(self.gridLayoutWidget))
-            self.lastTrialLabelList.append(QtGui.QLabel(self.gridLayoutWidget))
+            self.gridLayoutBoxList.append(QGridLayout())
+            self.statusLayoutBoxList.append(QVBoxLayout())
+            self.birdEntryLabelBoxList.append(QLabel(self.gridLayoutWidget))
+            self.birdEntryBoxList.append(QPlainTextEdit(self.gridLayoutWidget))
+            self.checkActiveBoxList.append(QCheckBox(self.gridLayoutWidget))
+            self.checkActiveLabelBoxList.append(QLabel(self.gridLayoutWidget))
+            self.boardVerBoxList.append(QComboBox(self.gridLayoutWidget))
+            self.graphicBoxList.append(QLabel(self.gridLayoutWidget))
+            self.labelBoxList.append(QLabel(self.gridLayoutWidget))
+            self.paramFileLabelBoxList.append(QLabel(self.gridLayoutWidget))
+            self.paramFileButtonBoxList.append(QPushButton(self.gridLayoutWidget))
+            self.paramFileBoxList.append(QTextEdit(self.gridLayoutWidget))
+            self.phaseLabelList.append(QLabel(self.gridLayoutWidget))
+            self.phaseBoxList.append(QLabel(self.gridLayoutWidget))
+            self.optionButtonBoxList.append(QPushButton(self.gridLayoutWidget))
+            self.waterOptionButtonBoxList.append(QPushButton(self.gridLayoutWidget))
+            self.startBoxList.append(QPushButton(self.gridLayoutWidget))
+            self.performanceBoxList.append(QPushButton(self.gridLayoutWidget))
+            self.statusTotalsBoxList.append(QTextBrowser(self.gridLayoutWidget))
+            self.statusTableBoxList.append(QTableView(self.gridLayoutWidget))
+            self.statusStatsBoxList.append(QLabel(self.gridLayoutWidget))
+            self.stopBoxList.append(QPushButton(self.gridLayoutWidget))
+            self.lastTrialLabelList.append(QLabel(self.gridLayoutWidget))
 
             # TODO: dynamic box placement within self.mainGrid
             boxRow = 2 * box_coords[box][0]
@@ -278,30 +301,30 @@ class UiMainWindow(object):
             if drawBorders:
                 boxGrid = [10, 5]
                 for row in range(boxGrid[0]):
-                    line = QtGui.QFrame(self.gridLayoutWidget)
-                    line.setFrameShape(QtGui.QFrame.HLine)
+                    line = QFrame(self.gridLayoutWidget)
+                    line.setFrameShape(QFrame.HLine)
                     line.setStyleSheet("color: red;")
-                    self.gridLayoutBoxList[box].addWidget(line, row, 0, boxGrid[0] + 1, 0, QtCore.Qt.AlignTop |
-                                                          QtCore.Qt.AlignVCenter)
+                    self.gridLayoutBoxList[box].addWidget(line, row, 0, boxGrid[0] + 1, 0, QtCore.Qt.AlignmentFlag.AlignTop |
+                                                          QtCore.Qt.AlignmentFlag.AlignVCenter)
                 for column in range(boxGrid[1]):
-                    line = QtGui.QFrame(self.gridLayoutWidget)
-                    line.setFrameShape(QtGui.QFrame.VLine)
+                    line = QFrame(self.gridLayoutWidget)
+                    line.setFrameShape(QFrame.VLine)
                     line.setMidLineWidth(0)
                     line.setStyleSheet("color: red;")
-                    self.gridLayoutBoxList[box].addWidget(line, 0, column, 0, boxGrid[1] + 1, QtCore.Qt.AlignLeft |
-                                                          QtCore.Qt.AlignLeft)
+                    self.gridLayoutBoxList[box].addWidget(line, 0, column, 0, boxGrid[1] + 1, QtCore.Qt.AlignmentFlag.AlignLeft |
+                                                          QtCore.Qt.AlignmentFlag.AlignLeft)
                 # region End lines
-                line = QtGui.QFrame(self.gridLayoutWidget)
-                line.setFrameShape(QtGui.QFrame.HLine)
+                line = QFrame(self.gridLayoutWidget)
+                line.setFrameShape(QFrame.HLine)
                 line.setStyleSheet("color: red;")
-                self.gridLayoutBoxList[box].addWidget(line, boxGrid[0], 0, boxGrid[0] + 1, 0, QtCore.Qt.AlignBottom |
-                                                      QtCore.Qt.AlignVCenter)
+                self.gridLayoutBoxList[box].addWidget(line, boxGrid[0], 0, boxGrid[0] + 1, 0, QtCore.Qt.AlignmentFlag.AlignBottom |
+                                                      QtCore.Qt.AlignmentFlag.AlignVCenter)
 
-                line = QtGui.QFrame(self.gridLayoutWidget)
-                line.setFrameShape(QtGui.QFrame.VLine)
+                line = QFrame(self.gridLayoutWidget)
+                line.setFrameShape(QFrame.VLine)
                 line.setStyleSheet("color: red;")
-                self.gridLayoutBoxList[box].addWidget(line, 0, boxGrid[1], 0, boxGrid[1] + 1, QtCore.Qt.AlignLeft |
-                                                      QtCore.Qt.AlignLeft)
+                self.gridLayoutBoxList[box].addWidget(line, 0, boxGrid[1], 0, boxGrid[1] + 1, QtCore.Qt.AlignmentFlag.AlignLeft |
+                                                      QtCore.Qt.AlignmentFlag.AlignLeft)
 
                 # endregion End lines
             # endregion Debugging gridlines
@@ -333,21 +356,21 @@ class UiMainWindow(object):
              └──────────────────────┴───────────┴───────────┴─────────┘
             """
             self.gridLayoutBoxList[box].addWidget(self.labelBoxList[box], 0, 0, 1, 1)
-            self.gridLayoutBoxList[box].addWidget(self.phaseLabelList[box], 0, 1, 1, 1, QtCore.Qt.AlignRight)
+            self.gridLayoutBoxList[box].addWidget(self.phaseLabelList[box], 0, 1, 1, 1, QtCore.Qt.AlignmentFlag.AlignRight)
             self.gridLayoutBoxList[box].addWidget(self.phaseBoxList[box], 0, 2, 1, 2)
 
-            self.gridLayoutBoxList[box].addWidget(self.waterOptionButtonBoxList[box], 0, 4, 1, 1, QtCore.Qt.AlignCenter)
+            self.gridLayoutBoxList[box].addWidget(self.waterOptionButtonBoxList[box], 0, 4, 1, 1, QtCore.Qt.AlignmentFlag.AlignCenter)
             self.gridLayoutBoxList[box].addLayout(self.statusLayoutBoxList[box], 1, 1, 5, 3)
 
-            self.gridLayoutBoxList[box].addWidget(self.graphicBoxList[box], 2, 0, 1, 1, QtCore.Qt.AlignCenter)
+            self.gridLayoutBoxList[box].addWidget(self.graphicBoxList[box], 2, 0, 1, 1, QtCore.Qt.AlignmentFlag.AlignCenter)
 
-            self.gridLayoutBoxList[box].addWidget(self.boardVerBoxList[box], 1, 0, 1, 1, QtCore.Qt.AlignCenter)
+            self.gridLayoutBoxList[box].addWidget(self.boardVerBoxList[box], 1, 0, 1, 1, QtCore.Qt.AlignmentFlag.AlignCenter)
 
-            self.gridLayoutBoxList[box].addWidget(self.checkActiveBoxList[box], 4, 0, 1, 1, QtCore.Qt.AlignCenter)
+            self.gridLayoutBoxList[box].addWidget(self.checkActiveBoxList[box], 4, 0, 1, 1, QtCore.Qt.AlignmentFlag.AlignCenter)
 
-            self.gridLayoutBoxList[box].addWidget(self.checkActiveLabelBoxList[box], 5, 0, 1, 1, QtCore.Qt.AlignCenter)
+            self.gridLayoutBoxList[box].addWidget(self.checkActiveLabelBoxList[box], 5, 0, 1, 1, QtCore.Qt.AlignmentFlag.AlignCenter)
 
-            self.gridLayoutBoxList[box].addWidget(self.lastTrialLabelList[box], 6, 1, 1, 3, QtCore.Qt.AlignLeft)
+            self.gridLayoutBoxList[box].addWidget(self.lastTrialLabelList[box], 6, 1, 1, 3, QtCore.Qt.AlignmentFlag.AlignLeft)
             # self.gridLayoutBoxList[box].addWidget(self.lastTrialBoxList[box], 6, 2, 1, 2)
 
             self.gridLayoutBoxList[box].addWidget(self.paramFileBoxList[box], 7, 1, 1, 3)
@@ -357,10 +380,10 @@ class UiMainWindow(object):
             self.gridLayoutBoxList[box].addWidget(self.birdEntryBoxList[box], 8, 1, 1, 3)
             self.gridLayoutBoxList[box].addWidget(self.birdEntryLabelBoxList[box], 8, 0, 1, 1)
 
-            self.gridLayoutBoxList[box].addWidget(self.performanceBoxList[box], 9, 0, 1, 2, QtCore.Qt.AlignLeft)
-            self.gridLayoutBoxList[box].addWidget(self.startBoxList[box], 9, 2, 1, 1, QtCore.Qt.AlignCenter)
-            self.gridLayoutBoxList[box].addWidget(self.stopBoxList[box], 9, 3, 1, 1, QtCore.Qt.AlignCenter)
-            self.gridLayoutBoxList[box].addWidget(self.optionButtonBoxList[box], 9, 4, 1, 1, QtCore.Qt.AlignCenter)
+            self.gridLayoutBoxList[box].addWidget(self.performanceBoxList[box], 9, 0, 1, 2, QtCore.Qt.AlignmentFlag.AlignLeft)
+            self.gridLayoutBoxList[box].addWidget(self.startBoxList[box], 9, 2, 1, 1, QtCore.Qt.AlignmentFlag.AlignCenter)
+            self.gridLayoutBoxList[box].addWidget(self.stopBoxList[box], 9, 3, 1, 1, QtCore.Qt.AlignmentFlag.AlignCenter)
+            self.gridLayoutBoxList[box].addWidget(self.optionButtonBoxList[box], 9, 4, 1, 1, QtCore.Qt.AlignmentFlag.AlignCenter)
             self.gridLayoutBoxList[box].setObjectName(_from_utf8("gridLayout_Box%d" % box))
             self.gridLayoutBoxList[box].setSpacing(4)
 
@@ -384,14 +407,14 @@ class UiMainWindow(object):
             self.statusTotalsBoxList[box].setTabStopWidth(60)
 
             self.statusTableBoxList[box].setFont(font11)
-            self.statusTableBoxList[box].setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
-            self.statusTableBoxList[box].setSelectionMode(QtGui.QAbstractItemView.NoSelection)
+            self.statusTableBoxList[box].setEditTriggers(QAbstractItemView.NoEditTriggers)
+            self.statusTableBoxList[box].setSelectionMode(QAbstractItemView.NoSelection)
             self.statusTableBoxList[box].setMinimumSize(QtCore.QSize(280, lineHeightBuffer + (textLnHgt * 4)))
             self.statusTableBoxList[box].setMaximumSize(QtCore.QSize(340, lineHeightBuffer + (textLnHgt * 4)))
             self.statusTableBoxList[box].setObjectName(_from_utf8("statusTable_Box%d" % box))
             self.statusTableBoxList[box].setSizePolicy(sizePolicy_Fixed)
-            self.statusTableBoxList[box].setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-            self.statusTableBoxList[box].setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+            self.statusTableBoxList[box].setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+            self.statusTableBoxList[box].setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
             self.statusTableBoxList[box].setStyleSheet("border: 0px;")
             self.statusTableBoxList[box].horizontalHeader().setMinimumSectionSize(50)
 
@@ -402,28 +425,28 @@ class UiMainWindow(object):
             self.statusStatsBoxList[box].setSizePolicy(sizePolicy_Fixed)
             self.statusStatsBoxList[box].setStyleSheet("border: 0px; background: white; text-align: center;")
             # self.statusStatsBoxList[box].setTabStopWidth(60)
-            self.statusStatsBoxList[box].setAlignment(QtCore.Qt.AlignCenter)
+            self.statusStatsBoxList[box].setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
 
             self.birdEntryBoxList[box].setFont(font11)
-            self.birdEntryBoxList[box].setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+            self.birdEntryBoxList[box].setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
             self.birdEntryBoxList[box].setMaximumSize(QtCore.QSize(280, 10 + textLnHgt))
             self.birdEntryBoxList[box].setObjectName(_from_utf8("birdEntry_Box%d" % box))
             self.birdEntryBoxList[box].setPlainText(_from_utf8(""))
             self.birdEntryBoxList[box].setSizePolicy(sizePolicy_minEx_max)
-            self.birdEntryBoxList[box].setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+            self.birdEntryBoxList[box].setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
             self.paramFileBoxList[box].setFont(font11)
-            self.paramFileBoxList[box].setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+            self.paramFileBoxList[box].setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
             self.paramFileBoxList[box].setMaximumSize(QtCore.QSize(280, 10 + textLnHgt))
             self.paramFileBoxList[box].setObjectName(_from_utf8("paramFile_Box%d" % box))
             self.paramFileBoxList[box].setSizePolicy(sizePolicy_minEx_max)
-            self.paramFileBoxList[box].setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+            self.paramFileBoxList[box].setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
             # endregion Text boxes
 
             # region Labels
             self.labelBoxList[box].setFont(font12Bold)
-            self.labelBoxList[box].setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
+            self.labelBoxList[box].setAlignment(QtCore.Qt.AlignmentFlag.AlignHCenter | QtCore.Qt.AlignmentFlag.AlignVCenter)
             self.labelBoxList[box].setLineWidth(2)
             self.labelBoxList[box].setFrameShape(QFrame.StyledPanel)
             self.labelBoxList[box].setFrameShadow(QFrame.Raised)
@@ -434,31 +457,31 @@ class UiMainWindow(object):
             self.phaseLabelList[box].setObjectName(_from_utf8("phaseLabel_Box%d" % box))
 
             self.phaseBoxList[box].setFont(font11Under)
-            self.phaseBoxList[box].setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+            self.phaseBoxList[box].setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
             self.phaseBoxList[box].setObjectName(_from_utf8("phase_Box%d" % box))
 
             self.lastTrialLabelList[box].setFont(font11)
-            self.lastTrialLabelList[box].setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+            self.lastTrialLabelList[box].setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
             self.lastTrialLabelList[box].setObjectName(_from_utf8("lastTrialLabel_Box%d" % box))
 
             # self.lastTrialBoxList[box].setFont(font11Under)
             # self.lastTrialBoxList[box].setObjectName(_from_utf8("lastTrial_Box%d" % box))
 
             self.checkActiveLabelBoxList[box].setFont(font11)
-            self.checkActiveLabelBoxList[box].setAlignment(QtCore.Qt.AlignCenter)
+            self.checkActiveLabelBoxList[box].setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
             self.checkActiveLabelBoxList[box].setObjectName(_from_utf8("checkActiveLabel_Box%d" % box))
             self.checkActiveLabelBoxList[box].setSizePolicy(sizePolicy_minEx_max)
 
             self.paramFileLabelBoxList[box].setFont(font11)
             self.paramFileLabelBoxList[box].setAlignment(
-                QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+                QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignTrailing | QtCore.Qt.AlignmentFlag.AlignVCenter)
             self.paramFileLabelBoxList[box].setMaximumSize(QtCore.QSize(500, 26))
             self.paramFileLabelBoxList[box].setObjectName(_from_utf8("paramFileLabel_Box%d" % box))
             self.paramFileLabelBoxList[box].setSizePolicy(sizePolicy_minEx_max)
 
             self.birdEntryLabelBoxList[box].setFont(font11)
             self.birdEntryLabelBoxList[box].setAlignment(
-                QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+                QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignTrailing | QtCore.Qt.AlignmentFlag.AlignVCenter)
             self.birdEntryLabelBoxList[box].setMaximumSize(QtCore.QSize(500, 26))
             self.birdEntryLabelBoxList[box].setObjectName(_from_utf8("birdEntryLabel_Box%d" % box))
             self.birdEntryLabelBoxList[box].setSizePolicy(sizePolicy_minEx_max)
@@ -528,21 +551,21 @@ class UiMainWindow(object):
             # endregion Checkboxes
 
             # region Graphics
-            self.graphicBoxList[box].setAlignment(QtCore.Qt.AlignCenter)
-            self.graphicBoxList[box].setFrameShadow(QtGui.QFrame.Sunken)
-            self.graphicBoxList[box].setFrameShape(QtGui.QFrame.Panel)
+            self.graphicBoxList[box].setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+            self.graphicBoxList[box].setFrameShadow(QFrame.Sunken)
+            self.graphicBoxList[box].setFrameShape(QFrame.Panel)
             self.graphicBoxList[box].setMargin(2)
             self.graphicBoxList[box].setMaximumSize(QtCore.QSize(35, 35))
             self.graphicBoxList[box].setObjectName(_from_utf8("graphicLabel_Box%d" % box))
             self.graphicBoxList[box].setPixmap(self.redIcon)
             self.graphicBoxList[box].setScaledContents(True)
             self.graphicBoxList[box].setText(_from_utf8(""))
-            self.graphicBoxList[box].setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
+            self.graphicBoxList[box].setTextInteractionFlags(QtCore.Qt.TextInteractionFlag.NoTextInteraction)
 
             # endregion Graphics
 
             # region Alignments
-            # self.gridLayoutBoxList[box].setAlignment(QtCore.Qt.AlignCenter)
+            # self.gridLayoutBoxList[box].setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
             # endregion Alignments
 
             # endregion Formatting
@@ -586,12 +609,29 @@ class UiMainWindow(object):
 
 
 class UiSolenoidControl(object):
+    def __init__(self):
+        self.line = None
+        self.done_Button = None
+        self.test_Button = None
+        self.close_Button = None
+        self.open_Button = None
+        self.test_Times = None
+        self.times_Label = None
+        self.test_Amount = None
+        self.amount_Label = None
+        self.test_Label = None
+        self.solenoid_Status_Text = None
+        self.solenoid_text = None
+        self.box_name = None
+        self.testLayout = None
+        self.horizontalLayout = None
+
     def setup_ui(self, solenoid_control):
         # region Presets
-        sizePolicy_fixed = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+        sizePolicy_fixed = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         sizePolicy_fixed.setHorizontalStretch(0)
         sizePolicy_fixed.setVerticalStretch(0)
-        sizePolicy_max = QtGui.QSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Maximum)
+        sizePolicy_max = QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
         sizePolicy_max.setHorizontalStretch(0)
         sizePolicy_max.setVerticalStretch(0)
 
@@ -608,57 +648,57 @@ class UiSolenoidControl(object):
         solenoid_control.setMaximumSize(QtCore.QSize(300, 200))
 
         # region Layouts
-        self.gridLayout = QtGui.QGridLayout(solenoid_control)
+        self.gridLayout = QGridLayout(solenoid_control)
         self.gridLayout.setObjectName(_from_utf8("gridLayout"))
 
-        self.verticalLayout = QtGui.QVBoxLayout()
-        self.verticalLayout.setSizeConstraint(QtGui.QLayout.SetFixedSize)
+        self.verticalLayout = QVBoxLayout()
+        self.verticalLayout.setSizeConstraint(QLayout.SetFixedSize)
         self.verticalLayout.setObjectName(_from_utf8("verticalLayout"))
 
-        self.horizontalLayout = QtGui.QHBoxLayout()
+        self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(_from_utf8("horizontalLayout"))
 
-        self.testLayout = QtGui.QGridLayout()
+        self.testLayout = QGridLayout()
         self.testLayout.setObjectName(_from_utf8("testLayout"))
         # endregion Layouts
 
         # region Labels and text
-        self.box_name = QtGui.QLabel(solenoid_control)
+        self.box_name = QLabel(solenoid_control)
         self.box_name.setSizePolicy(sizePolicy_max)
         self.box_name.setMaximumSize(QtCore.QSize(280, 24))
         self.box_name.setBaseSize(QtCore.QSize(50, 18))
         self.box_name.setFont(font13)
-        self.box_name.setAlignment(QtCore.Qt.AlignCenter)
+        self.box_name.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.box_name.setObjectName(_from_utf8("box_name"))
 
-        self.solenoid_text = QtGui.QLabel(solenoid_control)
+        self.solenoid_text = QLabel(solenoid_control)
         self.solenoid_text.setSizePolicy(sizePolicy_fixed)
         self.solenoid_text.setMaximumSize(QtCore.QSize(280, 24))
-        self.solenoid_text.setAlignment(QtCore.Qt.AlignCenter)
+        self.solenoid_text.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.solenoid_text.setObjectName(_from_utf8("solenoid_text"))
 
-        self.solenoid_Status_Text = QtGui.QLabel(solenoid_control)
+        self.solenoid_Status_Text = QLabel(solenoid_control)
         self.solenoid_Status_Text.setSizePolicy(sizePolicy_fixed)
         self.solenoid_Status_Text.setMinimumSize(QtCore.QSize(0, 17))
         self.solenoid_Status_Text.setMaximumSize(QtCore.QSize(280, 24))
 
         self.solenoid_Status_Text.setFont(font16)
-        self.solenoid_Status_Text.setAlignment(QtCore.Qt.AlignCenter)
+        self.solenoid_Status_Text.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.solenoid_Status_Text.setObjectName(_from_utf8("solenoid_Status_Text"))
 
-        self.test_Label = QtGui.QLabel(solenoid_control)
+        self.test_Label = QLabel(solenoid_control)
         self.test_Label.setSizePolicy(sizePolicy_fixed)
         self.test_Label.setMaximumSize(QtCore.QSize(280, 24))
-        self.test_Label.setAlignment(QtCore.Qt.AlignCenter)
+        self.test_Label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.test_Label.setObjectName(_from_utf8("test_Label"))
 
-        self.amount_Label = QtGui.QLabel(solenoid_control)
+        self.amount_Label = QLabel(solenoid_control)
         self.amount_Label.setSizePolicy(sizePolicy_fixed)
         self.amount_Label.setMaximumSize(QtCore.QSize(280, 24))
-        self.amount_Label.setAlignment(QtCore.Qt.AlignCenter)
+        self.amount_Label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.amount_Label.setObjectName(_from_utf8("amount_Label"))
 
-        self.test_Amount = QtGui.QSpinBox(solenoid_control)
+        self.test_Amount = QSpinBox(solenoid_control)
         self.test_Amount.setFixedHeight(27)
         self.test_Amount.setMaximumWidth(300)
         self.test_Amount.setSuffix(' ms')
@@ -667,13 +707,13 @@ class UiSolenoidControl(object):
         self.test_Amount.setSingleStep(5)
         self.test_Amount.setValue(75)
 
-        self.times_Label = QtGui.QLabel(solenoid_control)
+        self.times_Label = QLabel(solenoid_control)
         self.times_Label.setSizePolicy(sizePolicy_fixed)
         self.times_Label.setMaximumSize(QtCore.QSize(280, 24))
-        self.times_Label.setAlignment(QtCore.Qt.AlignCenter)
+        self.times_Label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.times_Label.setObjectName(_from_utf8("times_Label"))
 
-        self.test_Times = QtGui.QSpinBox(solenoid_control)
+        self.test_Times = QSpinBox(solenoid_control)
         self.test_Times.setFixedHeight(27)
         self.test_Times.setMaximumWidth(300)
         self.test_Times.setMinimum(0)
@@ -684,32 +724,32 @@ class UiSolenoidControl(object):
         # endregion Labels and text
 
         # region Buttons
-        self.open_Button = QtGui.QPushButton(solenoid_control)
+        self.open_Button = QPushButton(solenoid_control)
         self.open_Button.setMinimumSize(QtCore.QSize(0, 27))
         self.open_Button.setMaximumSize(QtCore.QSize(136, 27))
         self.open_Button.setObjectName(_from_utf8("open_Button"))
 
-        self.close_Button = QtGui.QPushButton(solenoid_control)
+        self.close_Button = QPushButton(solenoid_control)
         self.close_Button.setEnabled(False)
         self.close_Button.setMinimumSize(QtCore.QSize(0, 27))
         self.close_Button.setMaximumSize(QtCore.QSize(136, 27))
         self.close_Button.setObjectName(_from_utf8("close_Button"))
 
-        self.test_Button = QtGui.QPushButton(solenoid_control)
+        self.test_Button = QPushButton(solenoid_control)
         self.test_Button.setMinimumSize(QtCore.QSize(0, 27))
         self.test_Button.setMaximumSize(QtCore.QSize(136, 27))
         self.test_Button.setObjectName(_from_utf8("test_Button"))
 
-        self.done_Button = QtGui.QPushButton(solenoid_control)
+        self.done_Button = QPushButton(solenoid_control)
         self.done_Button.setSizePolicy(sizePolicy_fixed)
         self.done_Button.setMaximumSize(QtCore.QSize(270, 27))
         self.done_Button.setObjectName(_from_utf8("done_Button"))
         # endregion Buttons
 
         # region Other objects
-        self.line = QtGui.QFrame(solenoid_control)
-        self.line.setFrameShape(QtGui.QFrame.HLine)
-        self.line.setFrameShadow(QtGui.QFrame.Sunken)
+        self.line = QFrame(solenoid_control)
+        self.line.setFrameShape(QFrame.HLine)
+        self.line.setFrameShadow(QFrame.Sunken)
         self.line.setObjectName(_from_utf8("line"))
 
         self.horizontalLayout.addWidget(self.open_Button)
@@ -752,19 +792,53 @@ class UiSolenoidControl(object):
 
 
 class StatsWindow(object):
+    def __init__(self):
+        self.done_Button = None
+        self.export_Button = None
+        self.hold_Checkbox = None
+        self.recalculate_Button = None
+        self.folder_Button = None
+        self.menuGrid = None
+        self.presetsWidget = None
+        self.raw_Checkbox = None
+        self.probe_Checkbox = None
+        self.noResponse_Checkbox = None
+        self.presetsGrid = None
+        self.fieldSelectWidget = None
+        self.fieldListSelectNone = None
+        self.fieldListSelectAll = None
+        self.fieldWidget = None
+        self.fieldList = None
+        self.fieldScroll = None
+        self.fieldGrid = None
+        self.filterByWidget = None
+        self.filterGrid = None
+        self.groupByFields = None
+        self.groupByDisable_Checkbox = None
+        self.groupByDisable = None
+        self.groupDisableWidget = None
+        self.groupGrid = None
+        self.groupGridWidget = None
+        self.groupByWidget = None
+        self.optionWidth = None
+        self.optionToolbox = None
+        self.performance_Table = None
+        self.tableStatsBar = None
+        self.gridLayout = None
+
     def setup_ui(self, stats_window):
         stats_window.setObjectName(_from_utf8("stats_window"))
         stats_window.resize(1000, 600)
-        sizePolicy_fixed = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+        sizePolicy_fixed = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         sizePolicy_fixed.setHorizontalStretch(0)
         sizePolicy_fixed.setVerticalStretch(0)
-        sizePolicy_exp = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        sizePolicy_exp = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         sizePolicy_exp.setHorizontalStretch(0)
         sizePolicy_exp.setVerticalStretch(0)
-        sizePolicy_minEx = QtGui.QSizePolicy(QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.MinimumExpanding)
+        sizePolicy_minEx = QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
         sizePolicy_minEx.setHorizontalStretch(0)
         sizePolicy_minEx.setVerticalStretch(0)
-        sizePolicy_min = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Minimum)
+        sizePolicy_min = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
         sizePolicy_min.setHorizontalStretch(0)
         sizePolicy_min.setVerticalStretch(0)
 
@@ -772,10 +846,10 @@ class StatsWindow(object):
         font = QtGui.QFont()
         font.setPointSize(11)
 
-        self.gridLayout = QtGui.QGridLayout(stats_window)
+        self.gridLayout = QGridLayout(stats_window)
         self.gridLayout.setObjectName(_from_utf8("gridLayout"))
 
-        self.tableStatsBar = QtGui.QLabel()
+        self.tableStatsBar = QLabel()
         self.tableStatsBar.setStyleSheet("QLabel {border-bottom: 1px solid #CCCCCC; border-top: 0px solid #CCCCCC; "
                                          "qproperty-alignment: AlignRight; padding: 0px 2px 2px 2px; font: 10pt; }")
 
@@ -784,31 +858,31 @@ class StatsWindow(object):
         if drawBorders:
             boxGrid = [4, 3]
             for row in range(boxGrid[0]):  # Horizontal lines
-                line = QtGui.QFrame(stats_window)
-                line.setFrameShape(QtGui.QFrame.HLine)
+                line = QFrame(stats_window)
+                line.setFrameShape(QFrame.HLine)
                 line.setStyleSheet("color: red;")
-                self.gridLayout.addWidget(line, row, 0, boxGrid[0], 0, QtCore.Qt.AlignTop | QtCore.Qt.AlignVCenter)
+                self.gridLayout.addWidget(line, row, 0, boxGrid[0], 0, QtCore.Qt.AlignmentFlag.AlignTop | QtCore.Qt.AlignmentFlag.AlignVCenter)
             for column in range(boxGrid[1]):  # Vertical lines
-                line = QtGui.QFrame(stats_window)
-                line.setFrameShape(QtGui.QFrame.VLine)
+                line = QFrame(stats_window)
+                line.setFrameShape(QFrame.VLine)
                 line.setMidLineWidth(0)
                 line.setStyleSheet("color: red;")
-                self.gridLayout.addWidget(line, 0, column, 0, boxGrid[1], QtCore.Qt.AlignLeft | QtCore.Qt.AlignLeft)
+                self.gridLayout.addWidget(line, 0, column, 0, boxGrid[1], QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignLeft)
             # Grid lines at right and bottom
-            line = QtGui.QFrame(stats_window)
-            line.setFrameShape(QtGui.QFrame.HLine)
+            line = QFrame(stats_window)
+            line.setFrameShape(QFrame.HLine)
             line.setStyleSheet("color: red;")
             self.gridLayout.addWidget(line, boxGrid[0], 0, boxGrid[0], 0,
-                                      QtCore.Qt.AlignBottom | QtCore.Qt.AlignVCenter)
+                                      QtCore.Qt.AlignmentFlag.AlignBottom | QtCore.Qt.AlignmentFlag.AlignVCenter)
 
-            line = QtGui.QFrame(stats_window)
-            line.setFrameShape(QtGui.QFrame.VLine)
+            line = QFrame(stats_window)
+            line.setFrameShape(QFrame.VLine)
             line.setStyleSheet("color: red;")
-            self.gridLayout.addWidget(line, 0, boxGrid[1], 0, boxGrid[1], QtCore.Qt.AlignLeft | QtCore.Qt.AlignLeft)
+            self.gridLayout.addWidget(line, 0, boxGrid[1], 0, boxGrid[1], QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignLeft)
 
         # endregion
 
-        self.performance_Table = QtGui.QTableView(stats_window)
+        self.performance_Table = QTableView(stats_window)
         self.performance_Table.setSizePolicy(sizePolicy_exp)
         self.performance_Table.setMinimumSize(QtCore.QSize(800, 700))
         self.performance_Table.setFont(font)
@@ -817,7 +891,7 @@ class StatsWindow(object):
         self.performance_Table.installEventFilter(self)  # to capture keyboard commands to allow ctrl+c functionality
 
         # Analysis Settings
-        self.optionToolbox = QtGui.QToolBox()
+        self.optionToolbox = QToolBox()
         self.optionToolbox.setFrameShape(1)
         self.optionWidth = 290
         self.optionToolbox.setMinimumWidth(self.optionWidth)
@@ -826,28 +900,28 @@ class StatsWindow(object):
         # region Grouping section
         # Two widgets, one (top) for all of the regular grouping checkboxes, and one (bottom) for the 'show raw 
         # trials' checkbox
-        self.groupByWidget = QtGui.QWidget()
+        self.groupByWidget = QWidget()
         self.groupByWidget.setSizePolicy(sizePolicy_exp)
-        groupByWidgetLayout = QtGui.QVBoxLayout(self.groupByWidget)
+        groupByWidgetLayout = QVBoxLayout(self.groupByWidget)
         groupByWidgetLayout.setMargin(0)
 
         # top widget that holds all regular grouping checkboxes
-        self.groupGridWidget = QtGui.QWidget()
-        self.groupGrid = QtGui.QFormLayout(self.groupGridWidget)
+        self.groupGridWidget = QWidget()
+        self.groupGrid = QFormLayout(self.groupGridWidget)
         self.groupGrid.setObjectName(_from_utf8("groupGrid"))
-        self.groupGrid.setLabelAlignment(QtCore.Qt.AlignRight)
-        self.groupGrid.setFormAlignment(QtCore.Qt.AlignHCenter)
-        self.groupGrid.setAlignment(QtCore.Qt.AlignCenter)
+        self.groupGrid.setLabelAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
+        self.groupGrid.setFormAlignment(QtCore.Qt.AlignmentFlag.AlignHCenter)
+        self.groupGrid.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
 
         # raw trial checkbox that will disable all grouping checkboxes
-        self.groupDisableWidget = QtGui.QWidget()
-        self.groupByDisable = QtGui.QFormLayout(self.groupDisableWidget)
+        self.groupDisableWidget = QWidget()
+        self.groupByDisable = QFormLayout(self.groupDisableWidget)
         self.groupByDisable.setObjectName(_from_utf8("groupByDisable"))
-        self.groupByDisable.setLabelAlignment(QtCore.Qt.AlignRight)
-        self.groupByDisable.setFormAlignment(QtCore.Qt.AlignHCenter)
-        self.groupByDisable.setAlignment(QtCore.Qt.AlignCenter)
+        self.groupByDisable.setLabelAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
+        self.groupByDisable.setFormAlignment(QtCore.Qt.AlignmentFlag.AlignHCenter)
+        self.groupByDisable.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         # actual checkbox
-        self.groupByDisable_Checkbox = QtGui.QCheckBox(stats_window)
+        self.groupByDisable_Checkbox = QCheckBox(stats_window)
         self.groupByDisable_Checkbox.setSizePolicy(sizePolicy_fixed)
         self.groupByDisable_Checkbox.setFixedHeight(27)
         self.groupByDisable_Checkbox.setMaximumWidth(300)
@@ -865,34 +939,34 @@ class StatsWindow(object):
         # endregion Grouping section
 
         # region filtering section
-        self.filterGrid = QtGui.QFormLayout()
+        self.filterGrid = QFormLayout()
         self.filterGrid.setObjectName(_from_utf8("filterGrid"))
-        self.filterGrid.setLabelAlignment(QtCore.Qt.AlignRight)
-        self.filterGrid.setAlignment(QtCore.Qt.AlignCenter)
-        self.filterGrid.setFormAlignment(QtCore.Qt.AlignHCenter)
-        # self.filterGrid.setSizeConstraint(QtGui.QLayout.SetFixedSize)
+        self.filterGrid.setLabelAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
+        self.filterGrid.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.filterGrid.setFormAlignment(QtCore.Qt.AlignmentFlag.AlignHCenter)
+        # self.filterGrid.setSizeConstraint(QLayout.SetFixedSize)
 
-        self.filterByWidget = QtGui.QWidget()
+        self.filterByWidget = QWidget()
         self.filterByWidget.setLayout(self.filterGrid)
         self.filterByWidget.setSizePolicy(sizePolicy_minEx)
         # endregion filtering section
 
         # region Field selection section
-        self.fieldGrid = QtGui.QGridLayout()
+        self.fieldGrid = QGridLayout()
         self.fieldGrid.setObjectName(_from_utf8("fieldGrid"))
-        self.fieldGrid.setAlignment(QtCore.Qt.AlignCenter)
+        self.fieldGrid.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
 
-        self.fieldScroll = QtGui.QScrollArea()
+        self.fieldScroll = QScrollArea()
         self.fieldScroll.setSizePolicy(sizePolicy_exp)
         self.fieldScroll.setMinimumSize(QtCore.QSize(100, 150))
         self.fieldScroll.setMaximumSize(QtCore.QSize(self.optionWidth, 500))
         self.fieldScroll.setWidgetResizable(True)
 
-        self.fieldList = QtGui.QVBoxLayout()
+        self.fieldList = QVBoxLayout()
         self.fieldList.setObjectName(_from_utf8("fieldList"))
         self.fieldList.setSpacing(0)
 
-        self.fieldWidget = QtGui.QWidget()
+        self.fieldWidget = QWidget()
         self.fieldWidget.setSizePolicy(sizePolicy_exp)
         self.fieldWidget.setMaximumWidth(self.optionWidth)
 
@@ -900,43 +974,43 @@ class StatsWindow(object):
         self.fieldScroll.setWidget(self.fieldWidget)
 
         # region Select All/None buttons
-        self.fieldListSelectAll = QtGui.QPushButton(stats_window)
+        self.fieldListSelectAll = QPushButton(stats_window)
         self.fieldListSelectAll.setMinimumSize(QtCore.QSize(50, 27))
         self.fieldListSelectAll.setMaximumSize(QtCore.QSize(self.optionWidth, 27))
         self.fieldListSelectAll.setSizePolicy(sizePolicy_exp)
-        self.fieldListSelectNone = QtGui.QPushButton(stats_window)
+        self.fieldListSelectNone = QPushButton(stats_window)
         self.fieldListSelectNone.setMinimumSize(QtCore.QSize(50, 27))
         self.fieldListSelectNone.setMaximumSize(QtCore.QSize(self.optionWidth, 27))
         self.fieldListSelectNone.setSizePolicy(sizePolicy_exp)
         # endregion Select All/None buttons
 
-        self.fieldSelectWidget = QtGui.QWidget()
+        self.fieldSelectWidget = QWidget()
         self.fieldSelectWidget.setLayout(self.fieldGrid)
         # endregion Field selection section
 
         # region Preset Options
-        self.presetsGrid = QtGui.QFormLayout()
+        self.presetsGrid = QFormLayout()
         self.presetsGrid.setObjectName(_from_utf8("presetsGrid"))
-        self.presetsGrid.setLabelAlignment(QtCore.Qt.AlignRight)
-        self.presetsGrid.setFormAlignment(QtCore.Qt.AlignHCenter)
+        self.presetsGrid.setLabelAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
+        self.presetsGrid.setFormAlignment(QtCore.Qt.AlignmentFlag.AlignHCenter)
 
         # region Specific presets
         # Use only trials where subject responded, or include all trials?
-        self.noResponse_Checkbox = QtGui.QCheckBox(stats_window)
+        self.noResponse_Checkbox = QCheckBox(stats_window)
         self.noResponse_Checkbox.setSizePolicy(sizePolicy_fixed)
         self.noResponse_Checkbox.setMaximumSize(QtCore.QSize(27, 27))
         self.noResponse_Checkbox.setObjectName(_from_utf8("noResponse_Checkbox"))
         self.noResponse_Checkbox.setCheckState(2)
 
         # Analyze probe trials as well?
-        self.probe_Checkbox = QtGui.QCheckBox(stats_window)
+        self.probe_Checkbox = QCheckBox(stats_window)
         self.probe_Checkbox.setSizePolicy(sizePolicy_fixed)
         self.probe_Checkbox.setMaximumSize(QtCore.QSize(27, 27))
         self.probe_Checkbox.setObjectName(_from_utf8("probe_Checkbox"))
         self.probe_Checkbox.setCheckState(2)  # default to on
 
         # Include raw counts
-        self.raw_Checkbox = QtGui.QCheckBox(stats_window)
+        self.raw_Checkbox = QCheckBox(stats_window)
         self.raw_Checkbox.setSizePolicy(sizePolicy_fixed)
         self.raw_Checkbox.setMaximumSize(QtCore.QSize(27, 27))
         self.raw_Checkbox.setObjectName(_from_utf8("raw_Checkbox"))
@@ -945,22 +1019,22 @@ class StatsWindow(object):
         self.presetsGrid.addRow(QLabel("Include NR Trials"), self.noResponse_Checkbox)
         self.presetsGrid.addRow(QLabel("Include Probe Trials"), self.probe_Checkbox)
         self.presetsGrid.addRow(QLabel("Include Raw Trial Counts"), self.raw_Checkbox)
-        self.presetsWidget = QtGui.QWidget()
+        self.presetsWidget = QWidget()
         self.presetsWidget.setLayout(self.presetsGrid)
         # endregion Preset Options
 
         # region Menu buttons at bottom
-        self.menuGrid = QtGui.QHBoxLayout()
+        self.menuGrid = QHBoxLayout()
         self.menuGrid.setObjectName(_from_utf8("menuGrid"))
 
-        self.folder_Button = QtGui.QPushButton(stats_window)
+        self.folder_Button = QPushButton(stats_window)
         self.folder_Button.setSizePolicy(sizePolicy_fixed)
         self.folder_Button.setMinimumSize(QtCore.QSize(150, 27))
         self.folder_Button.setMaximumSize(QtCore.QSize(300, 27))
         self.folder_Button.setObjectName(_from_utf8("folder_Button"))
 
         # button to force a recalculation
-        self.recalculate_Button = QtGui.QPushButton(stats_window)
+        self.recalculate_Button = QPushButton(stats_window)
         self.recalculate_Button.setSizePolicy(sizePolicy_fixed)
         self.recalculate_Button.setMinimumSize(QtCore.QSize(150, 27))
         self.recalculate_Button.setMaximumSize(QtCore.QSize(300, 27))
@@ -968,20 +1042,20 @@ class StatsWindow(object):
 
         # if hold checkbox is on, changing field/grouping/filters won't force a recalculate, so multiple things can
         # be changed without needing to wait after each click
-        self.hold_Checkbox = QtGui.QCheckBox(stats_window)
+        self.hold_Checkbox = QCheckBox(stats_window)
         self.hold_Checkbox.setSizePolicy(sizePolicy_fixed)
         self.hold_Checkbox.setText('Automatically recalculate')
         self.hold_Checkbox.setFixedHeight(27)
         self.hold_Checkbox.setMaximumWidth(300)
         self.hold_Checkbox.setObjectName(_from_utf8("hold_Checkbox"))
 
-        self.export_Button = QtGui.QPushButton(stats_window)
+        self.export_Button = QPushButton(stats_window)
         self.export_Button.setSizePolicy(sizePolicy_fixed)
         self.export_Button.setMinimumSize(QtCore.QSize(150, 27))
         self.export_Button.setMaximumSize(QtCore.QSize(300, 27))
         self.export_Button.setObjectName(_from_utf8("export_Button"))
 
-        self.done_Button = QtGui.QPushButton(stats_window)
+        self.done_Button = QPushButton(stats_window)
         self.done_Button.setSizePolicy(sizePolicy_fixed)
         self.done_Button.setMinimumSize(QtCore.QSize(150, 27))
         self.done_Button.setMaximumSize(QtCore.QSize(300, 27))
@@ -1052,13 +1126,21 @@ class StatsWindow(object):
 
 
 class FolderSelectWindow(object):
+    def __init__(self):
+        self.done_button = None
+        self.cancel_button = None
+        self.change_folder_button = None
+        self.menuBar = None
+        self.folder_view = None
+        self.gridLayout = None
+
     def setup_ui(self, folder_window):
         folder_window.setObjectName(_from_utf8("folder_select_window"))
         folder_window.resize(500, 400)
-        sizePolicy_fixed = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+        sizePolicy_fixed = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         sizePolicy_fixed.setHorizontalStretch(0)
         sizePolicy_fixed.setVerticalStretch(0)
-        sizePolicy_exp = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        sizePolicy_exp = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         sizePolicy_exp.setHorizontalStretch(0)
         sizePolicy_exp.setVerticalStretch(0)
 
@@ -1066,10 +1148,10 @@ class FolderSelectWindow(object):
         font = QtGui.QFont()
         font.setPointSize(11)
 
-        self.gridLayout = QtGui.QGridLayout(folder_window)
+        self.gridLayout = QGridLayout(folder_window)
         self.gridLayout.setObjectName(_from_utf8("gridLayout"))
 
-        self.folder_view = QtGui.QTreeView(folder_window)
+        self.folder_view = QTreeView(folder_window)
         self.folder_view.setSizePolicy(sizePolicy_exp)
         self.folder_view.setMinimumSize(QtCore.QSize(500, 300))
         self.folder_view.setFont(font)
@@ -1077,20 +1159,20 @@ class FolderSelectWindow(object):
         self.folder_view.setObjectName(_from_utf8("folder_view"))
 
         # region Menu buttons at bottom
-        self.menuBar = QtGui.QHBoxLayout()
+        self.menuBar = QHBoxLayout()
         self.menuBar.setObjectName(_from_utf8("menuBar"))
 
-        self.change_folder_button = QtGui.QPushButton(folder_window)
+        self.change_folder_button = QPushButton(folder_window)
         self.change_folder_button.setSizePolicy(sizePolicy_fixed)
         self.change_folder_button.setMaximumSize(QtCore.QSize(300, 27))
         self.change_folder_button.setObjectName(_from_utf8("change_folder_button"))
 
-        self.cancel_button = QtGui.QPushButton(folder_window)
+        self.cancel_button = QPushButton(folder_window)
         self.cancel_button.setSizePolicy(sizePolicy_fixed)
         self.cancel_button.setMaximumSize(QtCore.QSize(300, 27))
         self.cancel_button.setObjectName(_from_utf8("cancel_button"))
 
-        self.done_button = QtGui.QPushButton(folder_window)
+        self.done_button = QPushButton(folder_window)
         self.done_button.setSizePolicy(sizePolicy_fixed)
         self.done_button.setMaximumSize(QtCore.QSize(300, 27))
         self.done_button.setObjectName(_from_utf8("done_button"))
@@ -1142,15 +1224,15 @@ def add_spacer(pref_width, pref_height=20, direction='horiz', policy='exp'):
     :param policy: Size policy. 'exp' for MinimumExpanding (default), 'min' for Minimum
     :return: QSpacerItem
     """
-    size_minExp = QtGui.QSizePolicy.MinimumExpanding
-    size_min = QtGui.QSizePolicy.Minimum
+    size_minExp = QSizePolicy.MinimumExpanding
+    size_min = QSizePolicy.Minimum
 
     if policy == 'exp':
         if direction == 'vert':
-            spacer = QtGui.QSpacerItem(pref_width, pref_height, size_min, size_minExp)
+            spacer = QSpacerItem(pref_width, pref_height, size_min, size_minExp)
         else:
-            spacer = QtGui.QSpacerItem(pref_width, pref_height, size_minExp, size_min)
+            spacer = QSpacerItem(pref_width, pref_height, size_minExp, size_min)
     else:
         # minimum, direction only specified in given dimensions
-        spacer = QtGui.QSpacerItem(pref_width, pref_height, size_min, size_min)
+        spacer = QSpacerItem(pref_width, pref_height, size_min, size_min)
     return spacer

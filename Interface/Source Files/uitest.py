@@ -1,12 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'untitled_2.ui'
-#
-# Created by: PyQt4 UI code generator 4.11.4
-#
-# WARNING! All changes made in this file will be lost!
-
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtGui
+from PyQt5.QtWidgets import (QApplication, QMainWindow, QMenuBar, QAction, QMenu, QFileDialog, QMessageBox,
+                             QInputDialog, QLineEdit, QDialog, qApp, QCheckBox, QSpinBox, QGroupBox,
+                             QHeaderView, QFileSystemModel, QSizePolicy, QGridLayout, QFrame, QWidget)
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -15,83 +12,83 @@ except AttributeError:
         return s
 
 try:
-    _encoding = QtGui.QApplication.UnicodeUTF8
+    _encoding = QApplication.UnicodeUTF8
     def _translate(context, text, disambig):
-        return QtGui.QApplication.translate(context, text, disambig, _encoding)
+        return QApplication.translate(context, text, disambig, _encoding)
 except AttributeError:
     def _translate(context, text, disambig):
-        return QtGui.QApplication.translate(context, text, disambig)
+        return QApplication.translate(context, text, disambig)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
         MainWindow.resize(1200, 953)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Fixed)
+        sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(MainWindow.sizePolicy().hasHeightForWidth())
         MainWindow.setSizePolicy(sizePolicy)
         MainWindow.setMaximumSize(QtCore.QSize(1200, 1000))
-        self.centralwidget = QtGui.QWidget(MainWindow)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Maximum)
+        self.centralwidget = QWidget(MainWindow)
+        sizePolicy = QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.centralwidget.sizePolicy().hasHeightForWidth())
         self.centralwidget.setSizePolicy(sizePolicy)
         self.centralwidget.setMaximumSize(QtCore.QSize(2000, 2000))
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
-        self.gridLayout = QtGui.QGridLayout(self.centralwidget)
+        self.gridLayout = QGridLayout(self.centralwidget)
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
-        self.mainGrid = QtGui.QGridLayout()
+        self.mainGrid = QGridLayout()
         self.mainGrid.setObjectName(_fromUtf8("mainGrid"))
-        self.line_19 = QtGui.QFrame(self.centralwidget)
-        self.line_19.setFrameShape(QtGui.QFrame.HLine)
-        self.line_19.setFrameShadow(QtGui.QFrame.Sunken)
+        self.line_19 = QFrame(self.centralwidget)
+        self.line_19.setFrameShape(QFrame.HLine)
+        self.line_19.setFrameShadow(QFrame.Sunken)
         self.line_19.setObjectName(_fromUtf8("line_19"))
         self.mainGrid.addWidget(self.line_19, 4, 2, 1, 1)
-        self.line_6 = QtGui.QFrame(self.centralwidget)
-        self.line_6.setFrameShape(QtGui.QFrame.HLine)
-        self.line_6.setFrameShadow(QtGui.QFrame.Sunken)
+        self.line_6 = QFrame(self.centralwidget)
+        self.line_6.setFrameShape(QFrame.HLine)
+        self.line_6.setFrameShadow(QFrame.Sunken)
         self.line_6.setObjectName(_fromUtf8("line_6"))
         self.mainGrid.addWidget(self.line_6, 4, 0, 1, 1)
-        self.line_8 = QtGui.QFrame(self.centralwidget)
-        self.line_8.setFrameShape(QtGui.QFrame.HLine)
-        self.line_8.setFrameShadow(QtGui.QFrame.Sunken)
+        self.line_8 = QFrame(self.centralwidget)
+        self.line_8.setFrameShape(QFrame.HLine)
+        self.line_8.setFrameShadow(QFrame.Sunken)
         self.line_8.setObjectName(_fromUtf8("line_8"))
         self.mainGrid.addWidget(self.line_8, 6, 0, 1, 1)
-        self.line_13 = QtGui.QFrame(self.centralwidget)
-        self.line_13.setFrameShadow(QtGui.QFrame.Plain)
+        self.line_13 = QFrame(self.centralwidget)
+        self.line_13.setFrameShadow(QFrame.Plain)
         self.line_13.setLineWidth(2)
-        self.line_13.setFrameShape(QtGui.QFrame.VLine)
+        self.line_13.setFrameShape(QFrame.VLine)
         self.line_13.setObjectName(_fromUtf8("line_13"))
         self.mainGrid.addWidget(self.line_13, 1, 1, 6, 1)
-        self.line_3 = QtGui.QFrame(self.centralwidget)
-        self.line_3.setFrameShape(QtGui.QFrame.HLine)
-        self.line_3.setFrameShadow(QtGui.QFrame.Sunken)
+        self.line_3 = QFrame(self.centralwidget)
+        self.line_3.setFrameShape(QFrame.HLine)
+        self.line_3.setFrameShadow(QFrame.Sunken)
         self.line_3.setObjectName(_fromUtf8("line_3"))
         self.mainGrid.addWidget(self.line_3, 2, 4, 1, 1)
-        self.line_14 = QtGui.QFrame(self.centralwidget)
-        self.line_14.setFrameShadow(QtGui.QFrame.Plain)
+        self.line_14 = QFrame(self.centralwidget)
+        self.line_14.setFrameShadow(QFrame.Plain)
         self.line_14.setLineWidth(2)
-        self.line_14.setFrameShape(QtGui.QFrame.VLine)
+        self.line_14.setFrameShape(QFrame.VLine)
         self.line_14.setObjectName(_fromUtf8("line_14"))
         self.mainGrid.addWidget(self.line_14, 1, 3, 6, 1)
-        self.line_4 = QtGui.QFrame(self.centralwidget)
-        self.line_4.setFrameShape(QtGui.QFrame.HLine)
-        self.line_4.setFrameShadow(QtGui.QFrame.Sunken)
+        self.line_4 = QFrame(self.centralwidget)
+        self.line_4.setFrameShape(QFrame.HLine)
+        self.line_4.setFrameShadow(QFrame.Sunken)
         self.line_4.setObjectName(_fromUtf8("line_4"))
         self.mainGrid.addWidget(self.line_4, 2, 6, 1, 1)
-        self.line_2 = QtGui.QFrame(self.centralwidget)
-        self.line_2.setFrameShape(QtGui.QFrame.HLine)
-        self.line_2.setFrameShadow(QtGui.QFrame.Sunken)
+        self.line_2 = QFrame(self.centralwidget)
+        self.line_2.setFrameShape(QFrame.HLine)
+        self.line_2.setFrameShadow(QFrame.Sunken)
         self.line_2.setObjectName(_fromUtf8("line_2"))
         self.mainGrid.addWidget(self.line_2, 2, 0, 1, 1)
-        self.line_7 = QtGui.QFrame(self.centralwidget)
-        self.line_7.setFrameShape(QtGui.QFrame.HLine)
-        self.line_7.setFrameShadow(QtGui.QFrame.Sunken)
+        self.line_7 = QFrame(self.centralwidget)
+        self.line_7.setFrameShape(QFrame.HLine)
+        self.line_7.setFrameShadow(QFrame.Sunken)
         self.line_7.setObjectName(_fromUtf8("line_7"))
         self.mainGrid.addWidget(self.line_7, 2, 2, 1, 1)
-        self.menuGrid = QtGui.QGridLayout()
+        self.menuGrid = QGridLayout()
         self.menuGrid.setObjectName(_fromUtf8("menuGrid"))
         self.stopAllButton = QtGui.QPushButton(self.centralwidget)
         self.stopAllButton.setObjectName(_fromUtf8("stopAllButton"))

@@ -1526,9 +1526,9 @@ KeyError: 'Hit'
   File "/home/rouse/Desktop/pyoperant/pyoperant/Interface/pyoperant_gui.py", line 1853, in recalculate
     self.outputData = perform.analyze(perform.summaryData, groupBy=self.dataGroups, dropCols=dropCols)
   File "/home/rouse/Desktop/pyoperant/pyoperant/pyoperant/analysis.py", line 615, in analyze
-    for k in xrange(groupCount):
+    for k in range(groupCount):
   File "/home/rouse/Desktop/pyoperant/pyoperant/pyoperant/analysis.py", line 615, in analyze
-    for k in xrange(groupCount):
+    for k in range(groupCount):
   File "_pydevd_bundle/pydevd_cython.pyx", line 969, in _pydevd_bundle.pydevd_cython.SafeCallWrapper.__call__
     ret = (<object>method_obj)(*args)
   File "_pydevd_bundle/pydevd_cython.pyx", line 515, in _pydevd_bundle.pydevd_cython.PyDBFrame.trace_dispatch
@@ -7384,7 +7384,7 @@ KeyError: u'Bin'
   File "./pyoperant_gui.py", line 1958, in recalculate
     filterData[columnName] = []
   File "./pyoperant_gui.py", line 1504, in refresh_table
-    # for j in xrange(self.proxyModel.columnCount()):  # for all fields available in model
+    # for j in range(self.proxyModel.columnCount()):  # for all fields available in model
   File "./pyoperant_gui.py", line 1578, in recheck_fields
     # Make sure all displayed fields are checked in Select Column pane
 KeyError: u'Bin'
@@ -23446,3 +23446,68 @@ SerialException: device reports readiness to read but returned no data (device d
 SerialException: device reports readiness to read but returned no data (device disconnected or multiple access on port?)
 
 "2025-01-12 18:25:11,504","Warning: Selected file not found: (/home/rouse/bird/data/g21o1/g21o1.log)
+"2025-02-04 15:40:16,550","Unhandled exception: Traceback (most recent call last):
+  File "/home/rousea/pyoperant/pyoperant/Interface/pyoperant_gui.py", line 2500, in <module>
+    main()  # run the main function
+    ^^^^^^
+  File "/home/rousea/pyoperant/pyoperant/Interface/pyoperant_gui.py", line 2494, in main
+    form = PyoperantGui()  # We set the form to be our ExampleApp (design)
+           ^^^^^^^^^^^^^^
+  File "/home/rousea/pyoperant/pyoperant/Interface/pyoperant_gui.py", line 424, in __init__
+    device.device_links.next()
+    ^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'generator' object has no attribute 'next'
+
+"2025-02-04 15:42:18,779","Unhandled exception: Traceback (most recent call last):
+  File "/home/rousea/pyoperant/pyoperant/Interface/pyoperant_gui.py", line 152, in <lambda>
+    viewGuiLogAction.triggered.connect(lambda _, b='guilog': self.open_text_file(0, whichfile=b))
+                                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/rousea/pyoperant/pyoperant/Interface/pyoperant_gui.py", line 517, in open_text_file
+    subprocess.Popen(["geany", filePath])
+  File "/usr/lib/python3.12/subprocess.py", line 1026, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+  File "/usr/lib/python3.12/subprocess.py", line 1955, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: 'geany'
+
+"2025-02-04 15:42:20,793","Unhandled exception: Traceback (most recent call last):
+  File "/home/rousea/pyoperant/pyoperant/Interface/pyoperant_gui.py", line 1468, in close_application
+    json.dump(d, outfile, ensure_ascii=False, indent=4, separators=(',', ': '))
+  File "/usr/lib/python3.12/json/__init__.py", line 179, in dump
+    for chunk in iterable:
+  File "/usr/lib/python3.12/json/encoder.py", line 432, in _iterencode
+    yield from _iterencode_dict(o, _current_indent_level)
+  File "/usr/lib/python3.12/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib/python3.12/json/encoder.py", line 439, in _iterencode
+    o = _default(o)
+        ^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/encoder.py", line 180, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+TypeError: Object of type zip is not JSON serializable
+
+"2025-02-04 15:45:16,337","Unhandled exception: Traceback (most recent call last):
+  File "/home/rousea/pyoperant/pyoperant/Interface/pyoperant_gui.py", line 2500, in <module>
+    main()  # run the main function
+    ^^^^^^
+  File "/home/rousea/pyoperant/pyoperant/Interface/pyoperant_gui.py", line 2494, in main
+    form = PyoperantGui()  # We set the form to be our ExampleApp (design)
+           ^^^^^^^^^^^^^^
+  File "/home/rousea/pyoperant/pyoperant/Interface/pyoperant_gui.py", line 429, in __init__
+    self.open_application()
+  File "/home/rousea/pyoperant/pyoperant/Interface/pyoperant_gui.py", line 1391, in open_application
+    dictLoaded = json.load(f)
+                 ^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/__init__.py", line 293, in load
+    return loads(fp.read(),
+           ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 2 column 19 (char 20)
+

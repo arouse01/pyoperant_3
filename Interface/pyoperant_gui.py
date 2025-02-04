@@ -1,13 +1,19 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from PyQt4 import QtCore, QtGui  # Import the PyQt4 module we'll need
+from PyQt5 import QtCore, QtGui  # Import the PyQt4 module we'll need
+from PyQt5.QtWidgets import (QApplication, QMainWindow, QMenuBar, QAction, QMenu, QFileDialog, QMessageBox,
+                             QInputDialog, QLineEdit, QDialog, qApp, QCheckBox, QSpinBox, QGroupBox,
+                             QHeaderView, QFileSystemModel, QSizePolicy, QVBoxLayout, QScrollArea, QHBoxLayout,
+                             QPushButton, QComboBox, QDateEdit)
+from PyQt5.QtGui import QStandardItemModel, QStandardItem, QKeySequence
+from PyQt5.QtCore import QSortFilterProxyModel
 import sys  # We need sys so that we can pass argv to QApplication
 import os
 import subprocess  # So pyoperant can run for each box without blocking the rest of the GUI
 import serial  # To connect directly to Teensys for water control
 import time
 import threading  # Support subprocess, allow error messages to be passed out of the subprocess
-import Queue  # Support subprocess, allow error messages to be passed out of the subprocess
+import queue  # Support subprocess, allow error messages to be passed out of the subprocess
 import pyudev  # device monitoring to identify connected Teensys
 import re  # Regex, for parsing device names returned from pyudev to identify connected Teensys
 import argparse  # Parse command line arguments for GUI, primarily to enable debug mode
@@ -49,7 +55,7 @@ def _log_except_hook(*exc_info):  # How uncaught errors are handled
     logging.error("Unhandled exception: {}".format(text))
 
 
-class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
+class PyoperantGui(QMainWindow, pyoperant_gui_layout.UiMainWindow):
     """
     Main class for running the pyoperant GUI.
 
@@ -102,6 +108,13 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
     def __init__(self):
 
         super(self.__class__, self).__init__()
+        self.args = None
+        self.log = None
+        self.log_level = None
+        self.error_file = None
+        self.log_file = None
+        self.logRawCounts = None
+        self.wf = None
         with wait_cursor():  # set mouse cursor to 'waiting'
             # Set up layout and widgets
             testing = False
@@ -120,36 +133,36 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             self.debug = False
 
             # region Menu bar
-            mainMenu = QtGui.QMenuBar()
+            mainMenu = QMenuBar()
             fileMenu = mainMenu.addMenu('&File')
 
-            analyzeGuiAction = QtGui.QAction("Analy&ze", self)
+            analyzeGuiAction = QAction("Analy&ze", self)
             analyzeGuiAction.triggered.connect(lambda _, b=1: self.analyze_performance(b))
             fileMenu.addAction(analyzeGuiAction)
 
-            analyzeActiveGuiAction = QtGui.QAction("&Analyze Current", self)
+            analyzeActiveGuiAction = QAction("&Analyze Current", self)
             analyzeActiveGuiAction.triggered.connect(lambda _, b='all': self.analyze_performance(b))
             fileMenu.addAction(analyzeActiveGuiAction)
 
-            quitGuiAction = QtGui.QAction("&Quit", self)
+            quitGuiAction = QAction("&Quit", self)
             quitGuiAction.triggered.connect(self.close)
             fileMenu.addAction(quitGuiAction)
 
             globalOptionsMenu = mainMenu.addMenu('Options')
-            autosleepMenu = QtGui.QMenu('Autosleep', self)
-            nrTrialMenu = QtGui.QMenu('NR Trials', self)
+            autosleepMenu = QMenu('Autosleep', self)
+            nrTrialMenu = QMenu('NR Trials', self)
 
             # global options for GUI
             self.ui_options = {}
 
-            viewGuiLogAction = QtGui.QAction("View GUI Log", self)
+            viewGuiLogAction = QAction("View GUI Log", self)
             viewGuiLogAction.triggered.connect(lambda _, b='guilog': self.open_text_file(0, whichfile=b))
-            viewGuiErrorAction = QtGui.QAction("View GUI Error Log", self)
+            viewGuiErrorAction = QAction("View GUI Error Log", self)
             viewGuiErrorAction.triggered.connect(lambda _, b='guierror': self.open_text_file(0, whichfile=b))
-            self.ui_options['use_nr_all'] = QtGui.QAction("Include NR trials (all)", self)
+            self.ui_options['use_nr_all'] = QAction("Include NR trials (all)", self)
             self.ui_options['use_nr_all'].setCheckable(True)
             self.ui_options['use_nr_all'].triggered.connect(self.use_nr_trials_all)
-            self.ui_options['autosleep_all'] = QtGui.QAction("Enable autosleep (all)", self)
+            self.ui_options['autosleep_all'] = QAction("Enable autosleep (all)", self)
             self.ui_options['autosleep_all'].setCheckable(True)
             self.ui_options['autosleep_all'].setChecked(True)
             self.ui_options['autosleep_all'].triggered.connect(self.auto_sleep_set_all)
@@ -240,8 +253,8 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             - Add a blank list var to the "option var init" section for the action to be stored for each box
             - Figure out whether the new option should be in the main option menu or in a submenu
             - in the "Option Menu Setup" section, add two lines:
-                  self.{list var}.append(QtGui.QAction({action name as str}, self)
-                      (or QtGui.QMenu({menu name as str}))
+                  self.{list var}.append(QAction({action name as str}, self)
+                      (or QMenu({menu name as str}))
                   self.{parent menu}[boxIndex].addAction(self.{list var}[boxIndex])
                       (or addMenu)
             - If adding an action, go to the "Connect functions to buttons/objects" section and add a line to connect
@@ -251,29 +264,29 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             """
             for boxIndex in self.boxList:
                 # Create necessary objects for each box
-                self.statsActionList.append(QtGui.QAction("Performance", self))
+                self.statsActionList.append(QAction("Performance", self))
 
                 # menu-specific
-                self.boxMenuList.append(QtGui.QMenu())
+                self.boxMenuList.append(QMenu())
 
-                self.fileSelectActionList.append(QtGui.QAction("&Select Settings file", self))
-                self.rawTrialActionList.append(QtGui.QAction("Get &Raw Trial Data", self))
-                self.openFolderActionList.append(QtGui.QAction("Open &Data folder", self))
-                self.openSettingsActionList.append(QtGui.QAction("&Open Settings file", self))
-                self.openBoxLogActionList.append(QtGui.QAction("Open &Log file", self))
-                self.createNewJsonList.append(QtGui.QAction("&New Settings file", self))
-                self.newBirdActionList.append(QtGui.QAction("New &Bird", self))
-                self.useNRList.append(QtGui.QAction("Use &NR Trials", self))
-                self.autoSleepList.append(QtGui.QAction("&Autosleep", self))
+                self.fileSelectActionList.append(QAction("&Select Settings file", self))
+                self.rawTrialActionList.append(QAction("Get &Raw Trial Data", self))
+                self.openFolderActionList.append(QAction("Open &Data folder", self))
+                self.openSettingsActionList.append(QAction("&Open Settings file", self))
+                self.openBoxLogActionList.append(QAction("Open &Log file", self))
+                self.createNewJsonList.append(QAction("&New Settings file", self))
+                self.newBirdActionList.append(QAction("New &Bird", self))
+                self.useNRList.append(QAction("Use &NR Trials", self))
+                self.autoSleepList.append(QAction("&Autosleep", self))
 
-                self.optionsMenuList.append(QtGui.QMenu("Options"))
+                self.optionsMenuList.append(QMenu("Options"))
 
-                self.solenoidMenuList.append(QtGui.QMenu("Water Control"))
-                self.primeActionList.append(QtGui.QAction("Prime (5s)", self))
-                self.purgeActionList.append(QtGui.QAction("Purge (20s)", self))
-                self.solenoidManualList.append(QtGui.QAction("Manual Control", self))
+                self.solenoidMenuList.append(QMenu("Water Control"))
+                self.primeActionList.append(QAction("Prime (5s)", self))
+                self.purgeActionList.append(QAction("Purge (20s)", self))
+                self.solenoidManualList.append(QAction("Manual Control", self))
 
-                self.soundCheckActionList.append(QtGui.QAction("Sound Check", self))
+                self.soundCheckActionList.append(QAction("Sound Check", self))
 
                 # Reorder to change order in menu
                 """
@@ -344,7 +357,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
                 self.lastTrialList.append(None)
 
                 # Queue for running subprocesses and pulling outputs without blocking main script
-                self.qList[boxIndex] = Queue.Queue()
+                self.qList[boxIndex] = queue.Queue()
 
                 # Device-specific vars
                 self.deviceIDList.append(None)
@@ -353,7 +366,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
                 ## The following lines are only if we want to implement the ability for a running pyoperant
                 # subprocess to accept external input from the GUI
 
-                # self.qReadList[boxIndex] = Queue.Queue()  # Queue for running log-read subprocesses without blocking
+                # self.qReadList[boxIndex] = queue.Queue()  # Queue for running log-read subprocesses without blocking
                 # # main script
                 #
                 # self.tReadList[boxIndex] = threading.Thread(target=self.read_output_box,
@@ -415,7 +428,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             # tempContext = pyudev.Context()
             for device in context.list_devices(subsystem='tty'):
                 try:
-                    device.device_links.next()
+                    next(device.device_links)
                     self.usb_monitor('add', device)
                 except StopIteration:
                     pass
@@ -431,7 +444,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             currentPath = existingPathFile[0]
         else:  # Otherwise just start in working directory
             currentPath = os.path.dirname(os.path.realpath(__file__))
-        paramFile = QtGui.QFileDialog.getOpenFileName(self, "Select Preferences File", currentPath,
+        paramFile = QFileDialog.getOpenFileName(self, "Select Preferences File", currentPath,
                                                       "JSON Files (*.json)")
         # execute getOpenFileName dialog and set the directory variable to be equal to the user selected directory
 
@@ -484,10 +497,10 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             # self.log.info(folderPath[0])
             subprocess.Popen(["xdg-open", folderPath[0]])
         else:
-            msg = QtGui.QMessageBox()
+            msg = QMessageBox()
             msg.setIcon(2)
             msg.setText('Warning: Folder not found')
-            msg.setStandardButtons(QtGui.QMessageBox.Ok)
+            msg.setStandardButtons(QMessageBox.Ok)
             msg.exec_()
             self.log.error('Warning: Data folder not found: ({})'.format(folderPath[0]))
 
@@ -510,16 +523,16 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         elif os.path.exists(filePath):
             subprocess.Popen(["geany", filePath])
         else:
-            msg = QtGui.QMessageBox()
+            msg = QMessageBox()
             msg.setIcon(2)
             msg.setText('Warning: File not found')
-            msg.setStandardButtons(QtGui.QMessageBox.Ok)
+            msg.setStandardButtons(QMessageBox.Ok)
             msg.exec_()
             self.log.error('Warning: Selected file not found: ({})'.format(filePath))
 
     def create_json_file(self, boxnumber, birdname=''):
         currentPath = os.path.dirname('/home/rouse/Desktop/pyoperant/pyoperant/pyoperant/behavior/')
-        paramFile = QtGui.QFileDialog.getOpenFileName(self, "Select Template for Settings", currentPath,
+        paramFile = QFileDialog.getOpenFileName(self, "Select Template for Settings", currentPath,
                                                       "JSON Files (*.json)")
         if paramFile:  # if user didn't pick a file don't replace existing path
             # build new data folder path
@@ -547,7 +560,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         return False
 
     def create_new_bird(self, boxnumber):
-        newBird, ok = QtGui.QInputDialog.getText(self, 'Change Bird', 'Bird ID:', QtGui.QLineEdit.Normal, "")
+        newBird, ok = QInputDialog.getText(self, 'Change Bird', 'Bird ID:', QLineEdit.Normal, "")
         if newBird and ok:  # User entered bird name and clicked OK
             jsonSuccess = self.create_json_file(boxnumber, newBird)
             if jsonSuccess:
@@ -562,7 +575,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             while True:  # Empty queue so process can end gracefully
                 try:
                     blank = self.qList[boxnumber].get(False)
-                except Queue.Empty:
+                except queue.Empty:
                     break
         # self.tList[boxnumber].terminate()
         # self.subprocessBox[boxnumber].stderr.close()
@@ -896,7 +909,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         fl = f.readlines()
         f.close()
         # cards file is formatted "number [deviceName     ] so pull values before the matching name to get card number
-        matchString = '^(.+?)\s\[' + deviceNameIn
+        matchString = r"^(.+?)\s\[" + deviceNameIn
         deviceCardIn = []
         for x in fl:
             m = re.search(matchString, x)
@@ -1157,7 +1170,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
                     logTotalsMessage.encode('utf8')
                     self.display_message(boxnumber, logTotalsMessage, target='status')
 
-                    self.logRawCounts = QtGui.QStandardItemModel(self)
+                    self.logRawCounts = QStandardItemModel(self)
                     self.logRawCounts.setHorizontalHeaderLabels(["S+", "S-", "Prb+", "Prb-"])
                     self.logRawCounts.setVerticalHeaderLabels(["RspSw", "TrlSw"])
 
@@ -1177,14 +1190,14 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
                     ]
                     for row in range(len(rawCounts)):
                         for column in range(len(rawCounts[row])):
-                            self.logRawCounts.setItem(row, column, QtGui.QStandardItem(rawCounts[row][column]))
+                            self.logRawCounts.setItem(row, column, QStandardItem(rawCounts[row][column]))
 
                     self.statusTableBoxList[boxnumber].setModel(self.logRawCounts)
                     self.statusTableBoxList[boxnumber].horizontalHeader().setResizeMode(
-                        QtGui.QHeaderView.ResizeToContents)
+                        QHeaderView.ResizeToContents)
                     self.statusTableBoxList[boxnumber].horizontalHeader().setStretchLastSection(True)
                     self.statusTableBoxList[boxnumber].verticalHeader().setResizeMode(
-                        QtGui.QHeaderView.Stretch)
+                        QHeaderView.Stretch)
 
                     if self.useNRList[boxnumber].isChecked():
                         logStats = "d' (NR): {dprime_NR:1.2f}      " + \
@@ -1222,7 +1235,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
                 return True
         else:
             for epoch in schedule:
-                assert len(epoch) is 2
+                assert len(epoch) == 2
                 now = dt.datetime.time(dt.datetime.now())
                 start = dt.datetime.time(dt.datetime.strptime(epoch[0], fmt))
                 end = dt.datetime.time(dt.datetime.strptime(epoch[1], fmt))
@@ -1265,7 +1278,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             error = ""
             try:
                 error = '{0}\n{1}'.format(error, self.qList[boxnumber].get(False))
-            except Queue.Empty:
+            except queue.Empty:
                 break
         return error
 
@@ -1361,7 +1374,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         bird_name = str(self.birdEntryBoxList[boxnumber].toPlainText())
         dataFolder = os.path.join(self.experimentPath, bird_name)
         performance = analysis.Performance(dataFolder)
-        output_path = QtGui.QFileDialog.getSaveFileName(self, "Save As...", dataFolder, "CSV Files (*.csv)")
+        output_path = QFileDialog.getSaveFileName(self, "Save As...", dataFolder, "CSV Files (*.csv)")
         if output_path:
             with wait_cursor():  # set mouse cursor to 'waiting'
                 performance.raw_trial_data.to_csv(str(output_path))
@@ -1449,10 +1462,10 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             birdListTemp.append(birdSingle)
             activeListTemp.append(self.checkActiveBoxList[boxnumber].isChecked())
             boardVerListTemp.append(str(self.boardVerBoxList[boxnumber].currentText()))
-        paramFiles = zip(self.boxList, paramFileList)
-        birds = zip(self.boxList, birdListTemp)
-        active = zip(self.boxList, activeListTemp)
-        boardVer = zip(self.boxList, boardVerListTemp)
+        paramFiles = list(zip(self.boxList, paramFileList))
+        birds = list(zip(self.boxList, birdListTemp))
+        active = list(zip(self.boxList, activeListTemp))
+        boardVer = list(zip(self.boxList, boardVerListTemp))
         shutdownProper = True
 
         d = {'paramFiles': paramFiles, 'birds': birds, 'active': active, 'boardVer': boardVer, 'shutdownProper':
@@ -1497,7 +1510,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
     # endregion
 
 
-class SolenoidGui(QtGui.QDialog, pyoperant_gui_layout.UiSolenoidControl):
+class SolenoidGui(QDialog, pyoperant_gui_layout.UiSolenoidControl):
     """
     Code for creating and managing dialog that can open and close the solenoid for a given box manually
     Primarily to aid in water system cleaning process
@@ -1507,6 +1520,7 @@ class SolenoidGui(QtGui.QDialog, pyoperant_gui_layout.UiSolenoidControl):
     def __init__(self, box_number, solenoid_channel):
         super(self.__class__, self).__init__()
 
+        self.device_name = None
         self.setup_ui(self)  # from pyoperant_gui_layout.py
 
         self.open_Button.clicked.connect(lambda _, b=box_number: self.solenoid_control('open', b))
@@ -1595,7 +1609,7 @@ class SolenoidGui(QtGui.QDialog, pyoperant_gui_layout.UiSolenoidControl):
 
 
 # noinspection PyUnresolvedReferences
-class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
+class StatsGui(QDialog, pyoperant_gui_layout.StatsWindow):
     """
     Code for creating and managing dialog that displays bird's performance stats
     Added 11/30/18 by AR
@@ -1628,6 +1642,10 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
     def __init__(self, data_folder):
         super(self.__class__, self).__init__()
 
+        self.outputData = None
+        self.rawTrialData = None
+        self.proxyModel = None
+        self.model = None
         self.setup_ui(self)  # This is defined in pyoperant_gui_layout.py file
 
         # Ensure that pyqt can delete objects properly before python garbage collector goes to work
@@ -1723,7 +1741,7 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
 
     def export(self):
 
-        output_path = QtGui.QFileDialog.getSaveFileName(self, "Save As...", self.outputFolder, "CSV Files (*.csv)")
+        output_path = QFileDialog.getSaveFileName(self, "Save As...", self.outputFolder, "CSV Files (*.csv)")
         output_path = str(output_path)
         if output_path:
             if len(os.path.splitext(str(output_path))[1]) == 0:
@@ -1741,7 +1759,7 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
         """
 
         # Pull csv data into model, then put model into table - apparently proper way of doing it in Pyqt
-        self.model = QtGui.QStandardItemModel(self)
+        self.model = QStandardItemModel(self)
 
         with open(output_path, 'rb') as inputFile:
             i = 1
@@ -1755,12 +1773,12 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
                     self.model.setHorizontalHeaderLabels(row)
 
                 else:  # set items in rows of table
-                    items = [QtGui.QStandardItem(field) for field in row]
+                    items = [QStandardItem(field) for field in row]
                     self.model.appendRow(items)
                 i += 1
 
         # ProxyModel allows sorting
-        self.proxyModel = QtGui.QSortFilterProxyModel()
+        self.proxyModel = QSortFilterProxyModel()
         self.proxyModel.setSourceModel(self.model)
 
         self.performance_Table.setModel(self.proxyModel)  # apply constructed model to tableview object
@@ -1784,7 +1802,7 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
         # https://stackoverflow.com/questions/40469607
 
         if (event.type() == QtCore.QEvent.KeyPress and
-                event.matches(QtGui.QKeySequence.Copy)):
+                event.matches(QKeySequence.Copy)):
             self.copy_table_selection()
             return True
         return super(self.__class__, self).eventFilter(source, event)
@@ -1807,7 +1825,7 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
                 table[row][column] = index.data().toString()
             stream = io.BytesIO()
             csv.writer(stream, delimiter='\t').writerows(table)
-            QtGui.qApp.clipboard().setText(stream.getvalue())
+            qApp.clipboard().setText(stream.getvalue())
 
     def select_row_count(self):
         """
@@ -1831,11 +1849,11 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
         for key in self.fieldManagement:
             columnName = self.fieldManagement[key]['name']
 
-            item = QtGui.QCheckBox()
+            item = QCheckBox()
             item.setMinimumSize(QtCore.QSize(27, 27))
             item.setMaximumSize(QtCore.QSize(self.optionWidth, 27))
-            item.setSizePolicy(QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred,
-                                                 QtGui.QSizePolicy.MinimumExpanding))
+            item.setSizePolicy(QSizePolicy(QSizePolicy.Preferred,
+                                                 QSizePolicy.MinimumExpanding))
 
             item.setText(columnName)
             item.setTristate(False)
@@ -1865,7 +1883,7 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
         Makes sure all fields shown in the actual data table are checked in Select Column pane
         """
         existingHeaders = []  # Get list of headers, since they can't be pulled out of model as list (AFAIK)
-        for j in xrange(self.model.columnCount()):  # for all fields available in model
+        for j in range(self.model.columnCount()):  # for all fields available in model
             columnName = unicode(self.model.headerData(j, QtCore.Qt.Horizontal).toString())  # .replace('\n(NR)',
             # ' (NR)')
             if columnName == 'Bin':
@@ -1962,8 +1980,8 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
 
         self.groupByFields[group_name] = {}
 
-        groupByCheckbox = QtGui.QCheckBox(self)
-        groupByCheckbox.setSizePolicy(QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed))
+        groupByCheckbox = QCheckBox(self)
+        groupByCheckbox.setSizePolicy(QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed))
         groupByCheckbox.setFixedHeight(27)
         groupByCheckbox.setMaximumWidth(300)
         groupByCheckbox.setObjectName(_from_utf8("groupBy{}_Checkbox".format(group_name)))
@@ -1976,7 +1994,7 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
             # to dynamically group by a certain number of fields
             groupByCheckbox.setText("Every")
             self.groupByFields[group_name]['checkbox'] = groupByCheckbox
-            rangeBox = QtGui.QSpinBox(self)
+            rangeBox = QSpinBox(self)
             rangeBox.setFixedHeight(27)
             rangeBox.setMaximumWidth(300)
             rangeBox.setSuffix(' ' + group_name)
@@ -2060,15 +2078,15 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
         for columnName in self.fieldManagement:
             if self.fieldManagement[columnName]['filter']['type'] == 'list':
                 # create widget for both select all/none and field list
-                parentGroupBox = QtGui.QGroupBox()
+                parentGroupBox = QGroupBox()
 
                 # Stylesheet so the groupbox can have a border without giving borders to all child components
                 parentGroupBox.setStyleSheet(
                     'QGroupBox {border: 1px solid gray;margin-top: 0.5em} ' +
                     'QGroupBox::title {subcontrol-origin: margin; left: 3px; padding: 0 3px 0 3px;}')
 
-                parentGroupBox.setSizePolicy(QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred,
-                                                               QtGui.QSizePolicy.MinimumExpanding))
+                parentGroupBox.setSizePolicy(QSizePolicy(QSizePolicy.Preferred,
+                                                               QSizePolicy.MinimumExpanding))
                 parentGroupBox.setMaximumWidth(self.optionWidth)
                 parentGroupBox.setMaximumHeight(180)
                 parentGroupBox.setContentsMargins(3, 3, 3, 3)
@@ -2076,24 +2094,24 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
                 parentGroupBox.setTitle(columnName)
                 self.fieldManagement[columnName]['filter']['widget'] = parentGroupBox
                 # Add sublayout for both all/none buttons and value list
-                layout = QtGui.QVBoxLayout()
+                layout = QVBoxLayout()
                 layout.setSpacing(0)
                 # Add widget for value list (that gets filled later)
-                scrollArea = QtGui.QScrollArea()
+                scrollArea = QScrollArea()
                 scrollArea.setMinimumHeight(40)
                 scrollArea.setMaximumWidth(self.optionWidth)
                 scrollArea.setMaximumHeight(150)
-                scrollArea.setSizePolicy(QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding,
-                                                           QtGui.QSizePolicy.Expanding))
+                scrollArea.setSizePolicy(QSizePolicy(QSizePolicy.Expanding,
+                                                           QSizePolicy.Expanding))
                 scrollArea.setContentsMargins(0, 0, 0, 0)
                 self.fieldManagement[columnName]['filter']['CheckBoxList'] = scrollArea
                 # Add widget for select all/none
-                self.fieldManagement[columnName]['filter']['selectAllNoneMenu'] = QtGui.QWidget()
-                selectLayout = QtGui.QHBoxLayout()
-                actionAll = QtGui.QPushButton("Select All", self)
+                self.fieldManagement[columnName]['filter']['selectAllNoneMenu'] = QWidget()
+                selectLayout = QHBoxLayout()
+                actionAll = QPushButton("Select All", self)
                 actionAll.clicked.connect(lambda _, b=columnName: self.apply_filter(
                     column_name=b, filter_value='all'))
-                actionNone = QtGui.QPushButton("Select None", self)
+                actionNone = QPushButton("Select None", self)
                 actionNone.clicked.connect(lambda _, b=columnName: self.apply_filter(
                     column_name=b, filter_value='none'))
                 selectLayout.addWidget(actionAll)
@@ -2109,15 +2127,15 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
 
             elif self.fieldManagement[columnName]['filter']['type'] == 'range':
                 # create widget for both select all/none and field list
-                parentGroupBox = QtGui.QGroupBox()
+                parentGroupBox = QGroupBox()
 
                 # Stylesheet so the groupbox can have a border without giving borders to all child components
                 parentGroupBox.setStyleSheet(
                     'QGroupBox {border: 1px solid gray;margin-top: 0.5em} ' +
                     'QGroupBox::title {subcontrol-origin: margin; left: 3px; padding: 0 3px 0 3px;}')
 
-                parentGroupBox.setSizePolicy(QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding,
-                                                               QtGui.QSizePolicy.Expanding))
+                parentGroupBox.setSizePolicy(QSizePolicy(QSizePolicy.Expanding,
+                                                               QSizePolicy.Expanding))
                 parentGroupBox.setMaximumHeight(180)
                 parentGroupBox.setMaximumWidth(self.optionWidth)
                 parentGroupBox.setContentsMargins(3, 3, 3, 3)
@@ -2125,17 +2143,17 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
                 parentGroupBox.setTitle(columnName)
                 self.fieldManagement[columnName]['filter']['widget'] = parentGroupBox
                 # Add sublayout for both all/none buttons and value list
-                layout = QtGui.QHBoxLayout()
+                layout = QHBoxLayout()
                 # layout.setSpacing(0)
 
                 # Widget for equality selection
-                compareBox = QtGui.QComboBox()
+                compareBox = QComboBox()
                 compareBox.addItems(['<', '<=', '>', '>=', '==', '!='])
                 compareBox.setMaximumWidth(50)
                 compareBox.currentIndexChanged.connect(self.apply_filter)
 
                 # Add widget for date
-                dateBox = QtGui.QDateEdit()
+                dateBox = QDateEdit()
                 dateBox.setCalendarPopup(True)
                 currDate = QtCore.QDate()  # currentDate is called this way to avoid PyCharm claiming parameter
                 # 'self' is unfilled in currentDate()
@@ -2162,7 +2180,7 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
         Get values from model rather than table because table might be filtered and we want to see all available
         fields
         """
-        for column in xrange(self.model.columnCount()):
+        for column in range(self.model.columnCount()):
             if column == 'Bin':
                 pass  # skip Bin, which is only added by the analysis process if binning
             else:
@@ -2171,7 +2189,7 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
                 # ' (NR)')
                 if self.fieldManagement[columnName]['filter']['type'] == 'list':
                     valueList = []
-                    for row in xrange(self.model.rowCount()):
+                    for row in range(self.model.rowCount()):
                         valueIndex = self.model.index(row, column)
                         valueList.append(str(self.model.data(valueIndex).toString()))
                     valueList = list(set(valueList))
@@ -2184,17 +2202,17 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
             if self.fieldManagement[columnName]['visible']:  # only if column is actually present
                 if self.fieldManagement[columnName]['filter']['type'] == 'list':
                     # Create new widget for checkboxes
-                    valueWidget = QtGui.QWidget()
-                    valueWidget.setSizePolicy(QtGui.QSizePolicy(QtGui.QSizePolicy.MinimumExpanding,
-                                                                QtGui.QSizePolicy.MinimumExpanding))
+                    valueWidget = QWidget()
+                    valueWidget.setSizePolicy(QSizePolicy(QSizePolicy.MinimumExpanding,
+                                                                QSizePolicy.MinimumExpanding))
                     valueWidget.setMaximumWidth(self.optionWidth)
-                    valueLayout = QtGui.QVBoxLayout()
+                    valueLayout = QVBoxLayout()
                     valueLayout.setSpacing(2)
                     valueLayout.setContentsMargins(0, 3, 0, 3)
                     # valueLayout.addStretch()
 
                     for valueNumber, valueName in enumerate(sorted(self.fieldManagement[columnName]['valueList'])):
-                        action = QtGui.QCheckBox(valueName)
+                        action = QCheckBox(valueName)
 
                         if len(self.filters) == 0:
                             action.setCheckState(QtCore.Qt.Checked)
@@ -2231,7 +2249,7 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
                 #
                 #     pass
             else:
-                if self.fieldManagement[columnName]['filter']['type'] is not 'none':
+                if self.fieldManagement[columnName]['filter']['type'] != 'none':
                     if 'widget' in self.fieldManagement[columnName]['filter']:
                         # Hide filter
                         self.fieldManagement[columnName]['filter']['widget'].setVisible(False)
@@ -2321,24 +2339,24 @@ class StatsGui(QtGui.QDialog, pyoperant_gui_layout.StatsWindow):
 
 # region Reimplemented methods
 # noinspection PyBroadException
-class CheckableDirModel(QtGui.QFileSystemModel):
+class CheckableDirModel(QFileSystemModel):
     """
     Custom reimplementation of pyqt4's QFileSystemModel to integrate checkboxes next to each folder/file
     """
 
     def __init__(self):
-        QtGui.QFileSystemModel.__init__(self, None)
+        QFileSystemModel.__init__(self, None)
         self.checks = {}
 
     def data(self, index, role=QtCore.Qt.DisplayRole):
         if role != QtCore.Qt.CheckStateRole:
-            return QtGui.QFileSystemModel.data(self, index, role)
+            return QFileSystemModel.data(self, index, role)
         else:
             if index.column() == 0:
                 return self.checkbox_state(index)
 
     def flags(self, index):
-        return QtGui.QFileSystemModel.flags(self, index) | QtCore.Qt.ItemIsUserCheckable
+        return QFileSystemModel.flags(self, index) | QtCore.Qt.ItemIsUserCheckable
 
     def checkbox_state(self, index):
         if index in self.checks:
@@ -2352,7 +2370,7 @@ class CheckableDirModel(QtGui.QFileSystemModel):
             self.checks[QModelIndex] = QVariant
             self.emit(QtCore.SIGNAL("dataChanged(QModelIndex,QModelIndex)"), QModelIndex, QModelIndex)
             return True
-        return QtGui.QFileSystemModel.setData(self, QModelIndex, QVariant, int_role)
+        return QFileSystemModel.setData(self, QModelIndex, QVariant, int_role)
 
     def export_checked(self):
         selection = []
@@ -2367,7 +2385,7 @@ class CheckableDirModel(QtGui.QFileSystemModel):
         return selection
 
 
-class FolderSelect(QtGui.QDialog, pyoperant_gui_layout.FolderSelectWindow):
+class FolderSelect(QDialog, pyoperant_gui_layout.FolderSelectWindow):
     """
     Custom class to create a dialog window that allows selecting multiple folders from different locations.
     Implements CheckableDirModel class.
@@ -2375,6 +2393,7 @@ class FolderSelect(QtGui.QDialog, pyoperant_gui_layout.FolderSelectWindow):
 
     def __init__(self, preselected=None):
         super(self.__class__, self).__init__()
+        self.checkedPaths = None
         self.setup_ui(self)  # This is defined in pyoperant_gui_layout.py file
 
         self.data_folder = '/home/rouse/bird/data'
@@ -2407,7 +2426,7 @@ class FolderSelect(QtGui.QDialog, pyoperant_gui_layout.FolderSelectWindow):
         self.accept()
 
     def change_folder(self):
-        newPath = QtGui.QFileDialog.getExistingDirectory(self, "Open Directory", self.data_folder)
+        newPath = QFileDialog.getExistingDirectory(self, "Open Directory", self.data_folder)
         if newPath:
             self.data_folder = newPath
             self.model.setRootPath(self.data_folder)
@@ -2462,10 +2481,10 @@ def wait_cursor():
     and cursor will automatically change back when it exits the 'with' statement
     """
     try:
-        QtGui.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+        QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
         yield
     finally:
-        QtGui.QApplication.restoreOverrideCursor()
+        QApplication.restoreOverrideCursor()
 
 
 def commonprefix(args, sep='/'):
@@ -2483,7 +2502,7 @@ def commonprefix(args, sep='/'):
 
 
 def main():
-    app = QtGui.QApplication(sys.argv)  # A new instance of QApplication
+    app = QApplication(sys.argv)  # A new instance of QApplication
 
     form = PyoperantGui()  # We set the form to be our ExampleApp (design)
     form.show()  # Show the form

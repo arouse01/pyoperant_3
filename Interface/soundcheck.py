@@ -57,7 +57,7 @@ FORMAT = soundIn.get_format_from_width(wf.getsampwidth())
 #
 # # now use ALSA card number to find pyaudio device index
 # deviceIndexIn = None
-CHANNELS = 1L
+CHANNELS = 1
 # for index in range(soundIn.get_device_count()):
 #     pyaudioInputIndex = []
 #     try:

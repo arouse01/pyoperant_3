@@ -6,7 +6,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtGui
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -378,4 +378,4 @@ class Ui_MainWindow(object):
         self.startAllButton.setText(_translate("MainWindow", "Start All", None))
         self.behaviorLabel.setText(_translate("MainWindow", "Behavior", None))
 
-import icons_rc
+# import icons_rc

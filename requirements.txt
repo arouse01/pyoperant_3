@@ -1,7 +1,9 @@
-pyudev
-pandas
-pyserial
-pyaudio
-numpy
-scipy
+pyudev~=0.24.3
+pandas~=2.2.3
+pyserial~=3.5
+pyaudio~=0.2.14
+numpy~=2.2.2
+scipy~=1.15.1
 ephem
+
+PyQt5~=5.15.11

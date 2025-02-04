@@ -105,7 +105,7 @@ class PWM:
       elif prescale > 255:
          prescale = 255
 
-      mode = self._read_reg(self._MODE1);
+      mode = self._read_reg(self._MODE1)
       self._write_reg(self._MODE1, (mode & ~self._SLEEP) | self._SLEEP)
       self._write_reg(self._PRESCALE, prescale)
       self._write_reg(self._MODE1, mode)

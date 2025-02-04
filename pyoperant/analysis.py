@@ -165,7 +165,7 @@ def create_conf_matrix(expected, observed):
     n_classes = max(len(set(expected)), len(set(observed)), 2)
 
     m = np.zeros((n_classes, n_classes))
-    for exp, pred in zip(expected, observed):
+    for exp, pred in list(zip(expected, observed)):
         m[exp, pred] += 1
     return m
 
@@ -477,7 +477,7 @@ class Performance(object):
                         jsonData = json.load(f)
 
                     blocks = jsonData['block_design']['order']
-                    for block in xrange(len(blocks)):
+                    for block in range(len(blocks)):
                         if blocks[block] == 'training 1':
                             blocks[block] = 'training 125'
                         elif blocks[block] == 'training 2':
@@ -777,7 +777,7 @@ class Performance(object):
             # endregion
 
             # region Calculate stats for each summary group
-            for k in xrange(groupCount):
+            for k in range(groupCount):
                 hitCount = float(groupData['Hit'][k])
                 missCount = float(groupData['Miss'][k])
                 missNRCount = float(groupData['Miss (NR)'][k])
@@ -972,7 +972,7 @@ class Performance(object):
                             message = 'Record {:d} does not meet trial count criteria ({:d} trials vs {:d} minimum)' \
                                 .format(i, ntrials, trialThreshold)
                             if verbose:
-                                print message
+                                print(message)
                             self.log.debug(message)
 
             if criteria_result[i] is not False:  # skip next check if already failed previous criteria
@@ -990,7 +990,7 @@ class Performance(object):
                         message = "Record {:d} failed d' criteria ({:d} actual vs {:d} minimum)" \
                             .format(i, dprime_actual, dprime_min)
                         if verbose:
-                            print message
+                            print(message)
                         self.log.debug(message)
 
             if criteria_result[i] is not False:  # skip next check if already failed previous criteria
@@ -1012,7 +1012,7 @@ class Performance(object):
                             message = "Category {} failed proportion correct criteria ({:0.3f} actual vs {:0.3f} " \
                                       "minimum)".format(stim_type, proportion, category['minimum'])
                             if verbose:
-                                print message
+                                print(message)
                             self.log.debug(message)
 
             i += 1
@@ -1027,7 +1027,7 @@ class Performance(object):
         if num_days < min_days:
             message = "Not enough days meeting criteria ({:d} days, {:d} min)".format(num_days, min_days)
             if verbose:
-                print message
+                print(message)
             self.log.debug(message)
             return False
 
@@ -1035,7 +1035,7 @@ class Performance(object):
 
         message = "Meets all criteria!"
         if verbose:
-            print message
+            print(message)
         self.log.debug(message)
         return True
 

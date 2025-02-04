@@ -227,7 +227,7 @@ class BaseExp(object):
     def pyoperant_close(self):
         try:
             self.log.debug('waiting for response')
-            print "Closing pyoperant, turing off all components"
+            print("Closing pyoperant, turing off all components")
             self.panel.trialSens.off()
             self.panel.respSens.off()
         except:
