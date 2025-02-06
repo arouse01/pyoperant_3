@@ -20,7 +20,7 @@ except ImportError:
 
 
 # from matplotlib import mlab
-
+dt.datetime
 # region Raw stats
 # d-prime
 def dprime(confusion_matrix):

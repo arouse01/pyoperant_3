@@ -58,7 +58,7 @@ class jsonGui(QtGui.QMainWindow, json_layout.Ui_jsonStim):
         # child = QtGui.QTreeWidgetItem(self.item)
         # child.setFlags(child.flags() | QtCore.Qt.ItemIsUserCheckable)
         # child.setText(0, "test two")
-        # child.setCheckState(0, QtCore.Qt.Unchecked)
+        # child.setCheckState(0, QtCore.Qt.CheckState.Unchecked)
         #item = QtGui.QTreeWidgetItem(self.treeWidget,1,"test32, 1234"))
         #item = QtGui.QTreeWidgetItem(self.treeWidget, ("", "test", "test32, 1234"))
 
@@ -131,7 +131,7 @@ class jsonGui(QtGui.QMainWindow, json_layout.Ui_jsonStim):
         # print self.dataStruct
             # print self.dataStruct[0][0][0]
             # self.dataStruct[i].setFlags(self.dataStruct[i].flags() | QtCore.Qt.ItemIsUserCheckable)
-            # self.dataStruct[i].setCheckState(0, QtCore.Qt.Unchecked)
+            # self.dataStruct[i].setCheckState(0, QtCore.Qt.CheckState.Unchecked)
             # self.dataStruct[stimulus] = [baseTempo, tempo, condition, soundType, bird, stimulus]
             # self.dataStruct[i].setText(0, str(baseTempo))
             # self.dataStruct[i].setText(1, str(tempo))
@@ -221,7 +221,7 @@ class jsonGui(QtGui.QMainWindow, json_layout.Ui_jsonStim):
                 if self.dataStruct[j][self.columnOrder[currentColumn]] == groupName:
                     child = QtGui.QTreeWidgetItem(item)
                     child.setFlags(child.flags() | QtCore.Qt.ItemIsUserCheckable)
-                    child.setCheckState(0, QtCore.Qt.Unchecked)
+                    child.setCheckState(0, QtCore.Qt.CheckState.Unchecked)
                     child.setText(currentColumn, str(self.dataStruct[j][self.columnOrder[currentColumn]]))
                     child.setText(self.tempoColumn, str(self.dataStruct[j][1]))
                     child.setText(self.conditionColumn, self.dataStruct[j][
@@ -277,7 +277,7 @@ class jsonGui(QtGui.QMainWindow, json_layout.Ui_jsonStim):
                 if self.dataStruct[j][self.columnOrder[currentColumn]] == groupName:
                     child = QtGui.QTreeWidgetItem(item)
                     child.setFlags(child.flags() | QtCore.Qt.ItemIsUserCheckable)
-                    child.setCheckState(0, QtCore.Qt.Unchecked)
+                    child.setCheckState(0, QtCore.Qt.CheckState.Unchecked)
                     child.setText(currentColumn, str(self.dataStruct[j][self.columnOrder[currentColumn]]))
                     child.setText(self.tempoColumn, str(self.dataStruct[j][1]))
                     child.setText(self.conditionColumn, self.dataStruct[j][2])  # Defining the string that way converts the value into one that QtTable likes
@@ -316,7 +316,7 @@ class jsonGui(QtGui.QMainWindow, json_layout.Ui_jsonStim):
 
         self.enableCheck = QtGui.QTableWidgetItem()
         self.enableCheck.setFlags(QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
-        self.enableCheck.setCheckState(QtCore.Qt.Unchecked)
+        self.enableCheck.setCheckState(QtCore.Qt.CheckState.Unchecked)
         self.enableCheck.setObjectName(_fromUtf8("enableCheck"))
         self.treeWidget.setItem(newRowIndex, 0, self.enableCheck)
 
@@ -324,7 +324,7 @@ class jsonGui(QtGui.QMainWindow, json_layout.Ui_jsonStim):
         # Enable checkbox
         self.enableCheck = QtGui.QTableWidgetItem()
         self.enableCheck.setFlags(QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
-        self.enableCheck.setCheckState(QtCore.Qt.Unchecked)
+        self.enableCheck.setCheckState(QtCore.Qt.CheckState.Unchecked)
         self.enableCheck.setObjectName(_fromUtf8("enableCheck"))
         self.treeWidget.setItem(rowIndex, 0, self.enableCheck)
 

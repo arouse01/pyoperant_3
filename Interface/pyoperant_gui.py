@@ -445,7 +445,7 @@ class PyoperantGui(QMainWindow, pyoperant_gui_layout.UiMainWindow):
         else:  # Otherwise just start in working directory
             currentPath = os.path.dirname(os.path.realpath(__file__))
         paramFile = QFileDialog.getOpenFileName(self, "Select Preferences File", currentPath,
-                                                      "JSON Files (*.json)")
+                                                      "JSON Files (*.json)")[0]
         # execute getOpenFileName dialog and set the directory variable to be equal to the user selected directory
 
         if paramFile:  # if user didn't pick a file don't replace existing path
@@ -1857,7 +1857,7 @@ class StatsGui(QDialog, pyoperant_gui_layout.StatsWindow):
 
             item.setText(columnName)
             item.setTristate(False)
-            item.setCheckState(QtCore.Qt.Unchecked)
+            item.setCheckState(QtCore.Qt.CheckState.Unchecked)
             self.fieldManagement[key]['itemWidget'] = item
 
             self.fieldList.addWidget(self.fieldManagement[key]['itemWidget'])
@@ -1873,9 +1873,9 @@ class StatsGui(QDialog, pyoperant_gui_layout.StatsWindow):
         """
         checkbox.blockSignals(True)
         if newstate:
-            checkbox.setCheckState(QtCore.Qt.Checked)
+            checkbox.setCheckState(QtCore.Qt.CheckState.Checked)
         else:
-            checkbox.setCheckState(QtCore.Qt.Unchecked)
+            checkbox.setCheckState(QtCore.Qt.CheckState.Unchecked)
         checkbox.blockSignals(False)
 
     def recheck_fields(self):
@@ -2215,9 +2215,9 @@ class StatsGui(QDialog, pyoperant_gui_layout.StatsWindow):
                         action = QCheckBox(valueName)
 
                         if len(self.filters) == 0:
-                            action.setCheckState(QtCore.Qt.Checked)
+                            action.setCheckState(QtCore.Qt.CheckState.Checked)
                         elif columnName in self.filters and valueName in self.filters[columnName]:
-                            action.setCheckState(QtCore.Qt.Checked)
+                            action.setCheckState(QtCore.Qt.CheckState.Checked)
                         action.setMaximumHeight(27)
                         action.stateChanged.connect(lambda _, b=valueName: self.apply_filter(filter_value=b))
                         # self.fieldManagement[columnName]['filter']['signalMapper'].setMapping(action, valueName)
@@ -2276,14 +2276,14 @@ class StatsGui(QDialog, pyoperant_gui_layout.StatsWindow):
                                 self.silent_checkbox_change(child, newstate=True)
                                 # child.blockSignals(True)  # Block signals for bulk checking/unchecking so each
                                 # # iteration of loop doesn't refire the calculation
-                                # child.setCheckState(QtCore.Qt.Checked)
+                                # child.setCheckState(QtCore.Qt.CheckState.Checked)
                                 # child.blockSignals(False)
 
                             elif filter_value == 'none' and column_name == columnName:
                                 self.silent_checkbox_change(child, newstate=False)
                                 # child.blockSignals(True)  # Block signals for bulk checking/unchecking so each
                                 # # iteration of loop doesn't refire the calculation
-                                # child.setCheckState(QtCore.Qt.Unchecked)
+                                # child.setCheckState(QtCore.Qt.CheckState.Unchecked)
                                 # child.blockSignals(False)
 
                             if child.isChecked():
@@ -2362,7 +2362,7 @@ class CheckableDirModel(QFileSystemModel):
         if index in self.checks:
             return self.checks[index]
         else:
-            return QtCore.Qt.Unchecked
+            return QtCore.Qt.CheckState.Unchecked
 
     # noinspection PyPep8Naming
     def setData(self, QModelIndex, QVariant, int_role=None):
@@ -2375,7 +2375,7 @@ class CheckableDirModel(QFileSystemModel):
     def export_checked(self):
         selection = []
         for c in self.checks.keys():
-            if self.checks[c] == QtCore.Qt.Checked:
+            if self.checks[c] == QtCore.Qt.CheckState.Checked:
                 try:
                     selection.append(str(self.filePath(c).toUtf8()))
                 except:
@@ -2453,8 +2453,8 @@ class FolderSelect(QDialog, pyoperant_gui_layout.FolderSelectWindow):
                 if currBirdName in self.preselected:
                     # this properly checks the birds in the list, but doesn't actually mark the box as checked
                     # currIndex is not the same as the index of the actual checkbox within the layout
-                    self.model.setData(currIndex, QtCore.Qt.Checked, QtCore.Qt.CheckStateRole)
-                    # self.model.checks[currIndex] = QtCore.Qt.Checked
+                    self.model.setData(currIndex, QtCore.Qt.CheckState.Checked, QtCore.Qt.CheckStateRole)
+                    # self.model.checks[currIndex] = QtCore.Qt.CheckState.Checked
 
             # childIterator = QtCore.QDirIterator(self.data_folder, QtCore.QDir.Dirs | QtCore.QDir.NoDotAndDotDot)
             # while childIterator.hasNext():

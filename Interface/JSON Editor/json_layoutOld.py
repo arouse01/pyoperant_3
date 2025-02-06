@@ -103,7 +103,7 @@ class Ui_jsonStim(object):
 
         self.enableCheck = QtGui.QTableWidgetItem()
         self.enableCheck.setFlags(QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
-        self.enableCheck.setCheckState(QtCore.Qt.Unchecked)
+        self.enableCheck.setCheckState(QtCore.Qt.CheckState.Unchecked)
         self.stimTable.setItem(0, 0, self.enableCheck)
 
         self.stimLine = QtGui.Lin

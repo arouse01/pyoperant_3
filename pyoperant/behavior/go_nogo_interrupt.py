@@ -537,11 +537,11 @@ class GoNoGoInterruptExp(base.BaseExp):
                                 index=index,
                                 class_=self.trials[-1].class_)
             for ev in self.trials[-1].events:
-                if ev.label is 'wav':
+                if ev.label == 'wav':
                     trial.events.append(copy.copy(ev))
                     trial.stimulus_event = trial.events[-1]
                     trial.stimulus = trial.stimulus_event.name
-                elif ev.label is 'motif':
+                elif ev.label == 'motif':
                     trial.events.append(copy.copy(ev))
             self.log.debug("correction trial: class is %s" % trial.class_)
         else:

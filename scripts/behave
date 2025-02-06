@@ -8,7 +8,7 @@ import sys
 import collections
 
 # append this folder to working directory
-sys.path.append('/home/rouse/Desktop/pyoperant/pyoperant/pyoperant')
+sys.path.append('/home/rousea/pyoperant/pyoperant')
 
 try:
     import simplejson as json
@@ -97,7 +97,7 @@ def list_protocols():
     protocol_list = []
     behav_modules = [importlib.import_module(pstr) for pstr in BEHAVIORS]
     for mod in behav_modules:
-        for name, obj in mod.__dict__.iteritems():  # Python 3 renamed dict.iteritems > dict.items
+        for name, obj in mod.__dict__.items():  # Python 3 renamed dict.iteritems > dict.items
             try:
                 if issubclass(obj, BaseExp):
                     protocol_list.append(name)

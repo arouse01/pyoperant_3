@@ -331,7 +331,7 @@ def check_time(schedule, fmt="%H:%M", **kwargs):
             return True
     else:
         for epoch in schedule:
-            assert len(epoch) is 2
+            assert len(epoch) == 2
             now = dt.datetime.time(dt.datetime.now())
             start = dt.datetime.time(dt.datetime.strptime(epoch[0], fmt))
             end = dt.datetime.time(dt.datetime.strptime(epoch[1], fmt))

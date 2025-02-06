@@ -54639,3 +54639,106 @@ TypeError: Object of type zip is not JSON serializable
 json.decoder.JSONDecodeError: Expecting value: line 2 column 19 (char 20)
 "
 "2025-02-04 15:46:14,060","INFO","settings.json file detected, loading settings"
+"2025-02-04 16:07:01,547","INFO","settings.json file detected, loading settings"
+"2025-02-04 16:07:09,347","ERROR","Warning: Selected file not found: (/home/rouse/bird/data/b29o82/b29o82.log)"
+"2025-02-04 16:07:17,518","ERROR","Warning: Data folder not found: (/home/rouse/bird/data/b29o82)"
+"2025-02-04 16:07:21,256","ERROR","Unhandled exception: Traceback (most recent call last):
+  File "/home/rousea/pyoperant/pyoperant/Interface/pyoperant_gui.py", line 387, in <lambda>
+    lambda _, b=boxIndex: self.param_file_select(boxindex=b))
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/rousea/pyoperant/pyoperant/Interface/pyoperant_gui.py", line 453, in param_file_select
+    self.paramFileBoxList[boxindex].setPlainText(paramFile)  # add file to the listWidget
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: setPlainText(self, text: Optional[str]): argument 1 has unexpected type 'tuple'
+"
+"2025-02-04 16:07:48,676","INFO","settings.json file detected, loading settings"
+"2025-02-04 16:08:57,353","ERROR","Unhandled exception: Traceback (most recent call last):
+  File "/home/rousea/pyoperant/pyoperant/Interface/pyoperant_gui.py", line 387, in <lambda>
+    lambda _, b=boxIndex: self.param_file_select(boxindex=b))
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/rousea/pyoperant/pyoperant/Interface/pyoperant_gui.py", line 453, in param_file_select
+    self.paramFileBoxList[boxindex].setPlainText(paramFile)  # add file to the listWidget
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: setPlainText(self, text: Optional[str]): argument 1 has unexpected type 'tuple'
+"
+"2025-02-04 16:10:25,166","ERROR","Unhandled exception: Traceback (most recent call last):
+  File "/home/rousea/pyoperant/pyoperant/Interface/pyoperant_gui.py", line 387, in <lambda>
+    lambda _, b=boxIndex: self.param_file_select(boxindex=b))
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/rousea/pyoperant/pyoperant/Interface/pyoperant_gui.py", line 453, in param_file_select
+    self.paramFileBoxList[boxindex].setPlainText(paramFile)  # add file to the listWidget
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: setPlainText(self, text: Optional[str]): argument 1 has unexpected type 'tuple'
+"
+"2025-02-04 16:18:22,231","INFO","settings.json file detected, loading settings"
+"2025-02-04 16:19:42,684","INFO","settings.json file detected, loading settings"
+"2025-02-04 16:24:02,032","INFO","settings.json file detected, loading settings"
+"2025-02-04 16:30:10,463","ERROR","Could not open serial device /dev/teensy02"
+"2025-02-04 16:30:10,466","ERROR","Unhandled exception: Traceback (most recent call last):
+  File "/home/rousea/pyoperant/pyoperant/.venv/lib/python3.12/site-packages/serial/serialposix.py", line 322, in open
+    self.fd = os.open(self.portstr, os.O_RDWR | os.O_NOCTTY | os.O_NONBLOCK)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/dev/teensy02'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/rousea/pyoperant/pyoperant/Interface/pyoperant_gui.py", line 1547, in serial_connect
+    self.device = serial.Serial(port=self.device_name,
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/rousea/pyoperant/pyoperant/.venv/lib/python3.12/site-packages/serial/serialutil.py", line 244, in __init__
+    self.open()
+  File "/home/rousea/pyoperant/pyoperant/.venv/lib/python3.12/site-packages/serial/serialposix.py", line 325, in open
+    raise SerialException(msg.errno, "could not open port {}: {}".format(self._port, msg))
+serial.serialutil.SerialException: [Errno 2] could not open port /dev/teensy02: [Errno 2] No such file or directory: '/dev/teensy02'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/rousea/pyoperant/pyoperant/Interface/pyoperant_gui.py", line 403, in <lambda>
+    lambda _, b=boxIndex: self.water_control(boxindex=b, parameter='dialog'))
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/rousea/pyoperant/pyoperant/Interface/pyoperant_gui.py", line 822, in water_control
+    dialog = SolenoidGui(boxnumber, solenoidChannel)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/rousea/pyoperant/pyoperant/Interface/pyoperant_gui.py", line 1538, in __init__
+    self.serial_connect(box_number)
+  File "/home/rousea/pyoperant/pyoperant/Interface/pyoperant_gui.py", line 1552, in serial_connect
+    raise serial.SerialException('Could not open serial device {}'.format(self.device_name))
+serial.serialutil.SerialException: Could not open serial device /dev/teensy02
+"
+"2025-02-04 16:30:31,724","ERROR","Could not open serial device /dev/teensy01"
+"2025-02-04 16:30:31,725","ERROR","Unhandled exception: Traceback (most recent call last):
+  File "/home/rousea/pyoperant/pyoperant/.venv/lib/python3.12/site-packages/serial/serialposix.py", line 322, in open
+    self.fd = os.open(self.portstr, os.O_RDWR | os.O_NOCTTY | os.O_NONBLOCK)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/dev/teensy01'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/rousea/pyoperant/pyoperant/Interface/pyoperant_gui.py", line 1547, in serial_connect
+    self.device = serial.Serial(port=self.device_name,
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/rousea/pyoperant/pyoperant/.venv/lib/python3.12/site-packages/serial/serialutil.py", line 244, in __init__
+    self.open()
+  File "/home/rousea/pyoperant/pyoperant/.venv/lib/python3.12/site-packages/serial/serialposix.py", line 325, in open
+    raise SerialException(msg.errno, "could not open port {}: {}".format(self._port, msg))
+serial.serialutil.SerialException: [Errno 2] could not open port /dev/teensy01: [Errno 2] No such file or directory: '/dev/teensy01'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/rousea/pyoperant/pyoperant/Interface/pyoperant_gui.py", line 403, in <lambda>
+    lambda _, b=boxIndex: self.water_control(boxindex=b, parameter='dialog'))
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/rousea/pyoperant/pyoperant/Interface/pyoperant_gui.py", line 822, in water_control
+    dialog = SolenoidGui(boxnumber, solenoidChannel)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/rousea/pyoperant/pyoperant/Interface/pyoperant_gui.py", line 1538, in __init__
+    self.serial_connect(box_number)
+  File "/home/rousea/pyoperant/pyoperant/Interface/pyoperant_gui.py", line 1552, in serial_connect
+    raise serial.SerialException('Could not open serial device {}'.format(self.device_name))
+serial.serialutil.SerialException: Could not open serial device /dev/teensy01
+"
+"2025-02-05 10:21:22,744","INFO","settings.json file detected, loading settings"
