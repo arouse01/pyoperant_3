@@ -10,3 +10,5 @@ elif 'zog' in hostname:
     from pyoperant.local_zog import *
 elif 'Aperture' in hostname:
     from pyoperant.local_rouse_newboard import *
+elif 'Jupiter' in hostname:
+    from pyoperant.local_rouse_newboard_test import *

@@ -4,7 +4,7 @@
 # specify the desired number of boxes
 
 from PyQt5 import QtCore, QtGui
-from PyQt5.QtWidgets import (QApplication, QWidget, QGridLayout, QPushButton, QSizePolicy, QLabel, QComboBox, QFrame, 
+from PyQt5.QtWidgets import (QWidget, QGridLayout, QPushButton, QSizePolicy, QLabel, QComboBox, QFrame,
                              QVBoxLayout, QPlainTextEdit, QCheckBox, QTextEdit, QTextBrowser, QTableView,
                              QAbstractItemView, QLayout, QHBoxLayout, QSpinBox, QToolBox, QFormLayout, QScrollArea,
                              QTreeView, QSpacerItem)
@@ -12,22 +12,6 @@ from PyQt5.QtGui import QPixmap, QIcon
 # from PyQt5.QtGui import *
 import math
 import collections
-
-try:
-    _from_utf8 = QtCore.QString.fromUtf8
-except AttributeError:
-    def _from_utf8(s):
-        return s
-
-try:
-    _encoding = QApplication.UnicodeUTF8
-
-
-    def _translate(context, text, disambig):
-        return QApplication.translate(context, text, disambig, _encoding)
-except AttributeError:
-    def _translate(context, text, disambig):
-        return QApplication.translate(context, text, disambig)
 
 
 class UiMainWindow(object):
@@ -105,9 +89,9 @@ class UiMainWindow(object):
 
         # region Button icons
         self.wrenchIcon = QIcon()
-        self.wrenchIcon.addPixmap(QtGui.QPixmap(_from_utf8("icons/wrench.svg")), QIcon.Normal, QIcon.Off)
+        self.wrenchIcon.addPixmap(QtGui.QPixmap("icons/wrench.svg"), QIcon.Normal, QIcon.Off)
         self.waterIcon = QIcon()
-        self.waterIcon.addPixmap(QtGui.QPixmap(_from_utf8("icons/water.png")), QIcon.Normal, QIcon.Off)
+        self.waterIcon.addPixmap(QtGui.QPixmap("icons/water.png"), QIcon.Normal, QIcon.Off)
         # endregion Button icons
 
         # region Other vars
@@ -196,45 +180,45 @@ class UiMainWindow(object):
         # endregion Formatting templates
 
         # region Main window setup
-        main_window.setObjectName(_from_utf8("main_window"))
+        main_window.setObjectName("main_window")
         main_window.setSizePolicy(sizePolicy_Fixed)
         # main_window.setMaximumSize(QtCore.QSize(1200, 1000))
         self.centralwidget = QWidget(main_window)
         self.centralwidget.setSizePolicy(sizePolicy_Fixed)
         # self.centralwidget.setContentsMargins(0, 0, 0, 0)
         # self.centralwidget.setMaximumSize(QtCore.QSize(2000, 2000))
-        self.centralwidget.setObjectName(_from_utf8("centralwidget"))
+        self.centralwidget.setObjectName("centralwidget")
 
         self.gridLayoutWidget = QWidget(self.centralwidget)
-        self.gridLayoutWidget.setObjectName(_from_utf8("gridLayoutWidget"))
+        self.gridLayoutWidget.setObjectName("gridLayoutWidget")
         self.gridLayoutWidget.setSizePolicy(sizePolicy_Fixed)
         self.mainGrid = QGridLayout(self.gridLayoutWidget)
-        self.mainGrid.setObjectName(_from_utf8("mainGrid"))
+        self.mainGrid.setObjectName("mainGrid")
         self.gridLayoutWidget.setLayout(self.mainGrid)
 
         # Menu at bottom of screen
         self.menuGrid = QGridLayout()
-        self.menuGrid.setObjectName(_from_utf8("menuGrid"))
+        self.menuGrid.setObjectName("menuGrid")
         self.stopAllButton = QPushButton(self.gridLayoutWidget)
-        self.stopAllButton.setObjectName(_from_utf8("stopAllButton"))
+        self.stopAllButton.setObjectName("stopAllButton")
         self.stopAllButton.setSizePolicy(sizePolicy_minEx_max)
         self.startAllButton = QPushButton(self.gridLayoutWidget)
-        self.startAllButton.setObjectName(_from_utf8("startAllButton"))
+        self.startAllButton.setObjectName("startAllButton")
         self.startAllButton.setSizePolicy(sizePolicy_minEx_max)
         self.menuGrid.addWidget(self.stopAllButton, 0, 0, 1, 1)
         self.menuGrid.addWidget(self.startAllButton, 0, 1, 1, 1)
         self.behaviorField = QComboBox(self.gridLayoutWidget)
         self.behaviorField.setMinimumSize(QtCore.QSize(200, 0))
         self.behaviorField.setMaximumSize(QtCore.QSize(300, 30))
-        self.behaviorField.setObjectName(_from_utf8("behaviorField"))
-        self.behaviorField.addItem(_from_utf8(""))
+        self.behaviorField.setObjectName("behaviorField")
+        self.behaviorField.addItem("")
         self.menuGrid.addWidget(self.behaviorField, 0, 4, 1, 1)
         self.behaviorLabel = QLabel(self.gridLayoutWidget)
         self.behaviorLabel.setMinimumSize(QtCore.QSize(70, 0))
         self.behaviorLabel.setMaximumSize(QtCore.QSize(80, 30))
         # self.behaviorLabel.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignTrailing | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.behaviorLabel.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-        self.behaviorLabel.setObjectName(_from_utf8("behaviorLabel"))
+        self.behaviorLabel.setObjectName("behaviorLabel")
         self.menuGrid.addWidget(self.behaviorLabel, 0, 3, 1, 1)
         self.menuGrid.addItem(add_spacer(20, policy='min'), 0, 2, 1, 1)
         self.mainGrid.addLayout(self.menuGrid, 2 * rowCount, 0, 1, 2 * columnCount - 1)
@@ -245,7 +229,7 @@ class UiMainWindow(object):
             self.lineList.append(QFrame(self.gridLayoutWidget))
             self.lineList[i].setFrameShape(QFrame.HLine)
             self.lineList[i].setFrameShadow(QFrame.Sunken)
-            self.lineList[i].setObjectName(_from_utf8("hline_%d" % i))
+            self.lineList[i].setObjectName(("hline_%d" % i))
             self.mainGrid.addWidget(self.lineList[i], 2 * math.floor(i / columnCount) + 1, 2 * (i % columnCount), 1,
                                     1)
 
@@ -255,7 +239,7 @@ class UiMainWindow(object):
             self.lineList[i].setLineWidth(2)
             self.lineList[i].setMidLineWidth(0)
             self.lineList[i].setFrameShape(QFrame.VLine)
-            self.lineList[i].setObjectName(_from_utf8("vline_%d" % i))
+            self.lineList[i].setObjectName(("vline_%d" % i))
             self.mainGrid.addWidget(self.lineList[i], 0, (i - numHorizontalLines) * 2 + 1, 2 * rowCount, 1)
 
         # endregion
@@ -384,7 +368,7 @@ class UiMainWindow(object):
             self.gridLayoutBoxList[box].addWidget(self.startBoxList[box], 9, 2, 1, 1, QtCore.Qt.AlignmentFlag.AlignCenter)
             self.gridLayoutBoxList[box].addWidget(self.stopBoxList[box], 9, 3, 1, 1, QtCore.Qt.AlignmentFlag.AlignCenter)
             self.gridLayoutBoxList[box].addWidget(self.optionButtonBoxList[box], 9, 4, 1, 1, QtCore.Qt.AlignmentFlag.AlignCenter)
-            self.gridLayoutBoxList[box].setObjectName(_from_utf8("gridLayout_Box%d" % box))
+            self.gridLayoutBoxList[box].setObjectName(("gridLayout_Box%d" % box))
             self.gridLayoutBoxList[box].setSpacing(4)
 
             self.statusLayoutBoxList[box].addWidget(self.statusTotalsBoxList[box], 0)
@@ -401,7 +385,7 @@ class UiMainWindow(object):
             self.statusTotalsBoxList[box].setFont(font11)
             self.statusTotalsBoxList[box].setMinimumSize(QtCore.QSize(280, lineHeightBuffer + (textLnHgt * 2)))
             self.statusTotalsBoxList[box].setMaximumSize(QtCore.QSize(340, lineHeightBuffer + (textLnHgt * 2)))
-            self.statusTotalsBoxList[box].setObjectName(_from_utf8("statusTotalsText_Box%d" % box))
+            self.statusTotalsBoxList[box].setObjectName(("statusTotalsText_Box%d" % box))
             self.statusTotalsBoxList[box].setSizePolicy(sizePolicy_Fixed)
             self.statusTotalsBoxList[box].setStyleSheet("border: 0px;")
             self.statusTotalsBoxList[box].setTabStopWidth(60)
@@ -411,7 +395,7 @@ class UiMainWindow(object):
             self.statusTableBoxList[box].setSelectionMode(QAbstractItemView.NoSelection)
             self.statusTableBoxList[box].setMinimumSize(QtCore.QSize(280, lineHeightBuffer + (textLnHgt * 4)))
             self.statusTableBoxList[box].setMaximumSize(QtCore.QSize(340, lineHeightBuffer + (textLnHgt * 4)))
-            self.statusTableBoxList[box].setObjectName(_from_utf8("statusTable_Box%d" % box))
+            self.statusTableBoxList[box].setObjectName(("statusTable_Box%d" % box))
             self.statusTableBoxList[box].setSizePolicy(sizePolicy_Fixed)
             self.statusTableBoxList[box].setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
             self.statusTableBoxList[box].setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
@@ -421,7 +405,7 @@ class UiMainWindow(object):
             self.statusStatsBoxList[box].setFont(font11)
             self.statusStatsBoxList[box].setMinimumSize(QtCore.QSize(280, lineHeightBuffer + textLnHgt))
             self.statusStatsBoxList[box].setMaximumSize(QtCore.QSize(340, lineHeightBuffer + textLnHgt))
-            self.statusStatsBoxList[box].setObjectName(_from_utf8("statusStatsText_Box%d" % box))
+            self.statusStatsBoxList[box].setObjectName(("statusStatsText_Box%d" % box))
             self.statusStatsBoxList[box].setSizePolicy(sizePolicy_Fixed)
             self.statusStatsBoxList[box].setStyleSheet("border: 0px; background: white; text-align: center;")
             # self.statusStatsBoxList[box].setTabStopWidth(60)
@@ -430,15 +414,15 @@ class UiMainWindow(object):
             self.birdEntryBoxList[box].setFont(font11)
             self.birdEntryBoxList[box].setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
             self.birdEntryBoxList[box].setMaximumSize(QtCore.QSize(280, 10 + textLnHgt))
-            self.birdEntryBoxList[box].setObjectName(_from_utf8("birdEntry_Box%d" % box))
-            self.birdEntryBoxList[box].setPlainText(_from_utf8(""))
+            self.birdEntryBoxList[box].setObjectName(("birdEntry_Box%d" % box))
+            self.birdEntryBoxList[box].setPlainText("")
             self.birdEntryBoxList[box].setSizePolicy(sizePolicy_minEx_max)
             self.birdEntryBoxList[box].setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
             self.paramFileBoxList[box].setFont(font11)
             self.paramFileBoxList[box].setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
             self.paramFileBoxList[box].setMaximumSize(QtCore.QSize(280, 10 + textLnHgt))
-            self.paramFileBoxList[box].setObjectName(_from_utf8("paramFile_Box%d" % box))
+            self.paramFileBoxList[box].setObjectName(("paramFile_Box%d" % box))
             self.paramFileBoxList[box].setSizePolicy(sizePolicy_minEx_max)
             self.paramFileBoxList[box].setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
@@ -451,39 +435,39 @@ class UiMainWindow(object):
             self.labelBoxList[box].setFrameShape(QFrame.StyledPanel)
             self.labelBoxList[box].setFrameShadow(QFrame.Raised)
             self.labelBoxList[box].setStyleSheet("padding: 1px 1px 1px 1px;")
-            self.labelBoxList[box].setObjectName(_from_utf8("label_Box%d" % box))
+            self.labelBoxList[box].setObjectName(("label_Box%d" % box))
 
             self.phaseLabelList[box].setFont(font10)
-            self.phaseLabelList[box].setObjectName(_from_utf8("phaseLabel_Box%d" % box))
+            self.phaseLabelList[box].setObjectName(("phaseLabel_Box%d" % box))
 
             self.phaseBoxList[box].setFont(font11Under)
             self.phaseBoxList[box].setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
-            self.phaseBoxList[box].setObjectName(_from_utf8("phase_Box%d" % box))
+            self.phaseBoxList[box].setObjectName(("phase_Box%d" % box))
 
             self.lastTrialLabelList[box].setFont(font11)
             self.lastTrialLabelList[box].setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
-            self.lastTrialLabelList[box].setObjectName(_from_utf8("lastTrialLabel_Box%d" % box))
+            self.lastTrialLabelList[box].setObjectName(("lastTrialLabel_Box%d" % box))
 
             # self.lastTrialBoxList[box].setFont(font11Under)
             # self.lastTrialBoxList[box].setObjectName(_from_utf8("lastTrial_Box%d" % box))
 
             self.checkActiveLabelBoxList[box].setFont(font11)
             self.checkActiveLabelBoxList[box].setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-            self.checkActiveLabelBoxList[box].setObjectName(_from_utf8("checkActiveLabel_Box%d" % box))
+            self.checkActiveLabelBoxList[box].setObjectName(("checkActiveLabel_Box%d" % box))
             self.checkActiveLabelBoxList[box].setSizePolicy(sizePolicy_minEx_max)
 
             self.paramFileLabelBoxList[box].setFont(font11)
             self.paramFileLabelBoxList[box].setAlignment(
                 QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignTrailing | QtCore.Qt.AlignmentFlag.AlignVCenter)
             self.paramFileLabelBoxList[box].setMaximumSize(QtCore.QSize(500, 26))
-            self.paramFileLabelBoxList[box].setObjectName(_from_utf8("paramFileLabel_Box%d" % box))
+            self.paramFileLabelBoxList[box].setObjectName(("paramFileLabel_Box%d" % box))
             self.paramFileLabelBoxList[box].setSizePolicy(sizePolicy_minEx_max)
 
             self.birdEntryLabelBoxList[box].setFont(font11)
             self.birdEntryLabelBoxList[box].setAlignment(
                 QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignTrailing | QtCore.Qt.AlignmentFlag.AlignVCenter)
             self.birdEntryLabelBoxList[box].setMaximumSize(QtCore.QSize(500, 26))
-            self.birdEntryLabelBoxList[box].setObjectName(_from_utf8("birdEntryLabel_Box%d" % box))
+            self.birdEntryLabelBoxList[box].setObjectName(("birdEntryLabel_Box%d" % box))
             self.birdEntryLabelBoxList[box].setSizePolicy(sizePolicy_minEx_max)
 
             # endregion Labels
@@ -492,42 +476,42 @@ class UiMainWindow(object):
             self.waterOptionButtonBoxList[box].setFont(font11)
             self.waterOptionButtonBoxList[box].setMinimumSize(QtCore.QSize(27, 27))
             self.waterOptionButtonBoxList[box].setMaximumSize(QtCore.QSize(27, 27))
-            self.waterOptionButtonBoxList[box].setObjectName(_from_utf8("waterOptionButton_Box%d" % box))
+            self.waterOptionButtonBoxList[box].setObjectName(("waterOptionButton_Box%d" % box))
             self.waterOptionButtonBoxList[box].setSizePolicy(sizePolicy_max)
             self.waterOptionButtonBoxList[box].setIcon(self.waterIcon)
-            self.waterOptionButtonBoxList[box].setText(_from_utf8(""))
+            self.waterOptionButtonBoxList[box].setText("")
             self.waterOptionButtonBoxList[box].setStyleSheet("QPushButton::menu-indicator { image: none; }")
 
             self.paramFileButtonBoxList[box].setFont(font11)
             self.paramFileButtonBoxList[box].setMaximumSize(QtCore.QSize(27, 27))
-            self.paramFileButtonBoxList[box].setObjectName(_from_utf8("paramFileButton_Box%d" % box))
+            self.paramFileButtonBoxList[box].setObjectName(("paramFileButton_Box%d" % box))
             self.paramFileButtonBoxList[box].setSizePolicy(sizePolicy_max)
-            self.paramFileButtonBoxList[box].setText(_from_utf8("..."))
+            self.paramFileButtonBoxList[box].setText("...")
             self.paramFileButtonBoxList[box].setStyleSheet("QPushButton::menu-indicator { image: none; width: 0px; }")
 
             self.startBoxList[box].setFont(font11)
             self.startBoxList[box].setMaximumSize(QtCore.QSize(100, 27))
-            self.startBoxList[box].setObjectName(_from_utf8("start_Box1"))
+            self.startBoxList[box].setObjectName("start_Box1")
             self.startBoxList[box].setSizePolicy(sizePolicy_minEx_max)
 
             self.performanceBoxList[box].setFont(font11)
             self.performanceBoxList[box].setMaximumSize(QtCore.QSize(100, 27))
-            self.performanceBoxList[box].setObjectName(_from_utf8("start_Box1"))
+            self.performanceBoxList[box].setObjectName("start_Box1")
             self.performanceBoxList[box].setSizePolicy(sizePolicy_minEx_max)
 
             self.stopBoxList[box].setFont(font11)
             self.stopBoxList[box].setMaximumSize(QtCore.QSize(100, 27))
-            self.stopBoxList[box].setObjectName(_from_utf8("stop_Box%d" % box))
+            self.stopBoxList[box].setObjectName(("stop_Box%d" % box))
             self.stopBoxList[box].setEnabled(False)
             self.stopBoxList[box].setSizePolicy(sizePolicy_minEx_max)
 
             self.optionButtonBoxList[box].setFont(font11)
             self.optionButtonBoxList[box].setMinimumSize(QtCore.QSize(27, 27))
             self.optionButtonBoxList[box].setMaximumSize(QtCore.QSize(27, 27))
-            self.optionButtonBoxList[box].setObjectName(_from_utf8("optionButton_Box%d" % box))
+            self.optionButtonBoxList[box].setObjectName(("optionButton_Box%d" % box))
             self.optionButtonBoxList[box].setSizePolicy(sizePolicy_max)
             self.optionButtonBoxList[box].setIcon(self.wrenchIcon)
-            self.optionButtonBoxList[box].setText(_from_utf8(""))
+            self.optionButtonBoxList[box].setText("")
             self.optionButtonBoxList[box].setStyleSheet("QPushButton::menu-indicator { image: none; }")
 
             # endregion Buttons
@@ -536,15 +520,15 @@ class UiMainWindow(object):
             self.checkActiveBoxList[box].setFont(font11)
             self.checkActiveBoxList[box].setIconSize(QtCore.QSize(20, 20))
             self.checkActiveBoxList[box].setMaximumSize(QtCore.QSize(22, 22))
-            self.checkActiveBoxList[box].setObjectName(_from_utf8("checkActive_Box%d" % box))
-            self.checkActiveBoxList[box].setText(_from_utf8(""))
+            self.checkActiveBoxList[box].setObjectName(("checkActive_Box%d" % box))
+            self.checkActiveBoxList[box].setText("")
 
             # endregion Checkboxes
 
             # region Dropdowns
             self.boardVerBoxList[box].setFont(font11)
             self.boardVerBoxList[box].setMaximumSize(QtCore.QSize(100, 22))
-            self.boardVerBoxList[box].setObjectName(_from_utf8("boardVer_Box%d" % box))
+            self.boardVerBoxList[box].setObjectName(("boardVer_Box%d" % box))
             self.boardVerBoxList[box].addItems(["v1.3","v1.4","v2.0","v4.0"])
             self.boardVerBoxList[box].setCurrentIndex(0)
 
@@ -556,10 +540,10 @@ class UiMainWindow(object):
             self.graphicBoxList[box].setFrameShape(QFrame.Panel)
             self.graphicBoxList[box].setMargin(2)
             self.graphicBoxList[box].setMaximumSize(QtCore.QSize(35, 35))
-            self.graphicBoxList[box].setObjectName(_from_utf8("graphicLabel_Box%d" % box))
+            self.graphicBoxList[box].setObjectName(("graphicLabel_Box%d" % box))
             self.graphicBoxList[box].setPixmap(self.redIcon)
             self.graphicBoxList[box].setScaledContents(True)
-            self.graphicBoxList[box].setText(_from_utf8(""))
+            self.graphicBoxList[box].setText("")
             self.graphicBoxList[box].setTextInteractionFlags(QtCore.Qt.TextInteractionFlag.NoTextInteraction)
 
             # endregion Graphics
@@ -589,27 +573,29 @@ class UiMainWindow(object):
         # QtCore.QMetaObject.connectSlotsByName(main_window)
 
     def retranslate_ui(self, mainwindow):
-        mainwindow.setWindowTitle(_translate("MainWindow", "pyoperant Interface", None))
-        self.startAllButton.setText(_translate("MainWindow", "Start All", None))
-        self.stopAllButton.setText(_translate("MainWindow", "Stop All", None))
-        self.behaviorField.setItemText(0, _translate("MainWindow", "GoNoGoInterruptExp", None))
-        self.behaviorLabel.setText(_translate("MainWindow", "Paradigm", None))
+        mainwindow.setWindowTitle("MainWindow", "pyoperant Interface", None)
+        self.startAllButton.setText("MainWindow", "Start All", None)
+        self.stopAllButton.setText("MainWindow", "Stop All", None)
+        self.behaviorField.setItemText(0, "MainWindow", "GoNoGoInterruptExp", None)
+        self.behaviorLabel.setText("MainWindow", "Paradigm", None)
 
         for box in range(0, self.numberOfBoxes):
-            self.birdEntryLabelBoxList[box].setText(_translate("MainWindow", "Bird", None))
-            self.checkActiveLabelBoxList[box].setText(_translate("MainWindow", "Active", None))
-            self.labelBoxList[box].setText(_translate("MainWindow", _from_utf8(" Box %s " % str(box + 1)), None))
-            self.phaseLabelList[box].setText(_translate("MainWindow", _from_utf8("Phase: "), None))
-            self.lastTrialLabelList[box].setText(_translate("MainWindow", _from_utf8("Last Trial: "), None))
-            self.paramFileButtonBoxList[box].setText(_translate("MainWindow", "...", None))
-            self.paramFileLabelBoxList[box].setText(_translate("MainWindow", "File", None))
-            self.performanceBoxList[box].setText(_translate("MainWindow", "Performance", None))
-            self.startBoxList[box].setText(_translate("MainWindow", "Start", None))
-            self.stopBoxList[box].setText(_translate("MainWindow", "Stop", None))
+            self.birdEntryLabelBoxList[box].setText("MainWindow", "Bird", None)
+            self.checkActiveLabelBoxList[box].setText("MainWindow", "Active", None)
+            self.labelBoxList[box].setText("MainWindow", (" Box %s " % str(box + 1)), None)
+            self.phaseLabelList[box].setText("MainWindow", "Phase: ", None)
+            self.lastTrialLabelList[box].setText("MainWindow", "Last Trial: ", None)
+            self.paramFileButtonBoxList[box].setText("MainWindow", "...", None)
+            self.paramFileLabelBoxList[box].setText("MainWindow", "File", None)
+            self.performanceBoxList[box].setText("MainWindow", "Performance", None)
+            self.startBoxList[box].setText("MainWindow", "Start", None)
+            self.stopBoxList[box].setText("MainWindow", "Stop", None)
 
 
 class UiSolenoidControl(object):
     def __init__(self):
+        self.verticalLayout = None
+        self.gridLayout = None
         self.line = None
         self.done_Button = None
         self.test_Button = None
@@ -642,24 +628,24 @@ class UiSolenoidControl(object):
         font16.setPointSize(16)
         # endregion Presets
 
-        solenoid_control.setObjectName(_from_utf8("solenoid_control"))
+        solenoid_control.setObjectName("solenoid_control")
         solenoid_control.resize(300, 185)
         solenoid_control.setSizePolicy(sizePolicy_fixed)
         solenoid_control.setMaximumSize(QtCore.QSize(300, 200))
 
         # region Layouts
         self.gridLayout = QGridLayout(solenoid_control)
-        self.gridLayout.setObjectName(_from_utf8("gridLayout"))
+        self.gridLayout.setObjectName("gridLayout")
 
         self.verticalLayout = QVBoxLayout()
         self.verticalLayout.setSizeConstraint(QLayout.SetFixedSize)
-        self.verticalLayout.setObjectName(_from_utf8("verticalLayout"))
+        self.verticalLayout.setObjectName("verticalLayout")
 
         self.horizontalLayout = QHBoxLayout()
-        self.horizontalLayout.setObjectName(_from_utf8("horizontalLayout"))
+        self.horizontalLayout.setObjectName("horizontalLayout")
 
         self.testLayout = QGridLayout()
-        self.testLayout.setObjectName(_from_utf8("testLayout"))
+        self.testLayout.setObjectName("testLayout")
         # endregion Layouts
 
         # region Labels and text
@@ -669,13 +655,13 @@ class UiSolenoidControl(object):
         self.box_name.setBaseSize(QtCore.QSize(50, 18))
         self.box_name.setFont(font13)
         self.box_name.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-        self.box_name.setObjectName(_from_utf8("box_name"))
+        self.box_name.setObjectName("box_name")
 
         self.solenoid_text = QLabel(solenoid_control)
         self.solenoid_text.setSizePolicy(sizePolicy_fixed)
         self.solenoid_text.setMaximumSize(QtCore.QSize(280, 24))
         self.solenoid_text.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-        self.solenoid_text.setObjectName(_from_utf8("solenoid_text"))
+        self.solenoid_text.setObjectName("solenoid_text")
 
         self.solenoid_Status_Text = QLabel(solenoid_control)
         self.solenoid_Status_Text.setSizePolicy(sizePolicy_fixed)
@@ -684,19 +670,19 @@ class UiSolenoidControl(object):
 
         self.solenoid_Status_Text.setFont(font16)
         self.solenoid_Status_Text.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-        self.solenoid_Status_Text.setObjectName(_from_utf8("solenoid_Status_Text"))
+        self.solenoid_Status_Text.setObjectName("solenoid_Status_Text")
 
         self.test_Label = QLabel(solenoid_control)
         self.test_Label.setSizePolicy(sizePolicy_fixed)
         self.test_Label.setMaximumSize(QtCore.QSize(280, 24))
         self.test_Label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-        self.test_Label.setObjectName(_from_utf8("test_Label"))
+        self.test_Label.setObjectName("test_Label")
 
         self.amount_Label = QLabel(solenoid_control)
         self.amount_Label.setSizePolicy(sizePolicy_fixed)
         self.amount_Label.setMaximumSize(QtCore.QSize(280, 24))
         self.amount_Label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-        self.amount_Label.setObjectName(_from_utf8("amount_Label"))
+        self.amount_Label.setObjectName("amount_Label")
 
         self.test_Amount = QSpinBox(solenoid_control)
         self.test_Amount.setFixedHeight(27)
@@ -711,7 +697,7 @@ class UiSolenoidControl(object):
         self.times_Label.setSizePolicy(sizePolicy_fixed)
         self.times_Label.setMaximumSize(QtCore.QSize(280, 24))
         self.times_Label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-        self.times_Label.setObjectName(_from_utf8("times_Label"))
+        self.times_Label.setObjectName("times_Label")
 
         self.test_Times = QSpinBox(solenoid_control)
         self.test_Times.setFixedHeight(27)
@@ -727,30 +713,30 @@ class UiSolenoidControl(object):
         self.open_Button = QPushButton(solenoid_control)
         self.open_Button.setMinimumSize(QtCore.QSize(0, 27))
         self.open_Button.setMaximumSize(QtCore.QSize(136, 27))
-        self.open_Button.setObjectName(_from_utf8("open_Button"))
+        self.open_Button.setObjectName("open_Button")
 
         self.close_Button = QPushButton(solenoid_control)
         self.close_Button.setEnabled(False)
         self.close_Button.setMinimumSize(QtCore.QSize(0, 27))
         self.close_Button.setMaximumSize(QtCore.QSize(136, 27))
-        self.close_Button.setObjectName(_from_utf8("close_Button"))
+        self.close_Button.setObjectName("close_Button")
 
         self.test_Button = QPushButton(solenoid_control)
         self.test_Button.setMinimumSize(QtCore.QSize(0, 27))
         self.test_Button.setMaximumSize(QtCore.QSize(136, 27))
-        self.test_Button.setObjectName(_from_utf8("test_Button"))
+        self.test_Button.setObjectName("test_Button")
 
         self.done_Button = QPushButton(solenoid_control)
         self.done_Button.setSizePolicy(sizePolicy_fixed)
         self.done_Button.setMaximumSize(QtCore.QSize(270, 27))
-        self.done_Button.setObjectName(_from_utf8("done_Button"))
+        self.done_Button.setObjectName("done_Button")
         # endregion Buttons
 
         # region Other objects
         self.line = QFrame(solenoid_control)
         self.line.setFrameShape(QFrame.HLine)
         self.line.setFrameShadow(QFrame.Sunken)
-        self.line.setObjectName(_from_utf8("line"))
+        self.line.setObjectName("line")
 
         self.horizontalLayout.addWidget(self.open_Button)
         self.horizontalLayout.addWidget(self.close_Button)
@@ -780,15 +766,15 @@ class UiSolenoidControl(object):
         # QtCore.QMetaObject.connectSlotsByName(solenoid_control)
 
     def retranslate_ui(self, solenoid_control):
-        solenoid_control.setWindowTitle(_translate("solenoid_control", "Solenoid Control", None))
-        self.solenoid_text.setText(_translate("solenoid_control", "Solenoid is ", None))
-        self.open_Button.setText(_translate("solenoid_control", "Open Solenoid", None))
-        self.close_Button.setText(_translate("solenoid_control", "Close Solenoid", None))
-        self.test_Label.setText(_translate("solenoid_control", "Solenoid Testing", None))
-        self.amount_Label.setText(_translate("solenoid_control", "Amount", None))
-        self.times_Label.setText(_translate("solenoid_control", "Times", None))
-        self.test_Button.setText(_translate("solenoid_control", "Test Solenoid", None))
-        self.done_Button.setText(_translate("solenoid_control", "Done", None))
+        solenoid_control.setWindowTitle("solenoid_control", "Solenoid Control", None)
+        self.solenoid_text.setText("solenoid_control", "Solenoid is ", None)
+        self.open_Button.setText("solenoid_control", "Open Solenoid", None)
+        self.close_Button.setText("solenoid_control", "Close Solenoid", None)
+        self.test_Label.setText("solenoid_control", "Solenoid Testing", None)
+        self.amount_Label.setText("solenoid_control", "Amount", None)
+        self.times_Label.setText("solenoid_control", "Times", None)
+        self.test_Button.setText("solenoid_control", "Test Solenoid", None)
+        self.done_Button.setText("solenoid_control", "Done", None)
 
 
 class StatsWindow(object):
@@ -827,7 +813,7 @@ class StatsWindow(object):
         self.gridLayout = None
 
     def setup_ui(self, stats_window):
-        stats_window.setObjectName(_from_utf8("stats_window"))
+        stats_window.setObjectName("stats_window")
         stats_window.resize(1000, 600)
         sizePolicy_fixed = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         sizePolicy_fixed.setHorizontalStretch(0)
@@ -847,7 +833,7 @@ class StatsWindow(object):
         font.setPointSize(11)
 
         self.gridLayout = QGridLayout(stats_window)
-        self.gridLayout.setObjectName(_from_utf8("gridLayout"))
+        self.gridLayout.setObjectName("gridLayout")
 
         self.tableStatsBar = QLabel()
         self.tableStatsBar.setStyleSheet("QLabel {border-bottom: 1px solid #CCCCCC; border-top: 0px solid #CCCCCC; "
@@ -886,7 +872,7 @@ class StatsWindow(object):
         self.performance_Table.setSizePolicy(sizePolicy_exp)
         self.performance_Table.setMinimumSize(QtCore.QSize(800, 700))
         self.performance_Table.setFont(font)
-        self.performance_Table.setObjectName(_from_utf8("performance_Table"))
+        self.performance_Table.setObjectName("performance_Table")
         self.performance_Table.setSelectionMode(4)
         self.performance_Table.installEventFilter(self)  # to capture keyboard commands to allow ctrl+c functionality
 
@@ -908,7 +894,7 @@ class StatsWindow(object):
         # top widget that holds all regular grouping checkboxes
         self.groupGridWidget = QWidget()
         self.groupGrid = QFormLayout(self.groupGridWidget)
-        self.groupGrid.setObjectName(_from_utf8("groupGrid"))
+        self.groupGrid.setObjectName("groupGrid")
         self.groupGrid.setLabelAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
         self.groupGrid.setFormAlignment(QtCore.Qt.AlignmentFlag.AlignHCenter)
         self.groupGrid.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
@@ -916,7 +902,7 @@ class StatsWindow(object):
         # raw trial checkbox that will disable all grouping checkboxes
         self.groupDisableWidget = QWidget()
         self.groupByDisable = QFormLayout(self.groupDisableWidget)
-        self.groupByDisable.setObjectName(_from_utf8("groupByDisable"))
+        self.groupByDisable.setObjectName("groupByDisable")
         self.groupByDisable.setLabelAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
         self.groupByDisable.setFormAlignment(QtCore.Qt.AlignmentFlag.AlignHCenter)
         self.groupByDisable.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
@@ -925,7 +911,7 @@ class StatsWindow(object):
         self.groupByDisable_Checkbox.setSizePolicy(sizePolicy_fixed)
         self.groupByDisable_Checkbox.setFixedHeight(27)
         self.groupByDisable_Checkbox.setMaximumWidth(300)
-        self.groupByDisable_Checkbox.setObjectName(_from_utf8("groupByDisable_Checkbox"))
+        self.groupByDisable_Checkbox.setObjectName("groupByDisable_Checkbox")
         self.groupByDisable_Checkbox.setText('Show raw trial data')
         self.groupByDisable.addRow(self.groupByDisable_Checkbox)
 
@@ -940,7 +926,7 @@ class StatsWindow(object):
 
         # region filtering section
         self.filterGrid = QFormLayout()
-        self.filterGrid.setObjectName(_from_utf8("filterGrid"))
+        self.filterGrid.setObjectName("filterGrid")
         self.filterGrid.setLabelAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
         self.filterGrid.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.filterGrid.setFormAlignment(QtCore.Qt.AlignmentFlag.AlignHCenter)
@@ -953,7 +939,7 @@ class StatsWindow(object):
 
         # region Field selection section
         self.fieldGrid = QGridLayout()
-        self.fieldGrid.setObjectName(_from_utf8("fieldGrid"))
+        self.fieldGrid.setObjectName("fieldGrid")
         self.fieldGrid.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
 
         self.fieldScroll = QScrollArea()
@@ -963,7 +949,7 @@ class StatsWindow(object):
         self.fieldScroll.setWidgetResizable(True)
 
         self.fieldList = QVBoxLayout()
-        self.fieldList.setObjectName(_from_utf8("fieldList"))
+        self.fieldList.setObjectName("fieldList")
         self.fieldList.setSpacing(0)
 
         self.fieldWidget = QWidget()
@@ -990,7 +976,7 @@ class StatsWindow(object):
 
         # region Preset Options
         self.presetsGrid = QFormLayout()
-        self.presetsGrid.setObjectName(_from_utf8("presetsGrid"))
+        self.presetsGrid.setObjectName("presetsGrid")
         self.presetsGrid.setLabelAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
         self.presetsGrid.setFormAlignment(QtCore.Qt.AlignmentFlag.AlignHCenter)
 
@@ -999,21 +985,21 @@ class StatsWindow(object):
         self.noResponse_Checkbox = QCheckBox(stats_window)
         self.noResponse_Checkbox.setSizePolicy(sizePolicy_fixed)
         self.noResponse_Checkbox.setMaximumSize(QtCore.QSize(27, 27))
-        self.noResponse_Checkbox.setObjectName(_from_utf8("noResponse_Checkbox"))
+        self.noResponse_Checkbox.setObjectName("noResponse_Checkbox")
         self.noResponse_Checkbox.setCheckState(2)
 
         # Analyze probe trials as well?
         self.probe_Checkbox = QCheckBox(stats_window)
         self.probe_Checkbox.setSizePolicy(sizePolicy_fixed)
         self.probe_Checkbox.setMaximumSize(QtCore.QSize(27, 27))
-        self.probe_Checkbox.setObjectName(_from_utf8("probe_Checkbox"))
+        self.probe_Checkbox.setObjectName("probe_Checkbox")
         self.probe_Checkbox.setCheckState(2)  # default to on
 
         # Include raw counts
         self.raw_Checkbox = QCheckBox(stats_window)
         self.raw_Checkbox.setSizePolicy(sizePolicy_fixed)
         self.raw_Checkbox.setMaximumSize(QtCore.QSize(27, 27))
-        self.raw_Checkbox.setObjectName(_from_utf8("raw_Checkbox"))
+        self.raw_Checkbox.setObjectName("raw_Checkbox")
         # endregion
 
         self.presetsGrid.addRow(QLabel("Include NR Trials"), self.noResponse_Checkbox)
@@ -1025,20 +1011,20 @@ class StatsWindow(object):
 
         # region Menu buttons at bottom
         self.menuGrid = QHBoxLayout()
-        self.menuGrid.setObjectName(_from_utf8("menuGrid"))
+        self.menuGrid.setObjectName("menuGrid")
 
         self.folder_Button = QPushButton(stats_window)
         self.folder_Button.setSizePolicy(sizePolicy_fixed)
         self.folder_Button.setMinimumSize(QtCore.QSize(150, 27))
         self.folder_Button.setMaximumSize(QtCore.QSize(300, 27))
-        self.folder_Button.setObjectName(_from_utf8("folder_Button"))
+        self.folder_Button.setObjectName("folder_Button")
 
         # button to force a recalculation
         self.recalculate_Button = QPushButton(stats_window)
         self.recalculate_Button.setSizePolicy(sizePolicy_fixed)
         self.recalculate_Button.setMinimumSize(QtCore.QSize(150, 27))
         self.recalculate_Button.setMaximumSize(QtCore.QSize(300, 27))
-        self.recalculate_Button.setObjectName(_from_utf8("recalculate_Button"))
+        self.recalculate_Button.setObjectName("recalculate_Button")
 
         # if hold checkbox is on, changing field/grouping/filters won't force a recalculate, so multiple things can
         # be changed without needing to wait after each click
@@ -1047,19 +1033,19 @@ class StatsWindow(object):
         self.hold_Checkbox.setText('Automatically recalculate')
         self.hold_Checkbox.setFixedHeight(27)
         self.hold_Checkbox.setMaximumWidth(300)
-        self.hold_Checkbox.setObjectName(_from_utf8("hold_Checkbox"))
+        self.hold_Checkbox.setObjectName("hold_Checkbox")
 
         self.export_Button = QPushButton(stats_window)
         self.export_Button.setSizePolicy(sizePolicy_fixed)
         self.export_Button.setMinimumSize(QtCore.QSize(150, 27))
         self.export_Button.setMaximumSize(QtCore.QSize(300, 27))
-        self.export_Button.setObjectName(_from_utf8("export_Button"))
+        self.export_Button.setObjectName("export_Button")
 
         self.done_Button = QPushButton(stats_window)
         self.done_Button.setSizePolicy(sizePolicy_fixed)
         self.done_Button.setMinimumSize(QtCore.QSize(150, 27))
         self.done_Button.setMaximumSize(QtCore.QSize(300, 27))
-        self.done_Button.setObjectName(_from_utf8("done_Button"))
+        self.done_Button.setObjectName("done_Button")
 
         self.menuGrid.addWidget(self.folder_Button)
 
@@ -1113,16 +1099,16 @@ class StatsWindow(object):
         # QtCore.QMetaObject.connectSlotsByName(stats_window)
 
     def retranslate_ui(self, stats_window):
-        stats_window.setWindowTitle(_translate("stats_window", "Performance", None))
-        self.folder_Button.setText(_translate("stats_window", "Select...", None))
-        self.recalculate_Button.setText(_translate("stats_window", "Recalculate", None))
-        self.export_Button.setText(_translate("stats_window", "Export", None))
-        self.done_Button.setText(_translate("stats_window", "Done", None))
-        self.noResponse_Checkbox.setText(_translate("stats_window", "", None))
-        self.probe_Checkbox.setText(_translate("stats_window", "", None))
-        self.raw_Checkbox.setText(_translate("stats_window", "", None))
-        self.fieldListSelectAll.setText(_translate("stats_window", "Select All", None))
-        self.fieldListSelectNone.setText(_translate("stats_window", "Select None", None))
+        stats_window.setWindowTitle("stats_window", "Performance", None)
+        self.folder_Button.setText("stats_window", "Select...", None)
+        self.recalculate_Button.setText("stats_window", "Recalculate", None)
+        self.export_Button.setText("stats_window", "Export", None)
+        self.done_Button.setText("stats_window", "Done", None)
+        self.noResponse_Checkbox.setText("stats_window", "", None)
+        self.probe_Checkbox.setText("stats_window", "", None)
+        self.raw_Checkbox.setText("stats_window", "", None)
+        self.fieldListSelectAll.setText("stats_window", "Select All", None)
+        self.fieldListSelectNone.setText("stats_window", "Select None", None)
 
 
 class FolderSelectWindow(object):
@@ -1135,7 +1121,7 @@ class FolderSelectWindow(object):
         self.gridLayout = None
 
     def setup_ui(self, folder_window):
-        folder_window.setObjectName(_from_utf8("folder_select_window"))
+        folder_window.setObjectName("folder_select_window")
         folder_window.resize(500, 400)
         sizePolicy_fixed = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         sizePolicy_fixed.setHorizontalStretch(0)
@@ -1149,33 +1135,33 @@ class FolderSelectWindow(object):
         font.setPointSize(11)
 
         self.gridLayout = QGridLayout(folder_window)
-        self.gridLayout.setObjectName(_from_utf8("gridLayout"))
+        self.gridLayout.setObjectName("gridLayout")
 
         self.folder_view = QTreeView(folder_window)
         self.folder_view.setSizePolicy(sizePolicy_exp)
         self.folder_view.setMinimumSize(QtCore.QSize(500, 300))
         self.folder_view.setFont(font)
         self.folder_view.setAnimated(False)
-        self.folder_view.setObjectName(_from_utf8("folder_view"))
+        self.folder_view.setObjectName("folder_view")
 
         # region Menu buttons at bottom
         self.menuBar = QHBoxLayout()
-        self.menuBar.setObjectName(_from_utf8("menuBar"))
+        self.menuBar.setObjectName("menuBar")
 
         self.change_folder_button = QPushButton(folder_window)
         self.change_folder_button.setSizePolicy(sizePolicy_fixed)
         self.change_folder_button.setMaximumSize(QtCore.QSize(300, 27))
-        self.change_folder_button.setObjectName(_from_utf8("change_folder_button"))
+        self.change_folder_button.setObjectName("change_folder_button")
 
         self.cancel_button = QPushButton(folder_window)
         self.cancel_button.setSizePolicy(sizePolicy_fixed)
         self.cancel_button.setMaximumSize(QtCore.QSize(300, 27))
-        self.cancel_button.setObjectName(_from_utf8("cancel_button"))
+        self.cancel_button.setObjectName("cancel_button")
 
         self.done_button = QPushButton(folder_window)
         self.done_button.setSizePolicy(sizePolicy_fixed)
         self.done_button.setMaximumSize(QtCore.QSize(300, 27))
-        self.done_button.setObjectName(_from_utf8("done_button"))
+        self.done_button.setObjectName("done_button")
 
         self.menuBar.addWidget(self.change_folder_button)
         self.menuBar.addSpacerItem(add_spacer(40, policy='min'))
@@ -1208,10 +1194,10 @@ class FolderSelectWindow(object):
         # QtCore.QMetaObject.connectSlotsByName(folder_window)
 
     def retranslate_ui(self, stats_window):
-        stats_window.setWindowTitle(_translate("stats_window", "Select Folder", None))
-        self.done_button.setText(_translate("stats_window", "Done", None))
-        self.cancel_button.setText(_translate("stats_window", "Cancel", None))
-        self.change_folder_button.setText(_translate("stats_window", "Select Base Folder", None))
+        stats_window.setWindowTitle("stats_window", "Select Folder", None)
+        self.done_button.setText("stats_window", "Done", None)
+        self.cancel_button.setText("stats_window", "Cancel", None)
+        self.change_folder_button.setText("stats_window", "Select Base Folder", None)
 
 
 def add_spacer(pref_width, pref_height=20, direction='horiz', policy='exp'):
