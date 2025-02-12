@@ -14,7 +14,7 @@ import serial  # To connect directly to Teensys for water control
 import time
 import threading  # Support subprocess, allow error messages to be passed out of the subprocess
 import queue  # Support subprocess, allow error messages to be passed out of the subprocess
-import pyudev  # device monitoring to identify connected Teensys
+# import pyudev  # device monitoring to identify connected Teensys
 import re  # Regex, for parsing device names returned from pyudev to identify connected Teensys
 import argparse  # Parse command line arguments for GUI, primarily to enable debug mode
 from shutil import copyfile  # For creating new json file by copying another
@@ -40,6 +40,11 @@ try:
 except ImportError:
     import json
 
+try:
+    import pyudev  # pyudev only works on Unix, not Windows
+except ImportError:
+    pass
+
 # try:  # Allows proper formatting of UTF-8 characters from summaryDAT file
 #     _from_utf8 = QtCore.QString.fromUtf8
 # except AttributeError:
@@ -47,6 +52,9 @@ except ImportError:
 #         return s
 
 import pyoperant_gui_layout
+
+
+osName = os.name  # pyudev only works on Unix systems
 
 
 def _log_except_hook(*exc_info):  # How uncaught errors are handled
@@ -191,12 +199,13 @@ class PyoperantGui(QMainWindow, pyoperant_gui_layout.UiMainWindow):
             self.log_config()
 
             # region Monitor when USB devices are connected/disconnected
-            context = pyudev.Context()
-            monitor = pyudev.Monitor.from_netlink(context)
-            monitor.filter_by(subsystem='tty')
-            observer = pyudev.MonitorObserver(monitor, self.usb_monitor, name='usb-observer')
-            observer.daemon = True
-            observer.start()
+            if osName == "posix":
+                context = pyudev.Context()
+                monitor = pyudev.Monitor.from_netlink(context)
+                monitor.filter_by(subsystem='tty')
+                observer = pyudev.MonitorObserver(monitor, self.usb_monitor, name='usb-observer')
+                observer.daemon = True
+                observer.start()
 
             self.teensy_emit.connect(
                 (lambda triggered_boxnumber, parameter: self.teensy_control(triggered_boxnumber, parameter)))
@@ -425,13 +434,14 @@ class PyoperantGui(QMainWindow, pyoperant_gui_layout.UiMainWindow):
             self.closeEvent = self.close_application
 
             # check if each box is connected
-            # tempContext = pyudev.Context()
-            for device in context.list_devices(subsystem='tty'):
-                try:
-                    next(device.device_links)
-                    self.usb_monitor('add', device)
-                except StopIteration:
-                    pass
+            if osName == "posix":
+                # tempContext = pyudev.Context()
+                for device in context.list_devices(subsystem='tty'):
+                    try:
+                        next(device.device_links)
+                        self.usb_monitor('add', device)
+                    except StopIteration:
+                        pass
 
             self.open_application()
 

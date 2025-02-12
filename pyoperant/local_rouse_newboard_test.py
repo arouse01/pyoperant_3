@@ -34,6 +34,7 @@ SMTP_CONFIG = {'mailhost': 'localhost',
                'secure': None,
                }
 
+
 class RousePanel(panels.BasePanel):
     """class for rouse boxes """
 

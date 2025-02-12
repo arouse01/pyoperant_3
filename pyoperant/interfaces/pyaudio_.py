@@ -62,6 +62,7 @@ class PyAudioInterface(base_.BaseInterface):
         numdevices = api_info.get('deviceCount')
         # Get device index based on device name, which is customized in Linux implementations (e.g., 'board01')
         # using get_device_info_by_host_api_device_index because it gets the full device name
+        device_index = None
         for i in range(numdevices):
             deviceInfo = self.pa.get_device_info_by_host_api_device_index(api_index, i)
             currDeviceName = deviceInfo['name'][:18]
@@ -111,8 +112,8 @@ class PyAudioInterface(base_.BaseInterface):
                 return data, pyaudio.paContinue
 
         self.stream = self.pa.open(format=self.pa.get_format_from_width(self.wf.getsampwidth()),
-                                   # channels=self.wf.getnchannels(),
-                                   channels=2,  # fixed to 1 for single-channel (mono) stimuli
+                                   channels=self.wf.getnchannels(),
+                                   # channels=2,  # fixed to 1 for single-channel (mono) stimuli
                                    rate=self.wf.getframerate(),
                                    # input=True,
                                    output=True,
@@ -132,8 +133,8 @@ class PyAudioInterface(base_.BaseInterface):
         RATE = 44100  # recording sampling rate
 
         self.stream = self.pa.open(format=self.pa.get_format_from_width(self.wf.getsampwidth()),
-                                   # channels=self.wf.getnchannels(),
-                                   channels=1,  # fixed to 1 for single-channel (mono) stimuli
+                                   channels=self.wf.getnchannels(),
+                                   # channels=1,  # fixed to 1 for single-channel (mono) stimuli
                                    rate=RATE,
                                    input=True,
                                    input_device_index=self.device_index,
