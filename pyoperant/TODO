@@ -1,5 +1,6 @@
 TODO
 # TODO - Change source folder from static to calculated/parameter
+#   TODO - Take parameter from json file and apply across whole script
 # TODO - Unify logging across scripts
 
 -

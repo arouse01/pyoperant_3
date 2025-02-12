@@ -4,6 +4,7 @@ import serial
 import logging
 from pyoperant.interfaces import base_
 from pyoperant import utils, InterfaceError, ArduinoException
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -332,6 +333,6 @@ class ArduinoInterface(base_.BaseInterface):
         :return: 2-byte hex string for input to arduino
         """
 
-        return "".join([chr(channel), chr(value)])
+        return "".join([chr(channel), chr(value)]).encode('utf-8')
 
 

@@ -40,11 +40,11 @@ try:
 except ImportError:
     import json
 
-try:  # Allows proper formatting of UTF-8 characters from summaryDAT file
-    _from_utf8 = QtCore.QString.fromUtf8
-except AttributeError:
-    def _from_utf8(s):
-        return s
+# try:  # Allows proper formatting of UTF-8 characters from summaryDAT file
+#     _from_utf8 = QtCore.QString.fromUtf8
+# except AttributeError:
+#     def _from_utf8(s):
+#         return s
 
 import pyoperant_gui_layout
 
@@ -1120,7 +1120,7 @@ class PyoperantGui(QMainWindow, pyoperant_gui_layout.UiMainWindow):
             f.close()
             if isinstance(logData, list):
                 messageFormatted = ''.join(logData)
-                messageFormatted = _from_utf8(messageFormatted)
+                messageFormatted = messageFormatted
                 try:  # catch IndexError if log file is empty (I think)
                     tempData = logData[0]
                 except IndexError:
@@ -1134,7 +1134,7 @@ class PyoperantGui(QMainWindow, pyoperant_gui_layout.UiMainWindow):
                         logData = messageFormatted
                         logFull = False
             else:
-                logData = _from_utf8(logData)
+                # logData = _from_utf8(logData)
                 logFull = False
                 # logData = f.readlines()
                 # f.close()
@@ -1312,9 +1312,9 @@ class PyoperantGui(QMainWindow, pyoperant_gui_layout.UiMainWindow):
         # box
         if isinstance(message, list):
             messageFormatted = ''.join(message)
-            messageFormatted = _from_utf8(messageFormatted)
+            # messageFormatted = _from_utf8(messageFormatted)
         else:
-            messageFormatted = _from_utf8(message)
+            messageFormatted = message
 
         if target == 'status':
             self.statusTotalsBoxList[boxnumber].setText(messageFormatted)
@@ -1984,7 +1984,7 @@ class StatsGui(QDialog, pyoperant_gui_layout.StatsWindow):
         groupByCheckbox.setSizePolicy(QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed))
         groupByCheckbox.setFixedHeight(27)
         groupByCheckbox.setMaximumWidth(300)
-        groupByCheckbox.setObjectName(_from_utf8("groupBy{}_Checkbox".format(group_name)))
+        groupByCheckbox.setObjectName("groupBy{}_Checkbox".format(group_name))
 
         if group_type is None:
             groupByCheckbox.setText(group_name)

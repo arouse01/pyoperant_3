@@ -22,7 +22,7 @@ except ImportError:
     BEHAVIORS = ['pyoperant.behavior']
 
 try:
-    from pyoperant.local import DATAPATH
+    from pyoperant.local import DATA_PATH as DATAPATH
 except ImportError:
     DATAPATH = '/home/rouse/bird/data'
 
