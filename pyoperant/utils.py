@@ -491,17 +491,20 @@ def get_num_open_fds():
 
     .. warning: will only work on UNIX-like os-es.
     """
+    osName = os.name
+    if osName == "posix":
+        pid = os.getpid()
+        procs = subprocess.check_output(
+            ["lsof", '-w', '-Ff', "-p", str(pid)])
 
-    pid = os.getpid()
-    procs = subprocess.check_output(
-        ["lsof", '-w', '-Ff', "-p", str(pid)])
-
-    nprocs = len(
-        filter(
-            lambda s: s and s[0] == 'f' and s[1:].isdigit(),
-            procs.split('\n'))
-    )
-    return nprocs
+        nprocs = len(
+            filter(
+                lambda s: s and s[0] == 'f' and s[1:].isdigit(),
+                procs.split('\n'))
+        )
+        return nprocs
+    else:
+        return 0
 
 
 def rand_from_log_shape_dist(alpha=10):

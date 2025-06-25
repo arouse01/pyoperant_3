@@ -1,0 +1,43 @@
+"2025-02-12 12:43:21,558","ERROR","Unhandled exception: Traceback (most recent call last):
+  File "D:\Rouse\My Documents\GitHub\pyoperant_3\Interface\pyoperant_gui.py", line 2520, in <module>
+    main()  # run the main function
+    ^^^^^^
+  File "D:\Rouse\My Documents\GitHub\pyoperant_3\Interface\pyoperant_gui.py", line 2514, in main
+    form = PyoperantGui()  # We set the form to be our ExampleApp (design)
+           ^^^^^^^^^^^^^^
+  File "D:\Rouse\My Documents\GitHub\pyoperant_3\Interface\pyoperant_gui.py", line 436, in __init__
+    for device in context.list_devices(subsystem='tty'):
+                  ^^^^^^^
+UnboundLocalError: cannot access local variable 'context' where it is not associated with a value
+"
+"2025-02-12 12:45:24,254","ERROR","Unhandled exception: Traceback (most recent call last):
+  File "D:\Rouse\My Documents\GitHub\pyoperant_3\Interface\pyoperant_gui.py", line 169, in <lambda>
+    viewGuiErrorAction.triggered.connect(lambda _, b='guierror': self.open_text_file(0, whichfile=b))
+                                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Rouse\My Documents\GitHub\pyoperant_3\Interface\pyoperant_gui.py", line 534, in open_text_file
+    subprocess.Popen(["geany", filePath])
+  File "D:\Program Files\Python312\Lib\subprocess.py", line 1026, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+  File "D:\Program Files\Python312\Lib\subprocess.py", line 1538, in _execute_child
+    hp, ht, pid, tid = _winapi.CreateProcess(executable, args,
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [WinError 2] The system cannot find the file specified
+"
+"2025-02-12 12:45:41,570","ERROR","Unhandled exception: Traceback (most recent call last):
+  File "D:\Rouse\My Documents\GitHub\pyoperant_3\Interface\pyoperant_gui.py", line 412, in <lambda>
+    lambda _, b=boxIndex: self.water_control(boxindex=b, parameter='dialog'))
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Rouse\My Documents\GitHub\pyoperant_3\Interface\pyoperant_gui.py", line 832, in water_control
+    dialog = SolenoidGui(boxnumber, solenoidChannel)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Rouse\My Documents\GitHub\pyoperant_3\Interface\pyoperant_gui.py", line 1534, in __init__
+    self.setup_ui(self)  # from pyoperant_gui_layout.py
+    ^^^^^^^^^^^^^^^^^^^
+  File "D:\Rouse\My Documents\GitHub\pyoperant_3\Interface\pyoperant_gui_layout.py", line 765, in setup_ui
+    self.retranslate_ui(solenoid_control)
+  File "D:\Rouse\My Documents\GitHub\pyoperant_3\Interface\pyoperant_gui_layout.py", line 769, in retranslate_ui
+    solenoid_control.setWindowTitle("solenoid_control", "Solenoid Control")
+TypeError: setWindowTitle(self, a0: Optional[str]): too many arguments
+"
+"2025-02-12 12:47:46,317","INFO","settings.json file detected, loading settings"
+"2025-02-12 12:55:04,179","INFO","settings.json file detected, loading settings"

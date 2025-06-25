@@ -4,8 +4,10 @@ import serial
 import logging
 from pyoperant.interfaces import base_
 from pyoperant import utils, InterfaceError, ArduinoException
+import os
 
 logger = logging.getLogger(__name__)
+logger.info("Arduino logging enabled")
 
 
 ## TODO: Attempt to reconnect device if it can't be reached
@@ -332,6 +334,6 @@ class ArduinoInterface(base_.BaseInterface):
         :return: 2-byte hex string for input to arduino
         """
 
-        return "".join([chr(channel), chr(value)])
+        return "".join([chr(channel), chr(value)]).encode('utf-8')
 
 

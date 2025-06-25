@@ -539,6 +539,7 @@ class UiMainWindow(object):
             self.graphicBoxList[box].setFrameShadow(QFrame.Sunken)
             self.graphicBoxList[box].setFrameShape(QFrame.Panel)
             self.graphicBoxList[box].setMargin(2)
+            self.graphicBoxList[box].setMinimumSize(QtCore.QSize(35, 35))
             self.graphicBoxList[box].setMaximumSize(QtCore.QSize(35, 35))
             self.graphicBoxList[box].setObjectName(("graphicLabel_Box%d" % box))
             self.graphicBoxList[box].setPixmap(self.redIcon)
@@ -573,23 +574,23 @@ class UiMainWindow(object):
         # QtCore.QMetaObject.connectSlotsByName(main_window)
 
     def retranslate_ui(self, mainwindow):
-        mainwindow.setWindowTitle("MainWindow", "pyoperant Interface", None)
-        self.startAllButton.setText("MainWindow", "Start All", None)
-        self.stopAllButton.setText("MainWindow", "Stop All", None)
-        self.behaviorField.setItemText(0, "MainWindow", "GoNoGoInterruptExp", None)
-        self.behaviorLabel.setText("MainWindow", "Paradigm", None)
+        mainwindow.setWindowTitle("pyoperant Interface")
+        self.startAllButton.setText("Start All")
+        self.stopAllButton.setText("Stop All")
+        self.behaviorField.setItemText(0, "GoNoGoInterruptExp")
+        self.behaviorLabel.setText("Paradigm")
 
         for box in range(0, self.numberOfBoxes):
-            self.birdEntryLabelBoxList[box].setText("MainWindow", "Bird", None)
-            self.checkActiveLabelBoxList[box].setText("MainWindow", "Active", None)
-            self.labelBoxList[box].setText("MainWindow", (" Box %s " % str(box + 1)), None)
-            self.phaseLabelList[box].setText("MainWindow", "Phase: ", None)
-            self.lastTrialLabelList[box].setText("MainWindow", "Last Trial: ", None)
-            self.paramFileButtonBoxList[box].setText("MainWindow", "...", None)
-            self.paramFileLabelBoxList[box].setText("MainWindow", "File", None)
-            self.performanceBoxList[box].setText("MainWindow", "Performance", None)
-            self.startBoxList[box].setText("MainWindow", "Start", None)
-            self.stopBoxList[box].setText("MainWindow", "Stop", None)
+            self.birdEntryLabelBoxList[box].setText("Bird")
+            self.checkActiveLabelBoxList[box].setText("Active")
+            self.labelBoxList[box].setText((" Box %s " % str(box + 1)))
+            self.phaseLabelList[box].setText("Phase: ")
+            self.lastTrialLabelList[box].setText("Last Trial: ")
+            self.paramFileButtonBoxList[box].setText("...")
+            self.paramFileLabelBoxList[box].setText("File")
+            self.performanceBoxList[box].setText("Performance")
+            self.startBoxList[box].setText("Start")
+            self.stopBoxList[box].setText("Stop")
 
 
 class UiSolenoidControl(object):
@@ -766,15 +767,15 @@ class UiSolenoidControl(object):
         # QtCore.QMetaObject.connectSlotsByName(solenoid_control)
 
     def retranslate_ui(self, solenoid_control):
-        solenoid_control.setWindowTitle("solenoid_control", "Solenoid Control", None)
-        self.solenoid_text.setText("solenoid_control", "Solenoid is ", None)
-        self.open_Button.setText("solenoid_control", "Open Solenoid", None)
-        self.close_Button.setText("solenoid_control", "Close Solenoid", None)
-        self.test_Label.setText("solenoid_control", "Solenoid Testing", None)
-        self.amount_Label.setText("solenoid_control", "Amount", None)
-        self.times_Label.setText("solenoid_control", "Times", None)
-        self.test_Button.setText("solenoid_control", "Test Solenoid", None)
-        self.done_Button.setText("solenoid_control", "Done", None)
+        solenoid_control.setWindowTitle("Solenoid Control")
+        self.solenoid_text.setText("Solenoid is ")
+        self.open_Button.setText("Open Solenoid")
+        self.close_Button.setText("Close Solenoid")
+        self.test_Label.setText("Solenoid Testing")
+        self.amount_Label.setText("Amount")
+        self.times_Label.setText("Times")
+        self.test_Button.setText("Test Solenoid")
+        self.done_Button.setText("Done")
 
 
 class StatsWindow(object):
@@ -1099,16 +1100,16 @@ class StatsWindow(object):
         # QtCore.QMetaObject.connectSlotsByName(stats_window)
 
     def retranslate_ui(self, stats_window):
-        stats_window.setWindowTitle("stats_window", "Performance", None)
-        self.folder_Button.setText("stats_window", "Select...", None)
-        self.recalculate_Button.setText("stats_window", "Recalculate", None)
-        self.export_Button.setText("stats_window", "Export", None)
-        self.done_Button.setText("stats_window", "Done", None)
-        self.noResponse_Checkbox.setText("stats_window", "", None)
-        self.probe_Checkbox.setText("stats_window", "", None)
-        self.raw_Checkbox.setText("stats_window", "", None)
-        self.fieldListSelectAll.setText("stats_window", "Select All", None)
-        self.fieldListSelectNone.setText("stats_window", "Select None", None)
+        stats_window.setWindowTitle("Performance")
+        self.folder_Button.setText("Select...")
+        self.recalculate_Button.setText("Recalculate")
+        self.export_Button.setText("Export")
+        self.done_Button.setText("Done")
+        self.noResponse_Checkbox.setText("")
+        self.probe_Checkbox.setText("")
+        self.raw_Checkbox.setText("")
+        self.fieldListSelectAll.setText("Select All")
+        self.fieldListSelectNone.setText("Select None")
 
 
 class FolderSelectWindow(object):
@@ -1194,10 +1195,10 @@ class FolderSelectWindow(object):
         # QtCore.QMetaObject.connectSlotsByName(folder_window)
 
     def retranslate_ui(self, stats_window):
-        stats_window.setWindowTitle("stats_window", "Select Folder", None)
-        self.done_button.setText("stats_window", "Done", None)
-        self.cancel_button.setText("stats_window", "Cancel", None)
-        self.change_folder_button.setText("stats_window", "Select Base Folder", None)
+        stats_window.setWindowTitle("Select Folder")
+        self.done_button.setText("Done")
+        self.cancel_button.setText("Cancel")
+        self.change_folder_button.setText("Select Base Folder")
 
 
 def add_spacer(pref_width, pref_height=20, direction='horiz', policy='exp'):

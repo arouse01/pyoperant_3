@@ -1,5 +1,6 @@
 from pyoperant import hwio, components, panels, utils
 from pyoperant.interfaces import pyaudio_, arduino_
+import os
 
 _ROUSE_MAP = {
     1: ('/dev/teensy01', 2, 0, 2, 8),  # box_id:(subdevice,in_dev,in_chan,out_dev,out_chan)
@@ -14,6 +15,26 @@ _ROUSE_MAP = {
     }
 
 
+osName = os.name
+if osName == "posix":
+    DATA_PATH = '/home/rousea/bird/data/'
+else:
+    DATA_PATH = 'D:/Rouse/My Documents/GitHub/pyoperant_3/junk/bird/data'
+
+
+# SMTP_CONFIG
+
+DEFAULT_EMAIL = 'andrew.rouse@tufts.edu'
+
+SMTP_CONFIG = {'mailhost': 'localhost',
+               'toaddrs': [DEFAULT_EMAIL],
+               'fromaddr': 'Aperture <aperturefinch@gmail.com>',
+               'subject': '[pyoperant notice] on rouse',
+               'credentials': None,
+               'secure': None,
+               }
+
+
 class RousePanel(panels.BasePanel):
     """class for rouse boxes """
 
@@ -22,8 +43,27 @@ class RousePanel(panels.BasePanel):
         self.id = panel_id
 
         # define interfaces
-        self.interfaces['pyaudio'] = pyaudio_.PyAudioInterface(device_name='Board%02i: USB Audio' % self.id)
-        self.interfaces['arduino'] = arduino_.ArduinoInterface(device_name='/dev/teensy%02i' % self.id)
+        # osName = os.name
+        if osName == "posix":
+            # Unix systems
+            self.interfaces['pyaudio'] = pyaudio_.PyAudioInterface(device_name='Board%02i: USB Audio' % self.id)
+            self.interfaces['arduino'] = arduino_.ArduinoInterface(device_name='/dev/teensy%02i' % self.id)
+        else:
+            # Windows
+            self.interfaces['pyaudio'] = pyaudio_.PyAudioInterface(device_name='Digital Audio Interface (Board%02i)' % self.id)
+            # get Teensy COM port by checking device against board name
+            boardName = 'Board%02i' % self.id
+            import serial.tools.list_ports
+            ports = serial.tools.list_ports.comports()
+            comDevice = None
+            for i in range(len(ports)):
+                if ports[i].description == boardName:
+                    comDevice = ports[i].device
+                    break
+                else:
+                    comDevice = None
+            self.interfaces['arduino'] = arduino_.ArduinoInterface(device_name=comDevice)
+
 
         # define inputs
         if boardtype == 'v1.4':
@@ -218,16 +258,3 @@ PANELS = {"1": Rouse1,
 
 BEHAVIORS = ['pyoperant.behavior']
 
-DATA_PATH = '/home/rousea/bird/data/'
-
-# SMTP_CONFIG
-
-DEFAULT_EMAIL = 'andrew.rouse@tufts.edu'
-
-SMTP_CONFIG = {'mailhost': 'localhost',
-               'toaddrs': [DEFAULT_EMAIL],
-               'fromaddr': 'Aperture <aperturefinch@gmail.com>',
-               'subject': '[pyoperant notice] on rouse',
-               'credentials': None,
-               'secure': None,
-               }

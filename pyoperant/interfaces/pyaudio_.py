@@ -2,6 +2,15 @@ import pyaudio
 import wave
 from pyoperant.interfaces import base_
 from pyoperant import InterfaceError
+import os
+
+
+def api_id():
+    osName = os.name
+    if osName == "posix":
+        return 'ALSA'
+    else:
+        return 'Windows WASAPI'
 
 
 class PyAudioInterface(base_.BaseInterface):
@@ -20,42 +29,59 @@ class PyAudioInterface(base_.BaseInterface):
 
     def __init__(self, device_name='default', io_type='output', *args, **kwargs):
         super(PyAudioInterface, self).__init__(*args, **kwargs)
+        self.device_info = None
+        self.pa = None
         self.device_name = device_name
         self.device_index = None
         self.stream = None
         self.wf = None
         self.io_type = io_type
+        self.preferredHost = api_id()
         self.open()
+
+    def get_api_info(self, p: pyaudio.PyAudio):
+        api_info, api_index = None, 0
+        for i in range(p.get_host_api_count()):
+            current_api_info = p.get_host_api_info_by_index(i)
+            if i == 0:
+                api_info = current_api_info
+            else:
+                if current_api_info['name'] == self.preferredHost:
+                    api_info, api_index = current_api_info, i
+                    break
+        return api_info, api_index
 
     def open(self):
         self.pa = pyaudio.PyAudio()
+        api_info, api_index = self.get_api_info(self.pa)
+        # warn user if preferred API is not available
+        api_name = api_info['name']
+        if api_name != self.preferredHost:
+            print(f'[WARNING] "{self.preferredHost}" not available on this system, '
+                  f'going with "{api_name}" instead')
+        numdevices = api_info.get('deviceCount')
         # Get device index based on device name, which is customized in Linux implementations (e.g., 'board01')
-        if self.io_type == 'output':
-            for index in range(self.pa.get_device_count()):
-                deviceInfo = self.pa.get_device_info_by_index(index)
-                truncName = deviceInfo['name']
-                # if self.device_name == self.pa.get_device_info_by_index(index)['name']:
-                if deviceInfo.get('maxOutputChannels') > 0 and self.device_name[:18] == truncName[:18]:  # only check
-                    # the first 7 characters
-                    self.device_index = index
+        # using get_device_info_by_host_api_device_index because it gets the full device name
+        device_index = None
+        for i in range(numdevices):
+            deviceInfo = self.pa.get_device_info_by_host_api_device_index(api_index, i)
+            currDeviceName = deviceInfo['name'][:18]
+            if self.device_name[:18] == currDeviceName:
+                # make sure it's the appropriate input/output
+                if ((self.io_type == 'output' and deviceInfo.get('maxOutputChannels') > 0)
+                        or (self.io_type == 'input' and deviceInfo.get('maxInputChannels') > 0)):
+                    device_index = i
                     break
                 else:
-                    self.device_index = None
-        elif self.io_type == 'input':
-            for index in range(self.pa.get_device_count()):
-                deviceInfo = self.pa.get_device_info_by_index(index)
-                truncName = deviceInfo['name']
-                # if self.device_name == self.pa.get_device_info_by_index(index)['name']:
-                if deviceInfo.get('maxInputChannels') > 0 and self.device_name[:18] == truncName[:18]:  # only check
-                    # the first 7 characters
-                    self.device_index = index
-                    break
-                else:
-                    self.device_index = None
-        if self.device_index is None:
+                    device_index = None
+
+        if device_index is None:
             raise InterfaceError('could not find pyaudio device %s' % self.device_name)
 
-        self.device_info = self.pa.get_device_info_by_index(self.device_index)
+        self.device_info = self.pa.get_device_info_by_host_api_device_index(api_index, device_index)
+
+        # however, the device index on the API is NOT the same index for get_device_info_by_index()
+        self.device_index = self.device_info['index']
 
     def close(self):
         try:
@@ -86,8 +112,8 @@ class PyAudioInterface(base_.BaseInterface):
                 return data, pyaudio.paContinue
 
         self.stream = self.pa.open(format=self.pa.get_format_from_width(self.wf.getsampwidth()),
-                                   # channels=self.wf.getnchannels(),
-                                   channels=1,  # fixed to 1 for single-channel (mono) stimuli
+                                   channels=self.wf.getnchannels(),
+                                   # channels=2,  # fixed to 1 for single-channel (mono) stimuli
                                    rate=self.wf.getframerate(),
                                    # input=True,
                                    output=True,
@@ -107,8 +133,8 @@ class PyAudioInterface(base_.BaseInterface):
         RATE = 44100  # recording sampling rate
 
         self.stream = self.pa.open(format=self.pa.get_format_from_width(self.wf.getsampwidth()),
-                                   # channels=self.wf.getnchannels(),
-                                   channels=1,  # fixed to 1 for single-channel (mono) stimuli
+                                   channels=self.wf.getnchannels(),
+                                   # channels=1,  # fixed to 1 for single-channel (mono) stimuli
                                    rate=RATE,
                                    input=True,
                                    input_device_index=self.device_index,
