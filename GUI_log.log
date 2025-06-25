@@ -40,3 +40,4 @@ FileNotFoundError: [WinError 2] The system cannot find the file specified
 TypeError: setWindowTitle(self, a0: Optional[str]): too many arguments
 "
 "2025-02-12 12:47:46,317","INFO","settings.json file detected, loading settings"
+"2025-02-12 12:55:04,179","INFO","settings.json file detected, loading settings"

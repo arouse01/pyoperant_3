@@ -7,6 +7,7 @@ from pyoperant import utils, InterfaceError, ArduinoException
 import os
 
 logger = logging.getLogger(__name__)
+logger.info("Arduino logging enabled")
 
 
 ## TODO: Attempt to reconnect device if it can't be reached
