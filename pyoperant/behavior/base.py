@@ -5,12 +5,12 @@ import atexit
 from pyoperant import utils, components, local, hwio
 from pyoperant import ComponentError, InterfaceError
 from pyoperant.behavior import shape
+import threading
 
 try:
     import simplejson as json
 except ImportError:
     import json
-
 
 def _log_except_hook(*exc_info):  # How uncaught errors are handled
     text = "".join(traceback.format_exception(*exc_info))
@@ -82,6 +82,7 @@ class BaseExp(object):
         self.log.debug('panel %s initialized' % self.parameters['panel_name'])
 
         atexit.register(self.pyoperant_close)
+
 
         if 'shape' not in self.parameters:
             # or self.parameters['shape'] not in ['block1', 'block2', 'block3', 'block4', 'block5']:
@@ -230,6 +231,7 @@ class BaseExp(object):
             print("Closing pyoperant, turing off all components")
             self.panel.trialSens.off()
             self.panel.respSens.off()
+            sys.exit(0)
         except:
             pass
 

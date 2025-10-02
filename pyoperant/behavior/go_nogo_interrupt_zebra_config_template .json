@@ -3,12 +3,13 @@
   "name": "ZF Isochrony discrimination",
   "description": "Discriminate regular from irregular patterns of sound",
   "comments": "json doesn't support comments",
-  "experiment_path": "/home/rouse/bird",
+  "experiment_path": "/home/aperture/bird",
   "experimenter": {
     "email": "andrew.rouse@tufts.edu",
     "name": "Andrew Rouse"
   },
   "panel_name": "Rouse1",
+  "board_version": "v4.0",
   "subject": "test",
   "subject_type": "bird",
   "debug": false,
@@ -40,7 +41,7 @@
     }
   },
   "block_design": {
-    "block_path": "/home/rouse/Desktop/pyoperant/pyoperant/pyoperant/behavior/go_nogo_interrupt_blocks.json",
+    "block_path": "C:/Users/tmerri03/PycharmProjects/pyoperant_3/pyoperant/behavior/go_nogo_interrupt_blocks.json",
     "order": [
       "shaping 1",
       "shaping 2",
@@ -86,8 +87,8 @@
     6
   ],
 
-  "stim_path": "/home/rouse/bird/stim",
-  "stim_list": "/home/rouse/Desktop/pyoperant/pyoperant/pyoperant/behavior/go_nogo_interrupt_stimuli.json",
+  "stim_path": "C:/Users/tmerri03/Desktop/aperture-3/bird/stim",
+  "stim_list": "C:/Users/tmerri03/PycharmProjects/pyoperant_3/pyoperant/behavior/go_nogo_interrupt_stimuli.json",
   "stims": {
     "z1i1_1500ir1.wav": "z1i1_1500ir1.wav",
     "z1i1_1500ir2.wav": "z1i1_1500ir2.wav",

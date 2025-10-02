@@ -22,7 +22,7 @@ setup(
     scripts=[
         'scripts/behave',
         'scripts/pyoperantctl',
-        'scripts/allsummary.py',
+        #'scripts/allsummary.py',
     ],
     license="BSD",
     classifiers=[

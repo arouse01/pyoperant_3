@@ -41,3 +41,7 @@ TypeError: setWindowTitle(self, a0: Optional[str]): too many arguments
 "
 "2025-02-12 12:47:46,317","INFO","settings.json file detected, loading settings"
 "2025-02-12 12:55:04,179","INFO","settings.json file detected, loading settings"
+"2025-09-23 15:44:30,468","INFO","settings.json file detected, loading settings"
+"2025-09-23 15:44:30,476","INFO","Arduino logging enabled"
+"2025-09-23 15:45:47,383","INFO","settings.json file detected, loading settings"
+"2025-09-23 15:45:47,390","INFO","Arduino logging enabled"

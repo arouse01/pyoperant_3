@@ -23,7 +23,9 @@ class RousePanel(panels.BasePanel):
 
         # define interfaces
         self.interfaces['pyaudio'] = pyaudio_.PyAudioInterface(device_name='Board%02i: USB Audio' % self.id)
-        self.interfaces['arduino'] = arduino_.ArduinoInterface(device_name='/dev/teensy%02i' % self.id)
+        #self.interfaces['arduino'] = arduino_.ArduinoInterface(device_name='/dev/teensy%02i' % self.id)
+        self.interfaces['arduino'] = arduino_.ArduinoInterface(device_name="COM3")
+
 
         # define inputs
         if boardtype == 'v1.4':

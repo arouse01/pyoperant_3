@@ -538,7 +538,7 @@ class UiMainWindow(object):
             self.graphicBoxList[box].setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
             self.graphicBoxList[box].setFrameShadow(QFrame.Sunken)
             self.graphicBoxList[box].setFrameShape(QFrame.Panel)
-            self.graphicBoxList[box].setMargin(2)
+            self.graphicBoxList[box].setContentsMargins(2,2,2,2)
             self.graphicBoxList[box].setMinimumSize(QtCore.QSize(35, 35))
             self.graphicBoxList[box].setMaximumSize(QtCore.QSize(35, 35))
             self.graphicBoxList[box].setObjectName(("graphicLabel_Box%d" % box))
@@ -890,7 +890,8 @@ class StatsWindow(object):
         self.groupByWidget = QWidget()
         self.groupByWidget.setSizePolicy(sizePolicy_exp)
         groupByWidgetLayout = QVBoxLayout(self.groupByWidget)
-        groupByWidgetLayout.setMargin(0)
+        groupByWidgetLayout.setContentsMargins(10, 10, 10, 10)
+
 
         # top widget that holds all regular grouping checkboxes
         self.groupGridWidget = QWidget()

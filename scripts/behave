@@ -6,9 +6,13 @@ import os
 import signal
 import sys
 import collections
+import subprocess
+import threading
+
+stop_requested = False
 
 # append this folder to working directory
-sys.path.append('/home/rousea/pyoperant/pyoperant')
+sys.path.append('/Desktop/aperture-3')
 
 try:
     import simplejson as json
@@ -24,7 +28,7 @@ except ImportError:
 try:
     from pyoperant.local import DATA_PATH as DATAPATH
 except ImportError:
-    DATAPATH = '/home/rouse/bird/data'
+    DATAPATH = r'C:\Users\tmerri03\Desktop\aperture-3\bird\data'
 
 
 def parse_commandline(arg_str=sys.argv[1:]):
@@ -121,11 +125,12 @@ def find_protocol(protocol):
 
 
 def clean(*args):
+    print('exit test')
     sys.exit(0)
 
 
 def main():
-    for sig in (signal.SIGINT, signal.SIGTERM,):
+    for sig in (signal.SIGINT, signal.SIGTERM):
         signal.signal(sig, clean)
 
     cmd_line = parse_commandline()
@@ -160,6 +165,7 @@ def main():
         boardtype = None
     else:
         boardtype = parameters['board_version']
+    print(f'boardtype: {boardtype}')
 
     behavior = BehaviorProtocol(
         panel=PANELS[cmd_line['panel']](boardtype=boardtype),
@@ -170,8 +176,42 @@ def main():
         **parameters
     )
 
-    behavior.run()
+    print('before thread')
 
+    # run_subprocess = subprocess.Popen(
+    #     behavior.run, shell=False, stderr=subprocess.PIPE, stdin=subprocess.PIPE,
+    #     cwd=r'C:\Users\tmerri03\PycharmProjects\pyoperant_3'
+    # )
+
+    # Thread for reading error messages
+    # threading.Thread(target=forward, args=(run_subprocess.stderr, sys.stderr), daemon=True).start()
+
+#uncomment block for new changes
+    # run_thread = threading.Thread(target=behavior.run, daemon=True)
+    # run_thread.start()
+    # # print('after thread')
+    # for line in sys.stdin:
+    #     if line.strip().lower() == 'stop':
+    #         print('stopping!')
+    #         stop_requested = True
+    #         behavior.close()
+    #         break
+    # print('closing')
+    # run_thread.join()
+
+    behavior.run()
+#
+# def run_behavior(behavior):
+#     print('testing')
+#     behavior.run()
+
+# def input_listener(run_thread):
+#     print('listening')
+
+def forward(pipe, target):
+    for line in iter(pipe.readline, ''):
+        print(line, end='', file=target, flush=True)
+    pipe.close()
 
 if __name__ == "__main__":
     main()

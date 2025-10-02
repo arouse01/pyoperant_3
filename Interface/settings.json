@@ -2,7 +2,7 @@
     "paramFiles": [
         [
             0,
-            "/home/rouse/bird/data/b29o82/b29o82_config.json"
+            "C:\\Users\\tmerri03\\Desktop\\aperture-3\\bird\\data\\box1.6\\box1.6_config.json"
         ],
         [
             1,
@@ -28,7 +28,7 @@
     "birds": [
         [
             0,
-            "b29o82"
+            "box1.6"
         ],
         [
             1,

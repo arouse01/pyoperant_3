@@ -19,7 +19,7 @@ osName = os.name
 if osName == "posix":
     DATA_PATH = '/home/rousea/bird/data/'
 else:
-    DATA_PATH = 'D:/Rouse/My Documents/GitHub/pyoperant_3/junk/bird/data'
+    DATA_PATH = r'C:\Users\tmerri03\Desktop\aperture-3\bird\data'
 
 
 # SMTP_CONFIG
@@ -53,6 +53,7 @@ class RousePanel(panels.BasePanel):
             self.interfaces['pyaudio'] = pyaudio_.PyAudioInterface(device_name='Digital Audio Interface (Board%02i)' % self.id)
             # get Teensy COM port by checking device against board name
             boardName = 'Board%02i' % self.id
+            print(f'board name {boardName}')
             import serial.tools.list_ports
             ports = serial.tools.list_ports.comports()
             comDevice = None
@@ -63,6 +64,7 @@ class RousePanel(panels.BasePanel):
                 else:
                     comDevice = None
             self.interfaces['arduino'] = arduino_.ArduinoInterface(device_name=comDevice)
+            print(f'com device {comDevice}')
 
 
         # define inputs

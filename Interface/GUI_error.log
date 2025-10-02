@@ -23608,3 +23608,1250 @@ Traceback (most recent call last):
     raise serial.SerialException('Could not open serial device {}'.format(self.device_name))
 serial.serialutil.SerialException: Could not open serial device /dev/teensy01
 
+"2025-09-16 14:37:10,184","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 422, in <lambda>
+    lambda _, b=boxIndex: self.create_new_bird(boxnumber=b))
+                          ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 575, in create_new_bird
+    jsonSuccess = self.create_json_file(boxnumber, newBird)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 567, in create_json_file
+    copyfile(paramFile, newParamPath)
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\shutil.py", line 239, in copyfile
+    if _samefile(src, dst):
+       ~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\shutil.py", line 216, in _samefile
+    return os.path.samefile(src, dst)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "<frozen genericpath>", line 136, in samefile
+TypeError: stat: path should be string, bytes, os.PathLike or integer, not tuple
+
+"2025-09-16 14:39:24,860","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 422, in <lambda>
+    lambda _, b=boxIndex: self.create_new_bird(boxnumber=b))
+                          ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 575, in create_new_bird
+    jsonSuccess = self.create_json_file(boxnumber, newBird)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 567, in create_json_file
+    copyfile(paramFile, newParamPath)
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\shutil.py", line 239, in copyfile
+    if _samefile(src, dst):
+       ~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\shutil.py", line 216, in _samefile
+    return os.path.samefile(src, dst)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "<frozen genericpath>", line 136, in samefile
+TypeError: stat: path should be string, bytes, os.PathLike or integer, not tuple
+
+"2025-09-16 14:40:00,409","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 422, in <lambda>
+    lambda _, b=boxIndex: self.create_new_bird(boxnumber=b))
+                          ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 575, in create_new_bird
+    jsonSuccess = self.create_json_file(boxnumber, newBird)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 567, in create_json_file
+    copyfile(paramFile, newParamPath)
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\shutil.py", line 239, in copyfile
+    if _samefile(src, dst):
+       ~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\shutil.py", line 216, in _samefile
+    return os.path.samefile(src, dst)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "<frozen genericpath>", line 136, in samefile
+TypeError: stat: path should be string, bytes, os.PathLike or integer, not tuple
+
+"2025-09-16 14:42:27,201","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 422, in <lambda>
+    lambda _, b=boxIndex: self.create_new_bird(boxnumber=b))
+                          ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 575, in create_new_bird
+    jsonSuccess = self.create_json_file(boxnumber, newBird)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 567, in create_json_file
+    copyfile(paramFile, newParamPath)
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\shutil.py", line 239, in copyfile
+    if _samefile(src, dst):
+       ~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\shutil.py", line 216, in _samefile
+    return os.path.samefile(src, dst)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "<frozen genericpath>", line 136, in samefile
+TypeError: stat: path should be string, bytes, os.PathLike or integer, not tuple
+
+"2025-09-16 14:42:37,123","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 422, in <lambda>
+    lambda _, b=boxIndex: self.create_new_bird(boxnumber=b))
+                          ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 575, in create_new_bird
+    jsonSuccess = self.create_json_file(boxnumber, newBird)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 567, in create_json_file
+    copyfile(paramFile, newParamPath)
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\shutil.py", line 239, in copyfile
+    if _samefile(src, dst):
+       ~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\shutil.py", line 216, in _samefile
+    return os.path.samefile(src, dst)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "<frozen genericpath>", line 136, in samefile
+TypeError: stat: path should be string, bytes, os.PathLike or integer, not tuple
+
+"2025-09-16 14:46:44,583","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 422, in <lambda>
+    lambda _, b=boxIndex: self.create_new_bird(boxnumber=b))
+                          ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 575, in create_new_bird
+    jsonSuccess = self.create_json_file(boxnumber, newBird)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 567, in create_json_file
+    copyfile(paramFile, newParamPath)
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\shutil.py", line 239, in copyfile
+    if _samefile(src, dst):
+       ~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\shutil.py", line 216, in _samefile
+    return os.path.samefile(src, dst)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "<frozen genericpath>", line 136, in samefile
+TypeError: stat: path should be string, bytes, os.PathLike or integer, not tuple
+
+"2025-09-16 16:47:46,028","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1092, in refreshall
+    self.stop_box(boxnumber, error_mode=True)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 609, in stop_box
+    self.refreshfile(boxnumber)  # one last time to display any errors sent to the summaryDAT file
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1207, in refreshfile
+    self.statusTableBoxList[boxnumber].horizontalHeader().setResizeMode(
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'QHeaderView' object has no attribute 'setResizeMode'. Did you mean: 'ResizeMode'?
+
+"2025-09-16 16:48:12,890","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1092, in refreshall
+    self.stop_box(boxnumber, error_mode=True)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 609, in stop_box
+    self.refreshfile(boxnumber)  # one last time to display any errors sent to the summaryDAT file
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1207, in refreshfile
+    self.statusTableBoxList[boxnumber].horizontalHeader().setResizeMode(
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'QHeaderView' object has no attribute 'setResizeMode'. Did you mean: 'ResizeMode'?
+
+"2025-09-16 16:48:22,904","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1092, in refreshall
+    self.stop_box(boxnumber, error_mode=True)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 609, in stop_box
+    self.refreshfile(boxnumber)  # one last time to display any errors sent to the summaryDAT file
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1207, in refreshfile
+    self.statusTableBoxList[boxnumber].horizontalHeader().setResizeMode(
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'QHeaderView' object has no attribute 'setResizeMode'. Did you mean: 'ResizeMode'?
+
+"2025-09-16 16:51:04,598","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1092, in refreshall
+    self.stop_box(boxnumber, error_mode=True)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 609, in stop_box
+    self.refreshfile(boxnumber)  # one last time to display any errors sent to the summaryDAT file
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1210, in refreshfile
+    self.statusTableBoxList[boxnumber].verticalHeader().setResizeMode(
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'QHeaderView' object has no attribute 'setResizeMode'. Did you mean: 'ResizeMode'?
+
+"2025-09-16 16:51:06,428","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1072, in refreshall
+    self.refreshfile(boxnumber)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1210, in refreshfile
+    self.statusTableBoxList[boxnumber].verticalHeader().setResizeMode(
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'QHeaderView' object has no attribute 'setResizeMode'. Did you mean: 'ResizeMode'?
+
+"2025-09-16 16:51:11,447","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1092, in refreshall
+    self.stop_box(boxnumber, error_mode=True)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 609, in stop_box
+    self.refreshfile(boxnumber)  # one last time to display any errors sent to the summaryDAT file
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1210, in refreshfile
+    self.statusTableBoxList[boxnumber].verticalHeader().setResizeMode(
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'QHeaderView' object has no attribute 'setResizeMode'. Did you mean: 'ResizeMode'?
+
+"2025-09-16 16:51:48,838","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1092, in refreshall
+    self.stop_box(boxnumber, error_mode=True)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 609, in stop_box
+    self.refreshfile(boxnumber)  # one last time to display any errors sent to the summaryDAT file
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1218, in refreshfile
+    logStats.decode('utf8')
+    ^^^^^^^^^^^^^^^
+AttributeError: 'str' object has no attribute 'decode'. Did you mean: 'encode'?
+
+"2025-09-16 16:51:55,668","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1092, in refreshall
+    self.stop_box(boxnumber, error_mode=True)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 609, in stop_box
+    self.refreshfile(boxnumber)  # one last time to display any errors sent to the summaryDAT file
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1218, in refreshfile
+    logStats.decode('utf8')
+    ^^^^^^^^^^^^^^^
+AttributeError: 'str' object has no attribute 'decode'. Did you mean: 'encode'?
+
+"2025-09-18 14:16:03,581","Could not open serial device /dev/teensy01
+"2025-09-18 14:16:03,588","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1558, in serial_connect
+    self.device = serial.Serial(port=self.device_name,
+                  ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+                                baudrate=19200,
+                                ^^^^^^^^^^^^^^^
+                                timeout=5)
+                                ^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialwin32.py", line 33, in __init__
+    super(Serial, self).__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialutil.py", line 244, in __init__
+    self.open()
+    ~~~~~~~~~^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialwin32.py", line 64, in open
+    raise SerialException("could not open port {!r}: {!r}".format(self.portstr, ctypes.WinError()))
+serial.serialutil.SerialException: could not open port '/dev/teensy01': FileNotFoundError(2, 'The system cannot find the path specified.', None, 3)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 412, in <lambda>
+    lambda _, b=boxIndex: self.water_control(boxindex=b, parameter='dialog'))
+                          ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 833, in water_control
+    dialog = SolenoidGui(boxnumber, solenoidChannel)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1549, in __init__
+    self.serial_connect(box_number)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1563, in serial_connect
+    raise serial.SerialException('Could not open serial device {}'.format(self.device_name))
+serial.serialutil.SerialException: Could not open serial device /dev/teensy01
+
+"2025-09-18 14:19:29,578","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 412, in <lambda>
+    lambda _, b=boxIndex: self.water_control(boxindex=b, parameter='dialog'))
+                          ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 833, in water_control
+    dialog = SolenoidGui(boxnumber, solenoidChannel)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1549, in __init__
+    self.serial_connect(box_number)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1585, in serial_connect
+    self.device.write("".join([chr(self.solenoidChannel), chr(3)]))
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialwin32.py", line 310, in write
+    data = to_bytes(data)
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialutil.py", line 65, in to_bytes
+    raise TypeError('unicode strings are not supported, please encode to bytes: {!r}'.format(seq))
+TypeError: unicode strings are not supported, please encode to bytes: ')\x03'
+
+"2025-09-18 14:19:40,364","Could not open serial device COM3
+"2025-09-18 14:19:40,366","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1570, in serial_connect
+    self.device = serial.Serial(port=self.device_name,
+                  ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+                                baudrate=19200,
+                                ^^^^^^^^^^^^^^^
+                                timeout=5)
+                                ^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialwin32.py", line 33, in __init__
+    super(Serial, self).__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialutil.py", line 244, in __init__
+    self.open()
+    ~~~~~~~~~^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialwin32.py", line 64, in open
+    raise SerialException("could not open port {!r}: {!r}".format(self.portstr, ctypes.WinError()))
+serial.serialutil.SerialException: could not open port 'COM3': PermissionError(13, 'Access is denied.', None, 5)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 412, in <lambda>
+    lambda _, b=boxIndex: self.water_control(boxindex=b, parameter='dialog'))
+                          ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 833, in water_control
+    dialog = SolenoidGui(boxnumber, solenoidChannel)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1549, in __init__
+    self.serial_connect(box_number)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1575, in serial_connect
+    raise serial.SerialException('Could not open serial device {}'.format(self.device_name))
+serial.serialutil.SerialException: Could not open serial device COM3
+
+"2025-09-18 14:20:26,092","Could not open serial device COM3
+"2025-09-18 14:20:26,094","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1570, in serial_connect
+    self.device = serial.Serial(port=self.device_name,
+                  ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+                                baudrate=19200,
+                                ^^^^^^^^^^^^^^^
+                                timeout=5)
+                                ^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialwin32.py", line 33, in __init__
+    super(Serial, self).__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialutil.py", line 244, in __init__
+    self.open()
+    ~~~~~~~~~^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialwin32.py", line 64, in open
+    raise SerialException("could not open port {!r}: {!r}".format(self.portstr, ctypes.WinError()))
+serial.serialutil.SerialException: could not open port 'COM3': PermissionError(13, 'Access is denied.', None, 5)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 412, in <lambda>
+    lambda _, b=boxIndex: self.water_control(boxindex=b, parameter='dialog'))
+                          ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 833, in water_control
+    dialog = SolenoidGui(boxnumber, solenoidChannel)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1549, in __init__
+    self.serial_connect(box_number)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1575, in serial_connect
+    raise serial.SerialException('Could not open serial device {}'.format(self.device_name))
+serial.serialutil.SerialException: Could not open serial device COM3
+
+"2025-09-18 14:20:47,916","Could not open serial device COM3
+"2025-09-18 14:20:47,918","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1570, in serial_connect
+    self.device = serial.Serial(port=self.device_name,
+                  ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+                                baudrate=19200,
+                                ^^^^^^^^^^^^^^^
+                                timeout=5)
+                                ^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialwin32.py", line 33, in __init__
+    super(Serial, self).__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialutil.py", line 244, in __init__
+    self.open()
+    ~~~~~~~~~^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialwin32.py", line 64, in open
+    raise SerialException("could not open port {!r}: {!r}".format(self.portstr, ctypes.WinError()))
+serial.serialutil.SerialException: could not open port 'COM3': PermissionError(13, 'Access is denied.', None, 5)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 412, in <lambda>
+    lambda _, b=boxIndex: self.water_control(boxindex=b, parameter='dialog'))
+                          ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 833, in water_control
+    dialog = SolenoidGui(boxnumber, solenoidChannel)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1549, in __init__
+    self.serial_connect(box_number)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1575, in serial_connect
+    raise serial.SerialException('Could not open serial device {}'.format(self.device_name))
+serial.serialutil.SerialException: Could not open serial device COM3
+
+"2025-09-18 14:20:51,196","Could not open serial device COM3
+"2025-09-18 14:20:51,198","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1570, in serial_connect
+    self.device = serial.Serial(port=self.device_name,
+                  ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+                                baudrate=19200,
+                                ^^^^^^^^^^^^^^^
+                                timeout=5)
+                                ^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialwin32.py", line 33, in __init__
+    super(Serial, self).__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialutil.py", line 244, in __init__
+    self.open()
+    ~~~~~~~~~^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialwin32.py", line 64, in open
+    raise SerialException("could not open port {!r}: {!r}".format(self.portstr, ctypes.WinError()))
+serial.serialutil.SerialException: could not open port 'COM3': PermissionError(13, 'Access is denied.', None, 5)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 412, in <lambda>
+    lambda _, b=boxIndex: self.water_control(boxindex=b, parameter='dialog'))
+                          ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 833, in water_control
+    dialog = SolenoidGui(boxnumber, solenoidChannel)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1549, in __init__
+    self.serial_connect(box_number)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1575, in serial_connect
+    raise serial.SerialException('Could not open serial device {}'.format(self.device_name))
+serial.serialutil.SerialException: Could not open serial device COM3
+
+"2025-09-18 14:21:09,124","Could not open serial device COM3
+"2025-09-18 14:21:09,126","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1570, in serial_connect
+    self.device = serial.Serial(port=self.device_name,
+                  ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+                                baudrate=19200,
+                                ^^^^^^^^^^^^^^^
+                                timeout=5)
+                                ^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialwin32.py", line 33, in __init__
+    super(Serial, self).__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialutil.py", line 244, in __init__
+    self.open()
+    ~~~~~~~~~^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialwin32.py", line 64, in open
+    raise SerialException("could not open port {!r}: {!r}".format(self.portstr, ctypes.WinError()))
+serial.serialutil.SerialException: could not open port 'COM3': PermissionError(13, 'Access is denied.', None, 5)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 412, in <lambda>
+    lambda _, b=boxIndex: self.water_control(boxindex=b, parameter='dialog'))
+                          ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 833, in water_control
+    dialog = SolenoidGui(boxnumber, solenoidChannel)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1549, in __init__
+    self.serial_connect(box_number)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1575, in serial_connect
+    raise serial.SerialException('Could not open serial device {}'.format(self.device_name))
+serial.serialutil.SerialException: Could not open serial device COM3
+
+"2025-09-18 14:21:46,396","Could not open serial device COM3
+"2025-09-18 14:21:46,398","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1570, in serial_connect
+    self.device = serial.Serial(port=self.device_name,
+                  ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+                                baudrate=19200,
+                                ^^^^^^^^^^^^^^^
+                                timeout=5)
+                                ^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialwin32.py", line 33, in __init__
+    super(Serial, self).__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialutil.py", line 244, in __init__
+    self.open()
+    ~~~~~~~~~^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialwin32.py", line 64, in open
+    raise SerialException("could not open port {!r}: {!r}".format(self.portstr, ctypes.WinError()))
+serial.serialutil.SerialException: could not open port 'COM3': PermissionError(13, 'Access is denied.', None, 5)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 412, in <lambda>
+    lambda _, b=boxIndex: self.water_control(boxindex=b, parameter='dialog'))
+                          ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 833, in water_control
+    dialog = SolenoidGui(boxnumber, solenoidChannel)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1549, in __init__
+    self.serial_connect(box_number)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1575, in serial_connect
+    raise serial.SerialException('Could not open serial device {}'.format(self.device_name))
+serial.serialutil.SerialException: Could not open serial device COM3
+
+"2025-09-18 14:21:54,340","Could not open serial device COM3
+"2025-09-18 14:21:54,342","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1570, in serial_connect
+    self.device = serial.Serial(port=self.device_name,
+                  ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+                                baudrate=19200,
+                                ^^^^^^^^^^^^^^^
+                                timeout=5)
+                                ^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialwin32.py", line 33, in __init__
+    super(Serial, self).__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialutil.py", line 244, in __init__
+    self.open()
+    ~~~~~~~~~^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialwin32.py", line 64, in open
+    raise SerialException("could not open port {!r}: {!r}".format(self.portstr, ctypes.WinError()))
+serial.serialutil.SerialException: could not open port 'COM3': PermissionError(13, 'Access is denied.', None, 5)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 412, in <lambda>
+    lambda _, b=boxIndex: self.water_control(boxindex=b, parameter='dialog'))
+                          ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 833, in water_control
+    dialog = SolenoidGui(boxnumber, solenoidChannel)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1549, in __init__
+    self.serial_connect(box_number)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1575, in serial_connect
+    raise serial.SerialException('Could not open serial device {}'.format(self.device_name))
+serial.serialutil.SerialException: Could not open serial device COM3
+
+"2025-09-18 14:22:06,804","Could not open serial device COM3
+"2025-09-18 14:22:06,806","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1570, in serial_connect
+    self.device = serial.Serial(port=self.device_name,
+                  ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+                                baudrate=19200,
+                                ^^^^^^^^^^^^^^^
+                                timeout=5)
+                                ^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialwin32.py", line 33, in __init__
+    super(Serial, self).__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialutil.py", line 244, in __init__
+    self.open()
+    ~~~~~~~~~^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialwin32.py", line 64, in open
+    raise SerialException("could not open port {!r}: {!r}".format(self.portstr, ctypes.WinError()))
+serial.serialutil.SerialException: could not open port 'COM3': PermissionError(13, 'Access is denied.', None, 5)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 412, in <lambda>
+    lambda _, b=boxIndex: self.water_control(boxindex=b, parameter='dialog'))
+                          ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 833, in water_control
+    dialog = SolenoidGui(boxnumber, solenoidChannel)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1549, in __init__
+    self.serial_connect(box_number)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1575, in serial_connect
+    raise serial.SerialException('Could not open serial device {}'.format(self.device_name))
+serial.serialutil.SerialException: Could not open serial device COM3
+
+"2025-09-18 14:25:32,413","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 412, in <lambda>
+    lambda _, b=boxIndex: self.water_control(boxindex=b, parameter='dialog'))
+                          ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 833, in water_control
+    dialog = SolenoidGui(boxnumber, solenoidChannel)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1549, in __init__
+    self.serial_connect(box_number)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1585, in serial_connect
+    self.device.write("".join([chr(self.solenoidChannel), chr(3)]))
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialwin32.py", line 310, in write
+    data = to_bytes(data)
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialutil.py", line 65, in to_bytes
+    raise TypeError('unicode strings are not supported, please encode to bytes: {!r}'.format(seq))
+TypeError: unicode strings are not supported, please encode to bytes: ')\x03'
+
+"2025-09-18 14:29:28,824","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1537, in <lambda>
+    self.open_Button.clicked.connect(lambda _, b=box_number: self.solenoid_control('open', b))
+                                                             ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1602, in solenoid_control
+    self.device.write("".join([chr(self.solenoidChannel), chr(1)]))  # open solenoid
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialwin32.py", line 310, in write
+    data = to_bytes(data)
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialutil.py", line 65, in to_bytes
+    raise TypeError('unicode strings are not supported, please encode to bytes: {!r}'.format(seq))
+TypeError: unicode strings are not supported, please encode to bytes: ')\x01'
+
+"2025-09-18 15:05:15,129","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 427, in <lambda>
+    lambda _, b=boxIndex: self.create_new_bird(boxnumber=b))
+                          ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 584, in create_new_bird
+    summary_file = os.path.join(self.parameters['experiment_path'],
+                                ^^^^^^^^^^^^^^^
+AttributeError: 'PyoperantGui' object has no attribute 'parameters'
+
+"2025-09-18 15:09:26,234","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 427, in <lambda>
+    lambda _, b=boxIndex: self.create_new_bird(boxnumber=b))
+                          ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 588, in create_new_bird
+    f.write("Welcome to pyoperant v%s." % self.version)
+                                          ^^^^^^^^^^^^
+AttributeError: 'PyoperantGui' object has no attribute 'version'
+
+"2025-09-18 15:14:25,892","Water error: Cannot open solenoid: Box 1 is currently running
+"2025-09-19 10:01:26,025","Water error: Cannot open solenoid: Box 1 is currently running
+"2025-09-19 10:28:56,342","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 406, in <lambda>
+    lambda _, b=boxIndex: self.open_text_file(boxnumber=b, whichfile='json'))
+                          ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 540, in open_text_file
+    subprocess.Popen(["geany", filePath])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\subprocess.py", line 1039, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                        pass_fds, cwd, env,
+                        ^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+                        gid, gids, uid, umask,
+                        ^^^^^^^^^^^^^^^^^^^^^^
+                        start_new_session, process_group)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\subprocess.py", line 1554, in _execute_child
+    hp, ht, pid, tid = _winapi.CreateProcess(executable, args,
+                       ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+                             # no special security
+                             ^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+                             cwd,
+                             ^^^^
+                             startupinfo)
+                             ^^^^^^^^^^^^
+FileNotFoundError: [WinError 2] The system cannot find the file specified
+
+"2025-09-19 10:31:35,846","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 406, in <lambda>
+    lambda _, b=boxIndex: self.open_text_file(boxnumber=b, whichfile='json'))
+                          ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 540, in open_text_file
+    subprocess.Popen(["start", '',filePath])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\subprocess.py", line 1039, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                        pass_fds, cwd, env,
+                        ^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+                        gid, gids, uid, umask,
+                        ^^^^^^^^^^^^^^^^^^^^^^
+                        start_new_session, process_group)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\subprocess.py", line 1554, in _execute_child
+    hp, ht, pid, tid = _winapi.CreateProcess(executable, args,
+                       ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+                             # no special security
+                             ^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+                             cwd,
+                             ^^^^
+                             startupinfo)
+                             ^^^^^^^^^^^^
+FileNotFoundError: [WinError 2] The system cannot find the file specified
+
+"2025-09-19 10:34:08,060","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 396, in <lambda>
+    lambda _, b=boxIndex: self.analyze_performance(boxnumber=b))
+                          ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1398, in analyze_performance
+    dialog = StatsGui(dataFolder)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1692, in __init__
+    self.setup_ui(self)  # This is defined in pyoperant_gui_layout.py file
+    ~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui_layout.py", line 893, in setup_ui
+    groupByWidgetLayout.setMargin(0)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'QVBoxLayout' object has no attribute 'setMargin'
+
+"2025-09-19 10:51:02,848","Water error: Cannot open solenoid: Box 1 is currently running
+"2025-09-19 10:51:33,021","Water error: Cannot open solenoid: Box 1 is currently running
+"2025-09-19 12:19:55,155","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 397, in <lambda>
+    self.startBoxList[boxIndex].clicked.connect(lambda _, b=boxIndex: self.start_box(boxnumber=b))
+                                                                      ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 676, in start_box
+    self.subprocessbox[boxnumber] = subprocess.Popen(
+    ^^^^^^^^^^^^^^^^^^
+AttributeError: 'PyoperantGui' object has no attribute 'subprocessbox'. Did you mean: 'subprocessBox'?
+
+"2025-09-19 12:30:49,878","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 396, in <lambda>
+    lambda _, b=boxIndex: self.analyze_performance(boxnumber=b))
+                          ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1403, in analyze_performance
+    dialog = StatsGui(dataFolder)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1758, in __init__
+    self.create_filter_objects()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 2157, in create_filter_objects
+    self.fieldManagement[columnName]['filter']['selectAllNoneMenu'] = QWidget()
+                                                                      ^^^^^^^
+NameError: name 'QWidget' is not defined
+
+"2025-09-19 12:30:56,740","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 396, in <lambda>
+    lambda _, b=boxIndex: self.analyze_performance(boxnumber=b))
+                          ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1403, in analyze_performance
+    dialog = StatsGui(dataFolder)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1758, in __init__
+    self.create_filter_objects()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 2157, in create_filter_objects
+    self.fieldManagement[columnName]['filter']['selectAllNoneMenu'] = QWidget()
+                                                                      ^^^^^^^
+NameError: name 'QWidget' is not defined
+
+"2025-09-19 12:30:56,907","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 396, in <lambda>
+    lambda _, b=boxIndex: self.analyze_performance(boxnumber=b))
+                          ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1403, in analyze_performance
+    dialog = StatsGui(dataFolder)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1758, in __init__
+    self.create_filter_objects()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 2157, in create_filter_objects
+    self.fieldManagement[columnName]['filter']['selectAllNoneMenu'] = QWidget()
+                                                                      ^^^^^^^
+NameError: name 'QWidget' is not defined
+
+"2025-09-19 12:31:03,283","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 396, in <lambda>
+    lambda _, b=boxIndex: self.analyze_performance(boxnumber=b))
+                          ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1403, in analyze_performance
+    dialog = StatsGui(dataFolder)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1758, in __init__
+    self.create_filter_objects()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 2157, in create_filter_objects
+    self.fieldManagement[columnName]['filter']['selectAllNoneMenu'] = QWidget()
+                                                                      ^^^^^^^
+NameError: name 'QWidget' is not defined
+
+"2025-09-19 12:32:09,980","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 396, in <lambda>
+    lambda _, b=boxIndex: self.analyze_performance(boxnumber=b))
+                          ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1403, in analyze_performance
+    dialog = StatsGui(dataFolder)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1758, in __init__
+    self.create_filter_objects()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 2157, in create_filter_objects
+    self.fieldManagement[columnName]['filter']['selectAllNoneMenu'] = QWidget()
+                                                                      ^^^^^^^
+NameError: name 'QWidget' is not defined
+
+"2025-09-19 12:33:49,437","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 396, in <lambda>
+    lambda _, b=boxIndex: self.analyze_performance(boxnumber=b))
+                          ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1403, in analyze_performance
+    dialog = StatsGui(dataFolder)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1763, in __init__
+    self.get_raw_data()
+    ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 2359, in get_raw_data
+    perform = analysis.Performance(self.data_folder)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\pyoperant\analysis.py", line 370, in __init__
+    self.gather_raw_data(dataDict)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\pyoperant\analysis.py", line 460, in gather_raw_data
+    rowCount = len(list(csv_reader)) - 1  # check if csv has data beyond header
+                   ~~~~^^^^^^^^^^^^
+_csv.Error: iterator should return strings, not bytes (the file should be opened in text mode)
+
+"2025-09-19 12:35:59,131","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 396, in <lambda>
+    lambda _, b=boxIndex: self.analyze_performance(boxnumber=b))
+                          ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1403, in analyze_performance
+    dialog = StatsGui(dataFolder)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1763, in __init__
+    self.get_raw_data()
+    ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 2359, in get_raw_data
+    perform = analysis.Performance(self.data_folder)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\pyoperant\analysis.py", line 370, in __init__
+    self.gather_raw_data(dataDict)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\pyoperant\analysis.py", line 506, in gather_raw_data
+    for row in csv_reader:
+               ^^^^^^^^^^
+_csv.Error: iterator should return strings, not bytes (the file should be opened in text mode)
+
+"2025-09-19 12:37:48,378","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 396, in <lambda>
+    lambda _, b=boxIndex: self.analyze_performance(boxnumber=b))
+                          ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1403, in analyze_performance
+    dialog = StatsGui(dataFolder)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1763, in __init__
+    self.get_raw_data()
+    ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 2359, in get_raw_data
+    perform = analysis.Performance(self.data_folder)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\pyoperant\analysis.py", line 370, in __init__
+    self.gather_raw_data(dataDict)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\pyoperant\analysis.py", line 511, in gather_raw_data
+    data_dict['Index'].append(int(row[1]))
+                                  ~~~^^^
+IndexError: list index out of range
+
+"2025-09-19 12:48:27,558","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 396, in <lambda>
+    lambda _, b=boxIndex: self.analyze_performance(boxnumber=b))
+                          ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1403, in analyze_performance
+    dialog = StatsGui(dataFolder)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1763, in __init__
+    self.get_raw_data()
+    ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 2359, in get_raw_data
+    perform = analysis.Performance(self.data_folder)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\pyoperant\analysis.py", line 370, in __init__
+    self.gather_raw_data(dataDict)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\pyoperant\analysis.py", line 511, in gather_raw_data
+    data_dict['Index'].append(int(row[1]))
+                                  ~~~^^^
+IndexError: list index out of range
+
+"2025-09-19 12:53:13,111","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 396, in <lambda>
+    lambda _, b=boxIndex: self.analyze_performance(boxnumber=b))
+                          ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1403, in analyze_performance
+    dialog = StatsGui(dataFolder)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1763, in __init__
+    self.get_raw_data()
+    ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 2359, in get_raw_data
+    perform = analysis.Performance(self.data_folder)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\pyoperant\analysis.py", line 370, in __init__
+    self.gather_raw_data(dataDict)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\pyoperant\analysis.py", line 511, in gather_raw_data
+    data_dict['Index'].append(int(row[1]))
+                                  ~~~^^^
+IndexError: list index out of range
+
+"2025-09-19 12:56:39,636","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 396, in <lambda>
+    lambda _, b=boxIndex: self.analyze_performance(boxnumber=b))
+                          ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1403, in analyze_performance
+    dialog = StatsGui(dataFolder)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1763, in __init__
+    self.get_raw_data()
+    ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 2359, in get_raw_data
+    perform = analysis.Performance(self.data_folder)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\pyoperant\analysis.py", line 370, in __init__
+    self.gather_raw_data(dataDict)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\pyoperant\analysis.py", line 512, in gather_raw_data
+    data_dict['Index'].append(int(row[1]))
+                                  ~~~^^^
+IndexError: list index out of range
+
+"2025-09-19 14:51:42,832","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 396, in <lambda>
+    lambda _, b=boxIndex: self.analyze_performance(boxnumber=b))
+                          ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1403, in analyze_performance
+    dialog = StatsGui(dataFolder)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1763, in __init__
+    self.get_raw_data()
+    ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 2359, in get_raw_data
+    perform = analysis.Performance(self.data_folder)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\pyoperant\analysis.py", line 370, in __init__
+    self.gather_raw_data(dataDict)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\pyoperant\analysis.py", line 513, in gather_raw_data
+    data_dict['Index'].append(int(row[1]))
+                                  ~~~^^^
+IndexError: list index out of range
+
+"2025-09-23 14:09:52,262","Water error: Cannot open solenoid: Box 1 is currently running
+"2025-09-23 14:31:05,602","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 396, in <lambda>
+    lambda _, b=boxIndex: self.analyze_performance(boxnumber=b))
+                          ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1403, in analyze_performance
+    dialog = StatsGui(dataFolder)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1763, in __init__
+    self.get_raw_data()
+    ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 2359, in get_raw_data
+    perform = analysis.Performance(self.data_folder)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\pyoperant\analysis.py", line 370, in __init__
+    self.gather_raw_data(dataDict)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\pyoperant\analysis.py", line 513, in gather_raw_data
+    data_dict['Index'].append(int(row[1]))
+                                  ~~~^^^
+IndexError: list index out of range
+
+"2025-09-23 14:58:15,312","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\pyoperant\analysis.py", line 545, in gather_raw_data
+    stim_tempo = float(stim_name[5:9]) / 10
+                 ~~~~~^^^^^^^^^^^^^^^^
+ValueError: could not convert string to float: 'g5q1'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 396, in <lambda>
+    lambda _, b=boxIndex: self.analyze_performance(boxnumber=b))
+                          ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1403, in analyze_performance
+    dialog = StatsGui(dataFolder)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1763, in __init__
+    self.get_raw_data()
+    ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 2359, in get_raw_data
+    perform = analysis.Performance(self.data_folder)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\pyoperant\analysis.py", line 377, in __init__
+    self.gather_raw_data(dataDict)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\pyoperant\analysis.py", line 549, in gather_raw_data
+    stim_tempo = float(stim_name[5:8])
+ValueError: could not convert string to float: 'g5q'
+
+"2025-09-23 15:38:37,804","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\pyoperant\analysis.py", line 547, in gather_raw_data
+    stim_tempo = float(stim_name[5:9]) / 10
+                 ~~~~~^^^^^^^^^^^^^^^^
+ValueError: could not convert string to float: 'g5q1'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 396, in <lambda>
+    lambda _, b=boxIndex: self.analyze_performance(boxnumber=b))
+                          ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1403, in analyze_performance
+    dialog = StatsGui(dataFolder)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1763, in __init__
+    self.get_raw_data()
+    ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 2359, in get_raw_data
+    perform = analysis.Performance(self.data_folder)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\pyoperant\analysis.py", line 378, in __init__
+    self.gather_raw_data(dataDict)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\pyoperant\analysis.py", line 553, in gather_raw_data
+    stim_temp = float(stim_name[-7:-4])
+ValueError: could not convert string to float: 'ir1'
+
+"2025-09-23 15:40:04,616","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 396, in <lambda>
+    lambda _, b=boxIndex: self.analyze_performance(boxnumber=b))
+                          ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1403, in analyze_performance
+    dialog = StatsGui(dataFolder)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1763, in __init__
+    self.get_raw_data()
+    ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 2359, in get_raw_data
+    perform = analysis.Performance(self.data_folder)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\pyoperant\analysis.py", line 378, in __init__
+    self.gather_raw_data(dataDict)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\pyoperant\analysis.py", line 562, in gather_raw_data
+    data_dict['Tempo'].append(stim_tempo)
+                              ^^^^^^^^^^
+UnboundLocalError: cannot access local variable 'stim_tempo' where it is not associated with a value
+
+"2025-09-23 15:41:44,976","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 396, in <lambda>
+    lambda _, b=boxIndex: self.analyze_performance(boxnumber=b))
+                          ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1403, in analyze_performance
+    dialog = StatsGui(dataFolder)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1763, in __init__
+    self.get_raw_data()
+    ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 2359, in get_raw_data
+    perform = analysis.Performance(self.data_folder)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\pyoperant\analysis.py", line 378, in __init__
+    self.gather_raw_data(dataDict)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\pyoperant\analysis.py", line 617, in gather_raw_data
+    self.raw_trial_data['Time'] = pd.to_datetime(self.raw_trial_data['Time'], format='%Y-%m-%d %H:%M:%S')
+                                  ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\pandas\core\tools\datetimes.py", line 1067, in to_datetime
+    values = convert_listlike(arg._values, format)
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\pandas\core\tools\datetimes.py", line 433, in _convert_listlike_datetimes
+    return _array_strptime_with_fallback(arg, name, utc, format, exact, errors)
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\pandas\core\tools\datetimes.py", line 467, in _array_strptime_with_fallback
+    result, tz_out = array_strptime(arg, fmt, exact=exact, errors=errors, utc=utc)
+                     ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "strptime.pyx", line 501, in pandas._libs.tslibs.strptime.array_strptime
+  File "strptime.pyx", line 451, in pandas._libs.tslibs.strptime.array_strptime
+  File "strptime.pyx", line 587, in pandas._libs.tslibs.strptime._parse_with_format
+ValueError: unconverted data remains when parsing with format "%Y-%m-%d %H:%M:%S": ".464112", at position 0. You might want to try:
+    - passing `format` if your strings have a consistent format;
+    - passing `format='ISO8601'` if your strings are all ISO8601 but not necessarily in exactly the same format;
+    - passing `format='mixed'`, and the format will be inferred for each element individually. You might want to use `dayfirst` alongside this.
+
+"2025-09-23 15:47:22,100","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\pandas\core\frame.py", line 12687, in _reindex_for_setitem
+    reindexed_value = value.reindex(index)._values
+                      ~~~~~~~~~~~~~^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\pandas\core\series.py", line 5153, in reindex
+    return super().reindex(
+           ~~~~~~~~~~~~~~~^
+        index=index,
+        ^^^^^^^^^^^^
+    ...<5 lines>...
+        tolerance=tolerance,
+        ^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\pandas\core\generic.py", line 5610, in reindex
+    return self._reindex_axes(
+           ~~~~~~~~~~~~~~~~~~^
+        axes, level, limit, tolerance, method, fill_value, copy
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ).__finalize__(self, method="reindex")
+    ^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\pandas\core\generic.py", line 5633, in _reindex_axes
+    new_index, indexer = ax.reindex(
+                         ~~~~~~~~~~^
+        labels, level=level, limit=limit, tolerance=tolerance, method=method
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\pandas\core\indexes\base.py", line 4433, in reindex
+    target = self._wrap_reindex_result(target, indexer, preserve_names)
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\pandas\core\indexes\multi.py", line 2717, in _wrap_reindex_result
+    target = MultiIndex.from_tuples(target)
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\pandas\core\indexes\multi.py", line 222, in new_meth
+    return meth(self_or_cls, *args, **kwargs)
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\pandas\core\indexes\multi.py", line 617, in from_tuples
+    arrays = list(lib.tuples_to_object_array(tuples).T)
+                  ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "lib.pyx", line 3029, in pandas._libs.lib.tuples_to_object_array
+ValueError: Buffer dtype mismatch, expected 'Python object' but got 'long long'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 396, in <lambda>
+    lambda _, b=boxIndex: self.analyze_performance(boxnumber=b))
+                          ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1403, in analyze_performance
+    dialog = StatsGui(dataFolder)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1763, in __init__
+    self.get_raw_data()
+    ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 2359, in get_raw_data
+    perform = analysis.Performance(self.data_folder)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\pyoperant\analysis.py", line 378, in __init__
+    self.gather_raw_data(dataDict)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\pyoperant\analysis.py", line 633, in gather_raw_data
+    self.raw_trial_data['Block Number'] = tempGroupBy.tempGroup.apply(lambda x: x.cumsum())
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\pandas\core\frame.py", line 4311, in __setitem__
+    self._set_item(key, value)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\pandas\core\frame.py", line 4524, in _set_item
+    value, refs = self._sanitize_column(value)
+                  ~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\pandas\core\frame.py", line 5263, in _sanitize_column
+    return _reindex_for_setitem(value, self.index)
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\pandas\core\frame.py", line 12694, in _reindex_for_setitem
+    raise TypeError(
+        "incompatible index of inserted column with frame index"
+    ) from err
+TypeError: incompatible index of inserted column with frame index
+
+"2025-09-23 15:49:29,041","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 396, in <lambda>
+    lambda _, b=boxIndex: self.analyze_performance(boxnumber=b))
+                          ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1403, in analyze_performance
+    dialog = StatsGui(dataFolder)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1765, in __init__
+    self.field_preset_select('nr')
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 2020, in field_preset_select
+    self.recalculate()
+    ~~~~~~~~~~~~~~~~^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 2383, in recalculate
+    self.refresh_table(output_path)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1814, in refresh_table
+    for row in csv.reader(inputFile):
+               ~~~~~~~~~~^^^^^^^^^^^
+_csv.Error: iterator should return strings, not bytes (the file should be opened in text mode)
+
+"2025-09-23 15:52:42,191","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 396, in <lambda>
+    lambda _, b=boxIndex: self.analyze_performance(boxnumber=b))
+                          ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1403, in analyze_performance
+    dialog = StatsGui(dataFolder)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1765, in __init__
+    self.field_preset_select('nr')
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 2020, in field_preset_select
+    self.recalculate()
+    ~~~~~~~~~~~~~~~~^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 2383, in recalculate
+    self.refresh_table(output_path)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1818, in refresh_table
+    row[column] = row[column].decode('utf-8')
+                  ^^^^^^^^^^^^^^^^^^
+AttributeError: 'str' object has no attribute 'decode'. Did you mean: 'encode'?
+
+"2025-09-23 15:55:06,466","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 396, in <lambda>
+    lambda _, b=boxIndex: self.analyze_performance(boxnumber=b))
+                          ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1403, in analyze_performance
+    dialog = StatsGui(dataFolder)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1765, in __init__
+    self.field_preset_select('nr')
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 2023, in field_preset_select
+    self.recalculate()
+    ~~~~~~~~~~~~~~~~^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 2386, in recalculate
+    self.refresh_table(output_path)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1842, in refresh_table
+    self.recheck_fields()
+    ~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1938, in recheck_fields
+    columnName = unicode(self.model.headerData(j, QtCore.Qt.Horizontal).toString())  # .replace('\n(NR)',
+                 ^^^^^^^
+NameError: name 'unicode' is not defined
+
+"2025-09-23 16:01:33,710","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 396, in <lambda>
+    lambda _, b=boxIndex: self.analyze_performance(boxnumber=b))
+                          ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1403, in analyze_performance
+    dialog = StatsGui(dataFolder)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1765, in __init__
+    self.field_preset_select('nr')
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 2027, in field_preset_select
+    self.recalculate()
+    ~~~~~~~~~~~~~~~~^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 2390, in recalculate
+    self.refresh_table(output_path)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1842, in refresh_table
+    self.recheck_fields()
+    ~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1941, in recheck_fields
+    self.model.headerData(j, QtCore.Qt.Horizontal).toString()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'str' object has no attribute 'toString'
+
+"2025-09-23 16:02:29,920","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 396, in <lambda>
+    lambda _, b=boxIndex: self.analyze_performance(boxnumber=b))
+                          ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1403, in analyze_performance
+    dialog = StatsGui(dataFolder)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1765, in __init__
+    self.field_preset_select('nr')
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 2027, in field_preset_select
+    self.recalculate()
+    ~~~~~~~~~~~~~~~~^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 2390, in recalculate
+    self.refresh_table(output_path)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1843, in refresh_table
+    self.build_filter_value_lists()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 2242, in build_filter_value_lists
+    columnName = unicode(
+                 ^^^^^^^
+NameError: name 'unicode' is not defined
+
+"2025-09-23 16:03:46,459","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 396, in <lambda>
+    lambda _, b=boxIndex: self.analyze_performance(boxnumber=b))
+                          ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1403, in analyze_performance
+    dialog = StatsGui(dataFolder)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1765, in __init__
+    self.field_preset_select('nr')
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 2027, in field_preset_select
+    self.recalculate()
+    ~~~~~~~~~~~~~~~~^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 2394, in recalculate
+    self.refresh_table(output_path)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1843, in refresh_table
+    self.build_filter_value_lists()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 2253, in build_filter_value_lists
+    valueList.append(str(self.model.data(valueIndex).toString()))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'str' object has no attribute 'toString'
+
+"2025-09-25 14:55:57,658","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1535, in close_application
+    self.stop_all()
+    ~~~~~~~~~~~~~^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 718, in stop_all
+    self.stop_box(boxnumber)
+    ~~~~~~~~~~~~~^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 607, in stop_box
+    self.subprocessBox[boxnumber].stdin.write('stop')
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+TypeError: a bytes-like object is required, not 'str'
+
+"2025-09-25 14:56:50,453","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1535, in close_application
+    self.stop_all()
+    ~~~~~~~~~~~~~^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 718, in stop_all
+    self.stop_box(boxnumber)
+    ~~~~~~~~~~~~~^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 607, in stop_box
+    self.subprocessBox[boxnumber].stdin.write('stop')
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+TypeError: a bytes-like object is required, not 'str'
+
+"2025-09-25 14:57:55,316","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1535, in close_application
+    self.stop_all()
+    ~~~~~~~~~~~~~^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 718, in stop_all
+    self.stop_box(boxnumber)
+    ~~~~~~~~~~~~~^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 607, in stop_box
+    self.subprocessBox[boxnumber].stdin.write('stop')
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+TypeError: a bytes-like object is required, not 'str'
+
+"2025-09-25 14:58:59,817","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 398, in <lambda>
+    self.stopBoxList[boxIndex].clicked.connect(lambda _, b=boxIndex: self.stop_box(boxnumber=b))
+                                                                     ~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 607, in stop_box
+    self.subprocessBox[boxnumber].stdin.write('stop')
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+TypeError: a bytes-like object is required, not 'str'
+
+"2025-09-25 14:59:54,304","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1535, in close_application
+    self.stop_all()
+    ~~~~~~~~~~~~~^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 718, in stop_all
+    self.stop_box(boxnumber)
+    ~~~~~~~~~~~~~^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 607, in stop_box
+    self.subprocessBox[boxnumber].stdin.write('stop')
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+TypeError: a bytes-like object is required, not 'str'
+

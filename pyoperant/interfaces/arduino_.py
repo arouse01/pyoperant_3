@@ -48,7 +48,13 @@ class ArduinoInterface(base_.BaseInterface):
         self.inputs = []
         self.outputs = []
 
+        print('opening and closing device')
+        # time.sleep(5)
         self.open()
+        self.close()
+        self.open()
+        print('done')
+
         if inputs is not None:
             for input_ in inputs:
                 self._config_read(*input_)
@@ -71,6 +77,7 @@ class ArduinoInterface(base_.BaseInterface):
         """
 
         logger.debug("Opening device %s" % self)
+        print(f'Opening device {self.device_name}')
         # self.device = serial.Serial(port=self.device_name, baudrate=self.baud_rate, timeout=5)
         self.device = serial.Serial(exclusive=True)
         self.device.port = self.device_name
@@ -130,6 +137,8 @@ class ArduinoInterface(base_.BaseInterface):
         if channel not in self.outputs:
             self.outputs.append(channel)
         self._state.setdefault(channel, self._default_state.copy())
+
+        print(f'configuring channel {channel}')
 
     def _read_bool(self, channel, **kwargs):
         """ Read a value from the specified channel
@@ -198,6 +207,7 @@ class ArduinoInterface(base_.BaseInterface):
 
         logger.debug("Begin polling from device %s" % self.device_name)
         while True:
+            #print("still polling")
             try:
                 result = self._read_bool(channel)
             except (InterfaceError, ArduinoException):
@@ -232,7 +242,7 @@ class ArduinoInterface(base_.BaseInterface):
 
     def _write_bool(self, channel, value, **kwargs):
         """Write a value to the specified channel
-        :param channel: the channel to write to
+        :pfaram channel: the channel to write to
         :param value: the value to write
         :return: value written if succeeded
         """
@@ -243,8 +253,12 @@ class ArduinoInterface(base_.BaseInterface):
         logger.debug("Writing %s to device %s, channel %d" % (value, self, channel))
         if value:
             s = self.device.write(self._make_arg(channel, 1))
+            if (channel == 37 or channel == 38):
+                print(f'Turning LED {channel} on.')
         else:
             s = self.device.write(self._make_arg(channel, 2))
+            if (channel == 37 or channel == 38):
+                print(f'Turning LED {channel} off.')
         if s:
             return value
         else:

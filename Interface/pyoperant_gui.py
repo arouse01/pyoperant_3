@@ -4,7 +4,7 @@ from PyQt5 import QtCore, QtGui  # Import the PyQt4 module we'll need
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QMenuBar, QAction, QMenu, QFileDialog, QMessageBox,
                              QInputDialog, QLineEdit, QDialog, qApp, QCheckBox, QSpinBox, QGroupBox,
                              QHeaderView, QFileSystemModel, QSizePolicy, QVBoxLayout, QScrollArea, QHBoxLayout,
-                             QPushButton, QComboBox, QDateEdit)
+                             QPushButton, QComboBox, QDateEdit, QWidget)
 from PyQt5.QtGui import QStandardItemModel, QStandardItem, QKeySequence
 from PyQt5.QtCore import QSortFilterProxyModel
 import sys  # We need sys so that we can pass argv to QApplication
@@ -55,7 +55,12 @@ import pyoperant_gui_layout
 
 
 osName = os.name  # pyudev only works on Unix systems
-
+if osName == "posix":
+    writeType = 'wb'
+    addType = 'ab'
+else:
+    writeType = 'w'
+    addType = 'a'
 
 def _log_except_hook(*exc_info):  # How uncaught errors are handled
     text = "".join(traceback.format_exception(*exc_info))
@@ -116,6 +121,7 @@ class PyoperantGui(QMainWindow, pyoperant_gui_layout.UiMainWindow):
     def __init__(self):
 
         super(self.__class__, self).__init__()
+        self.version = "2.0.0"
         self.args = None
         self.log = None
         self.log_level = None
@@ -531,7 +537,8 @@ class PyoperantGui(QMainWindow, pyoperant_gui_layout.UiMainWindow):
         if not len(filePath) > 0:  # value of whichfile doesn't match any of the options
             pass
         elif os.path.exists(filePath):
-            subprocess.Popen(["geany", filePath])
+            # subprocess.Popen(["geany", filePath])
+            os.startfile(filePath)
         else:
             msg = QMessageBox()
             msg.setIcon(2)
@@ -543,7 +550,7 @@ class PyoperantGui(QMainWindow, pyoperant_gui_layout.UiMainWindow):
     def create_json_file(self, boxnumber, birdname=''):
         currentPath = os.path.dirname('/home/rouse/Desktop/pyoperant/pyoperant/pyoperant/behavior/')
         paramFile = QFileDialog.getOpenFileName(self, "Select Template for Settings", currentPath,
-                                                      "JSON Files (*.json)")
+                                                      "JSON Files (*.json)")[0]
         if paramFile:  # if user didn't pick a file don't replace existing path
             # build new data folder path
             if not birdname:
@@ -554,7 +561,7 @@ class PyoperantGui(QMainWindow, pyoperant_gui_layout.UiMainWindow):
             try:
                 from pyoperant.local import DATAPATH
             except ImportError:
-                DATAPATH = '/home/rouse/bird/data'
+                DATAPATH = r'C:\Users\tmerri03\Desktop\aperture-3\bird\data'
             data_dir = os.path.join(DATAPATH, birdname)
 
             if not os.path.exists(data_dir):
@@ -576,11 +583,17 @@ class PyoperantGui(QMainWindow, pyoperant_gui_layout.UiMainWindow):
             if jsonSuccess:
                 self.birdEntryBoxList[boxnumber].setPlainText(newBird)
 
+                DATAPATH = r'C:\Users\tmerri03\Desktop\aperture-3\bird\data'
+                summary_file = os.path.join(DATAPATH, newBird, newBird + '.summaryDAT')
+                with open(summary_file, writeType) as f:
+                    f.write("Welcome to pyoperant v%s." % self.version)
+
     # endregion
 
     # region Pyoperant stop/start functions
     def stop_box(self, boxnumber, error_mode=False, sleep_mode=False):
         # stop selected box
+        print('trying to stop box')
         if not self.subprocessBox[boxnumber] == 0:  # Only operate if box is running
             while True:  # Empty queue so process can end gracefully
                 try:
@@ -591,7 +604,9 @@ class PyoperantGui(QMainWindow, pyoperant_gui_layout.UiMainWindow):
         # self.subprocessBox[boxnumber].stderr.close()
         # self.subprocessBox[boxnumber].stdout.close()
         try:
-            self.subprocessBox[boxnumber].terminate()
+            self.subprocessBox[boxnumber].stdin.write(b'stop\n')
+            self.subprocessBox[boxnumber].stdin.flush()
+            # self.subprocessBox[boxnumber].terminate()
         except OSError:
             pass  # OSError is probably that the process is already terminated
         except AttributeError:
@@ -633,30 +648,36 @@ class PyoperantGui(QMainWindow, pyoperant_gui_layout.UiMainWindow):
             error = "Error: Bird name must be entered."
             self.display_message(boxnumber, error, target='status')
         elif not os.path.isfile(jsonPath):  # Make sure param file is specified
+            print(f'jsonPath: {jsonPath}')
             error = "Error: No parameter file selected."
             self.display_message(boxnumber, error, target='status')
-        elif not os.path.exists("/dev/teensy{:02d}".format(actualboxnumber)):  # check if Teensy is detected:
-            error = "Error: Teensy {:02d} not detected.".format(actualboxnumber)
-            self.display_message(boxnumber, error, target='status')
+        # elif not os.path.exists("/dev/teensy{:02d}".format(actualboxnumber)):  # check if Teensy is detected:
+        #     error = "Error: Teensy {:02d} not detected.".format(actualboxnumber)
+        #     self.display_message(boxnumber, error, target='status')
         else:
             with wait_cursor():  # set mouse cursor to 'waiting' while connecting to Teensy
                 try:
                     from pyoperant.local import DATAPATH
                 except ImportError:
-                    DATAPATH = '/home/rouse/bird/data'
+                    DATAPATH = r'C:\Users\tmerri03\Desktop\aperture-3\bird\data'
                 self.experimentPath = DATAPATH
 
                 if self.subprocessBox[boxnumber] == 0 or self.subprocessBox[boxnumber] == 1:  # Make sure box isn't
                     # already running or sleeping
-                    commandString = ['python',
-                                     '/home/rouse/Desktop/pyoperant/pyoperant/scripts/behave',
+                    python_exe = sys.executable
+                    commandString = [python_exe,
+                                     "C:/Users/tmerri03/PycharmProjects/pyoperant_3/scripts/behave",
                                      '-P', str(boxnumber + 1),
                                      '-S', '{0}'.format(birdName),
                                      '{0}'.format(self.behaviorField.currentText()),
                                      '-c', '{0}'.format(jsonPath)]
+                    # self.subprocessBox[boxnumber] = subprocess.Popen(
+                    #     commandString, stdin=open(os.devnull), stderr=subprocess.PIPE, stdout=open(os.devnull),
+                    #     cwd=r"C:\Users\tmerri03\PycharmProjects\pyoperant_3", shell=self.args['debug']
+                    # )
+                    # ---- Tyler testing to see output -----
                     self.subprocessBox[boxnumber] = subprocess.Popen(
-                        commandString, stdin=open(os.devnull), stderr=subprocess.PIPE, stdout=open(os.devnull),
-                        shell=self.args['debug']
+                        commandString, shell = False, stderr=subprocess.PIPE, stdin=subprocess.PIPE, cwd = r'C:\Users\tmerri03\PycharmProjects\pyoperant_3'
                     )
 
                     # Thread for reading error messages
@@ -1097,18 +1118,26 @@ class PyoperantGui(QMainWindow, pyoperant_gui_layout.UiMainWindow):
                         # Seems the thread crashes, but pyoperant doesn't log anything unusual
                         try:
                             waketimeStr = self.sleepScheduleList[boxnumber][0][0]
+                            sleeptimeStr = self.sleepScheduleList[boxnumber][0][1]
                         except TypeError:
                             waketimeStr = self.defaultSleepSchedule[0][0]  # schedule has already been cleared,
+                            sleeptimeStr = self.defaultSleepSchedule[0][1]
                             # so try using the default
                         waketime = dt.datetime.strptime(waketimeStr, "%H:%M")
+                        sleeptime = dt.datetime.strptime(sleeptimeStr, "%H:%M")
                         if dt.datetime.now().hour == waketime.hour:
                             time.sleep(10)
                             self.start_box(boxnumber)  # try again
+                        elif dt.datetime.now().hour > waketime.hour and dt.datetime.now().hour < sleeptime.hour:
+                            time.sleep(10)
+                            self.start_box(boxnumber)
+
+                            #sleeptimeStr added by TDR (9/18/25)--not sure if correct
 
     def refreshfile(self, boxnumber):
 
         if self.debug:
-            self.experimentPath = '/home/rouse/bird/data'
+            self.experimentPath = r'C:\Users\tmerri03\Desktop\aperture-3\bird\data'
         birdName = str(self.birdEntryBoxList[boxnumber].toPlainText())
         # experiment_path = str(self.logpathList[boxnumber]+"/")
         summary_file = os.path.join(self.experimentPath, birdName, "{0}{1}".format(birdName, '.summaryDAT'))
@@ -1203,10 +1232,10 @@ class PyoperantGui(QMainWindow, pyoperant_gui_layout.UiMainWindow):
                             self.logRawCounts.setItem(row, column, QStandardItem(rawCounts[row][column]))
 
                     self.statusTableBoxList[boxnumber].setModel(self.logRawCounts)
-                    self.statusTableBoxList[boxnumber].horizontalHeader().setResizeMode(
+                    self.statusTableBoxList[boxnumber].horizontalHeader().setSectionResizeMode(
                         QHeaderView.ResizeToContents)
                     self.statusTableBoxList[boxnumber].horizontalHeader().setStretchLastSection(True)
-                    self.statusTableBoxList[boxnumber].verticalHeader().setResizeMode(
+                    self.statusTableBoxList[boxnumber].verticalHeader().setSectionResizeMode(
                         QHeaderView.Stretch)
 
                     if self.useNRList[boxnumber].isChecked():
@@ -1214,7 +1243,7 @@ class PyoperantGui(QMainWindow, pyoperant_gui_layout.UiMainWindow):
                                    "Beta (NR): {bias_NR:1.2f} {bias_description_NR}".format(**logData)
                     else:
                         logStats = "d': {dprime:1.2f}      Beta: {bias:1.2f} {bias_description}".format(**logData)
-                    logStats.decode('utf8')
+                    #logStats.decode('utf8')
                     self.display_message(boxnumber, logStats, target='statusStats')
 
                 else:
@@ -1454,7 +1483,7 @@ class PyoperantGui(QMainWindow, pyoperant_gui_layout.UiMainWindow):
         try:
             from pyoperant.local import DATAPATH
         except ImportError:
-            DATAPATH = '/home/rouse/bird/data'
+            DATAPATH = r'C:\Users\tmerri03\Desktop\aperture-3\bird\data'
         self.experimentPath = DATAPATH
 
     def close_application(self, event):
@@ -1551,7 +1580,19 @@ class SolenoidGui(QDialog, pyoperant_gui_layout.UiSolenoidControl):
         """Connect to solenoid of box_number, return error if connection cannot be established"""
         if self.device is None:
             with wait_cursor():  # set mouse cursor to 'waiting' while connecting to Teensy
-                self.device_name = '/dev/teensy{:02d}'.format(box_number)
+                #self.device_name = '/dev/teensy{:02d}'.format(box_number)
+                import serial.tools.list_ports
+                boardName = "Board01"
+                ports = serial.tools.list_ports.comports()
+                comDevice = None
+                for i in range(len(ports)):
+                    if ports[i].description == boardName:
+                        comDevice = ports[i].device
+                        break
+                    else:
+                        comDevice = None
+                self.device_name = comDevice
+
 
                 try:
                     self.device = serial.Serial(port=self.device_name,
@@ -1569,7 +1610,7 @@ class SolenoidGui(QDialog, pyoperant_gui_layout.UiSolenoidControl):
                     self.box_name.setText(str("Box {:02d}".format(box_number)))
 
                     # set self.solenoidChannel as output
-                    self.device.write("".join([chr(self.solenoidChannel), chr(3)]))
+                    self.device.write("".join([chr(self.solenoidChannel), chr(3)]).encode('utf-8'))
 
     def solenoid_control(self, action, box_number):
         if action == 'open':
@@ -1586,13 +1627,13 @@ class SolenoidGui(QDialog, pyoperant_gui_layout.UiSolenoidControl):
         else:
             # send signals and update layout
             if action == 'open':
-                self.device.write("".join([chr(self.solenoidChannel), chr(1)]))  # open solenoid
+                self.device.write("".join([chr(self.solenoidChannel), chr(1)]).encode('utf-8'))  # open solenoid
 
                 self.solenoid_Status_Text.setText(str("OPEN"))
                 self.open_Button.setEnabled(False)
                 self.close_Button.setEnabled(True)
             elif action == 'close':
-                self.device.write("".join([chr(self.solenoidChannel), chr(2)]))  # close solenoid
+                self.device.write("".join([chr(self.solenoidChannel), chr(2)]).encode('utf-8'))  # close solenoid
 
                 print("Closed water system in box {0}".format(str(box_number)))
 
@@ -1605,9 +1646,9 @@ class SolenoidGui(QDialog, pyoperant_gui_layout.UiSolenoidControl):
         self.serial_connect(box_number)
         times = int(self.test_Times.value())
         for i in range(times):
-            self.device.write("".join([chr(self.solenoidChannel), chr(1)]))  # open solenoid
+            self.device.write("".join([chr(self.solenoidChannel), chr(1)]).encode('utf-8'))  # open solenoid
             utils.wait(length)
-            self.device.write("".join([chr(self.solenoidChannel), chr(2)]))  # close solenoid
+            self.device.write("".join([chr(self.solenoidChannel), chr(2)]).encode('utf-8'))  # close solenoid
             if times > 1:
                 utils.wait(0.5)
 
@@ -1771,13 +1812,16 @@ class StatsGui(QDialog, pyoperant_gui_layout.StatsWindow):
         # Pull csv data into model, then put model into table - apparently proper way of doing it in Pyqt
         self.model = QStandardItemModel(self)
 
-        with open(output_path, 'rb') as inputFile:
+        with open(output_path, 'r', newline='', encoding='utf-8') as inputFile:
             i = 1
             for row in csv.reader(inputFile):
                 if i == 1:  # set headers of table
-                    for column in range(len(row)):
+                    #for column in range(len(row)):
                         # reencode each item in header list as utf-8 so beta can be displayed properly
-                        row[column] = row[column].decode('utf-8')
+
+                        #TDM: remove next line b/c added encoding = 'utf-8' in the open() statement above
+                        # --- this actually removes the entire for loop block
+                        #row[column] = row[column].decode('utf-8')
                         # row[column] = row[column].replace(' (NR)', '\n(NR)')
 
                     self.model.setHorizontalHeaderLabels(row)
@@ -1894,7 +1938,11 @@ class StatsGui(QDialog, pyoperant_gui_layout.StatsWindow):
         """
         existingHeaders = []  # Get list of headers, since they can't be pulled out of model as list (AFAIK)
         for j in range(self.model.columnCount()):  # for all fields available in model
-            columnName = unicode(self.model.headerData(j, QtCore.Qt.Horizontal).toString())  # .replace('\n(NR)',
+            #columnName = unicode(self.model.headerData(j, QtCore.Qt.Horizontal).toString())  # .replace('\n(NR)',
+            #TDM: change to update for python 3
+            columnName = str(
+                self.model.headerData(j, QtCore.Qt.Horizontal)
+            )
             # ' (NR)')
             if columnName == 'Bin':
                 pass  # skip Bin, which is only added by the analysis process if binning
@@ -2194,14 +2242,20 @@ class StatsGui(QDialog, pyoperant_gui_layout.StatsWindow):
             if column == 'Bin':
                 pass  # skip Bin, which is only added by the analysis process if binning
             else:
-                columnName = unicode(
-                    self.model.headerData(column, QtCore.Qt.Horizontal).toString())  # .replace('\n(NR)',
+                #TDM: updating for python 3
+                columnName = str(
+                    self.model.headerData(column, QtCore.Qt.Horizontal)
+                )
+                # columnName = unicode(
+                #     self.model.headerData(column, QtCore.Qt.Horizontal).toString())  # .replace('\n(NR)',
                 # ' (NR)')
                 if self.fieldManagement[columnName]['filter']['type'] == 'list':
                     valueList = []
                     for row in range(self.model.rowCount()):
                         valueIndex = self.model.index(row, column)
-                        valueList.append(str(self.model.data(valueIndex).toString()))
+                        #TDM: remove .toString()
+                        valueList.append(str(self.model.data(valueIndex)))
+                        # valueList.append(str(self.model.data(valueIndex).toString()))
                     valueList = list(set(valueList))
                     if 'valueList' in self.fieldManagement[columnName]:
                         valueList = valueList + self.fieldManagement[columnName]['valueList']
@@ -2458,7 +2512,10 @@ class FolderSelect(QDialog, pyoperant_gui_layout.FolderSelectWindow):
             for i in range(folderCount):
                 currIndex = self.model.index(i, 0, self.parentIndex)
 
-                currBirdName = str(self.model.data(currIndex).toString())
+                #TDM: remove .toString()
+                currBirdName = str(self.model.data(currIndex))
+                # currBirdName = str(self.model.data(currIndex).toString())
+
                 # modelIndex = self.
                 if currBirdName in self.preselected:
                     # this properly checks the birds in the list, but doesn't actually mark the box as checked

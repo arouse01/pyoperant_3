@@ -7,6 +7,7 @@ import datetime as dt
 from pyoperant.behavior import base, shape, adlib
 from pyoperant.errors import EndSession, EndBlock, InterfaceError, ArduinoException
 from pyoperant import utils, reinf, queues, analysis
+import threading
 
 # from collections import OrderedDict  # If we want to export json in some sort of ordered way
 
@@ -54,6 +55,8 @@ class GoNoGoInterruptExp(base.BaseExp):
 
     def __init__(self, *args, **kwargs):
         super(GoNoGoInterruptExp, self).__init__(*args, **kwargs)
+
+        self.stop_requested = threading.Event()
 
         if self.parameters['shape']:
             self.shaper = shape.ShaperGoNogoInterrupt(self.panel, self.log, self.parameters, self.log_error_callback)
@@ -228,7 +231,7 @@ class GoNoGoInterruptExp(base.BaseExp):
         with the fields in experiment.fields_to_save
         """
 
-        with open(self.data_csv, writeType) as data_fh:
+        with open(self.data_csv, writeType, newline='', encoding='utf-8') as data_fh:
             trialWriter = csv.writer(data_fh)
             trialWriter.writerow(self.fields_to_save)
 
@@ -642,7 +645,7 @@ class GoNoGoInterruptExp(base.BaseExp):
             except AttributeError:
                 trial_dict[field] = trial.annotations[field]
 
-        with open(self.data_csv, addType) as data_fh:
+        with open(self.data_csv, addType, newline='', encoding='utf-8') as data_fh:
             trialWriter = csv.DictWriter(data_fh, fieldnames=self.fields_to_save, extrasaction='ignore')
             trialWriter.writerow(trial_dict)
 
@@ -740,6 +743,18 @@ class GoNoGoInterruptExp(base.BaseExp):
                 #     self.panel.trialSens.off()
                 self.update_adaptive_queue(presented=False)
                 raise EndSession
+            elif self.stop_requested.is_set():
+                print('stop_requested set')
+                self.try_panel_function(self.panel.speaker.stop)
+                self.try_panel_function(self.panel.trialSens.off)
+                # try:
+                #     self.panel.trialSens.off()
+                # except (ArduinoException, InterfaceError):
+                #     self.reconnect_panel()
+                #     self.panel.trialSens.off()
+                self.update_adaptive_queue(presented=False)
+                self.pyoperant_close()
+                raise EndSession
             else:
                 trial_time = self.try_panel_function(self.panel.trialSens.poll, timeout=15.0)
 
@@ -768,6 +783,7 @@ class GoNoGoInterruptExp(base.BaseExp):
         stim_start = dt.datetime.now()
         self.this_trial.stimulus_event.time = (stim_start - self.this_trial.time).total_seconds()
         self.try_panel_function(self.panel.speaker.play)  # already queued in stimulus_pre()
+        self.log.debug('waiting %s secs...' % self.this_trial.annotations['min_wait'])
 
     def stimulus_post(self):
         self.log.debug('waiting %s secs...' % self.this_trial.annotations['min_wait'])
@@ -932,6 +948,10 @@ class GoNoGoInterruptExp(base.BaseExp):
 
     def consequence_post(self):
         self.update_adaptive_queue()
+
+    def close(self):
+        print('closing pyoperant!')
+        self.stop_requested.set()
 
     def update_adaptive_queue(self, presented=True):
         if self.this_trial.type_ == 'normal' and isinstance(self.trial_q, queues.AdaptiveBase):

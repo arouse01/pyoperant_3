@@ -18,6 +18,14 @@ try:
 except ImportError:
     import json
 
+osName = os.name  # for differences between open(..., 'w') vs open(..., 'wb'), which can be different in Linux vs Win
+if osName == "posix":
+    writeType = 'wb'
+    addType = 'ab'
+else:
+    writeType = 'w'
+    addType = 'a'
+    osName = "windows"
 
 # from matplotlib import mlab
 dt.datetime
@@ -455,7 +463,7 @@ class Performance(object):
             # Add specific response columns to data_dict
             for curr_csv in csvList:
                 csvPath = os.path.join(curr_dir, curr_csv)
-                with open(csvPath, 'rb') as data_file:
+                with open(csvPath, 'r', newline='', encoding='utf-8') as data_file:
                     csv_reader = csv.reader(data_file, delimiter=',')
                     rowCount = len(list(csv_reader)) - 1  # check if csv has data beyond header
                     if rowCount < 1:
@@ -500,14 +508,15 @@ class Performance(object):
                     # endregion
 
                     # region Actually read csv and pull data
-                    with open(csvPath, 'rb') as data_file:
+                    with open(csvPath, 'r', newline='', encoding='utf-8') as data_file:
                         csv_reader = csv.reader(data_file, delimiter=',')
                         currentLine = 0  # resets each time so later we can tell how many lines were imported
-                        for row in csv_reader:
+                        for r, row in enumerate(csv_reader):
+                            # print(f'{r}: {row}')
                             if currentLine == 0:
                                 # ignore first line (headers) because we're assuming the order is the same for all files
                                 pass
-                            else:
+                            elif row:
                                 data_dict['Index'].append(int(row[1]))
                                 data_dict['Class'].append(row[4])
                                 data_dict['Response'].append(row[5])
@@ -534,11 +543,16 @@ class Performance(object):
                                     trialType = 'Shaping'
                                 else:
                                     try:
+
                                         stim_tempo = float(stim_name[5:9]) / 10
                                     except ValueError:
                                         # Old stim name format only had tempo as three-digit number, which is caught
                                         # by ValueError (since ###_ can't be converted to float)
-                                        stim_tempo = float(stim_name[5:8])
+
+                                        if osName == 'windows':
+                                            stim_tempo = float(stim_name[-11:-8])
+                                        else:
+                                            stim_tempo = float(stim_name[5:8])
                                     if row[5] == 'probePlus' or row[5] == 'probeMinus':
                                         trialType = 'Probe'
                                     else:
@@ -584,8 +598,11 @@ class Performance(object):
                                     1 if response_type in ['probe_FA', 'probe_CR'] else 0)
                                 data_dict['Probe S- (NR) Trials'].append(
                                     1 if response_type in ['probe_FA', 'probe_CR', 'probe_CR_NR'] else 0)
-
+                            else:
+                                pass
                             currentLine += 1
+                
+
                     # endregion
         data_dict = pd.DataFrame.from_dict(data_dict)  # Convert to data frame
 
@@ -597,7 +614,7 @@ class Performance(object):
         # region Create indexable fields for groupby functions
 
         # Create actual datetime value from string
-        self.raw_trial_data['Time'] = pd.to_datetime(self.raw_trial_data['Time'], format='%Y-%m-%d %H:%M:%S')
+        self.raw_trial_data['Time'] = pd.to_datetime(self.raw_trial_data['Time'], format='%Y-%m-%d %H:%M:%S.%f')
 
         self.raw_trial_data['Hour'] = pd.DatetimeIndex(self.raw_trial_data['Time']).hour
         self.raw_trial_data['Date'] = self.raw_trial_data['Time'].dt.date
@@ -613,7 +630,7 @@ class Performance(object):
 
         # group by subject, then get cumsum of True values (i.e. how many times block changed so far)
         tempGroupBy = self.raw_trial_data.groupby(self.raw_trial_data.Subject, sort=False)
-        self.raw_trial_data['Block Number'] = tempGroupBy.tempGroup.apply(lambda x: x.cumsum())
+        self.raw_trial_data['Block Number'] = tempGroupBy.tempGroup.apply(lambda x: x.cumsum()).reset_index(drop=True)
 
         # remove temporary field
         self.raw_trial_data.drop('tempGroup', axis=1, inplace=True)
@@ -777,21 +794,38 @@ class Performance(object):
             # endregion
 
             # region Calculate stats for each summary group
+            #TODO: change these to be forward compatible in pandas
             for k in range(groupCount):
-                hitCount = float(groupData['Hit'][k])
-                missCount = float(groupData['Miss'][k])
-                missNRCount = float(groupData['Miss (NR)'][k])
-                FACount = float(groupData['FA'][k])
-                CRCount = float(groupData['CR'][k])
-                CRNRCount = float(groupData['CR (NR)'][k])
-                totalTrials = float(groupData['Trials'][k])
-                probeHitCount = float(groupData['Probe Hit'][k])
-                probeMissCount = float(groupData['Probe Miss'][k])
-                probeMissNRCount = float(groupData['Probe Miss (NR)'][k])
-                probeFACount = float(groupData['Probe FA'][k])
-                probeCRCount = float(groupData['Probe CR'][k])
-                probeCRNRCount = float(groupData['Probe CR (NR)'][k])
-                probeTotalTrials = float(groupData['Probe Trials'][k])
+                # hitCount = float(groupData['Hit'][k])
+                # missCount = float(groupData['Miss'][k])
+                # missNRCount = float(groupData['Miss (NR)'][k])
+                # FACount = float(groupData['FA'][k])
+                # CRCount = float(groupData['CR'][k])
+                # CRNRCount = float(groupData['CR (NR)'][k])
+                # totalTrials = float(groupData['Trials'][k])
+                # probeHitCount = float(groupData['Probe Hit'][k])
+                # probeMissCount = float(groupData['Probe Miss'][k])
+                # probeMissNRCount = float(groupData['Probe Miss (NR)'][k])
+                # probeFACount = float(groupData['Probe FA'][k])
+                # probeCRCount = float(groupData['Probe CR'][k])
+                # probeCRNRCount = float(groupData['Probe CR (NR)'][k])
+                # probeTotalTrials = float(groupData['Probe Trials'][k])
+
+                #TDM: pandas will update soon -- fix to protect against future updates
+                hitCount = float(groupData['Hit'].iloc[k])
+                missCount = float(groupData['Miss'].iloc[k])
+                missNRCount = float(groupData['Miss (NR)'].iloc[k])
+                FACount = float(groupData['FA'].iloc[k])
+                CRCount = float(groupData['CR'].iloc[k])
+                CRNRCount = float(groupData['CR (NR)'].iloc[k])
+                totalTrials = float(groupData['Trials'].iloc[k])
+                probeHitCount = float(groupData['Probe Hit'].iloc[k])
+                probeMissCount = float(groupData['Probe Miss'].iloc[k])
+                probeMissNRCount = float(groupData['Probe Miss (NR)'].iloc[k])
+                probeFACount = float(groupData['Probe FA'].iloc[k])
+                probeCRCount = float(groupData['Probe CR'].iloc[k])
+                probeCRNRCount = float(groupData['Probe CR (NR)'].iloc[k])
+                probeTotalTrials = float(groupData['Probe Trials'].iloc[k])
 
                 dayDprime = round(Analysis([[hitCount, missCount], [FACount, CRCount]]).dprime(), 3)
                 dprimes.append(dayDprime)
