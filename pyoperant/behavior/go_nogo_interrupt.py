@@ -653,8 +653,13 @@ class GoNoGoInterruptExp(base.BaseExp):
         self.trial_pre()
 
         self.stimulus_pre()
+        print('stimulus_pre')
+
         self.stimulus_main()
+        print('stimulus_main')
+
         self.stimulus_post()
+        print('stimulus_post')
 
         self.response_pre()
         self.response_main()
@@ -756,8 +761,8 @@ class GoNoGoInterruptExp(base.BaseExp):
                 self.pyoperant_close()
                 raise EndSession
             else:
-                trial_time = self.try_panel_function(self.panel.trialSens.poll, timeout=15.0)
-
+                trial_time = self.try_panel_function(self.panel.trialSens.poll, timeout=5.0)
+        print('set trial time')
         self.this_trial.time = trial_time
 
         self.try_panel_function(self.panel.trialSens.off)
@@ -792,9 +797,10 @@ class GoNoGoInterruptExp(base.BaseExp):
     # response flow
     def response_pre(self):
         for class_, port in self.class_assoc.items():
+            print('trying_panel_function')
             self.try_panel_function(port.on)
             # port.on()
-        self.log.debug('waiting for response')
+        self.log.debug('waiting for response - go_nogo_interrupt.py - response_pre()')
 
     def response_main(self):
         response_start = dt.datetime.now()
@@ -951,7 +957,9 @@ class GoNoGoInterruptExp(base.BaseExp):
 
     def close(self):
         print('closing pyoperant!')
-        self.stop_requested.set()
+        # self.stop_requested.set()
+        self.panel_reset()
+        self.panel.interfaces['arduino'].device.close()
 
     def update_adaptive_queue(self, presented=True):
         if self.this_trial.type_ == 'normal' and isinstance(self.trial_q, queues.AdaptiveBase):

@@ -590,6 +590,78 @@ class PyoperantGui(QMainWindow, pyoperant_gui_layout.UiMainWindow):
 
     # endregion
 
+    def close_box(self, boxnumber):
+        # start selected box
+        actualboxnumber = boxnumber + 1  # Boxnumber is index, but actual box number starts from 1
+
+        # Error checking: make sure all relevant boxes are filled and files are found:
+        birdName = self.birdEntryBoxList[boxnumber].toPlainText()
+        jsonPath = self.paramFileBoxList[boxnumber].toPlainText()
+        if not self.checkActiveBoxList[boxnumber].checkState():  # Box needs to be marked as active
+            error = "Error: Box not set as Active."
+            self.display_message(boxnumber, error, target='status')
+        elif birdName == "":  # Need a bird specified
+            error = "Error: Bird name must be entered."
+            self.display_message(boxnumber, error, target='status')
+        elif not os.path.isfile(jsonPath):  # Make sure param file is specified
+            print(f'jsonPath: {jsonPath}')
+            error = "Error: No parameter file selected."
+            self.display_message(boxnumber, error, target='status')
+        # elif not os.path.exists("/dev/teensy{:02d}".format(actualboxnumber)):  # check if Teensy is detected:
+        #     error = "Error: Teensy {:02d} not detected.".format(actualboxnumber)
+        #     self.display_message(boxnumber, error, target='status')
+        else:
+            with wait_cursor():  # set mouse cursor to 'waiting' while connecting to Teensy
+                try:
+                    from pyoperant.local import DATAPATH
+                except ImportError:
+                    DATAPATH = r'C:\Users\tmerri03\Desktop\aperture-3\bird\data'
+                self.experimentPath = DATAPATH
+
+                if self.subprocessBox[boxnumber].poll() == 0 or self.subprocessBox[boxnumber].poll() == 1:  # Make sure box isn't
+                    # already running or sleeping
+                    python_exe = sys.executable
+                    commandString = [python_exe,
+                                     "C:/Users/tmerri03/PycharmProjects/pyoperant_3/scripts/behave",
+                                     '-P', str(boxnumber + 1),
+                                     '-S', '{0}'.format(birdName),
+                                     '{0}'.format(self.behaviorField.currentText()),
+                                     '-c', '{0}'.format(jsonPath),
+                                     '--close']
+                    # self.subprocessBox[boxnumber] = subprocess.Popen(
+                    #     commandString, stdin=open(os.devnull), stderr=subprocess.PIPE, stdout=open(os.devnull),
+                    #     cwd=r"C:\Users\tmerri03\PycharmProjects\pyoperant_3", shell=self.args['debug']
+                    # )
+                    # ---- Tyler testing to see output -----
+                    self.subprocessBox[boxnumber] = subprocess.Popen(
+                        commandString, shell=False, stderr=subprocess.PIPE, stdin=subprocess.PIPE,
+                        cwd=r'C:\Users\tmerri03\PycharmProjects\pyoperant_3'
+                    )
+
+                    # Thread for reading error messages
+                    self.tList[boxnumber] = threading.Thread(target=self.read_output_box,
+                                                             args=(boxnumber, self.subprocessBox[boxnumber].stderr,
+                                                                   self.qList[boxnumber]))
+                    self.tList[boxnumber].daemon = True
+
+                    self.tList[boxnumber].start()
+
+                    error = self.get_error(boxnumber)
+                    # error = ''
+
+                    if error and not error[0:4] == "ALSA" and not error[0:5] == 'pydev' and not error[0:5] == 'debug':
+                        print(error)
+                        self.log.info(error)
+                        self.display_message(boxnumber, error, target='status')
+                        self.stop_box(boxnumber, error_mode=True)
+
+                    else:  # Successfully started
+                        self.box_button_control(boxnumber, "start")  # UI modifications while box is running
+                        self.log.debug("Setting status icon to 'start'")
+                        self.status_icon(boxnumber, 'start')
+                        self.lastStartList[boxnumber] = dt.datetime.now()
+                        self.sleepScheduleList[boxnumber] = self.defaultSleepSchedule
+
     # region Pyoperant stop/start functions
     def stop_box(self, boxnumber, error_mode=False, sleep_mode=False):
         # stop selected box
@@ -604,9 +676,16 @@ class PyoperantGui(QMainWindow, pyoperant_gui_layout.UiMainWindow):
         # self.subprocessBox[boxnumber].stderr.close()
         # self.subprocessBox[boxnumber].stdout.close()
         try:
-            self.subprocessBox[boxnumber].stdin.write(b'stop\n')
-            self.subprocessBox[boxnumber].stdin.flush()
-            # self.subprocessBox[boxnumber].terminate()
+            # self.subprocessBox[boxnumber].stdin.write(b'stop\n')
+            # self.subprocessBox[boxnumber].stdin.flush()
+            self.subprocessBox[boxnumber].terminate()
+            self.subprocessBox[boxnumber].wait()
+
+            #add something here to close box
+            self.close_box(boxnumber)
+
+
+
         except OSError:
             pass  # OSError is probably that the process is already terminated
         except AttributeError:

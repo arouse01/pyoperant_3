@@ -81,8 +81,7 @@ class BaseExp(object):
         self.panel = panel
         self.log.debug('panel %s initialized' % self.parameters['panel_name'])
 
-        atexit.register(self.pyoperant_close)
-
+        #atexit.register(self.pyoperant_close)
 
         if 'shape' not in self.parameters:
             # or self.parameters['shape'] not in ['block1', 'block2', 'block3', 'block4', 'block5']:
@@ -226,15 +225,19 @@ class BaseExp(object):
         return 'idle'
 
     def pyoperant_close(self):
-        try:
-            self.log.debug('waiting for response')
-            print("Closing pyoperant, turing off all components")
-            self.panel.trialSens.off()
-            self.panel.respSens.off()
-            sys.exit(0)
-        except:
-            pass
-
+        # try:
+        #     self.log.debug('waiting for response')
+        #     print("Closing pyoperant, turing off all components")
+        #     self.panel.trialSens.off()
+        #     self.panel.respSens.off()
+        #     sys.exit(0)
+        # except:
+        #     pass
+        self.log.debug('base.py pyoperant_close()')
+        print("Closing pyoperant, turing off all components")
+        self.panel.trialSens.off()
+        self.panel.respSens.off()
+        sys.exit(0)
     # session
 
     def session_pre(self):

@@ -59,14 +59,10 @@ def parse_commandline(arg_str=sys.argv[1:]):
                         required=True,
                         help='(str) subject identifier'
                         )
-    # parser.add_argument('-c', '--config',
-    #                     action='store',
-    #                     type=str,
-    #                     dest='config_file',
-    #                     default='config.json',
-    #                     required=False,
-    #                     help='configuration file [default: %(default)s]'
-    #                     )
+    parser.add_argument('--close',
+                        action='store_true',
+                        help='turn off lights & close'
+                        )
     # parser.add_argument('-c', '--config',
     #                     action='store',
     #                     type=str,
@@ -134,9 +130,9 @@ def main():
         signal.signal(sig, clean)
 
     cmd_line = parse_commandline()
+    reset_board = cmd_line['close']
 
     from pyoperant.local import PANELS
-
     experiment_path = os.path.join(DATAPATH, cmd_line['subject'])
     config_file = os.path.join(experiment_path, cmd_line['config_file'])
     stimuli_path = os.path.join(experiment_path, 'Stimuli')
@@ -176,14 +172,14 @@ def main():
         **parameters
     )
 
-    print('before thread')
-
+    # print('before thread')
+    #
     # run_subprocess = subprocess.Popen(
     #     behavior.run, shell=False, stderr=subprocess.PIPE, stdin=subprocess.PIPE,
     #     cwd=r'C:\Users\tmerri03\PycharmProjects\pyoperant_3'
     # )
-
-    # Thread for reading error messages
+    #
+    # #Thread for reading error messages
     # threading.Thread(target=forward, args=(run_subprocess.stderr, sys.stderr), daemon=True).start()
 
 #uncomment block for new changes
@@ -199,7 +195,11 @@ def main():
     # print('closing')
     # run_thread.join()
 
-    behavior.run()
+    if reset_board:
+        behavior.close()
+    else:
+        behavior.run()
+
 #
 # def run_behavior(behavior):
 #     print('testing')

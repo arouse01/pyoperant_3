@@ -253,12 +253,12 @@ class ArduinoInterface(base_.BaseInterface):
         logger.debug("Writing %s to device %s, channel %d" % (value, self, channel))
         if value:
             s = self.device.write(self._make_arg(channel, 1))
-            if (channel == 37 or channel == 38):
-                print(f'Turning LED {channel} on.')
+            # if (channel == 37 or channel == 38):
+            #     print(f'Turning LED {channel} on.')
         else:
             s = self.device.write(self._make_arg(channel, 2))
-            if (channel == 37 or channel == 38):
-                print(f'Turning LED {channel} off.')
+            # if (channel == 37 or channel == 38):
+            #     print(f'Turning LED {channel} off.')
         if s:
             return value
         else:
