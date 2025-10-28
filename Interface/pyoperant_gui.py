@@ -1661,7 +1661,7 @@ class SolenoidGui(QDialog, pyoperant_gui_layout.UiSolenoidControl):
             with wait_cursor():  # set mouse cursor to 'waiting' while connecting to Teensy
                 #self.device_name = '/dev/teensy{:02d}'.format(box_number)
                 import serial.tools.list_ports
-                boardName = "Board01"
+                boardName = f'Board{box_number:02}'
                 ports = serial.tools.list_ports.comports()
                 comDevice = None
                 for i in range(len(ports)):

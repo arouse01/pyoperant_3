@@ -65,8 +65,8 @@ class PyAudioInterface(base_.BaseInterface):
         device_index = None
         for i in range(numdevices):
             deviceInfo = self.pa.get_device_info_by_host_api_device_index(api_index, i)
-            currDeviceName = deviceInfo['name'][:18]
-            if self.device_name[:18] == currDeviceName:
+            currDeviceName = deviceInfo['name'][:len(self.device_name)]
+            if self.device_name == currDeviceName:
                 # make sure it's the appropriate input/output
                 if ((self.io_type == 'output' and deviceInfo.get('maxOutputChannels') > 0)
                         or (self.io_type == 'input' and deviceInfo.get('maxInputChannels') > 0)):

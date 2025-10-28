@@ -564,8 +564,8 @@ class UiMainWindow(object):
         # extra space due to padding:
         #   layoutSpacing * (number of columns + number of vertical lines + 1 [for whole layout])
         spacingWidthTotal = (columnCount + numVerticalLines + -3) * self.mainGrid.getContentsMargins()[0]
-        mainGridWidth = math.ceil(self.gridLayoutWidget.sizeHint().width() + spacingWidthTotal)
-        mainGridHeight = self.gridLayoutWidget.sizeHint().height()
+        mainGridWidth = math.ceil(self.gridLayoutWidget.sizeHint().width() + spacingWidthTotal) + 20
+        mainGridHeight = self.gridLayoutWidget.sizeHint().height() + 20
 
         main_window.setFixedSize(mainGridWidth, mainGridHeight)
         # endregion Window sizing

@@ -56407,3 +56407,693 @@ TypeError: a bytes-like object is required, not 'str'
 "2025-10-09 14:21:06,014","INFO","Arduino logging enabled"
 "2025-10-09 14:24:00,168","INFO","settings.json file detected, loading settings"
 "2025-10-09 14:24:00,176","INFO","Arduino logging enabled"
+"2025-10-09 14:31:43,817","INFO","settings.json file detected, loading settings"
+"2025-10-09 14:31:43,831","INFO","Arduino logging enabled"
+"2025-10-09 14:32:46,768","INFO","settings.json file detected, loading settings"
+"2025-10-09 14:32:46,779","INFO","Arduino logging enabled"
+"2025-10-09 14:34:21,094","INFO","settings.json file detected, loading settings"
+"2025-10-09 14:34:21,103","INFO","Arduino logging enabled"
+"2025-10-17 18:14:09,967","INFO","settings.json file detected, loading settings"
+"2025-10-17 18:14:09,983","INFO","Arduino logging enabled"
+"2025-10-22 11:26:55,753","INFO","settings.json file detected, loading settings"
+"2025-10-22 11:26:55,762","INFO","Arduino logging enabled"
+"2025-10-22 11:27:20,359","INFO","Opening water system in box 1"
+"2025-10-22 11:27:21,056","INFO","Closing water system in box 1"
+"2025-10-22 11:27:22,207","INFO","Opening water system in box 1"
+"2025-10-22 11:27:22,727","INFO","Closing water system in box 1"
+"2025-10-22 11:27:23,303","INFO","Opening water system in box 1"
+"2025-10-22 11:27:23,735","INFO","Closing water system in box 1"
+"2025-10-22 16:50:34,092","INFO","settings.json file detected, loading settings"
+"2025-10-22 16:50:34,101","INFO","Arduino logging enabled"
+"2025-10-22 16:51:17,706","INFO","Opening water system in box 1"
+"2025-10-22 16:51:18,090","INFO","Closing water system in box 1"
+"2025-10-22 16:51:59,733","ERROR","Could not open serial device COM3"
+"2025-10-22 16:51:59,737","ERROR","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1677, in serial_connect
+    self.device = serial.Serial(port=self.device_name,
+                  ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+                                baudrate=19200,
+                                ^^^^^^^^^^^^^^^
+                                timeout=5)
+                                ^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialwin32.py", line 33, in __init__
+    super(Serial, self).__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialutil.py", line 244, in __init__
+    self.open()
+    ~~~~~~~~~^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialwin32.py", line 64, in open
+    raise SerialException("could not open port {!r}: {!r}".format(self.portstr, ctypes.WinError()))
+serial.serialutil.SerialException: could not open port 'COM3': PermissionError(13, 'Access is denied.', None, 5)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 418, in <lambda>
+    lambda _, b=boxIndex: self.water_control(boxindex=b, parameter='dialog'))
+                          ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 932, in water_control
+    dialog = SolenoidGui(boxnumber, solenoidChannel)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1656, in __init__
+    self.serial_connect(box_number)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1682, in serial_connect
+    raise serial.SerialException('Could not open serial device {}'.format(self.device_name))
+serial.serialutil.SerialException: Could not open serial device COM3
+"
+"2025-10-22 16:52:06,164","ERROR","Could not open serial device COM3"
+"2025-10-22 16:52:06,166","ERROR","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1677, in serial_connect
+    self.device = serial.Serial(port=self.device_name,
+                  ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+                                baudrate=19200,
+                                ^^^^^^^^^^^^^^^
+                                timeout=5)
+                                ^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialwin32.py", line 33, in __init__
+    super(Serial, self).__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialutil.py", line 244, in __init__
+    self.open()
+    ~~~~~~~~~^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialwin32.py", line 64, in open
+    raise SerialException("could not open port {!r}: {!r}".format(self.portstr, ctypes.WinError()))
+serial.serialutil.SerialException: could not open port 'COM3': PermissionError(13, 'Access is denied.', None, 5)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 418, in <lambda>
+    lambda _, b=boxIndex: self.water_control(boxindex=b, parameter='dialog'))
+                          ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 932, in water_control
+    dialog = SolenoidGui(boxnumber, solenoidChannel)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1656, in __init__
+    self.serial_connect(box_number)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1682, in serial_connect
+    raise serial.SerialException('Could not open serial device {}'.format(self.device_name))
+serial.serialutil.SerialException: Could not open serial device COM3
+"
+"2025-10-22 16:52:08,684","ERROR","Could not open serial device COM3"
+"2025-10-22 16:52:08,686","ERROR","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1677, in serial_connect
+    self.device = serial.Serial(port=self.device_name,
+                  ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+                                baudrate=19200,
+                                ^^^^^^^^^^^^^^^
+                                timeout=5)
+                                ^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialwin32.py", line 33, in __init__
+    super(Serial, self).__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialutil.py", line 244, in __init__
+    self.open()
+    ~~~~~~~~~^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialwin32.py", line 64, in open
+    raise SerialException("could not open port {!r}: {!r}".format(self.portstr, ctypes.WinError()))
+serial.serialutil.SerialException: could not open port 'COM3': PermissionError(13, 'Access is denied.', None, 5)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 418, in <lambda>
+    lambda _, b=boxIndex: self.water_control(boxindex=b, parameter='dialog'))
+                          ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 932, in water_control
+    dialog = SolenoidGui(boxnumber, solenoidChannel)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1656, in __init__
+    self.serial_connect(box_number)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1682, in serial_connect
+    raise serial.SerialException('Could not open serial device {}'.format(self.device_name))
+serial.serialutil.SerialException: Could not open serial device COM3
+"
+"2025-10-22 16:52:10,384","INFO","Purging water system in box 1 for 5 s"
+"2025-10-22 16:52:10,385","ERROR","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 416, in <lambda>
+    lambda _, b=boxIndex: self.water_control(boxindex=b, parameter='purge', purge_time=5))
+                          ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 937, in water_control
+    device = serial.Serial(port=device_name, baudrate=19200, timeout=5)
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialwin32.py", line 33, in __init__
+    super(Serial, self).__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialutil.py", line 244, in __init__
+    self.open()
+    ~~~~~~~~~^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialwin32.py", line 64, in open
+    raise SerialException("could not open port {!r}: {!r}".format(self.portstr, ctypes.WinError()))
+serial.serialutil.SerialException: could not open port '/dev/teensy01': FileNotFoundError(2, 'The system cannot find the path specified.', None, 3)
+"
+"2025-10-22 16:52:19,124","ERROR","Could not open serial device COM3"
+"2025-10-22 16:52:19,125","ERROR","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1677, in serial_connect
+    self.device = serial.Serial(port=self.device_name,
+                  ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+                                baudrate=19200,
+                                ^^^^^^^^^^^^^^^
+                                timeout=5)
+                                ^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialwin32.py", line 33, in __init__
+    super(Serial, self).__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialutil.py", line 244, in __init__
+    self.open()
+    ~~~~~~~~~^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialwin32.py", line 64, in open
+    raise SerialException("could not open port {!r}: {!r}".format(self.portstr, ctypes.WinError()))
+serial.serialutil.SerialException: could not open port 'COM3': PermissionError(13, 'Access is denied.', None, 5)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 418, in <lambda>
+    lambda _, b=boxIndex: self.water_control(boxindex=b, parameter='dialog'))
+                          ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 932, in water_control
+    dialog = SolenoidGui(boxnumber, solenoidChannel)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1656, in __init__
+    self.serial_connect(box_number)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1682, in serial_connect
+    raise serial.SerialException('Could not open serial device {}'.format(self.device_name))
+serial.serialutil.SerialException: Could not open serial device COM3
+"
+"2025-10-22 16:53:02,110","INFO","settings.json file detected, loading settings"
+"2025-10-22 16:53:02,118","INFO","Arduino logging enabled"
+"2025-10-22 16:53:36,452","INFO","Opening water system in box 1"
+"2025-10-22 16:53:36,732","INFO","Closing water system in box 1"
+"2025-10-22 16:53:37,020","INFO","Opening water system in box 1"
+"2025-10-22 16:53:37,292","INFO","Closing water system in box 1"
+"2025-10-22 17:07:28,446","INFO","settings.json file detected, loading settings"
+"2025-10-22 17:07:28,454","INFO","Arduino logging enabled"
+"2025-10-22 17:07:38,441","INFO","Opening water system in box 1"
+"2025-10-22 17:07:38,753","INFO","Closing water system in box 1"
+"2025-10-22 17:08:26,116","ERROR","Could not open serial device COM3"
+"2025-10-22 17:08:26,122","ERROR","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1677, in serial_connect
+    self.device = serial.Serial(port=self.device_name,
+                  ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+                                baudrate=19200,
+                                ^^^^^^^^^^^^^^^
+                                timeout=5)
+                                ^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialwin32.py", line 33, in __init__
+    super(Serial, self).__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialutil.py", line 244, in __init__
+    self.open()
+    ~~~~~~~~~^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialwin32.py", line 64, in open
+    raise SerialException("could not open port {!r}: {!r}".format(self.portstr, ctypes.WinError()))
+serial.serialutil.SerialException: could not open port 'COM3': PermissionError(13, 'Access is denied.', None, 5)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 418, in <lambda>
+    lambda _, b=boxIndex: self.water_control(boxindex=b, parameter='dialog'))
+                          ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 932, in water_control
+    dialog = SolenoidGui(boxnumber, solenoidChannel)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1656, in __init__
+    self.serial_connect(box_number)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1682, in serial_connect
+    raise serial.SerialException('Could not open serial device {}'.format(self.device_name))
+serial.serialutil.SerialException: Could not open serial device COM3
+"
+"2025-10-22 17:08:28,428","ERROR","Could not open serial device COM3"
+"2025-10-22 17:08:28,430","ERROR","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1677, in serial_connect
+    self.device = serial.Serial(port=self.device_name,
+                  ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+                                baudrate=19200,
+                                ^^^^^^^^^^^^^^^
+                                timeout=5)
+                                ^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialwin32.py", line 33, in __init__
+    super(Serial, self).__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialutil.py", line 244, in __init__
+    self.open()
+    ~~~~~~~~~^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialwin32.py", line 64, in open
+    raise SerialException("could not open port {!r}: {!r}".format(self.portstr, ctypes.WinError()))
+serial.serialutil.SerialException: could not open port 'COM3': PermissionError(13, 'Access is denied.', None, 5)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 418, in <lambda>
+    lambda _, b=boxIndex: self.water_control(boxindex=b, parameter='dialog'))
+                          ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 932, in water_control
+    dialog = SolenoidGui(boxnumber, solenoidChannel)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1656, in __init__
+    self.serial_connect(box_number)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1682, in serial_connect
+    raise serial.SerialException('Could not open serial device {}'.format(self.device_name))
+serial.serialutil.SerialException: Could not open serial device COM3
+"
+"2025-10-28 12:24:07,215","INFO","settings.json file detected, loading settings"
+"2025-10-28 12:24:07,223","INFO","Arduino logging enabled"
+"2025-10-28 12:24:29,013","ERROR","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 418, in <lambda>
+    lambda _, b=boxIndex: self.water_control(boxindex=b, parameter='dialog'))
+                          ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 932, in water_control
+    dialog = SolenoidGui(boxnumber, solenoidChannel)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1656, in __init__
+    self.serial_connect(box_number)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1684, in serial_connect
+    self.device.readline()
+    ~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialwin32.py", line 269, in read
+    raise PortNotOpenError()
+serial.serialutil.PortNotOpenError: Attempting to use a port that is not open
+"
+"2025-10-28 12:24:43,644","INFO","settings.json file detected, loading settings"
+"2025-10-28 12:24:43,654","INFO","Arduino logging enabled"
+"2025-10-28 12:27:34,007","ERROR","Could not open serial device COM3"
+"2025-10-28 12:27:34,013","ERROR","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1677, in serial_connect
+    self.device = serial.Serial(port=self.device_name,
+                  ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+                                baudrate=19200,
+                                ^^^^^^^^^^^^^^^
+                                timeout=5)
+                                ^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialwin32.py", line 33, in __init__
+    super(Serial, self).__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialutil.py", line 244, in __init__
+    self.open()
+    ~~~~~~~~~^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialwin32.py", line 64, in open
+    raise SerialException("could not open port {!r}: {!r}".format(self.portstr, ctypes.WinError()))
+serial.serialutil.SerialException: could not open port 'COM3': PermissionError(13, 'Access is denied.', None, 5)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 418, in <lambda>
+    lambda _, b=boxIndex: self.water_control(boxindex=b, parameter='dialog'))
+                          ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 932, in water_control
+    dialog = SolenoidGui(boxnumber, solenoidChannel)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1656, in __init__
+    self.serial_connect(box_number)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1682, in serial_connect
+    raise serial.SerialException('Could not open serial device {}'.format(self.device_name))
+serial.serialutil.SerialException: Could not open serial device COM3
+"
+"2025-10-28 12:27:47,388","INFO","Opening water system in box 1"
+"2025-10-28 12:27:47,716","INFO","Closing water system in box 1"
+"2025-10-28 12:27:48,012","INFO","Opening water system in box 1"
+"2025-10-28 12:27:48,236","INFO","Closing water system in box 1"
+"2025-10-28 12:27:48,636","INFO","Opening water system in box 1"
+"2025-10-28 12:27:48,892","INFO","Closing water system in box 1"
+"2025-10-28 12:31:44,539","ERROR","Could not open serial device COM3"
+"2025-10-28 12:31:44,541","ERROR","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1677, in serial_connect
+    self.device = serial.Serial(port=self.device_name,
+                  ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+                                baudrate=19200,
+                                ^^^^^^^^^^^^^^^
+                                timeout=5)
+                                ^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialwin32.py", line 33, in __init__
+    super(Serial, self).__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialutil.py", line 244, in __init__
+    self.open()
+    ~~~~~~~~~^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialwin32.py", line 64, in open
+    raise SerialException("could not open port {!r}: {!r}".format(self.portstr, ctypes.WinError()))
+serial.serialutil.SerialException: could not open port 'COM3': PermissionError(13, 'Access is denied.', None, 5)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 418, in <lambda>
+    lambda _, b=boxIndex: self.water_control(boxindex=b, parameter='dialog'))
+                          ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 932, in water_control
+    dialog = SolenoidGui(boxnumber, solenoidChannel)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1656, in __init__
+    self.serial_connect(box_number)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1682, in serial_connect
+    raise serial.SerialException('Could not open serial device {}'.format(self.device_name))
+serial.serialutil.SerialException: Could not open serial device COM3
+"
+"2025-10-28 12:32:00,140","INFO","settings.json file detected, loading settings"
+"2025-10-28 12:32:00,148","INFO","Arduino logging enabled"
+"2025-10-28 12:33:20,678","INFO","Opening water system in box 1"
+"2025-10-28 12:33:21,014","INFO","Closing water system in box 1"
+"2025-10-28 12:33:21,270","INFO","Opening water system in box 1"
+"2025-10-28 12:33:22,030","INFO","Closing water system in box 1"
+"2025-10-28 12:33:34,918","INFO","Opening water system in box 2"
+"2025-10-28 12:33:35,398","INFO","Closing water system in box 2"
+"2025-10-28 12:33:35,862","INFO","Opening water system in box 2"
+"2025-10-28 12:33:36,446","INFO","Closing water system in box 2"
+"2025-10-28 12:33:39,094","INFO","Opening water system in box 2"
+"2025-10-28 12:33:39,486","INFO","Closing water system in box 2"
+"2025-10-28 12:33:39,790","INFO","Opening water system in box 2"
+"2025-10-28 12:33:40,110","INFO","Closing water system in box 2"
+"2025-10-28 12:33:41,510","INFO","Opening water system in box 2"
+"2025-10-28 12:33:41,750","INFO","Closing water system in box 2"
+"2025-10-28 12:33:41,982","INFO","Opening water system in box 2"
+"2025-10-28 12:33:42,198","INFO","Closing water system in box 2"
+"2025-10-28 12:33:42,926","INFO","Opening water system in box 2"
+"2025-10-28 12:33:43,270","INFO","Closing water system in box 2"
+"2025-10-28 12:34:15,286","ERROR","Water error: Cannot open solenoid: Box 2 is currently running"
+"2025-10-28 12:34:19,387","ERROR","Could not open serial device COM3"
+"2025-10-28 12:34:19,390","ERROR","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1677, in serial_connect
+    self.device = serial.Serial(port=self.device_name,
+                  ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+                                baudrate=19200,
+                                ^^^^^^^^^^^^^^^
+                                timeout=5)
+                                ^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialwin32.py", line 33, in __init__
+    super(Serial, self).__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialutil.py", line 244, in __init__
+    self.open()
+    ~~~~~~~~~^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialwin32.py", line 64, in open
+    raise SerialException("could not open port {!r}: {!r}".format(self.portstr, ctypes.WinError()))
+serial.serialutil.SerialException: could not open port 'COM3': PermissionError(13, 'Access is denied.', None, 5)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 418, in <lambda>
+    lambda _, b=boxIndex: self.water_control(boxindex=b, parameter='dialog'))
+                          ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 932, in water_control
+    dialog = SolenoidGui(boxnumber, solenoidChannel)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1656, in __init__
+    self.serial_connect(box_number)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1682, in serial_connect
+    raise serial.SerialException('Could not open serial device {}'.format(self.device_name))
+serial.serialutil.SerialException: Could not open serial device COM3
+"
+"2025-10-28 12:35:14,803","INFO","settings.json file detected, loading settings"
+"2025-10-28 12:35:14,811","INFO","Arduino logging enabled"
+"2025-10-28 12:35:44,951","INFO","Opening water system in box 1"
+"2025-10-28 12:35:45,254","INFO","Closing water system in box 1"
+"2025-10-28 12:37:15,677","INFO","settings.json file detected, loading settings"
+"2025-10-28 12:37:15,685","INFO","Arduino logging enabled"
+"2025-10-28 12:37:25,871","INFO","Opening water system in box 1"
+"2025-10-28 12:37:26,143","INFO","Closing water system in box 1"
+"2025-10-28 12:37:26,391","INFO","Opening water system in box 1"
+"2025-10-28 12:37:26,599","INFO","Closing water system in box 1"
+"2025-10-28 12:37:35,447","INFO","Opening water system in box 2"
+"2025-10-28 12:37:35,759","INFO","Closing water system in box 2"
+"2025-10-28 12:37:36,039","INFO","Opening water system in box 2"
+"2025-10-28 12:37:36,263","INFO","Closing water system in box 2"
+"2025-10-28 12:41:54,358","INFO","settings.json file detected, loading settings"
+"2025-10-28 12:41:54,366","INFO","Arduino logging enabled"
+"2025-10-28 12:52:02,053","INFO","settings.json file detected, loading settings"
+"2025-10-28 12:52:02,069","INFO","Arduino logging enabled"
+"2025-10-28 14:03:56,396","INFO","settings.json file detected, loading settings"
+"2025-10-28 14:03:56,411","INFO","Arduino logging enabled"
+"2025-10-28 14:17:13,597","INFO","Opening water system in box 2"
+"2025-10-28 14:17:14,125","INFO","Closing water system in box 2"
+"2025-10-28 14:17:14,420","INFO","Opening water system in box 2"
+"2025-10-28 14:17:14,693","INFO","Closing water system in box 2"
+"2025-10-28 14:17:14,988","INFO","Opening water system in box 2"
+"2025-10-28 14:17:15,669","INFO","Closing water system in box 2"
+"2025-10-28 14:21:29,444","INFO","Opening water system in box 1"
+"2025-10-28 14:21:29,741","INFO","Closing water system in box 1"
+"2025-10-28 14:21:30,044","INFO","Opening water system in box 1"
+"2025-10-28 14:21:30,285","INFO","Closing water system in box 1"
+"2025-10-28 14:24:24,269","INFO","Opening water system in box 1"
+"2025-10-28 14:24:24,653","INFO","Closing water system in box 1"
+"2025-10-28 14:27:42,791","INFO","settings.json file detected, loading settings"
+"2025-10-28 14:27:42,800","INFO","Arduino logging enabled"
+"2025-10-28 14:30:52,493","INFO","Opening water system in box 1"
+"2025-10-28 14:30:52,828","INFO","Closing water system in box 1"
+"2025-10-28 14:32:12,417","INFO","settings.json file detected, loading settings"
+"2025-10-28 14:32:12,426","INFO","Arduino logging enabled"
+"2025-10-28 14:39:39,979","INFO","settings.json file detected, loading settings"
+"2025-10-28 14:39:39,987","INFO","Arduino logging enabled"
+"2025-10-28 14:39:48,397","INFO","Opening water system in box 1"
+"2025-10-28 14:39:48,708","INFO","Closing water system in box 1"
+"2025-10-28 15:01:53,909","INFO","settings.json file detected, loading settings"
+"2025-10-28 15:01:53,918","INFO","Arduino logging enabled"
+"2025-10-28 15:02:44,355","INFO","Opening water system in box 2"
+"2025-10-28 15:02:44,763","INFO","Closing water system in box 2"
+"2025-10-28 15:02:45,299","INFO","Opening water system in box 2"
+"2025-10-28 15:02:45,843","INFO","Closing water system in box 2"
+"2025-10-28 15:04:13,735","ERROR","Could not open serial device COM5"
+"2025-10-28 15:04:13,744","ERROR","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1677, in serial_connect
+    self.device = serial.Serial(port=self.device_name,
+                  ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+                                baudrate=19200,
+                                ^^^^^^^^^^^^^^^
+                                timeout=5)
+                                ^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialwin32.py", line 33, in __init__
+    super(Serial, self).__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialutil.py", line 244, in __init__
+    self.open()
+    ~~~~~~~~~^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialwin32.py", line 64, in open
+    raise SerialException("could not open port {!r}: {!r}".format(self.portstr, ctypes.WinError()))
+serial.serialutil.SerialException: could not open port 'COM5': PermissionError(13, 'Access is denied.', None, 5)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 418, in <lambda>
+    lambda _, b=boxIndex: self.water_control(boxindex=b, parameter='dialog'))
+                          ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 932, in water_control
+    dialog = SolenoidGui(boxnumber, solenoidChannel)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1656, in __init__
+    self.serial_connect(box_number)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1682, in serial_connect
+    raise serial.SerialException('Could not open serial device {}'.format(self.device_name))
+serial.serialutil.SerialException: Could not open serial device COM5
+"
+"2025-10-28 15:04:26,603","INFO","Opening water system in box 2"
+"2025-10-28 15:04:27,011","INFO","Closing water system in box 2"
+"2025-10-28 15:07:20,811","INFO","Opening water system in box 1"
+"2025-10-28 15:07:21,131","INFO","Closing water system in box 1"
+"2025-10-28 15:12:08,707","INFO","Opening water system in box 2"
+"2025-10-28 15:12:09,258","INFO","Closing water system in box 2"
+"2025-10-28 15:13:25,552","ERROR","Could not open serial device COM5"
+"2025-10-28 15:13:25,554","ERROR","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1677, in serial_connect
+    self.device = serial.Serial(port=self.device_name,
+                  ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+                                baudrate=19200,
+                                ^^^^^^^^^^^^^^^
+                                timeout=5)
+                                ^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialwin32.py", line 33, in __init__
+    super(Serial, self).__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialutil.py", line 244, in __init__
+    self.open()
+    ~~~~~~~~~^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialwin32.py", line 64, in open
+    raise SerialException("could not open port {!r}: {!r}".format(self.portstr, ctypes.WinError()))
+serial.serialutil.SerialException: could not open port 'COM5': PermissionError(13, 'Access is denied.', None, 5)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 418, in <lambda>
+    lambda _, b=boxIndex: self.water_control(boxindex=b, parameter='dialog'))
+                          ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 932, in water_control
+    dialog = SolenoidGui(boxnumber, solenoidChannel)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1656, in __init__
+    self.serial_connect(box_number)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1682, in serial_connect
+    raise serial.SerialException('Could not open serial device {}'.format(self.device_name))
+serial.serialutil.SerialException: Could not open serial device COM5
+"
+"2025-10-28 15:13:33,935","ERROR","Could not open serial device COM5"
+"2025-10-28 15:13:33,937","ERROR","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1677, in serial_connect
+    self.device = serial.Serial(port=self.device_name,
+                  ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+                                baudrate=19200,
+                                ^^^^^^^^^^^^^^^
+                                timeout=5)
+                                ^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialwin32.py", line 33, in __init__
+    super(Serial, self).__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialutil.py", line 244, in __init__
+    self.open()
+    ~~~~~~~~~^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialwin32.py", line 64, in open
+    raise SerialException("could not open port {!r}: {!r}".format(self.portstr, ctypes.WinError()))
+serial.serialutil.SerialException: could not open port 'COM5': PermissionError(13, 'Access is denied.', None, 5)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 418, in <lambda>
+    lambda _, b=boxIndex: self.water_control(boxindex=b, parameter='dialog'))
+                          ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 932, in water_control
+    dialog = SolenoidGui(boxnumber, solenoidChannel)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1656, in __init__
+    self.serial_connect(box_number)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1682, in serial_connect
+    raise serial.SerialException('Could not open serial device {}'.format(self.device_name))
+serial.serialutil.SerialException: Could not open serial device COM5
+"
+"2025-10-28 15:14:00,319","ERROR","Could not open serial device COM5"
+"2025-10-28 15:14:00,320","ERROR","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1677, in serial_connect
+    self.device = serial.Serial(port=self.device_name,
+                  ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+                                baudrate=19200,
+                                ^^^^^^^^^^^^^^^
+                                timeout=5)
+                                ^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialwin32.py", line 33, in __init__
+    super(Serial, self).__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialutil.py", line 244, in __init__
+    self.open()
+    ~~~~~~~~~^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialwin32.py", line 64, in open
+    raise SerialException("could not open port {!r}: {!r}".format(self.portstr, ctypes.WinError()))
+serial.serialutil.SerialException: could not open port 'COM5': PermissionError(13, 'Access is denied.', None, 5)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 418, in <lambda>
+    lambda _, b=boxIndex: self.water_control(boxindex=b, parameter='dialog'))
+                          ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 932, in water_control
+    dialog = SolenoidGui(boxnumber, solenoidChannel)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1656, in __init__
+    self.serial_connect(box_number)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1682, in serial_connect
+    raise serial.SerialException('Could not open serial device {}'.format(self.device_name))
+serial.serialutil.SerialException: Could not open serial device COM5
+"
+"2025-10-28 15:15:53,642","INFO","Opening water system in box 2"
+"2025-10-28 15:15:54,130","INFO","Closing water system in box 2"
+"2025-10-28 15:36:39,897","INFO","settings.json file detected, loading settings"
+"2025-10-28 15:36:39,905","INFO","Arduino logging enabled"
+"2025-10-28 15:37:20,944","INFO","Opening water system in box 2"
+"2025-10-28 15:37:21,456","INFO","Closing water system in box 2"
+"2025-10-28 15:37:21,752","INFO","Opening water system in box 2"
+"2025-10-28 15:37:22,032","INFO","Closing water system in box 2"
+"2025-10-28 15:53:13,641","ERROR","Could not open serial device COM5"
+"2025-10-28 15:53:13,654","ERROR","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1677, in serial_connect
+    self.device = serial.Serial(port=self.device_name,
+                  ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+                                baudrate=19200,
+                                ^^^^^^^^^^^^^^^
+                                timeout=5)
+                                ^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialwin32.py", line 33, in __init__
+    super(Serial, self).__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialutil.py", line 244, in __init__
+    self.open()
+    ~~~~~~~~~^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialwin32.py", line 64, in open
+    raise SerialException("could not open port {!r}: {!r}".format(self.portstr, ctypes.WinError()))
+serial.serialutil.SerialException: could not open port 'COM5': PermissionError(13, 'Access is denied.', None, 5)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 418, in <lambda>
+    lambda _, b=boxIndex: self.water_control(boxindex=b, parameter='dialog'))
+                          ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 932, in water_control
+    dialog = SolenoidGui(boxnumber, solenoidChannel)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1656, in __init__
+    self.serial_connect(box_number)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1682, in serial_connect
+    raise serial.SerialException('Could not open serial device {}'.format(self.device_name))
+serial.serialutil.SerialException: Could not open serial device COM5
+"
+"2025-10-28 15:53:25,694","INFO","Opening water system in box 2"
+"2025-10-28 15:53:26,062","INFO","Closing water system in box 2"
+"2025-10-28 16:16:22,683","INFO","settings.json file detected, loading settings"
+"2025-10-28 16:16:22,692","INFO","Arduino logging enabled"
+"2025-10-28 16:21:17,592","ERROR","Could not open serial device COM3"
+"2025-10-28 16:21:17,600","ERROR","Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1677, in serial_connect
+    self.device = serial.Serial(port=self.device_name,
+                  ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+                                baudrate=19200,
+                                ^^^^^^^^^^^^^^^
+                                timeout=5)
+                                ^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialwin32.py", line 33, in __init__
+    super(Serial, self).__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialutil.py", line 244, in __init__
+    self.open()
+    ~~~~~~~~~^^
+  File "C:\Users\tmerri03\AppData\Local\miniconda3\envs\pyoperant_3\Lib\site-packages\serial\serialwin32.py", line 64, in open
+    raise SerialException("could not open port {!r}: {!r}".format(self.portstr, ctypes.WinError()))
+serial.serialutil.SerialException: could not open port 'COM3': PermissionError(13, 'Access is denied.', None, 5)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 418, in <lambda>
+    lambda _, b=boxIndex: self.water_control(boxindex=b, parameter='dialog'))
+                          ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 932, in water_control
+    dialog = SolenoidGui(boxnumber, solenoidChannel)
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1656, in __init__
+    self.serial_connect(box_number)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\tmerri03\PycharmProjects\pyoperant_3\Interface\pyoperant_gui.py", line 1682, in serial_connect
+    raise serial.SerialException('Could not open serial device {}'.format(self.device_name))
+serial.serialutil.SerialException: Could not open serial device COM3
+"
+"2025-10-28 16:21:26,146","INFO","Opening water system in box 1"
+"2025-10-28 16:21:26,418","INFO","Closing water system in box 1"
+"2025-10-28 16:21:26,706","INFO","Opening water system in box 1"
+"2025-10-28 16:21:26,946","INFO","Closing water system in box 1"
+"2025-10-28 16:23:37,634","INFO","Opening water system in box 2"
+"2025-10-28 16:23:38,122","INFO","Closing water system in box 2"
+"2025-10-28 16:34:32,592","INFO","Opening water system in box 1"
+"2025-10-28 16:34:32,832","INFO","Closing water system in box 1"
+"2025-10-28 16:39:37,130","INFO","settings.json file detected, loading settings"
+"2025-10-28 16:39:37,142","INFO","Arduino logging enabled"
+"2025-10-28 16:39:58,694","INFO","settings.json file detected, loading settings"
+"2025-10-28 16:39:58,703","INFO","Arduino logging enabled"
+"2025-10-28 16:40:51,527","INFO","Opening water system in box 2"
+"2025-10-28 16:40:51,943","INFO","Closing water system in box 2"
+"2025-10-28 16:41:00,159","INFO","Opening water system in box 1"
+"2025-10-28 16:41:00,431","INFO","Closing water system in box 1"
+"2025-10-28 16:43:39,071","INFO","Opening water system in box 2"
+"2025-10-28 16:43:39,391","INFO","Closing water system in box 2"
+"2025-10-28 16:59:59,334","INFO","Opening water system in box 2"
+"2025-10-28 16:59:59,726","INFO","Closing water system in box 2"
