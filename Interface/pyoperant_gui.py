@@ -823,7 +823,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
                     if purge_time <= elapsedTime:
                         break
 
-                device.write("".join([chr(16), chr(2)]))  # close solenoid
+                device.write("".join([chr(41), chr(2)]))  # close solenoid
                 device.close()  # close connection
                 print("Purged box {:02d}".format(boxnumber))
                 self.log.info("Purged box {:02d}".format(boxnumber))
@@ -854,14 +854,14 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         playSound = True
         recordSound = True
 
-        boxNumber = boxindex + 1
+        boxNumber = boxindex + 7
         testFile = '/home/aperture/bird/stim/440 test tone.wav'
         soundOut = pyaudio.PyAudio()
-        soundIn = pyaudio.PyAudio()
+        # soundIn = pyaudio.PyAudio()
         tempRecording = 'Box {:02d} cal.wav'.format(boxNumber)
 
         # Get actual device indices
-        deviceNameOut = 'Board{:02d}: USB Audio'.format(boxNumber)
+        deviceNameOut = u'Board{:02d}: USB Audio'.format(boxNumber)
         deviceIndexOut = None
         for index in range(soundOut.get_device_count()):
             truncName = soundOut.get_device_info_by_index(index)['name']
@@ -873,52 +873,52 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         if deviceIndexOut is None:
             raise NameError('could not find pyaudio device %s' % deviceNameOut)
 
-        # get input device index
-        # Complicated because ALSA number doesn't necessarily correspond with pyaudio's device index,
-        # and there doesn't seem to be a good way of simply renaming the devices in a way that pyaudio can read.
-        # Therefore the process is:
-        #   1. Name the ALSA card (with udev rules) by USB port (since the devices are all identical and don't have a
-        #   unique serial number)
-        #   2. Find the card number of a particular named card
-        #   3. Pyaudio can read card numbers, so get the pyaudio device with the matching card number
-        deviceNameIn = 'sound%02i' % boxNumber
-        deviceIndexIn = None
-
-        # First get list of cards on computer
-        cardFile = '/proc/asound/cards'  # cards file contains list of all cards
-        f = open(cardFile, 'r')
-        fl = f.readlines()
-        f.close()
-        # cards file is formatted "number [deviceName     ] so pull values before the matching name to get card number
-        matchString = '^(.+?)\s\[' + deviceNameIn
-        deviceCardIn = []
-        for x in fl:
-            m = re.search(matchString, x)
-            if m is not None:
-                deviceCardIn = int(m.groups()[0])
-                # print("ALSA Card number: %d" % deviceCardIn)
-                break
-        if not deviceCardIn:
-            raise NameError('could not find input device %s' % deviceNameIn)
-
-        # now use ALSA card number to find pyaudio device index
-
-        for index in range(soundIn.get_device_count()):
-            pyaudioInputIndex = []
-            try:
-                pyaudioInputIndex = re.split('hw:', soundIn.get_device_info_by_index(index)['name'])[1]
-            except IndexError:
-                pass
-            if pyaudioInputIndex:
-                # if hw number returned, compare with ALSA card
-                pyaudioInputIndex = int(re.split(',', pyaudioInputIndex)[0])
-
-                if pyaudioInputIndex == deviceCardIn:
-                    deviceIndexIn = int(index)
-                    break
-
-        if deviceIndexIn is None:
-            raise NameError('could not find pyaudio device %s' % self.device_name)
+        # # get input device index
+        # # Complicated because ALSA number doesn't necessarily correspond with pyaudio's device index,
+        # # and there doesn't seem to be a good way of simply renaming the devices in a way that pyaudio can read.
+        # # Therefore the process is:
+        # #   1. Name the ALSA card (with udev rules) by USB port (since the devices are all identical and don't have a
+        # #   unique serial number)
+        # #   2. Find the card number of a particular named card
+        # #   3. Pyaudio can read card numbers, so get the pyaudio device with the matching card number
+        # deviceNameIn = 'sound%02i' % boxNumber
+        # deviceIndexIn = None
+        #
+        # # First get list of cards on computer
+        # cardFile = '/proc/asound/cards'  # cards file contains list of all cards
+        # f = open(cardFile, 'r')
+        # fl = f.readlines()
+        # f.close()
+        # # cards file is formatted "number [deviceName     ] so pull values before the matching name to get card number
+        # matchString = '^(.+?)\s\[' + deviceNameIn
+        # deviceCardIn = []
+        # for x in fl:
+        #     m = re.search(matchString, x)
+        #     if m is not None:
+        #         deviceCardIn = int(m.groups()[0])
+        #         # print("ALSA Card number: %d" % deviceCardIn)
+        #         break
+        # if not deviceCardIn:
+        #     raise NameError('could not find input device %s' % deviceNameIn)
+        #
+        # # now use ALSA card number to find pyaudio device index
+        #
+        # for index in range(soundIn.get_device_count()):
+        #     pyaudioInputIndex = []
+        #     try:
+        #         pyaudioInputIndex = re.split('hw:', soundIn.get_device_info_by_index(index)['name'])[1]
+        #     except IndexError:
+        #         pass
+        #     if pyaudioInputIndex:
+        #         # if hw number returned, compare with ALSA card
+        #         pyaudioInputIndex = int(re.split(',', pyaudioInputIndex)[0])
+        #
+        #         if pyaudioInputIndex == deviceCardIn:
+        #             deviceIndexIn = int(index)
+        #             break
+        #
+        # if deviceIndexIn is None:
+        #     raise NameError('could not find pyaudio device %s' % self.device_name)
 
         # open wav file
         self.wf = wave.open(testFile)
@@ -936,52 +936,52 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         CHUNK = 4096  # recording chunk size
         RATE = 44100  # recording sampling rate
         SECONDS = 2  # how long to record
-        FORMAT = soundIn.get_format_from_width(self.wf.getsampwidth())
-
-        streamIn = soundIn.open(format=FORMAT,
-                                channels=1,
-                                rate=RATE,
-                                input=True,
-                                input_device_index=deviceIndexIn,
-                                frames_per_buffer=CHUNK
-                                )
+        # FORMAT = soundIn.get_format_from_width(self.wf.getsampwidth())
+        #
+        # streamIn = soundIn.open(format=FORMAT,
+        #                         channels=1,
+        #                         rate=RATE,
+        #                         input=True,
+        #                         input_device_index=deviceIndexIn,
+        #                         frames_per_buffer=CHUNK
+        #                         )
 
         recordingFrames = []  # Initialize it first just in case the record function fails
 
-        def record():
-            streamIn.start_stream()
-            nFrames = 10  # 1.5 seconds
-            # recording for SECONDS seconds
-            frames = []
-            # print("starting recording")
-            maxrms = 0
-            for i in range(0, int(RATE / CHUNK * SECONDS)):
-                data = streamIn.read(CHUNK)
-                # Check rms for each chunk
-                newrms = rms_calc(data)
-                if newrms > maxrms:
-                    maxrms = newrms
-                frames.append(data)
-            # frames = streamIn.read(CHUNK*nFrames)
-            # # create temporary wav file
-            #
-            # # print("recording finished")
-            # TODO: check if wave library does autoscaling and find way to disable if present
-            wavFile = wave.open(tempRecording, 'wb')
-            wavFile.setnchannels(1)
-            wavFile.setsampwidth(soundIn.get_sample_size(FORMAT))
-            wavFile.setframerate(RATE)
-            wavFile.writeframes(b''.join(frames))
-            wavFile.close()
-
-            # # print("file closed")
-            return frames
+        # def record():
+        #     streamIn.start_stream()
+        #     nFrames = 10  # 1.5 seconds
+        #     # recording for SECONDS seconds
+        #     frames = []
+        #     # print("starting recording")
+        #     maxrms = 0
+        #     for i in range(0, int(RATE / CHUNK * SECONDS)):
+        #         data = streamIn.read(CHUNK)
+        #         # Check rms for each chunk
+        #         newrms = rms_calc(data)
+        #         if newrms > maxrms:
+        #             maxrms = newrms
+        #         frames.append(data)
+        #     # frames = streamIn.read(CHUNK*nFrames)
+        #     # # create temporary wav file
+        #     #
+        #     # # print("recording finished")
+        #     # TODO: check if wave library does autoscaling and find way to disable if present
+        #     wavFile = wave.open(tempRecording, 'wb')
+        #     wavFile.setnchannels(1)
+        #     wavFile.setsampwidth(soundIn.get_sample_size(FORMAT))
+        #     wavFile.setframerate(RATE)
+        #     wavFile.writeframes(b''.join(frames))
+        #     wavFile.close()
+        #
+        #     # # print("file closed")
+        #     return frames
 
         # play sound, then start recording
         if playSound:
             streamOut.start_stream()
-        if recordSound:
-            recordingFrames = record()
+        # if recordSound:
+        #     recordingFrames = record()
 
         # stop recording
         try:
@@ -997,15 +997,15 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         # wavFs, readWav = wavfile.read(tempRecording, 'rb')
         #
         # wavRms = numpy.sqrt(numpy.mean(readWav ** 2))
-        recording = numpy.fromstring(b''.join(recordingFrames), dtype=numpy.int16)
-        recordingRMS = numpy.sqrt(numpy.mean(recording) ** 2)
-        recordingdB = 20 * numpy.log10(recordingRMS)
+        # recording = numpy.fromstring(b''.join(recordingFrames), dtype=numpy.int16)
+        # recordingRMS = numpy.sqrt(numpy.mean(recording) ** 2)
+        # recordingdB = 20 * numpy.log10(recordingRMS)
 
         # report peak level
-        messageOut = "Box %s level: %f rms (raw) \ndBFS: %f" % (boxNumber, recordingRMS, recordingdB)
-        self.display_message(boxindex, messageOut)
+        # messageOut = "Box %s level: %f rms (raw) \ndBFS: %f" % (boxNumber, recordingRMS, recordingdB)
+        # self.display_message(boxindex, messageOut)
         soundOut.terminate()
-        soundIn.terminate()
+        # soundIn.terminate()
 
         with wait_cursor():  # set mouse cursor to 'waiting' while garbage collecting
             gc.collect()  # just in case sound recording doesn't clear vars properly
@@ -1039,6 +1039,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
                     # Box should be active, not sleeping
                     poll = self.subprocessBox[boxnumber].poll()  # poll() == None means the subprocess is still running
                     if poll is None:  # or self.args['debug'] is not False:
+                        print('hihihi')
                         self.refreshfile(boxnumber)
 
                         # Restart if last trial was more than 2 hours ago
@@ -1498,7 +1499,7 @@ class SolenoidGui(QtGui.QDialog, pyoperant_gui_layout.UiSolenoidControl):
         self.box_name.setText(str("Box {:02d}".format(box_number)))
         self.solenoid_Status_Text.setText(str("CLOSED"))
 
-        self.solenoidChannel = 16
+        self.solenoidChannel = 41
 
         self.device = None
 

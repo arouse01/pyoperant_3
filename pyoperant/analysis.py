@@ -512,6 +512,7 @@ class Performance(object):
                                 data_dict['Class'].append(row[4])
                                 data_dict['Response'].append(row[5])
 
+                                print(csvPath)
                                 data_dict['RT'].append(float(row[7]) if len(row[7]) > 0 else float('nan'))
                                 data_dict['Reward'].append(1 if row[8] == 'True' else 0)
                                 data_dict['Punish'].append(1 if row[9] == 'True' else 0)
@@ -529,7 +530,7 @@ class Performance(object):
 
                                 # categorize shaping stimuli (which contain 'song' in the name)separately (they don't
                                 # have a tempo)
-                                if stim_name[-8:] == 'song.wav':
+                                if stim_name[-8:] == 'song.wav' or stim_name[-8:] == 'shap.wav':
                                     stim_tempo = 'Shaping'
                                     trialType = 'Shaping'
                                 else:

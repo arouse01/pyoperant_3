@@ -45,7 +45,7 @@ def close(device):
     device.close()
 
 
-selectDevice = start(9)
+selectDevice = start(7)
 # set_high(selectDevice, 38)
 # time.sleep(1)
 # set_low(selectDevice, 38)

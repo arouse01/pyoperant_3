@@ -122,7 +122,12 @@ class ArduinoInterface(base_.BaseInterface):
         """
 
         logger.debug("Configuring %s, channel %d as output" % (self.device_name, channel))
+        logger.info("Configuring %s, channel %d as output" % (self.device_name, channel))
+        logger.error("Configuring %s, channel %d as output" % (self.device_name, channel))
+        print('testign arduino')
+
         self.device.write(self._make_arg(channel, 3))
+        # print("set", channel, ' as output')
         if channel in self.inputs:
             self.inputs.remove(channel)
         if channel not in self.outputs:
@@ -141,21 +146,23 @@ class ArduinoInterface(base_.BaseInterface):
         """
 
         if channel not in self._state:
-            raise InterfaceError("Channel %d is not configured on device %s" % (channel, self.device_name))
+            raise InterfaceError("Channel %d is not configured on device %s \n" % (channel, self.device_name))
 
         if self.device.inWaiting() > 0:  # There is currently data in the input buffer
             self.device.flushInput()
-        self.device.write(self._make_arg(channel, 0))
+        bytes_sent = self.device.write(self._make_arg(channel, 0))
+        assert bytes_sent == 2
         # Also need to make sure self.device.read() returns something that ord can work with. Possibly except TypeError
         while True:  # is this While loop necessary? can it just call the try statement once?
             try:
                 t = self.device.read()
-                # logger.debug("Read value of %s from channel %d on %s" % (t, channel, self))
+                test = t.decode("utf-8")
+                logger.debug("Read value of %s from channel %d on %s" % (t, channel, self))
             except serial.SerialException:
                 # This is to make it robust in case it accidentally disconnects or you try to access the arduino in
                 # multiple ways
                 # self.reconnect_panel()
-                logger.info('Serial connection issue - serialException')
+                logger.info('Readbool: Serial connection issue - serialException')
                 raise ArduinoException("Serial connection interrupted")
 
             try:
@@ -236,6 +243,7 @@ class ArduinoInterface(base_.BaseInterface):
         """
 
         if channel not in self._state:
+            print("interface error")
             raise InterfaceError("Channel %d is not configured on device %s" % (channel, self))
 
         logger.debug("Writing %s to device %s, channel %d" % (value, self, channel))
@@ -247,6 +255,7 @@ class ArduinoInterface(base_.BaseInterface):
             return value
         else:
             # self.reconnect_panel()
+            print("arduino error")
             raise ArduinoException('Could not write to serial device %s, channel %d' % (self.device, channel))
 
     # # ENABLE IF USING TEENSY WAV PLAYBACK

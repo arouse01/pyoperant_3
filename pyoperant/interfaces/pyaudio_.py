@@ -33,11 +33,14 @@ class PyAudioInterface(base_.BaseInterface):
         if self.io_type == 'output':
             for index in range(self.pa.get_device_count()):
                 deviceInfo = self.pa.get_device_info_by_index(index)
-                truncName = deviceInfo['name']
-                # if self.device_name == self.pa.get_device_info_by_index(index)['name']:
-                if deviceInfo.get('maxOutputChannels') > 0 and self.device_name[:18] == truncName[:18]:  # only check
+                truncName = deviceInfo['name'].encode('ascii', 'ignore')
+                # if self.device_name  == self.pa.get_device_info_by_index(index)['name']:
+                # Edited by Tim Xu 04/01/2025: simple slicing of characters does not work
+                # if (deviceInfo.get('maxOutputChannels') > 0 and (self.device_name in truncName)):  # only check
+                if self.device_name in truncName:
                     # the first 7 characters
                     self.device_index = index
+                    print(deviceInfo.get('maxOutputChannels'))
                     break
                 else:
                     self.device_index = None

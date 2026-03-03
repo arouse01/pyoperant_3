@@ -11,7 +11,7 @@ import collections
 sys.path.append('/home/aperture/Desktop/pyoperant/pyoperant/')
 
 # to fix print statements not working properly in 2.7 sometimes because of conflicts with stdout
-sys.stdout = sys.stderr = open('output.txt', 'w')
+# sys.stdout = sys.stderr = open('output.txt', 'w')
 
 try:
     import simplejson as json
@@ -133,7 +133,8 @@ def main():
 
     cmd_line = parse_commandline()
 
-    from pyoperant.local import PANELS
+    # change by TDM - 3/3/36 (issue with importing from local.py?) --> was from pyoperant.local import PANELS
+    from pyoperant.local_rouse_newboard import PANELS
 
     experiment_path = os.path.join(DATAPATH, cmd_line['subject'])
     config_file = os.path.join(experiment_path, cmd_line['config_file'])

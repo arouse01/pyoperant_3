@@ -122,7 +122,8 @@ class BaseExp(object):
         self.log.addHandler(errorHandler)
 
         if 'email' in self.parameters['log_handlers']:
-            from pyoperant.local import SMTP_CONFIG
+            #change by TDM - 3/3/36 (issue with importing from local.py?)
+            from pyoperant.local_rouse_newboard import SMTP_CONFIG
             from logging import handlers
             SMTP_CONFIG['toaddrs'] = [self.parameters['experimenter']['email'], ]
 
