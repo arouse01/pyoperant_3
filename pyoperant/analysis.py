@@ -12,6 +12,7 @@ import re
 import logging, traceback
 # import string
 import collections  # for orderedDict
+from datetime import datetime
 
 try:
     import simplejson as json
@@ -462,6 +463,7 @@ class Performance(object):
 
             # Add specific response columns to data_dict
             for curr_csv in csvList:
+                print_error = False
                 csvPath = os.path.join(curr_dir, curr_csv)
                 with open(csvPath, 'r', newline='', encoding='utf-8') as data_file:
                     csv_reader = csv.reader(data_file, delimiter=',')
@@ -525,7 +527,20 @@ class Performance(object):
                                 data_dict['Reward'].append(1 if row[8] == 'True' else 0)
                                 data_dict['Punish'].append(1 if row[9] == 'True' else 0)
                                 data_dict['Timeout'].append(timeout)
-                                data_dict['Time'].append(row[10])
+                                try:
+                                    pd.to_datetime(row[10], format='%Y-%m-%d %H:%M:%S.%f')
+                                    data_dict['Time'].append(row[10])
+                                except:
+                                    if not print_error:
+                                        print(f'{curr_csv} datetime format is corrupted. Recomputing date from file name...')
+                                        print_error = True
+                                    match = re.search(r'(\d{14})', curr_csv.rstrip('.csv'))
+                                    if not match:
+                                        raise ValueError("No timestamp in filename")
+                                    session_start = datetime.strptime(match.group(1), "%Y%m%d%H%M%S")
+                                    dt = pd.to_timedelta("0:" + row[10], errors="coerce")
+                                    data_dict["Time"].append(session_start + dt)
+
                                 data_dict['Session'].append(row[0])
                                 data_dict['File'].append(curr_csv)
 
@@ -614,16 +629,33 @@ class Performance(object):
         # region Create indexable fields for groupby functions
 
         # Create actual datetime value from string
-        self.raw_trial_data['Time'] = pd.to_datetime(self.raw_trial_data['Time'], format='%Y-%m-%d %H:%M:%S.%f')
+        try:
+            self.raw_trial_data['Time'] = pd.to_datetime(self.raw_trial_data['Time'], format='%Y-%m-%d %H:%M:%S.%f')
+            # td = pd.to_timedelta(self.raw_trial_data['Time'])
+            # dt = pd.Timestamp("1900-01-01") + td
+            # self.raw_trial_data['Time'] = dt
 
-        self.raw_trial_data['Hour'] = pd.DatetimeIndex(self.raw_trial_data['Time']).hour
-        self.raw_trial_data['Date'] = self.raw_trial_data['Time'].dt.date
+            self.raw_trial_data['Hour'] = pd.DatetimeIndex(self.raw_trial_data['Time']).hour
+            self.raw_trial_data['Date'] = self.raw_trial_data['Time'].dt.date
 
-        # endregion Create indexable fields for groupby functions
+            # endregion Create indexable fields for groupby functions
 
-        # region Block numbers
-        # sort first
-        self.raw_trial_data.sort_values(by=['Subject', 'Time'], inplace=True)
+            # region Block numbers
+            # sort first
+            self.raw_trial_data.sort_values(by=['Subject', 'Time'], inplace=True)
+        except:
+            print('error in collecting times. see analysis.py lines 617-632.')
+            print('grabbing date from file name')
+            match = re.search(r'(\d{14})', curr_csv)
+
+            session_start =  datetime.strptime(match.group(1), "%Y%m%d%H%M%S")
+            dt = pd.to_datetime(self.raw_trial_data['Time'], errors="coerce")
+            elapsed = (dt - session_start)
+            self.raw_trial_data["Time"] = session_start + elapsed
+
+            self.raw_trial_data['Hour'] = pd.DatetimeIndex(self.raw_trial_data['Time']).hour
+            self.raw_trial_data['Date'] = self.raw_trial_data['Time'].dt.date
+            self.raw_trial_data.sort_values(by=['Subject', 'Time'], inplace=True)
 
         # Using temporary field, indicate (as bool) rows where block changes from previous to current (Returns series)
         self.raw_trial_data['tempGroup'] = self.raw_trial_data['Block'] != self.raw_trial_data['Block'].shift()

@@ -3114,6 +3114,122 @@
       ],
       "queue": "random"
     },
+    "training 120/180 50%wn": {
+      "description": "1:1 S+/S- stim, 120 and 180 ms, 50%wn",
+      "reinforcement": {
+        "schedule": "go_interrupt",
+        "prob": 1,
+        "secondary": false,
+        "passive": false,
+        "punish": true
+      },
+      "criteria": {
+        "days": 2,
+        "trialcount": {
+          "mintrials": 100
+        },
+        "propCorrect": [
+          {
+            "type": "S+\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "type": "S-\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "minimum": 0.75
+          }
+        ]
+      },
+      "conditions": [
+        {
+          "class": "sMinus",
+          "stim_name": "z2s1_1200ir1_50%wn.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "z2s1_1800ir1_50%wn.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "z2s1_1200reg_50%wn.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "z2s1_1800reg_50%wn.wav"
+        }
+      ],
+      "weights": [
+        {
+          "class": "sPlus",
+          "weight": 1
+        },
+        {
+          "class": "sMinus",
+          "weight": 1
+        }
+      ],
+      "queue": "random"
+    },
+    "training 120/180 100%wn": {
+      "description": "1:1 S+/S- stim, 120 and 180 ms, 100%wn",
+      "reinforcement": {
+        "schedule": "go_interrupt",
+        "prob": 1,
+        "secondary": false,
+        "passive": false,
+        "punish": true
+      },
+      "criteria": {
+        "days": 2,
+        "trialcount": {
+          "mintrials": 100
+        },
+        "propCorrect": [
+          {
+            "type": "S+\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "type": "S-\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "minimum": 0.75
+          }
+        ]
+      },
+      "conditions": [
+        {
+          "class": "sMinus",
+          "stim_name": "z2s1_1200ir1_100%wn.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "z2s1_1800ir1_100%wn.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "z2s1_1200reg_100%wn.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "z2s1_1800reg_100%wn.wav"
+        }
+      ],
+      "weights": [
+        {
+          "class": "sPlus",
+          "weight": 1
+        },
+        {
+          "class": "sMinus",
+          "weight": 1
+        }
+      ],
+      "queue": "random"
+    },
     "training 120/180b": {
       "description": "1:1 S+/S- stim, 120 and 180 ms, z1i1",
       "reinforcement": {
@@ -3172,6 +3288,122 @@
       ],
       "queue": "random"
     },
+    "training 120/180b 50%wn": {
+      "description": "1:1 S+/S- stim, 120 and 180 ms, z1i1, 50%wn",
+      "reinforcement": {
+        "schedule": "go_interrupt",
+        "prob": 1,
+        "secondary": false,
+        "passive": false,
+        "punish": true
+      },
+      "criteria": {
+        "days": 2,
+        "trialcount": {
+          "mintrials": 100
+        },
+        "propCorrect": [
+          {
+            "type": "S+\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "type": "S-\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "minimum": 0.75
+          }
+        ]
+      },
+      "conditions": [
+        {
+          "class": "sMinus",
+          "stim_name": "z1i1_1200ir1_50%wn.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "z1i1_1800ir1_50%wn.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "z1i1_1200reg_50%wn.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "z1i1_1800reg_50%wn.wav"
+        }
+      ],
+      "weights": [
+        {
+          "class": "sPlus",
+          "weight": 1
+        },
+        {
+          "class": "sMinus",
+          "weight": 1
+        }
+      ],
+      "queue": "random"
+    },
+    "training 120/180b 100%wn": {
+      "description": "1:1 S+/S- stim, 120 and 180 ms, z1i1, 100%wn",
+      "reinforcement": {
+        "schedule": "go_interrupt",
+        "prob": 1,
+        "secondary": false,
+        "passive": false,
+        "punish": true
+      },
+      "criteria": {
+        "days": 2,
+        "trialcount": {
+          "mintrials": 100
+        },
+        "propCorrect": [
+          {
+            "type": "S+\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "type": "S-\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "minimum": 0.75
+          }
+        ]
+      },
+      "conditions": [
+        {
+          "class": "sMinus",
+          "stim_name": "z1i1_1200ir1_100%wn.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "z1i1_1800ir1_100%wn.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "z1i1_1200reg_100%wn.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "z1i1_1800reg_100%wn.wav"
+        }
+      ],
+      "weights": [
+        {
+          "class": "sPlus",
+          "weight": 1
+        },
+        {
+          "class": "sMinus",
+          "weight": 1
+        }
+      ],
+      "queue": "random"
+    },
     "training 120/180c": {
       "description": "1:1 S+/S- stim, 120 and 180 ms, z3s1",
       "reinforcement": {
@@ -3216,6 +3448,122 @@
         {
           "class": "sPlus",
           "stim_name": "z3s1_1800reg.wav"
+        }
+      ],
+      "weights": [
+        {
+          "class": "sPlus",
+          "weight": 1
+        },
+        {
+          "class": "sMinus",
+          "weight": 1
+        }
+      ],
+      "queue": "random"
+    },
+    "training 120/180c 50%wn": {
+      "description": "1:1 S+/S- stim, 120 and 180 ms, z3s1, 50%wn",
+      "reinforcement": {
+        "schedule": "go_interrupt",
+        "prob": 1,
+        "secondary": false,
+        "passive": false,
+        "punish": true
+      },
+      "criteria": {
+        "days": 2,
+        "trialcount": {
+          "mintrials": 100
+        },
+        "propCorrect": [
+          {
+            "type": "S+\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "type": "S-\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "minimum": 0.75
+          }
+        ]
+      },
+      "conditions": [
+        {
+          "class": "sMinus",
+          "stim_name": "z3s1_1200ir2_50%wn.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "z3s1_1800ir2_50%wn.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "z3s1_1200reg_50%wn.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "z3s1_1800reg_50%wn.wav"
+        }
+      ],
+      "weights": [
+        {
+          "class": "sPlus",
+          "weight": 1
+        },
+        {
+          "class": "sMinus",
+          "weight": 1
+        }
+      ],
+      "queue": "random"
+    },
+    "training 120/180c 100%wn": {
+      "description": "1:1 S+/S- stim, 120 and 180 ms, z3s1, 100%wn",
+      "reinforcement": {
+        "schedule": "go_interrupt",
+        "prob": 1,
+        "secondary": false,
+        "passive": false,
+        "punish": true
+      },
+      "criteria": {
+        "days": 2,
+        "trialcount": {
+          "mintrials": 100
+        },
+        "propCorrect": [
+          {
+            "type": "S+\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "type": "S-\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "minimum": 0.75
+          }
+        ]
+      },
+      "conditions": [
+        {
+          "class": "sMinus",
+          "stim_name": "z3s1_1200ir2_100%wn.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "z3s1_1800ir2_100%wn.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "z3s1_1200reg_100%wn.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "z3s1_1800reg_100%wn.wav"
         }
       ],
       "weights": [
@@ -3404,6 +3752,122 @@
       ],
       "queue": "random"
     },
+    "training 120/180 0.8 50%wn": {
+      "description": "1:1 S+/S- stim, 120 and 180 ms, 0.8 reinf rate, 50%wn",
+      "reinforcement": {
+        "schedule": "go_interrupt",
+        "prob": 0.8,
+        "secondary": false,
+        "passive": false,
+        "punish": true
+      },
+      "criteria": {
+        "days": 2,
+        "trialcount": {
+          "mintrials": 100
+        },
+        "propCorrect": [
+          {
+            "type": "S+\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "type": "S-\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "minimum": 0.75
+          }
+        ]
+      },
+      "conditions": [
+        {
+          "class": "sMinus",
+          "stim_name": "z2s1_1200ir1_50%wn.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "z2s1_1800ir1_50%wn.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "z2s1_1200reg_50%wn.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "z2s1_1800reg_50%wn.wav"
+        }
+      ],
+      "weights": [
+        {
+          "class": "sPlus",
+          "weight": 1
+        },
+        {
+          "class": "sMinus",
+          "weight": 1
+        }
+      ],
+      "queue": "random"
+    },
+    "training 120/180 0.8 100%wn": {
+      "description": "1:1 S+/S- stim, 120 and 180 ms, 0.8 reinf rate, 100%wn",
+      "reinforcement": {
+        "schedule": "go_interrupt",
+        "prob": 0.8,
+        "secondary": false,
+        "passive": false,
+        "punish": true
+      },
+      "criteria": {
+        "days": 2,
+        "trialcount": {
+          "mintrials": 100
+        },
+        "propCorrect": [
+          {
+            "type": "S+\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "type": "S-\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "minimum": 0.75
+          }
+        ]
+      },
+      "conditions": [
+        {
+          "class": "sMinus",
+          "stim_name": "z2s1_1200ir1_100%wn.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "z2s1_1800ir1_100%wn.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "z2s1_1200reg_100%wn.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "z2s1_1800reg_100%wn.wav"
+        }
+      ],
+      "weights": [
+        {
+          "class": "sPlus",
+          "weight": 1
+        },
+        {
+          "class": "sMinus",
+          "weight": 1
+        }
+      ],
+      "queue": "random"
+    },
     "training 120/180b 0.8": {
       "description": "1:1 S+/S- stim, 120 and 180 ms, z1i1, 0.8 reinf rate",
       "reinforcement": {
@@ -3462,6 +3926,122 @@
       ],
       "queue": "random"
     },
+    "training 120/180b 0.8 50%wn": {
+      "description": "1:1 S+/S- stim, 120 and 180 ms, z1i1, 0.8 reinf rate",
+      "reinforcement": {
+        "schedule": "go_interrupt",
+        "prob": 0.8,
+        "secondary": false,
+        "passive": false,
+        "punish": true
+      },
+      "criteria": {
+        "days": 2,
+        "trialcount": {
+          "mintrials": 100
+        },
+        "propCorrect": [
+          {
+            "type": "S+\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "type": "S-\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "minimum": 0.75
+          }
+        ]
+      },
+      "conditions": [
+        {
+          "class": "sMinus",
+          "stim_name": "z1i1_1200ir1_50%wn.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "z1i1_1800ir1_50%wn.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "z1i1_1200reg_50%wn.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "z1i1_1800reg_50%wn.wav"
+        }
+      ],
+      "weights": [
+        {
+          "class": "sPlus",
+          "weight": 1
+        },
+        {
+          "class": "sMinus",
+          "weight": 1
+        }
+      ],
+      "queue": "random"
+    },
+    "training 120/180b 0.8 100%wn": {
+      "description": "1:1 S+/S- stim, 120 and 180 ms, z1i1, 0.8 reinf rate",
+      "reinforcement": {
+        "schedule": "go_interrupt",
+        "prob": 0.8,
+        "secondary": false,
+        "passive": false,
+        "punish": true
+      },
+      "criteria": {
+        "days": 2,
+        "trialcount": {
+          "mintrials": 100
+        },
+        "propCorrect": [
+          {
+            "type": "S+\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "type": "S-\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "minimum": 0.75
+          }
+        ]
+      },
+      "conditions": [
+        {
+          "class": "sMinus",
+          "stim_name": "z1i1_1200ir1_100%wn.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "z1i1_1800ir1_100%wn.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "z1i1_1200reg_100%wn.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "z1i1_1800reg_100%wn.wav"
+        }
+      ],
+      "weights": [
+        {
+          "class": "sPlus",
+          "weight": 1
+        },
+        {
+          "class": "sMinus",
+          "weight": 1
+        }
+      ],
+      "queue": "random"
+    },
     "training 120/180c 0.8": {
       "description": "1:1 S+/S- stim, 120 and 180 ms, z3s1, 0.8 reinf rate",
       "reinforcement": {
@@ -3506,6 +4086,122 @@
         {
           "class": "sPlus",
           "stim_name": "z3s1_1800reg.wav"
+        }
+      ],
+      "weights": [
+        {
+          "class": "sPlus",
+          "weight": 1
+        },
+        {
+          "class": "sMinus",
+          "weight": 1
+        }
+      ],
+      "queue": "random"
+    },
+    "training 120/180c 0.8 50%wn": {
+      "description": "1:1 S+/S- stim, 120 and 180 ms, z3s1, 0.8 reinf rate, 50%wn",
+      "reinforcement": {
+        "schedule": "go_interrupt",
+        "prob": 0.8,
+        "secondary": false,
+        "passive": false,
+        "punish": true
+      },
+      "criteria": {
+        "days": 2,
+        "trialcount": {
+          "mintrials": 100
+        },
+        "propCorrect": [
+          {
+            "type": "S+\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "type": "S-\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "minimum": 0.75
+          }
+        ]
+      },
+      "conditions": [
+        {
+          "class": "sMinus",
+          "stim_name": "z3s1_1200ir1_50%wn.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "z3s1_1800ir1_50%wn.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "z3s1_1200reg_50%wn.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "z3s1_1800reg_50%wn.wav"
+        }
+      ],
+      "weights": [
+        {
+          "class": "sPlus",
+          "weight": 1
+        },
+        {
+          "class": "sMinus",
+          "weight": 1
+        }
+      ],
+      "queue": "random"
+    },
+    "training 120/180c 0.8 100%wn": {
+      "description": "1:1 S+/S- stim, 120 and 180 ms, z3s1, 0.8 reinf rate, 100%wn",
+      "reinforcement": {
+        "schedule": "go_interrupt",
+        "prob": 0.8,
+        "secondary": false,
+        "passive": false,
+        "punish": true
+      },
+      "criteria": {
+        "days": 2,
+        "trialcount": {
+          "mintrials": 100
+        },
+        "propCorrect": [
+          {
+            "type": "S+\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "type": "S-\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "minimum": 0.75
+          }
+        ]
+      },
+      "conditions": [
+        {
+          "class": "sMinus",
+          "stim_name": "z3s1_1200ir1_100%wn.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "z3s1_1800ir1_100%wn.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "z3s1_1200reg_100%wn.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "z3s1_1800reg_100%wn.wav"
         }
       ],
       "weights": [
@@ -3762,6 +4458,720 @@
         {
           "class": "probePlus",
           "stim_name": "z2s1_1440reg.wav"
+        }
+      ],
+      "weights": [
+        {
+          "class": "sPlus",
+          "weight": 9
+        },
+        {
+          "class": "sMinus",
+          "weight": 9
+        },
+        {
+          "class": "probePlus",
+          "weight": 1
+        },
+        {
+          "class": "probeMinus",
+          "weight": 1
+        }
+      ],
+      "queue": "random"
+    },
+    "testing 144 (120/180) 50%wn": {
+      "description": "1:1 S+/S- stim, 120/180, 0.8 reinf rate, novel 144 ms 50%wn",
+      "reinforcement": {
+        "schedule": "go_interrupt",
+        "prob": 0.889,
+        "secondary": false,
+        "passive": false,
+        "punish": true
+      },
+      "criteria": {
+        "days": 2,
+        "trialcount": {
+          "mintrials": 100
+        },
+        "propCorrect": [
+          {
+            "type": "S+\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "type": "S-\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "minimum": 0.75
+          }
+        ]
+      },
+      "conditions": [
+        {
+          "class": "sMinus",
+          "stim_name": "z2s1_1200ir1_50%wn.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "z2s1_1800ir1_50%wn.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "z2s1_1200reg_50%wn.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "z2s1_1800reg_50%wn.wav"
+        },
+        {
+          "class": "probeMinus",
+          "stim_name": "z2s1_1440ir1_50%wn.wav"
+        },
+        {
+          "class": "probePlus",
+          "stim_name": "z2s1_1440reg_50%wn.wav"
+        }
+      ],
+      "weights": [
+        {
+          "class": "sPlus",
+          "weight": 9
+        },
+        {
+          "class": "sMinus",
+          "weight": 9
+        },
+        {
+          "class": "probePlus",
+          "weight": 1
+        },
+        {
+          "class": "probeMinus",
+          "weight": 1
+        }
+      ],
+      "queue": "random"
+    },
+    "testing 144 (120/180) 100%wn": {
+      "description": "1:1 S+/S- stim, 120/180, 0.8 reinf rate, novel 144 ms 100%wn",
+      "reinforcement": {
+        "schedule": "go_interrupt",
+        "prob": 0.889,
+        "secondary": false,
+        "passive": false,
+        "punish": true
+      },
+      "criteria": {
+        "days": 2,
+        "trialcount": {
+          "mintrials": 100
+        },
+        "propCorrect": [
+          {
+            "type": "S+\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "type": "S-\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "minimum": 0.75
+          }
+        ]
+      },
+      "conditions": [
+        {
+          "class": "sMinus",
+          "stim_name": "z2s1_1200ir1_100%wn.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "z2s1_1800ir1_100%wn.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "z2s1_1200reg_100%wn.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "z2s1_1800reg_100%wn.wav"
+        },
+        {
+          "class": "probeMinus",
+          "stim_name": "z2s1_1440ir_100%wn.wav"
+        },
+        {
+          "class": "probePlus",
+          "stim_name": "z2s1_1440reg_100%wn.wav"
+        }
+      ],
+      "weights": [
+        {
+          "class": "sPlus",
+          "weight": 9
+        },
+        {
+          "class": "sMinus",
+          "weight": 9
+        },
+        {
+          "class": "probePlus",
+          "weight": 1
+        },
+        {
+          "class": "probeMinus",
+          "weight": 1
+        }
+      ],
+      "queue": "random"
+    },
+    "testing 144b (120/180) 50%wn": {
+      "description": "1:1 S+/S- stim, 120/180, 0.8 reinf rate, z1i1, novel 144 ms 50%wn",
+      "reinforcement": {
+        "schedule": "go_interrupt",
+        "prob": 0.889,
+        "secondary": false,
+        "passive": false,
+        "punish": true
+      },
+      "criteria": {
+        "days": 2,
+        "trialcount": {
+          "mintrials": 100
+        },
+        "propCorrect": [
+          {
+            "type": "S+\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "type": "S-\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "minimum": 0.75
+          }
+        ]
+      },
+      "conditions": [
+        {
+          "class": "sMinus",
+          "stim_name": "z1i1_1200ir1_50%wn.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "z1i1_1800ir1_50%wn.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "z1i1_1200reg_50%wn.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "z1i1_1800reg_50%wn.wav"
+        },
+        {
+          "class": "probeMinus",
+          "stim_name": "z1i1_1440ir1_50%wn.wav"
+        },
+        {
+          "class": "probePlus",
+          "stim_name": "z1i1_1440reg_50%wn.wav"
+        }
+      ],
+      "weights": [
+        {
+          "class": "sPlus",
+          "weight": 9
+        },
+        {
+          "class": "sMinus",
+          "weight": 9
+        },
+        {
+          "class": "probePlus",
+          "weight": 1
+        },
+        {
+          "class": "probeMinus",
+          "weight": 1
+        }
+      ],
+      "queue": "random"
+    },
+    "testing 144b (120/180) 100%wn": {
+      "description": "1:1 S+/S- stim, 120/180, 0.8 reinf rate, z1i1, novel 144 ms 100%wn",
+      "reinforcement": {
+        "schedule": "go_interrupt",
+        "prob": 0.889,
+        "secondary": false,
+        "passive": false,
+        "punish": true
+      },
+      "criteria": {
+        "days": 2,
+        "trialcount": {
+          "mintrials": 100
+        },
+        "propCorrect": [
+          {
+            "type": "S+\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "type": "S-\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "minimum": 0.75
+          }
+        ]
+      },
+      "conditions": [
+        {
+          "class": "sMinus",
+          "stim_name": "z1i1_1200ir1_100%wn.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "z1i1_1800ir1_100%wn.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "z1i1_1200reg_100%wn.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "z1i1_1800reg_100%wn.wav"
+        },
+        {
+          "class": "probeMinus",
+          "stim_name": "z1i1_1440ir1_100%wn.wav"
+        },
+        {
+          "class": "probePlus",
+          "stim_name": "z1i1_1440reg_100%wn.wav"
+        }
+      ],
+      "weights": [
+        {
+          "class": "sPlus",
+          "weight": 9
+        },
+        {
+          "class": "sMinus",
+          "weight": 9
+        },
+        {
+          "class": "probePlus",
+          "weight": 1
+        },
+        {
+          "class": "probeMinus",
+          "weight": 1
+        }
+      ],
+      "queue": "random"
+    },
+    "testing 144c (120/180) 50%wn": {
+      "description": "1:1 S+/S- stim, 120/180, 0.8 reinf rate, z3s1, novel 144 ms 50%wn",
+      "reinforcement": {
+        "schedule": "go_interrupt",
+        "prob": 0.889,
+        "secondary": false,
+        "passive": false,
+        "punish": true
+      },
+      "criteria": {
+        "days": 2,
+        "trialcount": {
+          "mintrials": 100
+        },
+        "propCorrect": [
+          {
+            "type": "S+\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "type": "S-\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "minimum": 0.75
+          }
+        ]
+      },
+      "conditions": [
+        {
+          "class": "sMinus",
+          "stim_name": "z3s1_1200ir1_50%wn.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "z3s1_1800ir1_50%wn.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "z3s1_1200reg_50%wn.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "z3s1_1800reg_50%wn.wav"
+        },
+        {
+          "class": "probeMinus",
+          "stim_name": "z3s1_1440ir1_50%wn.wav"
+        },
+        {
+          "class": "probePlus",
+          "stim_name": "z3s1_1440reg_50%wn.wav"
+        }
+      ],
+      "weights": [
+        {
+          "class": "sPlus",
+          "weight": 9
+        },
+        {
+          "class": "sMinus",
+          "weight": 9
+        },
+        {
+          "class": "probePlus",
+          "weight": 1
+        },
+        {
+          "class": "probeMinus",
+          "weight": 1
+        }
+      ],
+      "queue": "random"
+    },
+    "testing 144c (120/180) 100%wn": {
+      "description": "1:1 S+/S- stim, 120/180, 0.8 reinf rate, z3s1, novel 144 ms 100%wn",
+      "reinforcement": {
+        "schedule": "go_interrupt",
+        "prob": 0.889,
+        "secondary": false,
+        "passive": false,
+        "punish": true
+      },
+      "criteria": {
+        "days": 2,
+        "trialcount": {
+          "mintrials": 100
+        },
+        "propCorrect": [
+          {
+            "type": "S+\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "type": "S-\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "minimum": 0.75
+          }
+        ]
+      },
+      "conditions": [
+        {
+          "class": "sMinus",
+          "stim_name": "z3s1_1200ir1_100%wn.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "z3s1_1800ir1_100%wn.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "z3s1_1200reg_100%wn.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "z3s1_1800reg_100%wn.wav"
+        },
+        {
+          "class": "probeMinus",
+          "stim_name": "z3s1_1440ir1_100%wn.wav"
+        },
+        {
+          "class": "probePlus",
+          "stim_name": "z3s1_1440reg_100%wn.wav"
+        }
+      ],
+      "weights": [
+        {
+          "class": "sPlus",
+          "weight": 9
+        },
+        {
+          "class": "sMinus",
+          "weight": 9
+        },
+        {
+          "class": "probePlus",
+          "weight": 1
+        },
+        {
+          "class": "probeMinus",
+          "weight": 1
+        }
+      ],
+      "queue": "random"
+    },
+    "testing 144/216/260 (120/180)": {
+      "description": "1:1 S+/S- stim, 120/180, 0.8 reinf rate, novel 144/216/260ms",
+      "reinforcement": {
+        "schedule": "go_interrupt",
+        "prob": 0.889,
+        "secondary": false,
+        "passive": false,
+        "punish": true
+      },
+      "criteria": {
+        "days": 2,
+        "trialcount": {
+          "mintrials": 100
+        },
+        "propCorrect": [
+          {
+            "type": "S+\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "type": "S-\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "minimum": 0.75
+          }
+        ]
+      },
+      "conditions": [
+        {
+          "class": "sMinus",
+          "stim_name": "z2s1_1200ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "z2s1_1800ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "z2s1_1200reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "z2s1_1800reg.wav"
+        },
+        {
+          "class": "probeMinus",
+          "stim_name": "z2s1_1440ir1.wav"
+        },
+        {
+          "class": "probePlus",
+          "stim_name": "z2s1_1440reg.wav"
+        },
+        {
+          "class": "probeMinus",
+          "stim_name": "z2s1_2160ir1.wav"
+        },
+        {
+          "class": "probePlus",
+          "stim_name": "z2s1_2160reg.wav"
+        },
+        {
+          "class": "probeMinus",
+          "stim_name": "z2s1_2600ir1.wav"
+        },
+        {
+          "class": "probePlus",
+          "stim_name": "z2s1_2600reg.wav"
+        }
+      ],
+      "weights": [
+        {
+          "class": "sPlus",
+          "weight": 9
+        },
+        {
+          "class": "sMinus",
+          "weight": 9
+        },
+        {
+          "class": "probePlus",
+          "weight": 1
+        },
+        {
+          "class": "probeMinus",
+          "weight": 1
+        }
+      ],
+      "queue": "random"
+    },
+    "testing 144/216/260b (120/180)": {
+      "description": "1:1 S+/S- stim, 120/180, 0.8 reinf rate, novel 144/216/260ms",
+      "reinforcement": {
+        "schedule": "go_interrupt",
+        "prob": 0.889,
+        "secondary": false,
+        "passive": false,
+        "punish": true
+      },
+      "criteria": {
+        "days": 2,
+        "trialcount": {
+          "mintrials": 100
+        },
+        "propCorrect": [
+          {
+            "type": "S+\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "type": "S-\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "minimum": 0.75
+          }
+        ]
+      },
+      "conditions": [
+        {
+          "class": "sMinus",
+          "stim_name": "z1i1_1200ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "z1i1_1800ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "z1i1_1200reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "z1i1_1800reg.wav"
+        },
+        {
+          "class": "probeMinus",
+          "stim_name": "z1i1_1440ir1.wav"
+        },
+        {
+          "class": "probePlus",
+          "stim_name": "z1i1_1440reg.wav"
+        },
+        {
+          "class": "probeMinus",
+          "stim_name": "z1i1_2160ir1.wav"
+        },
+        {
+          "class": "probePlus",
+          "stim_name": "z1i1_2160reg.wav"
+        },
+        {
+          "class": "probeMinus",
+          "stim_name": "z1i1_2600ir1.wav"
+        },
+        {
+          "class": "probePlus",
+          "stim_name": "z1i1_2600reg.wav"
+        }
+      ],
+      "weights": [
+        {
+          "class": "sPlus",
+          "weight": 9
+        },
+        {
+          "class": "sMinus",
+          "weight": 9
+        },
+        {
+          "class": "probePlus",
+          "weight": 1
+        },
+        {
+          "class": "probeMinus",
+          "weight": 1
+        }
+      ],
+      "queue": "random"
+    },
+    "testing 144/216/260c (120/180)": {
+      "description": "1:1 S+/S- stim, 120/180, 0.8 reinf rate, novel 144/216/260ms",
+      "reinforcement": {
+        "schedule": "go_interrupt",
+        "prob": 0.889,
+        "secondary": false,
+        "passive": false,
+        "punish": true
+      },
+      "criteria": {
+        "days": 2,
+        "trialcount": {
+          "mintrials": 100
+        },
+        "propCorrect": [
+          {
+            "type": "S+\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "type": "S-\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "minimum": 0.75
+          }
+        ]
+      },
+      "conditions": [
+        {
+          "class": "sMinus",
+          "stim_name": "z3s1_1200ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "z3s1_1800ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "z3s1_1200reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "z3s1_1800reg.wav"
+        },
+        {
+          "class": "probeMinus",
+          "stim_name": "z3s1_1440ir1.wav"
+        },
+        {
+          "class": "probePlus",
+          "stim_name": "z3s1_1440reg.wav"
+        },
+        {
+          "class": "probeMinus",
+          "stim_name": "z3s1_2160ir1.wav"
+        },
+        {
+          "class": "probePlus",
+          "stim_name": "z3s1_2160reg.wav"
+        },
+        {
+          "class": "probeMinus",
+          "stim_name": "z3s1_2600ir1.wav"
+        },
+        {
+          "class": "probePlus",
+          "stim_name": "z3s1_2600reg.wav"
         }
       ],
       "weights": [
@@ -4076,6 +5486,344 @@
         {
           "class": "probeMinus",
           "weight": 1
+        }
+      ],
+      "queue": "random"
+    },
+    "testing vgp/vIOI_b (120/180)": {
+      "description": "1:1 S+/S- stim, 120/180, 0.8 reinf rate, z1i1, novel vgp/vIOI",
+      "reinforcement": {
+        "schedule": "go_interrupt",
+        "prob": 0.889,
+        "secondary": false,
+        "passive": false,
+        "punish": true
+      },
+      "criteria": {
+        "days": 2,
+        "trialcount": {
+          "mintrials": 100
+        },
+        "propCorrect": [
+          {
+            "type": "S+\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "type": "S-\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "minimum": 0.75
+          }
+        ]
+      },
+      "conditions": [
+        {
+          "class": "sMinus",
+          "stim_name": "z1i1_1200ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "z1i1_1800ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "z1i1_1200reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "z1i1_1800reg.wav"
+        },
+        {
+          "class": "probeMinus",
+          "stim_name": "z1i1_1200_sgp.wav"
+        },
+        {
+          "class": "probePlus",
+          "stim_name": "z1i1_1200_vgp.wav"
+        },
+        {
+          "class": "probeMinus",
+          "stim_name": "z1i1_1800_sgp.wav"
+        },
+        {
+          "class": "probePlus",
+          "stim_name": "z1i1_1800_vgp.wav"
+        }
+      ],
+      "weights": [
+        {
+          "class": "sPlus",
+          "weight": 9
+        },
+        {
+          "class": "sMinus",
+          "weight": 9
+        },
+        {
+          "class": "probePlus",
+          "weight": 1
+        },
+        {
+          "class": "probeMinus",
+          "weight": 1
+        }
+      ],
+      "queue": "random"
+    },
+    "testing vgp_b (120/180)": {
+      "description": "1:1 S+/S- stim, 120/180, 0.8 reinf rate, z1i1, novel vgp",
+      "reinforcement": {
+        "schedule": "go_interrupt",
+        "prob": 0.889,
+        "secondary": false,
+        "passive": false,
+        "punish": true
+      },
+      "criteria": {
+        "days": 2,
+        "trialcount": {
+          "mintrials": 100
+        },
+        "propCorrect": [
+          {
+            "type": "S+\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "type": "S-\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "minimum": 0.75
+          }
+        ]
+      },
+      "conditions": [
+        {
+          "class": "sMinus",
+          "stim_name": "z1i1_1200ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "z1i1_1800ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "z1i1_1200reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "z1i1_1800reg.wav"
+        },
+        {
+          "class": "probePlus",
+          "stim_name": "z1i1_1200_vgp.wav"
+        },
+        {
+          "class": "probePlus",
+          "stim_name": "z1i1_1800_vgp.wav"
+        }
+      ],
+      "weights": [
+        {
+          "class": "sPlus",
+          "weight": 9
+        },
+        {
+          "class": "sMinus",
+          "weight": 9
+        },
+        {
+          "class": "probePlus",
+          "weight": 2
+        }
+      ],
+      "queue": "random"
+    },
+    "testing vIOI_b (120/180)": {
+      "description": "1:1 S+/S- stim, 120/180, 0.8 reinf rate, z1i1, novel vIOI",
+      "reinforcement": {
+        "schedule": "go_interrupt",
+        "prob": 0.889,
+        "secondary": false,
+        "passive": false,
+        "punish": true
+      },
+      "criteria": {
+        "days": 2,
+        "trialcount": {
+          "mintrials": 100
+        },
+        "propCorrect": [
+          {
+            "type": "S+\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "type": "S-\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "minimum": 0.75
+          }
+        ]
+      },
+      "conditions": [
+        {
+          "class": "sMinus",
+          "stim_name": "z1i1_1200ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "z1i1_1800ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "z1i1_1200reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "z1i1_1800reg.wav"
+        },
+        {
+          "class": "probeMinus",
+          "stim_name": "z1i1_1200_sgp.wav"
+        },
+        {
+          "class": "probeMinus",
+          "stim_name": "z1i1_1800_sgp.wav"
+        }
+      ],
+      "weights": [
+        {
+          "class": "sPlus",
+          "weight": 9
+        },
+        {
+          "class": "sMinus",
+          "weight": 9
+        },
+        {
+          "class": "probeMinus",
+          "weight": 2
+        }
+      ],
+      "queue": "random"
+    },
+    "testing vgp_b (144) bengalese": {
+      "description": "1:1 S+/S- stim, all 144ms IOI, 0.8 reinf rate, g5q1, novel vgap",
+      "reinforcement": {
+        "schedule": "go_interrupt",
+        "prob": 0.889,
+        "secondary": false,
+        "passive": false,
+        "punish": true
+      },
+      "criteria": {
+        "days": 2,
+        "trialcount": {
+          "mintrials": 100
+        },
+        "propCorrect": [
+          {
+            "type": "S+\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "type": "S-\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "minimum": 0.75
+          }
+        ]
+      },
+      "conditions": [
+        {
+          "class": "sMinus",
+          "stim_name": "g5q1_1440ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "g5q1_1440reg.wav"
+        },
+        {
+          "class": "probePlus",
+          "stim_name": "g5q1_1440_vgp.wav"
+        }
+      ],
+      "weights": [
+        {
+          "class": "sPlus",
+          "weight": 9
+        },
+        {
+          "class": "sMinus",
+          "weight": 9
+        },
+        {
+          "class": "probePlus",
+          "weight": 2
+        }
+      ],
+      "queue": "random"
+    },
+    "testing vIOI_b (144) bengalese": {
+      "description": "1:1 S+/S- stim, all 144ms IOI, 0.8 reinf rate, g5q1, novel vIOI",
+      "reinforcement": {
+        "schedule": "go_interrupt",
+        "prob": 0.889,
+        "secondary": false,
+        "passive": false,
+        "punish": true
+      },
+      "criteria": {
+        "days": 2,
+        "trialcount": {
+          "mintrials": 100
+        },
+        "propCorrect": [
+          {
+            "type": "S+\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "type": "S-\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "minimum": 0.75
+          }
+        ]
+      },
+      "conditions": [
+        {
+          "class": "sMinus",
+          "stim_name": "g5q1_1440ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "g5q1_1440reg.wav"
+        },
+        {
+          "class": "probePlus",
+          "stim_name": "g5q1_1440_sgp.wav"
+        }
+      ],
+      "weights": [
+        {
+          "class": "sPlus",
+          "weight": 9
+        },
+        {
+          "class": "sMinus",
+          "weight": 9
+        },
+        {
+          "class": "probePlus",
+          "weight": 2
         }
       ],
       "queue": "random"
@@ -8999,6 +10747,276 @@
         {
           "class": "probePlus",
           "stim_name": "g5q1_1440reg.wav"
+        }
+      ],
+      "weights": [
+        {
+          "class": "sPlus",
+          "weight": 9
+        },
+        {
+          "class": "sMinus",
+          "weight": 9
+        },
+        {
+          "class": "probePlus",
+          "weight": 1
+        },
+        {
+          "class": "probeMinus",
+          "weight": 1
+        }
+      ],
+      "queue": "random"
+    },
+    "testing 144/216/260 (120/180) bengalese": {
+      "description": "1:1 S+/S- stim, 120/180, 0.8 reinf rate, novel 144/216/260ms, bengalese",
+      "reinforcement": {
+        "schedule": "go_interrupt",
+        "prob": 0.889,
+        "secondary": false,
+        "passive": false,
+        "punish": true
+      },
+      "criteria": {
+        "days": 2,
+        "trialcount": {
+          "mintrials": 100
+        },
+        "propCorrect": [
+          {
+            "type": "S+\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "type": "S-\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "minimum": 0.75
+          }
+        ]
+      },
+      "conditions": [
+        {
+          "class": "sMinus",
+          "stim_name": "g5q1_1200ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "g5q1_1800ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "g5q1_1200reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "g5q1_1800reg.wav"
+        },
+        {
+          "class": "probeMinus",
+          "stim_name": "g5q1_1440ir1.wav"
+        },
+        {
+          "class": "probePlus",
+          "stim_name": "g5q1_1440reg.wav"
+        },
+        {
+          "class": "probeMinus",
+          "stim_name": "g5q1_0960ir1.wav"
+        },
+        {
+          "class": "probePlus",
+          "stim_name": "g5q1_0960reg.wav"
+        },
+        {
+          "class": "probeMinus",
+          "stim_name": "g5q1_0770ir1.wav"
+        },
+        {
+          "class": "probePlus",
+          "stim_name": "g5q1_0770reg.wav"
+        }
+      ],
+      "weights": [
+        {
+          "class": "sPlus",
+          "weight": 9
+        },
+        {
+          "class": "sMinus",
+          "weight": 9
+        },
+        {
+          "class": "probePlus",
+          "weight": 1
+        },
+        {
+          "class": "probeMinus",
+          "weight": 1
+        }
+      ],
+      "queue": "random"
+    },
+    "testing 144/216/260b (120/180) bengalese": {
+      "description": "1:1 S+/S- stim, 120/180, 0.8 reinf rate, novel 144/216/260ms, bengalese",
+      "reinforcement": {
+        "schedule": "go_interrupt",
+        "prob": 0.889,
+        "secondary": false,
+        "passive": false,
+        "punish": true
+      },
+      "criteria": {
+        "days": 2,
+        "trialcount": {
+          "mintrials": 100
+        },
+        "propCorrect": [
+          {
+            "type": "S+\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "type": "S-\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "minimum": 0.75
+          }
+        ]
+      },
+      "conditions": [
+        {
+          "class": "sMinus",
+          "stim_name": "g7s1_1200ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "g7s1_1800ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "g7s1_1200reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "g7s1_1800reg.wav"
+        },
+        {
+          "class": "probeMinus",
+          "stim_name": "g7s1_1440ir1.wav"
+        },
+        {
+          "class": "probePlus",
+          "stim_name": "g7s1_1440reg.wav"
+        },
+        {
+          "class": "probeMinus",
+          "stim_name": "g7s1_0960ir1.wav"
+        },
+        {
+          "class": "probePlus",
+          "stim_name": "g7s1_0960reg.wav"
+        },
+        {
+          "class": "probeMinus",
+          "stim_name": "g7s1_0770ir1.wav"
+        },
+        {
+          "class": "probePlus",
+          "stim_name": "g7s1_0770reg.wav"
+        }
+      ],
+      "weights": [
+        {
+          "class": "sPlus",
+          "weight": 9
+        },
+        {
+          "class": "sMinus",
+          "weight": 9
+        },
+        {
+          "class": "probePlus",
+          "weight": 1
+        },
+        {
+          "class": "probeMinus",
+          "weight": 1
+        }
+      ],
+      "queue": "random"
+    },
+    "testing 144/216/260c (120/180) bengalese": {
+      "description": "1:1 S+/S- stim, 120/180, 0.8 reinf rate, novel 144/216/260ms, bengalese",
+      "reinforcement": {
+        "schedule": "go_interrupt",
+        "prob": 0.889,
+        "secondary": false,
+        "passive": false,
+        "punish": true
+      },
+      "criteria": {
+        "days": 2,
+        "trialcount": {
+          "mintrials": 100
+        },
+        "propCorrect": [
+          {
+            "type": "S+\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "type": "S-\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "minimum": 0.75
+          }
+        ]
+      },
+      "conditions": [
+        {
+          "class": "sMinus",
+          "stim_name": "g8p1_1200ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "g8p1_1800ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "g8p1_1200reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "g8p1_1800reg.wav"
+        },
+        {
+          "class": "probeMinus",
+          "stim_name": "g8p1_1440ir1.wav"
+        },
+        {
+          "class": "probePlus",
+          "stim_name": "g8p1_1440reg.wav"
+        },
+        {
+          "class": "probeMinus",
+          "stim_name": "g8p1_0960ir1.wav"
+        },
+        {
+          "class": "probePlus",
+          "stim_name": "g8p1_0960reg.wav"
+        },
+        {
+          "class": "probeMinus",
+          "stim_name": "g8p1_0770ir1.wav"
+        },
+        {
+          "class": "probePlus",
+          "stim_name": "g8p1_0770reg.wav"
         }
       ],
       "weights": [
@@ -14864,10 +16882,10 @@
           "class": "sMinus",
           "stim_name": "g6s1_2400ir1.wav"
         },
-        {
-          "class": "sPlus",
-          "stim_name": "g6s1_2400reg.wav"
-        },
+          {
+            "class": "sPlus",
+            "stim_name": "g6s1_2400reg.wav"
+          },
         {
           "class": "sMinus",
           "stim_name": "g6s1_2410ir1.wav"
@@ -14991,15 +17009,15 @@
         {
           "class": "sMinus",
           "stim_name": "g6s1_2560ir1.wav"
-        },
-        {
-          "class": "sPlus",
-          "stim_name": "g6s1_2560reg.wav"
-        },
-        {
-          "class": "sMinus",
-          "stim_name": "g6s1_2570ir1.wav"
-        },
+          },
+          {
+            "class": "sPlus",
+            "stim_name": "g6s1_2560reg.wav"
+          },
+          {
+            "class": "sMinus",
+            "stim_name": "g6s1_2570ir1.wav"
+          },
         {
           "class": "sPlus",
           "stim_name": "g6s1_2570reg.wav"

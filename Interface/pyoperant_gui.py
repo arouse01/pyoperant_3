@@ -819,7 +819,22 @@ class PyoperantGui(QMainWindow, pyoperant_gui_layout.UiMainWindow):
         boxnumber = boxnumber + 1
         print("Box {:d} going to sleep".format(boxnumber))
         self.log.info("Box {:d} going to sleep".format(boxnumber))
-        device_name = '/dev/teensy{:02d}'.format(boxnumber)
+
+#get COM port from boardName
+        boardName = 'Board%02i' % boxnumber
+        print(f'board name {boardName}')
+        import serial.tools.list_ports
+        ports = serial.tools.list_ports.comports()
+        comDevice = None
+        for i in range(len(ports)):
+            if ports[i].description == boardName:
+                comDevice = ports[i].device
+                break
+            else:
+                comDevice = None
+
+        device_name = f'{comDevice}'
+        # device_name = '/dev/teensy{:02d}'.format(boxnumber)
         device = serial.Serial(port=device_name, baudrate=19200, timeout=5)
         if device is None:
             print('Could not open serial device {}'.format(device_name))
@@ -828,14 +843,30 @@ class PyoperantGui(QMainWindow, pyoperant_gui_layout.UiMainWindow):
         else:
             device.readline()
             device.flushInput()
-            device.write("".join([chr(3), chr(3)]))  # set channel 3 (house light) as output
-            device.write("".join([chr(3), chr(1)]))  # turn off house lights
+            device.write("".join([chr(3), chr(3)]).encode('utf-8'))  # set channel 3 (house light) as output
+            device.write("".join([chr(3), chr(1)]).encode('utf-8'))  # turn off house lights
             device.close()  # close connection
 
     def wake_box(self, boxnumber):
         print("Box {:d} waking up".format(boxnumber))
         self.log.info("Box {:d} waking up".format(boxnumber))
-        device_name = '/dev/teensy{:02d}'.format(boxnumber)
+
+        # get COM port from boardName
+        boardName = 'Board%02i' % boxnumber
+        print(f'board name {boardName}')
+        import serial.tools.list_ports
+        ports = serial.tools.list_ports.comports()
+        comDevice = None
+        for i in range(len(ports)):
+            if ports[i].description == boardName:
+                comDevice = ports[i].device
+                break
+            else:
+                comDevice = None
+
+        device_name = f'{comDevice}'
+        # device_name = '/dev/teensy{:02d}'.format(boxnumber)
+
         device = serial.Serial(port=device_name,
                                baudrate=19200,
                                timeout=5)
@@ -845,8 +876,8 @@ class PyoperantGui(QMainWindow, pyoperant_gui_layout.UiMainWindow):
         else:
             device.readline()
             device.flushInput()
-            device.write("".join([chr(3), chr(3)]))  # set channel 3 (house light) as output
-            device.write("".join([chr(3), chr(2)]))  # turn on house lights
+            device.write("".join([chr(3), chr(3)]).encode('utf-8'))  # set channel 3 (house light) as output
+            device.write("".join([chr(3), chr(2)]).encode('utf-8'))  # turn on house lights
             device.close()  # close connection
 
     # endregion
