@@ -48,6 +48,19 @@ class RousePanel(panels.BasePanel):
                        22,  # Reinforcement solenoid 1
                        21,  # Reinforcement solenoid 2
                        ]
+        elif boardtype == 'v4.0':
+            # Has two solenoids
+            INPUTS = [36,  # Trial IR
+                      35,  # Response IR
+                      ]
+
+            OUTPUTS = [38,  # Trial LED
+                       37,  # Response LED
+                       22,  # House lights
+                       41,  # Reinforcement solenoid 1
+                       40,  # Reinforcement solenoid 2
+                       ]
+
         else:
             INPUTS = [37,  # Trial IR
                       36,  # Response IR
@@ -94,6 +107,19 @@ class RousePanel(panels.BasePanel):
         self.house_light.on()
         self.water.off()
 
+    def test_audio(self):
+        print('reset')
+        self.reset()
+        dur = 2.0
+        print('playing audio: ')
+        print('queue file')
+        self.speaker.queue('/home/rouse/bird/stim/g5q1_1800ir1.wav')
+        print('play file')
+        self.speaker.play()
+        while self.speaker.interface.stream.is_active():
+            utils.wait(0.1)
+        return True
+
     def test(self):
         print('reset')
         self.reset()
@@ -111,9 +137,11 @@ class RousePanel(panels.BasePanel):
         print('timeout')
         self.punish(value=dur)
         print('queue file')
-        self.speaker.queue('/usr/local/stimuli/A1.wav')
+        self.speaker.queue('/home/rouse/bird/stim/g5q1_1800ir1.wav')
         print('play file')
         self.speaker.play()
+        while self.speaker.interface.stream.is_active():
+            utils.wait(0.1)
         return True
 
 
@@ -154,9 +182,13 @@ class Rouse6(RousePanel):
         super(Rouse6, self).__init__(panel_id=6,
                                      **kwargs)  # Not sure if this is the working setup, or if boardtype=boardtype is
 
+# class Rouse6(RousePanel):
+#     """Rouse6 panel"""
+#     def __init__(self, boardtype='v1'):
+#         super(Rouse6, self).__init__(panel_id=6, boardtype=boardtype)
 
 class Rouse7(RousePanel):
-    """Rouse6 panel"""
+    """Rouse7 panel"""
 
     def __init__(self, boardtype='v1.4'):
         super(Rouse7, self).__init__(panel_id=7, boardtype=boardtype)

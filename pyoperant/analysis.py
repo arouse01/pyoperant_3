@@ -311,7 +311,8 @@ class FieldList:
                                         'Probe Tot Corr', 'Probe Tot Corr (NR)', 'Prop CR Resets']:
                 # 'group' columns are those that are calculated based strictly on grouped data - calculations that
                 # can't be performed on a single trial (e.g. proportion correct)
-                columnDict['type'] = 'group'
+                self.group = 'group'
+                columnDict['type'] = self.group
 
             fieldDict[column] = columnDict
         return fieldDict
@@ -444,6 +445,8 @@ class Performance(object):
 
         # region Read each CSV file
         for dir_index, curr_dir in enumerate(self.data_dir):
+            self.log.error(dir_index)
+            self.log.error(curr_dir)
             # - importing csv files as dataframes directly and then concatenating with pandas was way too slow,
             # so went with importing csv data directly into a dict line by line
             # - Dynamically getting column names from first row of each csv and then matching column number to name for
@@ -454,9 +457,11 @@ class Performance(object):
 
             # Add specific response columns to data_dict
             for curr_csv in csvList:
+                self.log.error(curr_csv)
                 csvPath = os.path.join(curr_dir, curr_csv)
                 with open(csvPath, 'rb') as data_file:
                     csv_reader = csv.reader(data_file, delimiter=',')
+                    print(csv_reader)
                     rowCount = len(list(csv_reader)) - 1  # check if csv has data beyond header
                     if rowCount < 1:
                         fileEmpty = True
@@ -529,7 +534,8 @@ class Performance(object):
 
                                 # categorize shaping stimuli (which contain 'song' in the name)separately (they don't
                                 # have a tempo)
-                                if stim_name[-8:] == 'song.wav':
+                                # Tim 6/30/26: one bf shaping stim had shap as postfix
+                                if stim_name[-8:] == 'song.wav' or stim_name[-8:] == 'shap.wav':
                                     stim_tempo = 'Shaping'
                                     trialType = 'Shaping'
                                 else:
