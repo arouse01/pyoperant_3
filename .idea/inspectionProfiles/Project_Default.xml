@@ -43,11 +43,7 @@
     <inspection_tool class="PyUnresolvedReferencesInspection" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="ignoredIdentifiers">
         <list>
-          <option value="pyoperant.behavior.adlib.Shaper.responded_poll" />
-          <option value="PyQt4.QtGui.triggered.*" />
-          <option value="PyQt4.QtGui.clicked.*" />
-          <option value="PyQt4.QtCore.timeout.connect" />
-          <option value="ephem.Sun" />
+          <option value="PyQt4.QtGui.*" />
         </list>
       </option>
     </inspection_tool>

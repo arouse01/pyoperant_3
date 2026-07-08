@@ -137,6 +137,7 @@ class GoNoGoInterruptExp(base.BaseExp):
         # # Get blocks from separate file (for centrally-modifiable block definitions)
         if 'block_path' in self.parameters['block_design']:
             block_path = self.parameters['block_design']['block_path']
+            print(block_path)
             if os.path.isfile(block_path):
                 with open(block_path, 'rb') as stim_list:
                     blocks = json.load(stim_list)

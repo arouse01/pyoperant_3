@@ -51,6 +51,7 @@ class UiMainWindow(object):
         self.graphicBoxList = []  # Array for status graphic box
         self.checkActiveLabelBoxList = []  # Array for label for Active checkbox
         self.checkActiveBoxList = []  # Array for "active" checkbox
+        self.boardVerBoxList = []  # Array for board version dropdown
         self.statusTotalsBoxList = []  # Array for status text box
         self.statusTableBoxList = []  # Array for status text box
         self.statusStatsBoxList = []  # Array for status text box
@@ -245,6 +246,7 @@ class UiMainWindow(object):
             self.birdEntryBoxList.append(QtGui.QPlainTextEdit(self.gridLayoutWidget))
             self.checkActiveBoxList.append(QtGui.QCheckBox(self.gridLayoutWidget))
             self.checkActiveLabelBoxList.append(QtGui.QLabel(self.gridLayoutWidget))
+            self.boardVerBoxList.append(QtGui.QComboBox(self.gridLayoutWidget))
             self.graphicBoxList.append(QtGui.QLabel(self.gridLayoutWidget))
             self.labelBoxList.append(QtGui.QLabel(self.gridLayoutWidget))
             self.paramFileLabelBoxList.append(QtGui.QLabel(self.gridLayoutWidget))
@@ -338,6 +340,8 @@ class UiMainWindow(object):
             self.gridLayoutBoxList[box].addLayout(self.statusLayoutBoxList[box], 1, 1, 5, 3)
 
             self.gridLayoutBoxList[box].addWidget(self.graphicBoxList[box], 2, 0, 1, 1, QtCore.Qt.AlignCenter)
+
+            self.gridLayoutBoxList[box].addWidget(self.boardVerBoxList[box], 1, 0, 1, 1, QtCore.Qt.AlignCenter)
 
             self.gridLayoutBoxList[box].addWidget(self.checkActiveBoxList[box], 4, 0, 1, 1, QtCore.Qt.AlignCenter)
 
@@ -514,6 +518,15 @@ class UiMainWindow(object):
 
             # endregion Checkboxes
 
+            # region Dropdowns
+            self.boardVerBoxList[box].setFont(font11)
+            self.boardVerBoxList[box].setMaximumSize(QtCore.QSize(100, 22))
+            self.boardVerBoxList[box].setObjectName(_from_utf8("boardVer_Box%d" % box))
+            self.boardVerBoxList[box].addItems(["v1.3", "v1.4", "v2.0", "v4.0"])
+            self.boardVerBoxList[box].setCurrentIndex(0)
+
+            # endregion Checkboxes
+
             # region Graphics
             self.graphicBoxList[box].setAlignment(QtCore.Qt.AlignCenter)
             self.graphicBoxList[box].setFrameShadow(QtGui.QFrame.Sunken)
@@ -542,7 +555,7 @@ class UiMainWindow(object):
         # Set window and grid size based on content
         # extra space due to padding:
         #   layoutSpacing * (number of columns + number of vertical lines + 1 [for whole layout])
-        spacingWidthTotal = (columnCount + numVerticalLines + 1) * self.mainGrid.getContentsMargins()[0]
+        spacingWidthTotal = (columnCount + numVerticalLines + -3) * self.mainGrid.getContentsMargins()[0]
         mainGridWidth = math.ceil(self.gridLayoutWidget.sizeHint().width() + spacingWidthTotal)
         mainGridHeight = self.gridLayoutWidget.sizeHint().height()
 

@@ -6,7 +6,7 @@
     ],
     [
       1,
-      false
+      true
     ],
     [
       2,
@@ -23,95 +23,85 @@
     [
       5,
       true
-    ],
-    [
-      6,
-      false
-    ],
-    [
-      7,
-      false
-    ],
-    [
-      8,
-      false
     ]
   ],
   "paramFiles": [
     [
       0,
-      "/home/rouse/bird/data/p41p42/p41p42_config.json"
+      "/home/rouse/bird/data/w9k54/w9k54_config.json"
     ],
     [
       1,
-      "/home/rouse/bird/data/r79p79/r79p79_config.json"
+      "/home/rouse/bird/data/b25y70/b25y70_config.json"
     ],
     [
       2,
-      "/home/rouse/bird/data/r77p7/r77p7_config.json"
+      "/home/rouse/bird/data/o7/o7_config.json"
     ],
     [
       3,
-      "/home/rouse/bird/data/r79p79/r79p79_config.json"
+      "/home/rouse/bird/data/y61p91/y61p91_config.json"
     ],
     [
       4,
-      "/home/rouse/bird/data/k36w56/k36w56_config.json"
+      "/home/rouse/bird/data/y64p94/y64p94_config.json"
     ],
     [
       5,
-      "/home/rouse/bird/data/k65w85/k65w85_config.json"
-    ],
-    [
-      6,
-      "/home/rouse/bird/data/guitest/guitest_config.json"
-    ],
-    [
-      7,
-      ""
-    ],
-    [
-      8,
-      ""
+      "/home/rouse/bird/data/o38o39/o38o39_config.json"
     ]
   ],
   "birds": [
     [
       0,
-      "p41p42"
+      "w9k54"
     ],
     [
       1,
-      "r79p79"
+      "b25y70"
     ],
     [
       2,
-      "r77p7"
+      "o7"
     ],
     [
       3,
-      "r79p79"
+      "y61p91"
     ],
     [
       4,
-      "k"
+      "y64p94"
     ],
     [
       5,
-      "Test3"
-    ],
-    [
-      6,
-      "guitest"
-    ],
-    [
-      7,
-      ""
-    ],
-    [
-      8,
-      ""
+      "o38o39"
     ]
   ],
-  "shutdownProper": false
+  "shutdownProper": false,
+  "boardVer": [
+    [
+      0,
+      "v1.3"
+    ],
+    [
+      1,
+      "v1.3"
+    ],
+    [
+      2,
+      "v1.3"
+    ],
+    [
+      3,
+      "v1.3"
+    ],
+    [
+      4,
+      "v1.3"
+    ],
+    [
+      5,
+      "v1.3"
+    ]
+  ]
 }

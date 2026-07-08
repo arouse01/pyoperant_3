@@ -104,10 +104,10 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         super(self.__class__, self).__init__()
         with wait_cursor():  # set mouse cursor to 'waiting'
             # Set up layout and widgets
-            testing = True
+            testing = False
             # Number of boxes declared in pyoperant_gui_layout.py
             if testing:
-                boxCount = 9
+                boxCount = 6
                 boxCoords = [(0, 0), (1, 0), (2, 0), (0, 1), (1, 1), (2, 1), (0, 2), (1, 2), (2, 2)]
                 gridSize = (3, 3)
                 # ANY VARS THAT AFFECT LAYOUT SETUP NEED TO BE DEFINED BEFORE HERE
@@ -792,9 +792,21 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
     def water_control(self, boxindex, parameter='purge', purge_time=20):
 
         boxnumber = boxindex + 1  # boxindex is device number - 1
+        # get proper solenoid channel depending on board version
+        currBoardVer = str(self.boardVerBoxList[boxindex].currentText())
+        if currBoardVer == 'v1.3':
+            solenoidChannel = 16
+        elif currBoardVer == 'v1.4':
+            solenoidChannel = 22
+        elif currBoardVer == 'v2.0':
+            solenoidChannel = 22
+        elif currBoardVer == 'v4.0':
+            solenoidChannel = 41
+        else:
+            solenoidChannel = 16
         if self.subprocessBox[boxindex] == 0:  # If box is not running
             if parameter == 'dialog':
-                dialog = SolenoidGui(boxnumber)
+                dialog = SolenoidGui(boxnumber, solenoidChannel)
                 dialog.exec_()
             elif parameter == 'purge':
                 self.log.info("Purging water system in box {:d} for {:d} s".format(boxnumber, purge_time))
@@ -807,9 +819,9 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
                 device.readline()
                 device.flushInput()
                 self.log.debug("Successfully opened device {}".format(device_name))
-                device.write("".join([chr(16), chr(3)]))  # set channel 16 (solenoid) as output
+                device.write("".join([chr(solenoidChannel), chr(3)]))  # set channel 16 (solenoid) as output
                 # device.write("".join([chr(16), chr(2)]))  # close solenoid, just in case
-                device.write("".join([chr(16), chr(1)]))  # open solenoid
+                device.write("".join([chr(solenoidChannel), chr(1)]))  # open solenoid
                 startTime = time.time()
 
                 while True:
@@ -817,7 +829,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
                     if purge_time <= elapsedTime:
                         break
 
-                device.write("".join([chr(16), chr(2)]))  # close solenoid
+                device.write("".join([chr(solenoidChannel), chr(2)]))  # close solenoid
                 device.close()  # close connection
                 print("Purged box {:02d}".format(boxnumber))
                 self.log.info("Purged box {:02d}".format(boxnumber))
@@ -1385,6 +1397,16 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
                     for i, check in dictLoaded['active']:
                         if check and i < self.numberOfBoxes:
                             self.checkActiveBoxList[i].setChecked(True)
+
+                if 'boardVer' in dictLoaded:
+                    for i, boardVer in dictLoaded['boardVer']:
+                        if boardVer and i < self.numberOfBoxes:
+                            index = self.boardVerBoxList[i].findText(boardVer)
+                            if index >= 0:
+                                self.boardVerBoxList[i].setCurrentIndex(index)
+                            else:
+                                self.boardVerBoxList[i].setCurrentIndex(0)
+
                 # Whether last shutdown was done properly
                 if 'shutdownProper' in dictLoaded:
                     shutdownPrev = dictLoaded['shutdownProper']
@@ -1418,6 +1440,7 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
         paramFileList = []
         birdListTemp = []
         activeListTemp = []
+        boardVerListTemp = []
         for boxnumber in self.boxList:
             # Get plain text of both param file path and bird name, then join in a list for each
             paramSingle = str(self.paramFileBoxList[boxnumber].toPlainText())
@@ -1425,12 +1448,15 @@ class PyoperantGui(QtGui.QMainWindow, pyoperant_gui_layout.UiMainWindow):
             birdSingle = str(self.birdEntryBoxList[boxnumber].toPlainText())
             birdListTemp.append(birdSingle)
             activeListTemp.append(self.checkActiveBoxList[boxnumber].isChecked())
+            boardVerListTemp.append(str(self.boardVerBoxList[boxnumber].currentText()))
         paramFiles = zip(self.boxList, paramFileList)
         birds = zip(self.boxList, birdListTemp)
         active = zip(self.boxList, activeListTemp)
+        boardVer = zip(self.boxList, boardVerListTemp)
         shutdownProper = True
 
-        d = {'paramFiles': paramFiles, 'birds': birds, 'active': active, 'shutdownProper': shutdownProper}
+        d = {'paramFiles': paramFiles, 'birds': birds, 'active': active, 'boardVer': boardVer, 'shutdownProper':
+            shutdownProper}
 
         with open('settings.json', 'w') as outfile:
             json.dump(d, outfile, ensure_ascii=False, indent=4, separators=(',', ': '))
@@ -1478,7 +1504,7 @@ class SolenoidGui(QtGui.QDialog, pyoperant_gui_layout.UiSolenoidControl):
     Added 10/20/18 by AR
     """
 
-    def __init__(self, box_number):
+    def __init__(self, box_number, solenoid_channel):
         super(self.__class__, self).__init__()
 
         self.setup_ui(self)  # from pyoperant_gui_layout.py
@@ -1491,7 +1517,7 @@ class SolenoidGui(QtGui.QDialog, pyoperant_gui_layout.UiSolenoidControl):
         self.box_name.setText(str("Box {:02d}".format(box_number)))
         self.solenoid_Status_Text.setText(str("CLOSED"))
 
-        self.solenoidChannel = 16
+        self.solenoidChannel = solenoid_channel
 
         self.device = None
 
