@@ -9,6 +9,7 @@
     "name": "Andrew Rouse"
   },
   "panel_name": "Rouse1",
+  "board_version": "v1.4",
   "subject": "test",
   "subject_type": "bird",
   "debug": false,
@@ -18,6 +19,7 @@
   ],
   "shape": false,
   "free_day_off": false,
+
   "classes": {
     "sPlus": {
       "component": "respSens",
@@ -39,29 +41,30 @@
     }
   },
   "block_design": {
-    "block_path": "/home/rouse/Desktop/pyoperant/pyoperant/pyoperant/behavior/go_nogo_interrupt_blocks.json",
+    "block_path": "/home/aperture/Desktop/pyoperant/pyoperant/pyoperant/behavior/go_nogo_interrupt_blocks.json",
     "order": [
       "shaping 1",
       "shaping 2",
       "shaping 3",
-      "discrim 120:144 S+/S-",
-      "discrim pitch b hi/lo S+/S-",
-      "discrim 120:144 S+/S-",
-      "discrim pitch b hi/lo S+/S-",
-      "training 120/180c",
+      "training 120/180",
       "training 120/180b",
       "training 120/180b 0.8",
       "testing 144b (120/180)",
+      "training 120/180b 0.8",
+      "training 120/180c",
       "training 120/180c 0.8",
       "testing 144c (120/180)",
-      "testing range 75-275d",
-      "discrim amp d lo/hi S+/S-"
+      "training 120/180 0.8",
+      "testing 144 (120/180)",
+      "testing range 120-180"
     ]
   },
+
   "correction_trials": false,
   "intertrial_min": 0.1,
   "response_delay": 0.5,
   "response_win": 5,
+
   "light_schedule": [
     [
       "08:30",
@@ -83,8 +86,9 @@
     5,
     6
   ],
-  "stim_path": "/home/rouse/bird/stim",
-  "stim_list": "/home/rouse/Desktop/pyoperant/pyoperant/pyoperant/behavior/go_nogo_interrupt_stimuli.json",
+
+  "stim_path": "/home/aperture/bird/stim",
+  "stim_list": "/home/aperture/Desktop/pyoperant/pyoperant/behavior/go_nogo_interrupt_stimuli.json",
   "stims": {
     "b1i1_1500ir1.wav": "b1i1_1500ir1.wav",
     "b1i1_1500ir2.wav": "b1i1_1500ir2.wav",
@@ -621,9 +625,12 @@
     "b2s1_2000ir3.wav": "b2s1_2000ir3.wav",
     "b2s1_2000ir4.wav": "b2s1_2000ir4.wav",
     "b2s1_2000reg.wav": "b2s1_2000reg.wav",
+    "z1i1_1440_sgp.wav": "z1i1_1440_sgp.wav",
+    "z1i1_1440_vgp.wav": "z1i1_1440_vgp.wav",
     "songPlus": "blu33ylw24_song.wav",
     "songMinus": "zf12_song.wav"
   },
   "sr": 44100
+
 }
 
