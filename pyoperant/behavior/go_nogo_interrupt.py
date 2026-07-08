@@ -15,14 +15,6 @@ try:
 except ImportError:
     import json
 
-osName = os.name  # for differences between open(..., 'w') vs open(..., 'wb'), which can be different in Linux vs Win
-if osName == "posix":
-    writeType = 'wb'
-    addType = 'ab'
-else:
-    writeType = 'w'
-    addType = 'a'
-
 
 class GoNoGoInterruptExp(base.BaseExp):
     """A two alternative choice experiment
@@ -73,8 +65,6 @@ class GoNoGoInterruptExp(base.BaseExp):
                 with open(stim_file, 'rb') as stim_list:
                     stimuli = json.load(stim_list)
                     self.parameters['stims'] = stimuli['stims']
-            else:
-                raise FileNotFoundError('Could not open block file: %s' % stim_file)
 
         # # assign stim files full names
         for name, filename in self.parameters['stims'].items():
@@ -151,8 +141,6 @@ class GoNoGoInterruptExp(base.BaseExp):
                 with open(block_path, 'rb') as stim_list:
                     blocks = json.load(stim_list)
                     self.parameters['block_design']['blocks'] = blocks['blocks']
-            else:
-                raise FileNotFoundError('Could not open block file: %s' % block_path)
 
     def reconnect_panel(self):
         # If hardware connection is interrupted, like serial communication fails,
@@ -228,7 +216,7 @@ class GoNoGoInterruptExp(base.BaseExp):
         with the fields in experiment.fields_to_save
         """
 
-        with open(self.data_csv, writeType) as data_fh:
+        with open(self.data_csv, 'wb') as data_fh:
             trialWriter = csv.writer(data_fh)
             trialWriter.writerow(self.fields_to_save)
 
@@ -237,7 +225,7 @@ class GoNoGoInterruptExp(base.BaseExp):
         if not os.path.exists(json_path):
             os.mkdir(json_path)
         self.snapshot_f = os.path.join(json_path, self.parameters['subject'] + '_settings_' + self.timestamp + '.json')
-        with open(self.snapshot_f, writeType) as config_snap:
+        with open(self.snapshot_f, 'wb') as config_snap:
             json.dump(self.parameters, config_snap, sort_keys=True, indent=4)
 
     def run(self):  # Overwrite base method to include ad lib water when sessions not running
@@ -319,7 +307,7 @@ class GoNoGoInterruptExp(base.BaseExp):
                         'probe_CR_nr': 0
                         }
         summary_file = os.path.join(self.parameters['experiment_path'], self.parameters['subject'] + '.summaryDAT')
-        with open(summary_file, writeType) as f:
+        with open(summary_file, 'wb') as f:
             f.write("Welcome to pyoperant v%s." % self.version)
 
     def write_summary(self):
@@ -384,7 +372,7 @@ class GoNoGoInterruptExp(base.BaseExp):
                             self.condition = self.parameters['block_design']['order'].pop(0)  # Remove block from order
                             # with open(self.parameters['config_file'], 'wb') as config_snap:
                             #     json.load(config)
-                            with open(self.parameters['config_file'], writeType) as config_snap:
+                            with open(self.parameters['config_file'], 'wb') as config_snap:
                                 json.dump(self.parameters, config_snap, sort_keys=True, indent=4)
                                 self.log.info('Stage {} complete!'.format(self.condition))
                             self.save()
@@ -549,11 +537,11 @@ class GoNoGoInterruptExp(base.BaseExp):
                                 index=index,
                                 class_=self.trials[-1].class_)
             for ev in self.trials[-1].events:
-                if ev.label == 'wav':
+                if ev.label is 'wav':
                     trial.events.append(copy.copy(ev))
                     trial.stimulus_event = trial.events[-1]
                     trial.stimulus = trial.stimulus_event.name
-                elif ev.label == 'motif':
+                elif ev.label is 'motif':
                     trial.events.append(copy.copy(ev))
             self.log.debug("correction trial: class is %s" % trial.class_)
         else:
@@ -642,7 +630,7 @@ class GoNoGoInterruptExp(base.BaseExp):
             except AttributeError:
                 trial_dict[field] = trial.annotations[field]
 
-        with open(self.data_csv, addType) as data_fh:
+        with open(self.data_csv, 'ab') as data_fh:
             trialWriter = csv.DictWriter(data_fh, fieldnames=self.fields_to_save, extrasaction='ignore')
             trialWriter.writerow(trial_dict)
 

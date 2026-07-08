@@ -5490,6 +5490,88 @@
       ],
       "queue": "random"
     },
+    "testing vgp/vIOI_b (120/180)": {
+      "description": "1:1 S+/S- stim, 120/180, 0.8 reinf rate, z1i1, novel vgp/vIOI",
+      "reinforcement": {
+        "schedule": "go_interrupt",
+        "prob": 0.889,
+        "secondary": false,
+        "passive": false,
+        "punish": true
+      },
+      "criteria": {
+        "days": 2,
+        "trialcount": {
+          "mintrials": 100
+        },
+        "propCorrect": [
+          {
+            "type": "S+\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "type": "S-\n(NR)",
+            "minimum": 0.60
+          },
+          {
+            "minimum": 0.75
+          }
+        ]
+      },
+      "conditions": [
+        {
+          "class": "sMinus",
+          "stim_name": "z1i1_1200ir1.wav"
+        },
+        {
+          "class": "sMinus",
+          "stim_name": "z1i1_1800ir1.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "z1i1_1200reg.wav"
+        },
+        {
+          "class": "sPlus",
+          "stim_name": "z1i1_1800reg.wav"
+        },
+        {
+          "class": "probeMinus",
+          "stim_name": "z1i1_1200_sgp.wav"
+        },
+        {
+          "class": "probePlus",
+          "stim_name": "z1i1_1200_vgp.wav"
+        },
+        {
+          "class": "probeMinus",
+          "stim_name": "z1i1_1800_sgp.wav"
+        },
+        {
+          "class": "probePlus",
+          "stim_name": "z1i1_1800_vgp.wav"
+        }
+      ],
+      "weights": [
+        {
+          "class": "sPlus",
+          "weight": 9
+        },
+        {
+          "class": "sMinus",
+          "weight": 9
+        },
+        {
+          "class": "probePlus",
+          "weight": 1
+        },
+        {
+          "class": "probeMinus",
+          "weight": 1
+        }
+      ],
+      "queue": "random"
+    },
     "testing vgp_b (120/180)": {
       "description": "1:1 S+/S- stim, 120/180, 0.8 reinf rate, z1i1, novel vgp",
       "reinforcement": {
@@ -5630,8 +5712,8 @@
       ],
       "queue": "random"
     },
-    "testing vgp_a (144)": {
-      "description": "1:1 S+/S- stim, all 144ms IOI, 0.8 reinf rate, z2s1, novel vgap",
+    "testing vgp_b (144)": {
+      "description": "1:1 S+/S- stim, all 144ms IOI, 0.8 reinf rate, z1i1, novel vgap",
       "reinforcement": {
         "schedule": "go_interrupt",
         "prob": 0.889,
@@ -5661,15 +5743,15 @@
       "conditions": [
         {
           "class": "sMinus",
-          "stim_name": "z2s1_1440ir1.wav"
+          "stim_name": "z1i1_1440ir1.wav"
         },
         {
           "class": "sPlus",
-          "stim_name": "z2s1_1440reg.wav"
+          "stim_name": "z1i1_1440reg.wav"
         },
         {
           "class": "probePlus",
-          "stim_name": "z2s1_1440_vgp.wav"
+          "stim_name": "z1i1_1440_vgp.wav"
         }
       ],
       "weights": [
@@ -5688,8 +5770,8 @@
       ],
       "queue": "random"
     },
-    "testing vIOI_a (144)": {
-      "description": "1:1 S+/S- stim, all 144ms IOI, 0.8 reinf rate, z2s1, novel vIOI",
+    "testing vIOI_b (144)": {
+      "description": "1:1 S+/S- stim, all 144ms IOI, 0.8 reinf rate, z1i1, novel vIOI",
       "reinforcement": {
         "schedule": "go_interrupt",
         "prob": 0.889,
@@ -5719,15 +5801,15 @@
       "conditions": [
         {
           "class": "sMinus",
-          "stim_name": "z2s1_1440ir1.wav"
+          "stim_name": "z1i1_1440ir1.wav"
         },
         {
           "class": "sPlus",
-          "stim_name": "z2s1_1440reg.wav"
+          "stim_name": "z1i1_1440reg.wav"
         },
         {
           "class": "probePlus",
-          "stim_name": "z2s1_1440_sgp.wav"
+          "stim_name": "z1i1_1440_sgp.wav"
         }
       ],
       "weights": [

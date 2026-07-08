@@ -1,6 +1,7 @@
 from pyoperant import hwio, components, panels, utils
 from pyoperant.interfaces import pyaudio_, arduino_
 
+# No idea what this variable does or how the channels are mapped
 _ROUSE_MAP = {
     1: ('/dev/teensy01', 2, 0, 2, 8),  # box_id:(subdevice,in_dev,in_chan,out_dev,out_chan)
     2: ('/dev/teensy02', 2, 4, 2, 16),
@@ -24,7 +25,7 @@ class RousePanel(panels.BasePanel):
         # define interfaces
         self.interfaces['pyaudio'] = pyaudio_.PyAudioInterface(device_name='Board%02i: USB Audio' % self.id)
         self.interfaces['arduino'] = arduino_.ArduinoInterface(device_name='/dev/teensy%02i' % self.id)
-
+        # self.interfaces['pyaudio'] = pyaudio_.PyAudioInterface(device_name='Analog Output - Board%02i' % self.id)
         # define inputs
         if boardtype == 'v1.4':
             INPUTS = [38,  # Trial IR
@@ -60,7 +61,6 @@ class RousePanel(panels.BasePanel):
                        41,  # Reinforcement solenoid 1
                        40,  # Reinforcement solenoid 2
                        ]
-
         else:
             INPUTS = [37,  # Trial IR
                       36,  # Response IR
@@ -107,6 +107,31 @@ class RousePanel(panels.BasePanel):
         self.house_light.on()
         self.water.off()
 
+    # test solenoid
+    def test_solenoid(self):
+        print('reset')
+        self.reset()
+        print('opening solenoid')
+        self.reward(value=5)
+        return True
+
+    def test_sound(self):
+        print('reset')
+        self.reset()
+        print('queue file')
+        self.speaker.queue('/home/aperture/bird/stim/g5q1_1800ir1.wav')
+        print('play file')
+        self.speaker.play()
+        while self.speaker.interface.stream.is_active():
+            utils.wait(0.1)
+        return True
+
+    # test everything
+    # self.output:
+    #   0: trial LED
+    #   1: resp LED
+    #   2: lights on?
+    #   3: lights off?
     def test(self):
         print('reset')
         self.reset()
@@ -120,13 +145,15 @@ class RousePanel(panels.BasePanel):
         print('reset')
         self.reset()
         print('feed')
-        self.reward(value=dur)
-        print('timeout')
+        # self.reward(value=3)
+        # print('timeout')
         self.punish(value=dur)
         print('queue file')
-        self.speaker.queue('/usr/local/stimuli/A1.wav')
+        self.speaker.queue('/home/aperture/bird/stim/g5q1_1800ir1.wav')
         print('play file')
         self.speaker.play()
+        while self.speaker.interface.stream.is_active():
+            utils.wait(0.1)
         return True
 
 
@@ -171,7 +198,7 @@ class Rouse6(RousePanel):
 class Rouse7(RousePanel):
     """Rouse6 panel"""
 
-    def __init__(self, boardtype='v1.4'):
+    def __init__(self, boardtype='v4.0'):
         super(Rouse7, self).__init__(panel_id=7, boardtype=boardtype)
         # Not sure if this is the working setup, or if boardtype=boardtype is
 
@@ -179,7 +206,7 @@ class Rouse7(RousePanel):
 class Rouse8(RousePanel):
     """Rouse6 panel"""
 
-    def __init__(self, boardtype='v1.4'):
+    def __init__(self, boardtype='v4.0'):
         super(Rouse8, self).__init__(panel_id=8, boardtype=boardtype)
         # Not sure if this is the working setup, or if boardtype=boardtype is
 
@@ -187,8 +214,32 @@ class Rouse8(RousePanel):
 class Rouse9(RousePanel):
     """Rouse6 panel"""
 
-    def __init__(self, boardtype='v1.4'):
+    def __init__(self, boardtype='v4.0'):
         super(Rouse9, self).__init__(panel_id=9, boardtype=boardtype)
+        # Not sure if this is the working setup, or if boardtype=boardtype is
+
+
+class Rouse10(RousePanel):
+    """Rouse6 panel"""
+
+    def __init__(self, boardtype='v4.0'):
+        super(Rouse10, self).__init__(panel_id=10, boardtype=boardtype)
+        # Not sure if this is the working setup, or if boardtype=boardtype is
+
+
+class Rouse11(RousePanel):
+    """Rouse6 panel"""
+
+    def __init__(self, boardtype='v4.0'):
+        super(Rouse11, self).__init__(panel_id=11, boardtype=boardtype)
+        # Not sure if this is the working setup, or if boardtype=boardtype is
+
+
+class Rouse12(RousePanel):
+    """Rouse6 panel"""
+
+    def __init__(self, boardtype='v4.0'):
+        super(Rouse12, self).__init__(panel_id=12, boardtype=boardtype)
         # Not sure if this is the working setup, or if boardtype=boardtype is
 
 
@@ -204,7 +255,6 @@ class Rouse9(RousePanel):
 
 
 # in the end, 'PANELS' should contain each operant panel available for use
-
 PANELS = {"1": Rouse1,
           "2": Rouse2,
           "3": Rouse3,
@@ -213,12 +263,15 @@ PANELS = {"1": Rouse1,
           "6": Rouse6,
           "7": Rouse7,
           "8": Rouse8,
-          "9": Rouse9
+          "9": Rouse9,
+          "10": Rouse10,
+          "11": Rouse11,
+          "12": Rouse12
           }
 
 BEHAVIORS = ['pyoperant.behavior']
 
-DATA_PATH = '/home/rouse/bird/data/'
+DATA_PATH = '/home/aperture/bird/data/'
 
 # SMTP_CONFIG
 
