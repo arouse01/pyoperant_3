@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/snap/pycharm-community/580/plugins/python-ce/helpers/pydev/pydevd.py", line 1647, in _exec
+    pydev_imports.execfile(file, globals, locals)  # execute the script
+  File "/home/aperture/Desktop/pyoperant/scripts/behave", line 181, in <module>
+    main()
+  File "/home/aperture/Desktop/pyoperant/scripts/behave", line 136, in main
+    from pyoperant.local import PANELS
+ImportError: cannot import name PANELS
