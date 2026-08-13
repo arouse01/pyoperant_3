@@ -437,6 +437,8 @@ class PyoperantGui(QMainWindow, pyoperant_gui_layout.UiMainWindow):
                 self.paramFileButtonBoxList[boxIndex].setMenu(self.boxMenuList[boxIndex])
             # endregion
 
+            self.init_daily_restart_timer()
+
             self.closeEvent = self.close_application
 
             # check if each box is connected
@@ -782,6 +784,45 @@ class PyoperantGui(QMainWindow, pyoperant_gui_layout.UiMainWindow):
                         self.status_icon(boxnumber, 'start')
                         self.lastStartList[boxnumber] = dt.datetime.now()
                         self.sleepScheduleList[boxnumber] = self.defaultSleepSchedule
+
+    def init_daily_restart_timer(self):
+        """Call once during __init__, after subprocessBox/checkActiveBoxList/etc. exist."""
+        self.dailyRestartHour = 9
+        self.dailyRestartMinute = 0
+        self.lastRestartDate = None  # tracks date last restart ran, so it only fires once/day
+
+        self.restartTimer = QtCore.QTimer(self)
+        self.restartTimer.timeout.connect(self.check_daily_restart)
+        self.restartTimer.start(60 * 1000)  # check once a minute
+
+    def check_daily_restart(self):
+        now = dt.datetime.now()
+        if (now.hour == self.dailyRestartHour and
+                now.minute == self.dailyRestartMinute and
+                self.lastRestartDate != now.date()):
+            self.lastRestartDate = now.date()
+            self.log.info("Running scheduled 9am restart of all boxes")
+            self.restart_all_boxes()
+
+    def restart_all_boxes(self):
+        for boxnumber in self.boxList:
+            try:
+                self.restart_box(boxnumber)
+            except Exception as e:
+                self.log.error("Error restarting box {:02d}: {}".format(boxnumber + 1, e))
+
+    def restart_box(self, boxnumber):
+        if not self.checkActiveBoxList[boxnumber].checkState():
+            return
+        birdName = self.birdEntryBoxList[boxnumber].toPlainText()
+        jsonPath = self.paramFileBoxList[boxnumber].toPlainText()
+        if birdName == "" or not os.path.isfile(jsonPath):
+            return
+
+        self.log.info("Scheduled restart: stopping box {:02d}".format(boxnumber + 1))
+        self.stop_box(boxnumber)
+        time.sleep(20)
+        self.start_box(boxnumber)
 
     def start_all(self):
         # start all checked boxes
